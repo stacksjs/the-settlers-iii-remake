@@ -65,7 +65,7 @@
     "@stacksjs/actions": "^0.75.251",
     "@stacksjs/env": "^0.75.251",
     "@stacksjs/path": "^0.75.251",
-    "@stacksjs/stx": "0.2.630",
+    "@stacksjs/stx": "0.2.631",
     "craft-native": "0.0.262",
     "stacks": "^0.75.251"
   },
@@ -83,10 +83,10 @@
     "commit-msg": "bun x gitlint --edit \"$1\""
   },
   "devDependencies": {
-    "@stacksjs/components": "0.2.630",
+    "@stacksjs/components": "0.2.631",
     "@stacksjs/ts-png": "^0.1.8",
     "better-dx": "^0.2.37",
-    "bun-plugin-stx": "0.2.630"
+    "bun-plugin-stx": "0.2.631"
   },
   "author": "Chris <chris@stacksjs.com>",
   "repository": {
