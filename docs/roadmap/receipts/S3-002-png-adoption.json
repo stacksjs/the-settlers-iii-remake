@@ -168,5 +168,92 @@
     ],
     "documentation": "https://docs.npmjs.com/about-registry-signatures/"
   },
-  "attestationSignatureVerified": false
+  "attestationSignatureVerified": false,
+  "consumerManifestSha256": "3acc7da7d608dcd61ef0077cb178a0e6d663d1851a1c2e2912c995fab94ab901",
+  "combinedIntegrationCodeCommit": "dfc4e48b39d9f55831267d78c97f3c3e3ca60e3c",
+  "consumerChecks": {
+    "bunVersion": "1.4.2",
+    "frozenInstall": {
+      "packages": 213,
+      "changed": false
+    },
+    "lint": {
+      "files": 292,
+      "errors": 0,
+      "warnings": 0
+    },
+    "typecheck": {
+      "application": "passed",
+      "tools": "passed",
+      "stx": "passed"
+    },
+    "unit": {
+      "tests": 47,
+      "assertions": 2636,
+      "failures": 0
+    },
+    "assetsImport": {
+      "sprites": 103,
+      "atlasWidth": 1024,
+      "atlasHeight": 598,
+      "pcmSounds": 6,
+      "convertedFiles": 24
+    },
+    "assetsVerify": "passed",
+    "publicationWeb": {
+      "expected": "blocked",
+      "actualExitCode": 1,
+      "reason": "No recorded redistribution evidence for original source amazons-demo on web"
+    }
+  },
+  "convertedContent": {
+    "manifestSha256": "fe1f83de1db67661686e04112fbe303b2d10b42c4a0c51c1673a06a1a8c6618c",
+    "files": 24,
+    "converterInputs": [
+      {
+        "id": "converter:scripts/import-assets.ts",
+        "kind": "converter",
+        "path": "scripts/import-assets.ts",
+        "bytes": 12826,
+        "sha256": "2b0d2c1da1eb2ee309e6a692b3cbc20b90c057242b50df3748a24f176e15e305"
+      },
+      {
+        "id": "converter:scripts/lib/s3-dat.ts",
+        "kind": "converter",
+        "path": "scripts/lib/s3-dat.ts",
+        "bytes": 3937,
+        "sha256": "58bdb4ea3bbcdb78ab8b4c32c82ab12177430d267a704a2acaf31d59e49759ae"
+      },
+      {
+        "id": "converter:scripts/lib/content-provenance.ts",
+        "kind": "converter",
+        "path": "scripts/lib/content-provenance.ts",
+        "bytes": 11864,
+        "sha256": "16ad2e13ac982a59c3e36509fdaacb4781b48bec155352a2362d33a3253715c8"
+      },
+      {
+        "id": "converter:scripts/lib/verified-download.ts",
+        "kind": "converter",
+        "path": "scripts/lib/verified-download.ts",
+        "bytes": 731,
+        "sha256": "9bd6e17a7fe0ded3654dc467bb0398ef65c8e8477ee6a60998a2b253e55da0fc"
+      },
+      {
+        "id": "converter:package.json",
+        "kind": "converter",
+        "path": "package.json",
+        "bytes": 4245,
+        "sha256": "3acc7da7d608dcd61ef0077cb178a0e6d663d1851a1c2e2912c995fab94ab901"
+      },
+      {
+        "id": "converter:bun.lock",
+        "kind": "converter",
+        "path": "bun.lock",
+        "bytes": 84501,
+        "sha256": "8dd31df16415a1a14f3666071356d9abdee089151822d1ad5906cdb941911471"
+      }
+    ],
+    "originalBehaviorAdmitted": false,
+    "redistributionApproved": false
+  }
 }
