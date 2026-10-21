@@ -12,6 +12,20 @@ relevant `SKILL.md` before doing non-trivial work in that area rather than guess
 
 ---
 
+## Settlers Gold implementation
+
+For game features, fidelity claims, native support, issue selection, or releases,
+read [the Gold roadmap](docs/roadmap/README.md) and its specification. Work the
+actual issue frontier and retain completion evidence. For framework defects,
+dependency upgrades, signing, or production credentials, follow
+[source ownership and upstream delivery](docs/roadmap/upstream-workflow.md): fix
+the owning source, release and verify packages, update Stacks, then install here.
+Preserve unrelated work through isolated worktrees. Do not patch node_modules,
+copy framework runtimes, or rewrite generated native sources. Keep production
+values encrypted through buddy env and decryption keys outside Git.
+
+---
+
 ## Project conventions (mandatory)
 
 ### Linting

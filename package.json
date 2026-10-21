@@ -60,7 +60,10 @@
     "assets:import": "bun scripts/import-assets.ts",
     "prebuild": "bun run assets:import",
     "assets:verify": "bun scripts/verify-assets.ts",
-    "typecheck:tools": "bun x --bun tsc --noEmit -p tsconfig.tools.json --pretty false"
+    "typecheck:tools": "bun x --bun tsc --noEmit -p tsconfig.tools.json --pretty false",
+    "roadmap:check": "bun scripts/roadmap.ts --check",
+    "roadmap:publish": "bun scripts/roadmap.ts --publish",
+    "roadmap:verify": "bun scripts/roadmap.ts --verify"
   },
   "dependencies": {
     "@stacksjs/actions": "^0.75.255",

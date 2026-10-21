@@ -1,0 +1,2631 @@
+{
+  "version": 1,
+  "epics": {
+    "1": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964107695,
+      "number": 5,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/5",
+      "state": "open",
+      "title": "Gold Edition epic 1: Original evidence and complete content",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:01"
+      ],
+      "milestone": 1,
+      "nativeParent": true
+    },
+    "2": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964108163,
+      "number": 6,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/6",
+      "state": "open",
+      "title": "Gold Edition epic 2: True native foundations and upstream frameworks",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:02"
+      ],
+      "milestone": 1,
+      "nativeParent": true
+    },
+    "3": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964108523,
+      "number": 7,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/7",
+      "state": "open",
+      "title": "Gold Edition epic 3: World, logistics, workers, and construction",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:03"
+      ],
+      "milestone": 2,
+      "nativeParent": true
+    },
+    "4": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964108939,
+      "number": 8,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/8",
+      "state": "open",
+      "title": "Gold Edition epic 4: Complete civilian economy",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:04"
+      ],
+      "milestone": 2,
+      "nativeParent": true
+    },
+    "5": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964109339,
+      "number": 9,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/9",
+      "state": "open",
+      "title": "Gold Edition epic 5: Military, religion, and all civilizations",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:05"
+      ],
+      "milestone": 3,
+      "nativeParent": true
+    },
+    "6": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964109747,
+      "number": 10,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/10",
+      "state": "open",
+      "title": "Gold Edition epic 6: Ships, colonies, trade, and diplomacy",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:06"
+      ],
+      "milestone": 4,
+      "nativeParent": true
+    },
+    "7": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964110120,
+      "number": 11,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/11",
+      "state": "open",
+      "title": "Gold Edition epic 7: Same-rules opponents and skirmish",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:07"
+      ],
+      "milestone": 4,
+      "nativeParent": true
+    },
+    "8": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964110513,
+      "number": 12,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/12",
+      "state": "open",
+      "title": "Gold Edition epic 8: Original campaigns and map editing",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:08"
+      ],
+      "milestone": 4,
+      "nativeParent": true
+    },
+    "9": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964110940,
+      "number": 13,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/13",
+      "state": "open",
+      "title": "Gold Edition epic 9: Original interface, animation, and sound",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:09"
+      ],
+      "milestone": 5,
+      "nativeParent": true
+    },
+    "10": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964111334,
+      "number": 14,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/14",
+      "state": "open",
+      "title": "Gold Edition epic 10: Saves, replays, and multiplayer",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:10"
+      ],
+      "milestone": 6,
+      "nativeParent": true
+    },
+    "11": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964111740,
+      "number": 15,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/15",
+      "state": "open",
+      "title": "Gold Edition epic 11: Reusable release, signing, credentials, and stores",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:11"
+      ],
+      "milestone": 6,
+      "nativeParent": true
+    },
+    "12": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964112056,
+      "number": 16,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/16",
+      "state": "open",
+      "title": "Gold Edition epic 12: Performance, qualification, and finished release",
+      "labels": [
+        "settlers-gold",
+        "type:epic",
+        "subsystem:12"
+      ],
+      "milestone": 7,
+      "nativeParent": true
+    }
+  },
+  "tickets": {
+    "S3-001": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964112312,
+      "number": 17,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/17",
+      "state": "open",
+      "title": "[S3-001] Establish the Gold Edition fidelity specification",
+      "labels": [
+        "settlers-gold",
+        "type:research",
+        "priority:p0",
+        "ready-for-agent",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": []
+    },
+    "S3-002": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964112639,
+      "number": 18,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/18",
+      "state": "open",
+      "title": "[S3-002] Build repeatable original-game observation fixtures",
+      "labels": [
+        "settlers-gold",
+        "type:research",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/17"
+      ]
+    },
+    "S3-003": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964112992,
+      "number": 19,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/19",
+      "state": "open",
+      "title": "[S3-003] Establish licensed bundled-content provenance",
+      "labels": [
+        "settlers-gold",
+        "type:research",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/17"
+      ]
+    },
+    "S3-004": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964113366,
+      "number": 20,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/20",
+      "state": "open",
+      "title": "[S3-004] Complete original graphics and animation importing",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
+      ]
+    },
+    "S3-005": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964113762,
+      "number": 21,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/21",
+      "state": "open",
+      "title": "[S3-005] Complete original audio, text, font, and cinematic importing",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
+      ]
+    },
+    "S3-006": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964114112,
+      "number": 22,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
+      "state": "open",
+      "title": "[S3-006] Decode original maps and mission information",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/17",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
+      ]
+    },
+    "S3-007": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964114490,
+      "number": 23,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
+      "state": "open",
+      "title": "[S3-007] Publish versioned rules and content catalogs",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:01",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/18",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/20",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/21",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/22"
+      ]
+    },
+    "S3-008": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964114852,
+      "number": 24,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/24",
+      "state": "open",
+      "title": "[S3-008] Audit Craft, stx, and HomeOS execution evidence",
+      "labels": [
+        "settlers-gold",
+        "type:research",
+        "priority:p0",
+        "ready-for-agent",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": []
+    },
+    "S3-009": {
+      "repository": "craft-native/craft",
+      "id": 5964115182,
+      "number": 390,
+      "url": "https://github.com/craft-native/craft/issues/390",
+      "state": "open",
+      "title": "[S3-009] Establish an executable graphics core and truthful capabilities",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/24"
+      ]
+    },
+    "S3-010": {
+      "repository": "craft-native/craft",
+      "id": 5964115608,
+      "number": 391,
+      "url": "https://github.com/craft-native/craft/issues/391",
+      "state": "open",
+      "title": "[S3-010] Implement textured sprites, terrain triangles, and text",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/390"
+      ]
+    },
+    "S3-011": {
+      "repository": "craft-native/craft",
+      "id": 5964115974,
+      "number": 392,
+      "url": "https://github.com/craft-native/craft/issues/392",
+      "state": "open",
+      "title": "[S3-011] Implement native Metal surfaces on macOS and iOS",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/391"
+      ]
+    },
+    "S3-012": {
+      "repository": "craft-native/craft",
+      "id": 5964116234,
+      "number": 393,
+      "url": "https://github.com/craft-native/craft/issues/393",
+      "state": "open",
+      "title": "[S3-012] Implement native Vulkan surfaces on Windows, Linux, and Android",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/391"
+      ]
+    },
+    "S3-013": {
+      "repository": "craft-native/craft",
+      "id": 5964116544,
+      "number": 394,
+      "url": "https://github.com/craft-native/craft/issues/394",
+      "state": "open",
+      "title": "[S3-013] Expose typed persistent JavaScript hosting",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/390"
+      ]
+    },
+    "S3-014": {
+      "repository": "craft-native/craft",
+      "id": 5964116840,
+      "number": 395,
+      "url": "https://github.com/craft-native/craft/issues/395",
+      "state": "open",
+      "title": "[S3-014] Unify native surface clocks and input",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/392",
+        "https://github.com/craft-native/craft/issues/393",
+        "https://github.com/craft-native/craft/issues/394"
+      ]
+    },
+    "S3-015": {
+      "repository": "stacksjs/stx",
+      "id": 5964117262,
+      "number": 2108,
+      "url": "https://github.com/stacksjs/stx/issues/2108",
+      "state": "open",
+      "title": "[S3-015] Add a maintained native RenderSurface primitive",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/395"
+      ]
+    },
+    "S3-016": {
+      "repository": "stacksjs/ts-css",
+      "id": 5964117692,
+      "number": 38,
+      "url": "https://github.com/stacksjs/ts-css/issues/38",
+      "state": "open",
+      "title": "[S3-016] Support faithful native HUD styling",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stx/issues/2108"
+      ]
+    },
+    "S3-017": {
+      "repository": "craft-native/craft",
+      "id": 5964118046,
+      "number": 396,
+      "url": "https://github.com/craft-native/craft/issues/396",
+      "state": "open",
+      "title": "[S3-017] Harden native and browser checkpoint contracts",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/394"
+      ]
+    },
+    "S3-018": {
+      "repository": "craft-native/craft",
+      "id": 5964118413,
+      "number": 397,
+      "url": "https://github.com/craft-native/craft/issues/397",
+      "state": "open",
+      "title": "[S3-018] Complete native audio and content-import capabilities",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/394"
+      ]
+    },
+    "S3-019": {
+      "repository": "stacksjs/stx",
+      "id": 5964118713,
+      "number": 2109,
+      "url": "https://github.com/stacksjs/stx/issues/2109",
+      "state": "open",
+      "title": "[S3-019] Verify native reactive HUD and event delivery",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stx/issues/2108",
+        "https://github.com/stacksjs/ts-css/issues/38"
+      ]
+    },
+    "S3-020": {
+      "repository": "stacksjs/stacks",
+      "id": 5964119094,
+      "number": 2957,
+      "url": "https://github.com/stacksjs/stacks/issues/2957",
+      "state": "open",
+      "title": "[S3-020] Build and package true native game applications",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/396",
+        "https://github.com/craft-native/craft/issues/397",
+        "https://github.com/stacksjs/stx/issues/2109"
+      ]
+    },
+    "S3-021": {
+      "repository": "stacksjs/stacks",
+      "id": 5964119428,
+      "number": 2958,
+      "url": "https://github.com/stacksjs/stacks/issues/2958",
+      "state": "open",
+      "title": "[S3-021] Enforce source-first release and dependency evidence",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/24"
+      ]
+    },
+    "S3-022": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964119721,
+      "number": 25,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/25",
+      "state": "open",
+      "title": "[S3-022] Adopt verified published foundation releases",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/396",
+        "https://github.com/stacksjs/stacks/issues/2958"
+      ]
+    },
+    "S3-023": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964120134,
+      "number": 26,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/26",
+      "state": "open",
+      "title": "[S3-023] Demonstrate the shared browser and native settlement",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:02",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 1,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2957",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/25"
+      ]
+    },
+    "S3-024": {
+      "repository": "home-lang/home-os",
+      "id": 5964120558,
+      "number": 114,
+      "url": "https://github.com/home-lang/home-os/issues/114",
+      "state": "open",
+      "title": "[S3-024] Consume tested shared graphics primitives in HomeOS",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p2",
+        "subsystem:02",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 11,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/24",
+        "https://github.com/craft-native/craft/issues/391"
+      ]
+    },
+    "S3-025": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964120864,
+      "number": 27,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/27",
+      "state": "open",
+      "title": "[S3-025] Introduce the deterministic game session and world model",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/23"
+      ]
+    },
+    "S3-026": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964121141,
+      "number": 28,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
+      "state": "open",
+      "title": "[S3-026] Instantiate original terrain, elevation, and map geometry",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-027": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964121457,
+      "number": 29,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/29",
+      "state": "open",
+      "title": "[S3-027] Implement individual settlers and spatial movement",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/28"
+      ]
+    },
+    "S3-028": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964121678,
+      "number": 30,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
+      "state": "open",
+      "title": "[S3-028] Implement routing and dynamic obstruction recovery",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/29"
+      ]
+    },
+    "S3-029": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964122078,
+      "number": 31,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/31",
+      "state": "open",
+      "title": "[S3-029] Implement physical goods, piles, and bounded inventories",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-030": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964122375,
+      "number": 32,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
+      "state": "open",
+      "title": "[S3-030] Implement real carrier delivery jobs",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/31"
+      ]
+    },
+    "S3-031": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964122669,
+      "number": 33,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
+      "state": "open",
+      "title": "[S3-031] Implement professions, tools, and worker assignment",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/32"
+      ]
+    },
+    "S3-032": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964123145,
+      "number": 34,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
+      "state": "open",
+      "title": "[S3-032] Implement physical building construction",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/33"
+      ]
+    },
+    "S3-033": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964123662,
+      "number": 35,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/35",
+      "state": "open",
+      "title": "[S3-033] Implement construction suspension and demolition",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
+      ]
+    },
+    "S3-034": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964123911,
+      "number": 36,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
+      "state": "open",
+      "title": "[S3-034] Implement storage areas and transport priorities",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
+      ]
+    },
+    "S3-035": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964124213,
+      "number": 37,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
+      "state": "open",
+      "title": "[S3-035] Implement residences and workforce allocation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
+      ]
+    },
+    "S3-036": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964124636,
+      "number": 38,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
+      "state": "open",
+      "title": "[S3-036] Implement exploration and player-specific visibility",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/29"
+      ]
+    },
+    "S3-037": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964125071,
+      "number": 39,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
+      "state": "open",
+      "title": "[S3-037] Implement finite deposits, surveying, and terrain changes",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/33"
+      ]
+    },
+    "S3-038": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964125497,
+      "number": 40,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+      "state": "open",
+      "title": "[S3-038] Implement territory and pioneer expansion",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/29",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
+      ]
+    },
+    "S3-039": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964125839,
+      "number": 41,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/41",
+      "state": "open",
+      "title": "[S3-039] Render actual simulation workers and cargo",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
+      ]
+    },
+    "S3-040": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964126104,
+      "number": 42,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/42",
+      "state": "open",
+      "title": "[S3-040] Prove world and logistics conservation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:03",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/35",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/41"
+      ]
+    },
+    "S3-041": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964126425,
+      "number": 43,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
+      "state": "open",
+      "title": "[S3-041] Complete timber, forestry, sawmill, and stone production",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/39"
+      ]
+    },
+    "S3-042": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964126788,
+      "number": 44,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/44",
+      "state": "open",
+      "title": "[S3-042] Complete food and water production",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/43"
+      ]
+    },
+    "S3-043": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964127135,
+      "number": 45,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/45",
+      "state": "open",
+      "title": "[S3-043] Complete mining and miner food preferences",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/44"
+      ]
+    },
+    "S3-044": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964127409,
+      "number": 46,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/46",
+      "state": "open",
+      "title": "[S3-044] Complete iron, gold, and gem processing",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/45"
+      ]
+    },
+    "S3-045": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964127851,
+      "number": 47,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
+      "state": "open",
+      "title": "[S3-045] Complete tools and weapons production",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/46"
+      ]
+    },
+    "S3-046": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964128279,
+      "number": 48,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/48",
+      "state": "open",
+      "title": "[S3-046] Complete working-area and production controls",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/44",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/45"
+      ]
+    },
+    "S3-047": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964128641,
+      "number": 49,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
+      "state": "open",
+      "title": "[S3-047] Complete economic distribution controls",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/48"
+      ]
+    },
+    "S3-048": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964128979,
+      "number": 50,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/50",
+      "state": "open",
+      "title": "[S3-048] Complete civilian specialist recruitment",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/40"
+      ]
+    },
+    "S3-049": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964129342,
+      "number": 51,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/51",
+      "state": "open",
+      "title": "[S3-049] Implement truthful economy and settler statistics",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/49"
+      ]
+    },
+    "S3-050": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964129711,
+      "number": 52,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/52",
+      "state": "open",
+      "title": "[S3-050] Prove a sustainable Roman settlement",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:04",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 2,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/42",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/51"
+      ]
+    },
+    "S3-051": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964130053,
+      "number": 53,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/53",
+      "state": "open",
+      "title": "[S3-051] Implement barracks and individual recruitment",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/47"
+      ]
+    },
+    "S3-052": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964130470,
+      "number": 54,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/54",
+      "state": "open",
+      "title": "[S3-052] Implement original troop selection and commands",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/53"
+      ]
+    },
+    "S3-053": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964130743,
+      "number": 55,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+      "state": "open",
+      "title": "[S3-053] Implement individual combat and projectiles",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/46",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/54"
+      ]
+    },
+    "S3-054": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964131140,
+      "number": 56,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
+      "state": "open",
+      "title": "[S3-054] Implement garrisons, capture, and territory consequences",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55"
+      ]
+    },
+    "S3-055": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964131433,
+      "number": 57,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/57",
+      "state": "open",
+      "title": "[S3-055] Implement healers, thieves, and specialist military interactions",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/50",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/56"
+      ]
+    },
+    "S3-056": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964131783,
+      "number": 58,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/58",
+      "state": "open",
+      "title": "[S3-056] Complete Roman religious and special production",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/46"
+      ]
+    },
+    "S3-057": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964132113,
+      "number": 59,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
+      "state": "open",
+      "title": "[S3-057] Implement temples, offerings, manna, priests, and promotions",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/53",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/58"
+      ]
+    },
+    "S3-058": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964132499,
+      "number": 60,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/60",
+      "state": "open",
+      "title": "[S3-058] Complete the Roman faction and eight interventions",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
+      ]
+    },
+    "S3-059": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964132976,
+      "number": 61,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/61",
+      "state": "open",
+      "title": "[S3-059] Complete the Egyptian faction",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
+      ]
+    },
+    "S3-060": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964133342,
+      "number": 62,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/62",
+      "state": "open",
+      "title": "[S3-060] Complete the Asian faction",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
+      ]
+    },
+    "S3-061": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964133736,
+      "number": 63,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/63",
+      "state": "open",
+      "title": "[S3-061] Complete the Amazon faction",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
+      ]
+    },
+    "S3-062": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964134054,
+      "number": 64,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/64",
+      "state": "open",
+      "title": "[S3-062] Implement faction siege production and combat",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/56"
+      ]
+    },
+    "S3-063": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964134497,
+      "number": 65,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
+      "state": "open",
+      "title": "[S3-063] Verify civilization-specific balance and terrain behavior",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/46",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/60",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/61",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/62",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/63"
+      ]
+    },
+    "S3-064": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964134839,
+      "number": 66,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/66",
+      "state": "open",
+      "title": "[S3-064] Prove complete warfare and religion scenarios",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:05",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 3,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/57",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/64",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/65"
+      ]
+    },
+    "S3-065": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964135217,
+      "number": 67,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/67",
+      "state": "open",
+      "title": "[S3-065] Implement shipyards, ship construction, and water routing",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:06",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/47"
+      ]
+    },
+    "S3-066": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964135526,
+      "number": 68,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/68",
+      "state": "open",
+      "title": "[S3-066] Implement ferries and colony establishment",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:06",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/50",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/67"
+      ]
+    },
+    "S3-067": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964135970,
+      "number": 69,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/69",
+      "state": "open",
+      "title": "[S3-067] Implement donkey breeding and marketplace routes",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:06",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/44",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/50"
+      ]
+    },
+    "S3-068": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964136375,
+      "number": 70,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/70",
+      "state": "open",
+      "title": "[S3-068] Implement docks and cargo shipping",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:06",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/67",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/69"
+      ]
+    },
+    "S3-069": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964136740,
+      "number": 71,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/71",
+      "state": "open",
+      "title": "[S3-069] Complete diplomacy and interrupted trade recovery",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:06",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/68",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/70"
+      ]
+    },
+    "S3-070": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964137190,
+      "number": 72,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/72",
+      "state": "open",
+      "title": "[S3-070] Build an economic AI using player commands",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:07",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/52"
+      ]
+    },
+    "S3-071": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964137489,
+      "number": 73,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
+      "state": "open",
+      "title": "[S3-071] Make AI recover from economic deadlocks",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:07",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/72"
+      ]
+    },
+    "S3-072": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964137925,
+      "number": 74,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/74",
+      "state": "open",
+      "title": "[S3-072] Implement military and religious AI",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:07",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/66",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/72"
+      ]
+    },
+    "S3-073": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964138376,
+      "number": 75,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/75",
+      "state": "open",
+      "title": "[S3-073] Implement naval and colony AI",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:07",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/71",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/74"
+      ]
+    },
+    "S3-074": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964138824,
+      "number": 76,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/76",
+      "state": "open",
+      "title": "[S3-074] Complete skirmish setup, difficulty, and random maps",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:07",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/51",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/74",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/75"
+      ]
+    },
+    "S3-075": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964139300,
+      "number": 77,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/77",
+      "state": "open",
+      "title": "[S3-075] Implement a safe mission and objective runtime",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-076": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964139701,
+      "number": 78,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/78",
+      "state": "open",
+      "title": "[S3-076] Complete tutorials and the Roman campaign",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/52",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
+      ]
+    },
+    "S3-077": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964140050,
+      "number": 79,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/79",
+      "state": "open",
+      "title": "[S3-077] Complete the Egyptian campaign",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/61",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
+      ]
+    },
+    "S3-078": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964140488,
+      "number": 80,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/80",
+      "state": "open",
+      "title": "[S3-078] Complete the Asian campaign",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/62",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
+      ]
+    },
+    "S3-079": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964140870,
+      "number": 81,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/81",
+      "state": "open",
+      "title": "[S3-079] Complete Mission CD campaign content",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/78",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/79",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/80"
+      ]
+    },
+    "S3-080": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964141181,
+      "number": 82,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/82",
+      "state": "open",
+      "title": "[S3-080] Complete both Amazon campaign paths",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/63",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
+      ]
+    },
+    "S3-081": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964141525,
+      "number": 83,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/83",
+      "state": "open",
+      "title": "[S3-081] Build a native and browser map and scenario editor",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p2",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
+      ]
+    },
+    "S3-082": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964141886,
+      "number": 84,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/84",
+      "state": "open",
+      "title": "[S3-082] Verify all campaign progression and original media",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:08",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 4,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/78",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/79",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/80",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/81",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/82"
+      ]
+    },
+    "S3-083": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964142328,
+      "number": 85,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/85",
+      "state": "open",
+      "title": "[S3-083] Recreate the original control-center structure",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stx/issues/2109",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-084": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964142807,
+      "number": 86,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+      "state": "open",
+      "title": "[S3-084] Complete building and economic inspection panels",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/85"
+      ]
+    },
+    "S3-085": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964143159,
+      "number": 87,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/87",
+      "state": "open",
+      "title": "[S3-085] Complete minimap, alerts, and original navigation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/54",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/85"
+      ]
+    },
+    "S3-086": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964143483,
+      "number": 88,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/88",
+      "state": "open",
+      "title": "[S3-086] Match original terrain and entity presentation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/20",
+        "https://github.com/craft-native/craft/issues/391",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/41"
+      ]
+    },
+    "S3-087": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964143840,
+      "number": 89,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/89",
+      "state": "open",
+      "title": "[S3-087] Complete music, effects, ambience, and voice scheduling",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/21",
+        "https://github.com/craft-native/craft/issues/397",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/55"
+      ]
+    },
+    "S3-088": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964144168,
+      "number": 90,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/90",
+      "state": "open",
+      "title": "[S3-088] Complete localization, accessibility, and touch controls",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/87",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/88",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/89"
+      ]
+    },
+    "S3-089": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964144546,
+      "number": 91,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/91",
+      "state": "open",
+      "title": "[S3-089] Pass matched-scene visual and audio fidelity review",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:09",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 5,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/18",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/90"
+      ]
+    },
+    "S3-090": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964144857,
+      "number": 92,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
+      "state": "open",
+      "title": "[S3-090] Implement complete versioned saves and migration policy",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-091": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964145412,
+      "number": 93,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/93",
+      "state": "open",
+      "title": "[S3-091] Make checkpoints survive lifecycle and storage failures",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/396",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/92"
+      ]
+    },
+    "S3-092": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964145803,
+      "number": 94,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/94",
+      "state": "open",
+      "title": "[S3-092] Implement deterministic replay and state diagnostics",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/craft-native/craft/issues/394",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
+      ]
+    },
+    "S3-093": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964146204,
+      "number": 95,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/95",
+      "state": "open",
+      "title": "[S3-093] Implement multiplayer sessions and content negotiation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/94"
+      ]
+    },
+    "S3-094": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964146563,
+      "number": 96,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/96",
+      "state": "open",
+      "title": "[S3-094] Implement authoritative multiplayer simulation",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/95"
+      ]
+    },
+    "S3-095": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964147006,
+      "number": 97,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/97",
+      "state": "open",
+      "title": "[S3-095] Implement reconnect, background recovery, and network saves",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/96"
+      ]
+    },
+    "S3-096": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964147293,
+      "number": 98,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/98",
+      "state": "open",
+      "title": "[S3-096] Complete cross-platform multiplayer behavior",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:10",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/71",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/97"
+      ]
+    },
+    "S3-097": {
+      "repository": "stacksjs/stacks",
+      "id": 5964147798,
+      "number": 2959,
+      "url": "https://github.com/stacksjs/stacks/issues/2959",
+      "state": "open",
+      "title": "[S3-097] Complete encrypted production credential handling",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p0",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2958"
+      ]
+    },
+    "S3-098": {
+      "repository": "stacksjs/stacks",
+      "id": 5964148221,
+      "number": 2960,
+      "url": "https://github.com/stacksjs/stacks/issues/2960",
+      "state": "open",
+      "title": "[S3-098] Reconcile Apple signing and provisioning resources",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2959"
+      ]
+    },
+    "S3-099": {
+      "repository": "stacksjs/stacks",
+      "id": 5964148526,
+      "number": 2961,
+      "url": "https://github.com/stacksjs/stacks/issues/2961",
+      "state": "open",
+      "title": "[S3-099] Complete reusable iOS App Store delivery",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2957",
+        "https://github.com/stacksjs/stacks/issues/2960"
+      ]
+    },
+    "S3-100": {
+      "repository": "stacksjs/stacks",
+      "id": 5964148926,
+      "number": 2962,
+      "url": "https://github.com/stacksjs/stacks/issues/2962",
+      "state": "open",
+      "title": "[S3-100] Implement reusable Android and Google Play delivery",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2957",
+        "https://github.com/stacksjs/stacks/issues/2959"
+      ]
+    },
+    "S3-101": {
+      "repository": "stacksjs/stacks",
+      "id": 4943308006,
+      "number": 2059,
+      "url": "https://github.com/stacksjs/stacks/issues/2059",
+      "state": "open",
+      "title": "desktop: publish the Craft support, packaging, signing, and release matrix",
+      "labels": [
+        "documentation",
+        "enhancement",
+        "testing",
+        "desktop",
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "reused": true,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2957",
+        "https://github.com/stacksjs/stacks/issues/2960"
+      ]
+    },
+    "S3-102": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964150774,
+      "number": 99,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/99",
+      "state": "open",
+      "title": "[S3-102] Prepare verified store content and declarations",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 6,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/19",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/91"
+      ]
+    },
+    "S3-103": {
+      "repository": "stacksjs/stacks",
+      "id": 5964151202,
+      "number": 2963,
+      "url": "https://github.com/stacksjs/stacks/issues/2963",
+      "state": "open",
+      "title": "[S3-103] Unify release orchestration and receipts",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:11",
+        "platform:browser",
+        "platform:native",
+        "platform:desktop",
+        "platform:mobile"
+      ],
+      "milestone": 9,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2961",
+        "https://github.com/stacksjs/stacks/issues/2962",
+        "https://github.com/stacksjs/stacks/issues/2059",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/99"
+      ]
+    },
+    "S3-104": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964151539,
+      "number": 100,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/100",
+      "state": "open",
+      "title": "[S3-104] Establish large-world and native performance budgets",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:12",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 7,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/26",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/42",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/66",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/71"
+      ]
+    },
+    "S3-105": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964151793,
+      "number": 101,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/101",
+      "state": "open",
+      "title": "[S3-105] Execute the complete platform and campaign matrix",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:12",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 7,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/84",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/91",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/93",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/98"
+      ]
+    },
+    "S3-106": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964152144,
+      "number": 102,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/102",
+      "state": "open",
+      "title": "[S3-106] Verify untrusted input and release security",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:12",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 7,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/96",
+        "https://github.com/stacksjs/stacks/issues/2963"
+      ]
+    },
+    "S3-107": {
+      "repository": "stacksjs/the-settlers-iii-remake",
+      "id": 5964152567,
+      "number": 103,
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/103",
+      "state": "open",
+      "title": "[S3-107] Qualify and publish the finished Gold Edition release",
+      "labels": [
+        "settlers-gold",
+        "type:feature",
+        "priority:p1",
+        "subsystem:12",
+        "platform:browser",
+        "platform:native"
+      ],
+      "milestone": 7,
+      "nativeParent": true,
+      "nativeBlockers": [
+        "https://github.com/stacksjs/stacks/issues/2963",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/100",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/101",
+        "https://github.com/stacksjs/the-settlers-iii-remake/issues/102"
+      ]
+    }
+  },
+  "master": {
+    "repository": "stacksjs/the-settlers-iii-remake",
+    "id": 5964107448,
+    "number": 4,
+    "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/4",
+    "state": "open",
+    "title": "Settlers III Gold Edition: complete fidelity and cross-platform delivery",
+    "labels": [
+      "settlers-gold",
+      "type:epic",
+      "priority:p0"
+    ],
+    "milestone": null
+  }
+}

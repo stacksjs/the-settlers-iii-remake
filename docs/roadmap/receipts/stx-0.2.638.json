@@ -1,0 +1,95 @@
+{
+  "version": "0.2.638",
+  "commit": "7a0f6f4b8b81aa1927f267fb5018f33c07d397cf",
+  "workflow": "https://github.com/stacksjs/stx/actions/runs/39633183896",
+  "gates": {
+    "headSha": "7a0f6f4b8b81aa1927f267fb5018f33c07d397cf",
+    "jobs": [
+      {
+        "completedAt": "2026-10-21T16:27:04Z",
+        "conclusion": "success",
+        "databaseId": 119336519378,
+        "name": "Verify the exact release source",
+        "startedAt": "2026-10-21T16:15:50Z",
+        "status": "completed",
+        "url": "https://github.com/stacksjs/stx/actions/runs/39633183896/job/119336519378"
+      },
+      {
+        "completedAt": "2026-10-21T16:44:37Z",
+        "conclusion": "success",
+        "databaseId": 119342557443,
+        "name": "npm",
+        "startedAt": "2026-10-21T16:27:07Z",
+        "status": "completed",
+        "url": "https://github.com/stacksjs/stx/actions/runs/39633183896/job/119342557443"
+      },
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 119351919699,
+        "name": "icons",
+        "startedAt": "2026-10-21T16:44:47Z",
+        "status": "in_progress",
+        "url": "https://github.com/stacksjs/stx/actions/runs/39633183896/job/119351919699"
+      }
+    ]
+  },
+  "archives": [
+    {
+      "name": "@stacksjs/stx",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/@stacksjs/stx/-/stx-0.2.638.tgz",
+      "integrity": "sha512-fcWmyZdYLNiTg/6rbyGab7nLqTNNswiD3MqE9lNfngDqBUF+VJb4VK/RqwHmNFIcqEEh6GOElIw4JZh+6+ZG5g==",
+      "bytes": 2241568,
+      "registryGitHead": null
+    },
+    {
+      "name": "bun-plugin-stx",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/bun-plugin-stx/-/bun-plugin-stx-0.2.638.tgz",
+      "integrity": "sha512-3vHYP997pYGb4RshB0UJR6FXvkhzdImxlDgg/gu288fgVTllJ7eZHepg6ngR6WtGs7hi9/sQU0jIrRrRXV2WJw==",
+      "bytes": 124127,
+      "registryGitHead": null
+    },
+    {
+      "name": "@stacksjs/components",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/@stacksjs/components/-/components-0.2.638.tgz",
+      "integrity": "sha512-nlfWGdpklCjENCSyla1akcnoMtVXPF0OrpBlM9vl5YMkUJj5TLmSo2EciBNPF/2dRMzUYIBrH+mwJwmKFCWGcA==",
+      "bytes": 542193,
+      "registryGitHead": null
+    },
+    {
+      "name": "@stacksjs/desktop",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/@stacksjs/desktop/-/desktop-0.2.638.tgz",
+      "integrity": "sha512-1DGQ/PCzlxYUls6d37qaOKEBxroBWHRuqTNjtSxVL17UN7sYKkH7X2v0UNS1g5XItpc1LhwuhuHxx+LR0EXJow==",
+      "bytes": 88374,
+      "registryGitHead": null
+    },
+    {
+      "name": "stx-router",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/stx-router/-/stx-router-0.2.638.tgz",
+      "integrity": "sha512-wu2dc2EtHDxM89hY1R9grWRMK/KYnvZi48Z06VVaJU34xfaSONAbey74+XHRRfte+HzScKOi+rYHBUusbyzpKg==",
+      "bytes": 82882,
+      "registryGitHead": null
+    },
+    {
+      "name": "@stacksjs/sanitizer",
+      "version": "0.2.638",
+      "tarball": "https://registry.npmjs.org/@stacksjs/sanitizer/-/sanitizer-0.2.638.tgz",
+      "integrity": "sha512-kyCbtpfjclvtRTtod1WXBrw/2F/cpm1U2RZdtQ0CjrAhjBDbHarDTd0n4NKPLUJwml1D+PPqbdtf4Q7unn83ng==",
+      "bytes": 4746,
+      "registryGitHead": null
+    }
+  ],
+  "consumer": {
+    "output": "Published native clock verified through compiled screen",
+    "frozenInstall": true,
+    "nativeLifecycle": true,
+    "evidenceType": "compiled native stx runtime/bridge in a JavaScript VM with controlled host timers",
+    "actualUIKitOrDeviceExecution": false,
+    "gameNativePresentationVerified": false
+  }
+}

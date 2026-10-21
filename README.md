@@ -7,6 +7,12 @@ It does not yet reproduce the original game's worker, transport, military or
 faction systems. See the [fidelity audit](docs/fidelity-audit.md) for verified
 matches, gaps and the implementation priorities for a faithful remake.
 
+The [Gold Edition roadmap](docs/roadmap/README.md) tracks the original game,
+Mission CD and Amazons, true native rendering, multiplayer and automated store
+delivery through 12 epics and 107 implementation issues. The
+[master issue](https://github.com/stacksjs/the-settlers-iii-remake/issues/4)
+links the work across the game and its owning framework repositories.
+
 ## Play locally
 
 ```sh
