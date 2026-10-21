@@ -30,7 +30,7 @@ Original observations and manuals govern game behavior. Pin edition, revision, s
 
 [evidence.md](evidence.md) records the immutable preserved-manual revision and file hashes used by the issue catalog. Rendered manual links below are reading conveniences; the revised manual still requires edition-specific observations.
 
-The [detailed fidelity contract](../fidelity/gold-edition-specification.md) defines evidence classes, edition profiles, domain invariants, the full issue-to-system inventory, and unresolved numeric rules. It is a draft for S3-001; exact original builds and their applicability remain unverified.
+The [detailed fidelity contract](../fidelity/gold-edition-specification.md) defines evidence classes, edition profiles, domain invariants, the full issue-to-system inventory, and unresolved numeric rules. Its [versioned catalog](../fidelity/catalog.ts) validates documentary differences and scope for S3-001; exact original builds and their applicability remain unverified until the S3-002 observations.
 
 Each campaign has a per-mission table covering original identifier, starting state, objectives, special triggers, briefing/media, save/load, failure, victory, progression, and evidence. Loading terrain or reaching a generic victory does not finish a mission.
 

@@ -63,7 +63,9 @@
     "typecheck:tools": "bun x --bun tsc --noEmit -p tsconfig.tools.json --pretty false",
     "roadmap:check": "bun scripts/roadmap.ts --check",
     "roadmap:publish": "bun scripts/roadmap.ts --publish",
-    "roadmap:verify": "bun scripts/roadmap.ts --verify"
+    "roadmap:verify": "bun scripts/roadmap.ts --verify",
+    "fidelity:check": "bun scripts/fidelity.ts --check",
+    "fidelity:verify": "bun scripts/fidelity.ts --verify-sources"
   },
   "dependencies": {
     "@stacksjs/actions": "^0.75.255",

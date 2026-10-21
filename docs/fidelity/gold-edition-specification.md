@@ -1,6 +1,6 @@
 # Gold Edition fidelity contract
 
-Draft for S3-001, reviewed against preserved sources on 2026-10-21. **S3-001 remains open.** The supported scope is enumerated below, but original executable identities, patch applicability, and the complete original content manifest are not yet established. No original executable was run for this document. No row implies implemented gameplay or permission to redistribute content.
+Specification for S3-001, reviewed against preserved sources on 2026-10-21. It defines documentary edition differences, the required scope, and explicit unknowns. Original executable identities, patch applicability, and the complete original content manifest are not yet established; their observation and reconciliation belong to S3-002/006/007. No original executable was run for this document. No row implies implemented gameplay or permission to redistribute content.
 
 ## Evidence vocabulary and authority
 
@@ -31,6 +31,14 @@ The names B, M, A and G below are planning profile keys, **E**, not original exe
 For each original profile instance, S3-001/002 must record distribution/edition name, installed expansion set, language, displayed version, executable SHA-256, data archive/file hashes, installed patch evidence, relevant manual revision, and capture environment. A patch label without bytes is insufficient. A content pack's presence does not prove that its rule changes are active.
 
 Revision-sensitive rules remain separate until evidence establishes equality. A shared definition needs a reason and evidence for every profile using it. If a later edition changes a rule, retain both original results and select explicitly by rules version; do not overwrite the earlier fixture.
+
+### Executable specification and documentary expansion deltas
+
+[catalog.ts](catalog.ts) is version `1.0.0` of the machine-readable documentary contract. It records all four planning profiles, their required content packs, missing original-build identities, 107 required systems, six delivery targets, pinned source identities and individual feature applicability. `product-target` records the approved remake scope, not an original Gold executable. `unverified` never means that a feature was absent in every earlier build.
+
+The pinned Blue Byte [Mission CD/Amazon CD tips][M-TI] document six expansion changes: the mission clock, expanded unit inspection, multiplayer saves, campaign progress autosaving, additional chat commands, and economic mode. The same source distinguishes three-peoples Mission CD campaigns from the two Amazon paths. These are documentary revision differences. Exact introduction patches, inherited behavior in later base installations, and timing remain unverified. No source in this ledger is an original runtime observation.
+
+Run `bun run fidelity:check` to validate scope and evidence references. Run `bun run fidelity:verify` to fetch the five immutable source files, verify their SHA-256 values, and check the referenced documentary section anchors. `bun scripts/fidelity.ts --json` emits a report whose claim is explicitly `documentary-specification-only`. The public comparison reports features documented for a target; it reports zero verified runtime differences while original builds remain unidentified. Malformed profiles, missing systems, floating references, changed source bytes, and documentary claims backed only by product decisions fail validation.
 
 ## Small set of documentary anchors
 
@@ -171,21 +179,21 @@ These gates are **E acceptance requirements**, not claims of current completion.
 
 Original network byte compatibility, JSettlers protocol compatibility, HomeOS kernel bring-up and recreating obsolete online infrastructure are outside the approved delivery contract. New multiplayer and modern release infrastructure are E decisions. [P]
 
-## S3-001 acceptance status and next evidence
+## S3-001 acceptance and downstream evidence
 
-| Criterion | Status in this draft | Remaining work |
+| Criterion | Specification evidence | Downstream verification |
 |---|---|---|
-| Identify edition and revision differences | Partial | Distinguish original executable revisions and expand the edition delta matrix using identified original installations. The mirror revision is not enough. |
-| Enumerate supported systems and content packs | Scope enumerated | Reconcile complete original per-file/per-mission inventories; supported scope is not proven content completeness. |
-| Mark unsupported/unverified claims | Explicit M/O/E/U classes and unknown matrices | Keep them current when evidence arrives; do not inherit unknowns as production constants. |
-| Trace claimed rules to evidence and compare profiles | Documentary anchors pinned; all eight manual hashes rechecked | No original runtime comparisons have been executed. Obtain and retain S3-002 original observations. |
-| Retain reviewable evidence | This contract plus pinned source/hash references | Commit/review this draft with the owning issue and record remaining gaps. No package release or native capability claim is created by this document. |
+| Identify edition and revision differences | Four explicit profiles and individually pinned documentary expansion deltas, with unknown exact builds distinguished | S3-002 identifies original executables and observes applicability. The archive commit is never used as an executable version. |
+| Enumerate supported systems and content packs | Complete 107-slot inventory, base/Mission CD/Amazon content targets, and six supported delivery targets | S3-004..007 reconcile original per-file/per-mission inventories. Required scope is not proof of content completeness. |
+| Mark unsupported/unverified claims | Explicit M/O/E/U classes, unknown matrices, and validated per-profile applicability | Do not inherit unknowns as production constants; update evidence when original observations arrive. |
+| Visible report agrees with evidence | The executable report declares documentary-only evidence and no observed original runtime differences | Later runtimes and releases must satisfy their own executed gates. |
+| Tests exercise the public interface and retain evidence | Profile comparisons, malformed-contract rejection, immutable-source verification and source-failure checks | The S3-001 receipt records exact checks and source pins. No package release or native capability claim is created by this specification. |
 
-S3-001 should remain open until its edition/revision comparison is defensible. Unknown numeric values may remain assigned to S3-002/007, provided the specification names them and prevents unsupported fidelity claims. This draft does not claim that any original build, mission manifest or redistribution grant has been verified.
+S3-001 establishes the specification, including the limits of its documentary edition comparison. Unknown original-build identities and numeric values remain assigned to S3-002/007; they prevent runtime fidelity claims rather than preventing an explicit specification. No original build, mission manifest or redistribution grant is claimed as verified.
 
 ## Source pins
 
-The following are preserved primary-document pages at one immutable archive commit. Section names identify where to inspect the documentary claims above. [H] contains all eight raw-file SHA-256 values, independently matched on the review date. Links to the reference remake are primary evidence for that remake only.
+The following are preserved primary-document pages at one immutable archive commit. Section names identify where to inspect the documentary claims above. [H] contains the raw-file SHA-256 values, including the additional tips page. Links to the reference remake are primary evidence for that remake only.
 
 | Key | Pinned source and relevant sections |
 |---|---|
@@ -197,6 +205,7 @@ The following are preserved primary-document pages at one immutable archive comm
 | M-ME | [Menus][M-ME]: overview, control center, information and player controls. |
 | M-TR | [Trade][M-TR]: human trade, own-colony transport, land and sea. |
 | M-MI | [Military][M-MI]: recruitment, promotions, unit commands and ownership interactions. |
+| M-TI | [Mission CD/Amazon CD tips][M-TI]: `top5`, `5-001-0` through `5-005-0`, and `1-001-0`. |
 
 [P]: ../roadmap/specification.md
 [C]: ../roadmap/catalog.ts
@@ -212,3 +221,4 @@ The following are preserved primary-document pages at one immutable archive comm
 [M-ME]: https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en/in_menu/menu.htm
 [M-TR]: https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en/ec_trade/trade.htm
 [M-MI]: https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en/military/military.htm
+[M-TI]: https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/tips/main.htm
