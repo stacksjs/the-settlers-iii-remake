@@ -4,8 +4,8 @@ import { resolve } from 'node:path'
 import { campaignAcceptanceTable } from '../docs/roadmap/campaigns'
 import { epics, gameRepository, relatedIssues, reuseIssues, tickets } from '../docs/roadmap/catalog'
 
-interface RemoteIssue { id: number, number: number, html_url: string, state: string, title: string, body: string | null, labels: { name: string }[], milestone: { number: number, title: string } | null, pull_request?: unknown }
-interface Entry { repository: string, number: number, id: number, url: string, state: string, title: string, labels: string[], milestone: number | null, reused?: boolean, nativeParent?: boolean, nativeBlockers?: string[], relationshipLimits?: string[] }
+interface RemoteIssue { id: number, number: number, html_url: string, state: string, state_reason?: string | null, title: string, body: string | null, labels: { name: string }[], milestone: { number: number, title: string } | null, pull_request?: unknown }
+interface Entry { repository: string, number: number, id: number, url: string, state: string, stateReason?: string | null, title: string, labels: string[], milestone: number | null, reused?: boolean, nativeParent?: boolean, nativeBlockers?: string[], relationshipLimits?: string[] }
 interface Registry { version: 1, master?: Entry, epics: Record<string, Entry>, tickets: Record<string, Entry> }
 const root = resolve(import.meta.dir, '..')
 const registryPath = resolve(root, 'docs/roadmap/github.json')
@@ -71,8 +71,10 @@ async function persist(registry: Registry): Promise<void> {
   await rename(temporary, registryPath)
 }
 function entry(repository: string, issue: RemoteIssue, reused = false): Entry {
-  return { repository, id: issue.id, number: issue.number, url: issue.html_url, state: issue.state, title: issue.title, labels: issue.labels.map(label => label.name), milestone: issue.milestone?.number ?? null, ...(reused ? { reused: true } : {}) }
+  return { repository, id: issue.id, number: issue.number, url: issue.html_url, state: issue.state, stateReason: issue.state_reason ?? null, title: issue.title, labels: issue.labels.map(label => label.name), milestone: issue.milestone?.number ?? null, ...(reused ? { reused: true } : {}) }
 }
+
+function completed(item: Entry | undefined): boolean { return item?.state === 'closed' && item.stateReason === 'completed' }
 
 function bodyFor(ticket: Ticket, registry: Registry): string {
   const epic = epics[ticket.epic - 1]!, parent = registry.epics[String(ticket.epic)]
@@ -142,7 +144,26 @@ No node_modules edits, copied runtimes, generated-source string patches, fabrica
 
 function epicBody(index: number, registry: Registry): string {
   const epic = epics[index - 1]!, children = tickets.filter(ticket => ticket.epic === index)
-  return `${marker(`S3-E${index.toString().padStart(2, '0')}`)}\n# ${epic.title}\n\nMaster: ${registry.master?.url ?? 'S3-MASTER'}\n\n${epic.seam}\n\n## Completion gate\n\nAll mandatory child acceptance criteria require verified implementation evidence. Research, compilation, prototype victory, and uploaded but unprocessed binaries are not equivalent to completion. HomeOS integration is independent of supported game platform delivery.\n\n## Implementation issues\n\n${children.map(ticket => `- [ ] ${registry.tickets[ticket.key]?.url ?? ticket.key} - ${ticket.title}`).join('\n')}\n\n## Dependencies\n\nWork the actual child blocking graph. Do not make this entire epic a blocker for independent work. Sources and exact acceptance criteria are recorded in each child.\n`
+  const rows = children.map(ticket => `- [${completed(registry.tickets[ticket.key]) ? 'x' : ' '}] ${registry.tickets[ticket.key]?.url ?? ticket.key} - ${ticket.title}`).join('\n')
+  return `${marker(`S3-E${index.toString().padStart(2, '0')}`)}
+# ${epic.title}
+
+Master: ${registry.master?.url ?? 'S3-MASTER'}
+
+${epic.seam}
+
+## Completion gate
+
+All mandatory child acceptance criteria require verified implementation evidence. Research, compilation, prototype victory, and uploaded but unprocessed binaries are not equivalent to completion. HomeOS integration is independent of supported game platform delivery.
+
+## Implementation issues
+
+${rows}
+
+## Dependencies
+
+Work the actual child blocking graph. Do not make this entire epic a blocker for independent work. Sources and exact acceptance criteria are recorded in each child.
+`
 }
 
 function masterBody(registry: Registry): string {
@@ -287,11 +308,16 @@ async function publish(registry: Registry): Promise<void> {
     registry.epics[key] = await ensureIssue(gameRepository, `S3-E${key.padStart(2, '0')}`, `Gold Edition epic ${key}: ${epic.title}`, epicBody(i + 1, registry), ['settlers-gold', 'type:epic', `subsystem:${key.padStart(2, '0')}`], lists.get(gameRepository)!, milestones.get(gameRepository)!.get(epic.milestone))
     await persist(registry)
   }
+  const remoteForTicket = (ticket: Ticket): RemoteIssue | undefined => lists.get(ticket.repository)!.find(issue => issue.body?.includes(marker(ticket.key)) || issue.number === reuseIssues[ticket.key])
+  const satisfied = new Set(tickets.filter(ticket => {
+    const remote = remoteForTicket(ticket)
+    return remote?.state === 'closed' && remote.state_reason === 'completed'
+  }).map(ticket => ticket.key))
   for (const ticket of tickets) {
     const labels = ['settlers-gold', ticket.key === 'S3-001' || ticket.key === 'S3-002' || ticket.key === 'S3-003' || ticket.key === 'S3-008' ? 'type:research' : 'type:feature', `priority:${ticket.priority}`, `subsystem:${ticket.epic.toString().padStart(2, '0')}`]
     if (ticket.repository !== 'home-lang/home-os') labels.push('platform:browser', 'platform:native')
     if (ticket.epic === 2 || ticket.epic === 11) labels.push('platform:desktop', 'platform:mobile')
-    if (ticket.blockers.every(key => registry.tickets[key]?.state === 'closed')) labels.push('ready-for-agent')
+    if (remoteForTicket(ticket)?.state !== 'closed' && ticket.blockers.every(key => satisfied.has(key))) labels.push('ready-for-agent')
     registry.tickets[ticket.key] = await ensureIssue(ticket.repository, ticket.key, `[${ticket.key}] ${ticket.title}`, bodyFor(ticket, registry), labels, lists.get(ticket.repository)!, milestones.get(ticket.repository)!.get(epics[ticket.epic - 1]!.milestone), reuseIssues[ticket.key])
     await persist(registry)
     console.log(`${ticket.key}: ${registry.tickets[ticket.key]!.url}`)
@@ -324,6 +350,7 @@ async function verify(registry: Registry): Promise<void> {
     if ((remote.milestone?.number ?? null) !== item.milestone) throw new Error(`Incorrect milestone: ${key}`)
     for (const label of item.labels.filter(label => label !== 'ready-for-agent')) if (!remote.labels.some(actual => actual.name === label)) throw new Error(`Missing label ${label}: ${key}`)
     item.state = remote.state
+    item.stateReason = remote.state_reason ?? null
     const ticket = tickets.find(ticket => ticket.key === key)
     if (ticket) {
       if (!item.reused && remote.title !== `[${ticket.key}] ${ticket.title}`) throw new Error(`Title differs from catalog: ${key}`)
@@ -338,8 +365,8 @@ async function verify(registry: Registry): Promise<void> {
         const url = registry.tickets[blocker]!.url
         if (!item.nativeBlockers?.includes(url) && !item.relationshipLimits?.some(reason => reason.includes(url))) throw new Error(`Unaccounted native dependency: ${key} -> ${blocker}`)
       }
-      const shouldBeReady = ticket.blockers.every(blocker => registry.tickets[blocker]!.state === 'closed')
-      if (remote.state === 'open' && remote.labels.some(label => label.name === 'ready-for-agent') !== shouldBeReady) throw new Error(`Incorrect frontier label: ${key}`)
+      const shouldBeReady = remote.state === 'open' && ticket.blockers.every(blocker => completed(registry.tickets[blocker]))
+      if (remote.labels.some(label => label.name === 'ready-for-agent') !== shouldBeReady) throw new Error(`Incorrect frontier label: ${key}`)
       if (!item.nativeParent && !item.relationshipLimits?.length) throw new Error(`Unaccounted native parent: ${key}`)
       if (item.nativeBlockers?.length) {
         const actual = await api<RemoteIssue[]>(`repos/${item.repository}/issues/${item.number}/dependencies/blocked_by?per_page=100`)

@@ -3,7 +3,7 @@ import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
-interface Issue { id: number, number: number, html_url: string, title: string, body: string, labels: { name: string }[], milestone: { number: number, title: string } | null }
+interface Issue { id: number, number: number, html_url: string, title: string, body: string, state: string, state_reason?: string | null, labels: { name: string }[], milestone: { number: number, title: string } | null }
 interface Remote { repositories: Record<string, { issues: Issue[] }>, parents: Record<string, number>, blockers: Record<string, number[]> }
 interface RegistryEntry { id: number, url: string, reused?: boolean, nativeParent?: boolean, nativeBlockers?: string[], relationshipLimits?: string[] }
 interface Registry { master: RegistryEntry, epics: Record<string, RegistryEntry>, tickets: Record<string, RegistryEntry> }
@@ -87,6 +87,66 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     const verified = await run('--verify')
     expect(verified.code, verified.output).toBe(0)
     expect(verified.output).toContain('Verified 120 tracking entries')
+
+    const afterAudit = remote()
+    const audit = afterAudit.repositories[game]!.issues.find(issue => issue.id === published.tickets['S3-008']!.id)!
+    expect(audit.labels).toContainEqual({ name: 'ready-for-agent' })
+    // GitHub closing an issue preserves its labels. Only remote state changes here.
+    audit.state = 'closed'
+    audit.state_reason = 'completed'
+    writeFileSync(statePath, JSON.stringify(afterAudit))
+    const staleFrontier = await run('--verify')
+    expect(staleFrontier.code).not.toBe(0)
+    expect(staleFrontier.output).toContain('Incorrect frontier label: S3-008')
+
+    const reconciled = await run('--publish')
+    expect(reconciled.code, reconciled.output).toBe(0)
+    const current = registry()
+    const currentEntries = [current.master, ...Object.values(current.epics), ...Object.values(current.tickets)]
+    expect(currentEntries.map(item => [item.id, item.url])).toEqual(entries.map(item => [item.id, item.url]))
+    const currentIssues = Object.values(remote().repositories).flatMap(repository => repository.issues)
+    expect(currentIssues.filter(issue => issue.body.includes('<!-- settlers-gold:'))).toHaveLength(120)
+    expect(currentIssues).toHaveLength(121)
+    const closedAudit = currentIssues.find(issue => issue.id === audit.id)!
+    expect(closedAudit.state).toBe('closed')
+    expect(closedAudit.labels).not.toContainEqual({ name: 'ready-for-agent' })
+    for (const key of ['S3-009', 'S3-021']) {
+      const unblocked = currentIssues.find(issue => issue.id === current.tickets[key]!.id)!
+      expect(unblocked.state).toBe('open')
+      expect(unblocked.labels).toContainEqual({ name: 'ready-for-agent' })
+    }
+    const foundations = currentIssues.find(issue => issue.id === current.epics['2']!.id)!
+    expect(foundations.body).toContain(`- [x] ${published.tickets['S3-008']!.url} - Audit Craft, stx, and HomeOS execution evidence`)
+    const verifiedFrontier = await run('--verify')
+    expect(verifiedFrontier.code, verifiedFrontier.output).toBe(0)
+    expect(verifiedFrontier.output).toContain('Verified 120 tracking entries')
+
+    const afterCancellation = remote()
+    const cancelled = Object.values(afterCancellation.repositories).flatMap(repository => repository.issues).find(issue => issue.id === current.tickets['S3-009']!.id)!
+    expect(cancelled.labels).toContainEqual({ name: 'ready-for-agent' })
+    cancelled.state = 'closed'
+    cancelled.state_reason = 'not_planned'
+    writeFileSync(statePath, JSON.stringify(afterCancellation))
+    const reconciledCancellation = await run('--publish')
+    expect(reconciledCancellation.code, reconciledCancellation.output).toBe(0)
+    const afterCancelledRegistry = registry()
+    const afterCancelledEntries = [afterCancelledRegistry.master, ...Object.values(afterCancelledRegistry.epics), ...Object.values(afterCancelledRegistry.tickets)]
+    expect(afterCancelledEntries.map(item => [item.id, item.url])).toEqual(entries.map(item => [item.id, item.url]))
+    const afterCancelledIssues = Object.values(remote().repositories).flatMap(repository => repository.issues)
+    expect(afterCancelledIssues.filter(issue => issue.body.includes('<!-- settlers-gold:'))).toHaveLength(120)
+    expect(afterCancelledIssues).toHaveLength(121)
+    const cancelledGraphics = afterCancelledIssues.find(issue => issue.id === cancelled.id)!
+    expect(cancelledGraphics.state).toBe('closed')
+    expect(cancelledGraphics.state_reason).toBe('not_planned')
+    expect(cancelledGraphics.labels).not.toContainEqual({ name: 'ready-for-agent' })
+    const blockedSprites = afterCancelledIssues.find(issue => issue.id === current.tickets['S3-010']!.id)!
+    expect(blockedSprites.state).toBe('open')
+    expect(blockedSprites.labels).not.toContainEqual({ name: 'ready-for-agent' })
+    const cancelledFoundations = afterCancelledIssues.find(issue => issue.id === current.epics['2']!.id)!
+    expect(cancelledFoundations.body).toContain(`- [ ] ${current.tickets['S3-009']!.url} - Establish an executable graphics core and truthful capabilities`)
+    const verifiedCancellation = await run('--verify')
+    expect(verifiedCancellation.code, verifiedCancellation.output).toBe(0)
+    expect(verifiedCancellation.output).toContain('Verified 120 tracking entries')
   }
   finally {
     rmSync(directory, { recursive: true, force: true })

@@ -40,4 +40,4 @@ Inspect existing Apple team resources before creating replacements. Reuse valid 
 
 The registry records 120 slots, including adopted source issues. Reconcile stable remote markers before creating anything, preserve adopted issue bodies/titles/parents, and retain actual URLs. Use native parent and blocking relationships where GitHub permits them; every body also contains explicit dependencies. Record platform-imposed relationship restrictions instead of losing edges.
 
-Only issues with satisfied blockers receive `ready-for-agent`. A documented partial correction can advance an issue without closing it. Close only after every acceptance criterion has evidence. Never close an epic because its tracking entries were created.
+Only open issues whose blockers were closed as completed receive `ready-for-agent`. Closing a required blocker as not planned does not satisfy it. A documented partial correction can advance an issue without closing it. Close only after every acceptance criterion has evidence. Never close an epic because its tracking entries were created.

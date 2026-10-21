@@ -14,7 +14,8 @@
         "subsystem:01"
       ],
       "milestone": 1,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "2": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -29,7 +30,8 @@
         "subsystem:02"
       ],
       "milestone": 1,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "3": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -44,7 +46,8 @@
         "subsystem:03"
       ],
       "milestone": 2,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "4": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -59,7 +62,8 @@
         "subsystem:04"
       ],
       "milestone": 2,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "5": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -74,7 +78,8 @@
         "subsystem:05"
       ],
       "milestone": 3,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "6": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -89,7 +94,8 @@
         "subsystem:06"
       ],
       "milestone": 4,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "7": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -104,7 +110,8 @@
         "subsystem:07"
       ],
       "milestone": 4,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "8": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -119,7 +126,8 @@
         "subsystem:08"
       ],
       "milestone": 4,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "9": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -134,7 +142,8 @@
         "subsystem:09"
       ],
       "milestone": 5,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "10": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -149,7 +158,8 @@
         "subsystem:10"
       ],
       "milestone": 6,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "11": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -164,7 +174,8 @@
         "subsystem:11"
       ],
       "milestone": 6,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     },
     "12": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -179,7 +190,8 @@
         "subsystem:12"
       ],
       "milestone": 7,
-      "nativeParent": true
+      "nativeParent": true,
+      "stateReason": null
     }
   },
   "tickets": {
@@ -201,7 +213,8 @@
       ],
       "milestone": 1,
       "nativeParent": true,
-      "nativeBlockers": []
+      "nativeBlockers": [],
+      "stateReason": null
     },
     "S3-002": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -222,7 +235,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/17"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-003": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -243,7 +257,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/17"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-004": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -264,7 +279,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-005": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -285,7 +301,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-006": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -307,7 +324,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/17",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/19"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-007": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -331,20 +349,20 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/20",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/21",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/22"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-008": {
       "repository": "stacksjs/the-settlers-iii-remake",
       "id": 5964114852,
       "number": 24,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/24",
-      "state": "open",
+      "state": "closed",
       "title": "[S3-008] Audit Craft, stx, and HomeOS execution evidence",
       "labels": [
         "settlers-gold",
         "type:research",
         "priority:p0",
-        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
@@ -353,7 +371,8 @@
       ],
       "milestone": 1,
       "nativeParent": true,
-      "nativeBlockers": []
+      "nativeBlockers": [],
+      "stateReason": "completed"
     },
     "S3-009": {
       "repository": "craft-native/craft",
@@ -366,6 +385,7 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
@@ -376,7 +396,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/24"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-010": {
       "repository": "craft-native/craft",
@@ -399,7 +420,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/390"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-011": {
       "repository": "craft-native/craft",
@@ -422,7 +444,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/391"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-012": {
       "repository": "craft-native/craft",
@@ -445,7 +468,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/391"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-013": {
       "repository": "craft-native/craft",
@@ -468,7 +492,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/390"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-014": {
       "repository": "craft-native/craft",
@@ -493,7 +518,8 @@
         "https://github.com/craft-native/craft/issues/392",
         "https://github.com/craft-native/craft/issues/393",
         "https://github.com/craft-native/craft/issues/394"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-015": {
       "repository": "stacksjs/stx",
@@ -516,7 +542,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/395"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-016": {
       "repository": "stacksjs/ts-css",
@@ -539,7 +566,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/stx/issues/2108"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-017": {
       "repository": "craft-native/craft",
@@ -562,7 +590,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/394"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-018": {
       "repository": "craft-native/craft",
@@ -585,7 +614,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/394"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-019": {
       "repository": "stacksjs/stx",
@@ -609,7 +639,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stx/issues/2108",
         "https://github.com/stacksjs/ts-css/issues/38"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-020": {
       "repository": "stacksjs/stacks",
@@ -634,7 +665,8 @@
         "https://github.com/craft-native/craft/issues/396",
         "https://github.com/craft-native/craft/issues/397",
         "https://github.com/stacksjs/stx/issues/2109"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-021": {
       "repository": "stacksjs/stacks",
@@ -647,6 +679,7 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
@@ -657,7 +690,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/24"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-022": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -681,7 +715,8 @@
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/396",
         "https://github.com/stacksjs/stacks/issues/2958"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-023": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -705,7 +740,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2957",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/25"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-024": {
       "repository": "home-lang/home-os",
@@ -727,7 +763,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/24",
         "https://github.com/craft-native/craft/issues/391"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-025": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -748,7 +785,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/23"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-026": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -770,7 +808,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-027": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -791,7 +830,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/28"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-028": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -812,7 +852,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/29"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-029": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -833,7 +874,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-030": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -855,7 +897,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/31"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-031": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -876,7 +919,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/32"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-032": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -899,7 +943,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/33"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-033": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -920,7 +965,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-034": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -942,7 +988,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-035": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -964,7 +1011,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-036": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -985,7 +1033,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/29"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-037": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1007,7 +1056,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/33"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-038": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1029,7 +1079,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/29",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-039": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1051,7 +1102,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-040": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1077,7 +1129,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/41"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-041": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1099,7 +1152,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/39"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-042": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1120,7 +1174,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/43"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-043": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1142,7 +1197,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/44"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-044": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1163,7 +1219,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/45"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-045": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1185,7 +1242,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/46"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-046": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1209,7 +1267,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/44",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/45"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-047": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1231,7 +1290,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/48"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-048": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1253,7 +1313,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/40"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-049": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1275,7 +1336,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/49"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-050": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1299,7 +1361,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/51"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-051": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1321,7 +1384,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/47"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-052": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1343,7 +1407,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/53"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-053": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1366,7 +1431,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/46",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/54"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-054": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1388,7 +1454,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-055": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1411,7 +1478,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/50",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/56"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-056": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1433,7 +1501,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/46"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-057": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1455,7 +1524,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/53",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/58"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-058": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1478,7 +1548,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-059": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1501,7 +1572,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-060": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1524,7 +1596,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-061": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1547,7 +1620,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/23",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-062": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1570,7 +1644,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/47",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/56"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-063": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1595,7 +1670,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/61",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/62",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/63"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-064": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1618,7 +1694,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/57",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/64",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/65"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-065": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1641,7 +1718,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/47"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-066": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1664,7 +1742,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/50",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/67"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-067": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1687,7 +1766,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/44",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/50"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-068": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1709,7 +1789,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/67",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/69"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-069": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1732,7 +1813,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/68",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/70"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-070": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1753,7 +1835,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/52"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-071": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1775,7 +1858,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/72"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-072": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1797,7 +1881,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/66",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/72"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-073": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1820,7 +1905,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/71",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/74"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-074": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1844,7 +1930,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/74",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/75"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-075": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1866,7 +1953,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/22",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-076": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1890,7 +1978,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-077": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1913,7 +2002,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/61",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-078": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1936,7 +2026,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/62",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-079": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1959,7 +2050,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/78",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/79",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/80"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-080": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -1982,7 +2074,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/63",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-081": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2004,7 +2097,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/28",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/77"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-082": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2029,7 +2123,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/80",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/81",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/82"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-083": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2051,7 +2146,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stx/issues/2109",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-084": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2074,7 +2170,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/85"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-085": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2097,7 +2194,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/54",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/85"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-086": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2120,7 +2218,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/20",
         "https://github.com/craft-native/craft/issues/391",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/41"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-087": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2143,7 +2242,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/21",
         "https://github.com/craft-native/craft/issues/397",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/55"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-088": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2167,7 +2267,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/87",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/88",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/89"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-089": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2190,7 +2291,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/18",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/65",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/90"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-090": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2211,7 +2313,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-091": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2233,7 +2336,8 @@
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/396",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/92"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-092": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2255,7 +2359,8 @@
       "nativeBlockers": [
         "https://github.com/craft-native/craft/issues/394",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/27"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-093": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2276,7 +2381,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/94"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-094": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2298,7 +2404,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/95"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-095": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2320,7 +2427,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/96"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-096": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2342,7 +2450,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/71",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/97"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-097": {
       "repository": "stacksjs/stacks",
@@ -2365,7 +2474,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2958"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-098": {
       "repository": "stacksjs/stacks",
@@ -2388,7 +2498,8 @@
       "nativeParent": true,
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2959"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-099": {
       "repository": "stacksjs/stacks",
@@ -2412,7 +2523,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2957",
         "https://github.com/stacksjs/stacks/issues/2960"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-100": {
       "repository": "stacksjs/stacks",
@@ -2436,7 +2548,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2957",
         "https://github.com/stacksjs/stacks/issues/2959"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-101": {
       "repository": "stacksjs/stacks",
@@ -2465,7 +2578,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/stacks/issues/2957",
         "https://github.com/stacksjs/stacks/issues/2960"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-102": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2489,7 +2603,8 @@
       "nativeBlockers": [
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/19",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/91"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-103": {
       "repository": "stacksjs/stacks",
@@ -2515,7 +2630,8 @@
         "https://github.com/stacksjs/stacks/issues/2962",
         "https://github.com/stacksjs/stacks/issues/2059",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/99"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-104": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2539,7 +2655,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/42",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/66",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/71"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-105": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2563,7 +2680,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/91",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/93",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/98"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-106": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2587,7 +2705,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/96",
         "https://github.com/stacksjs/stacks/issues/2963"
-      ]
+      ],
+      "stateReason": null
     },
     "S3-107": {
       "repository": "stacksjs/the-settlers-iii-remake",
@@ -2611,7 +2730,8 @@
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/100",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/101",
         "https://github.com/stacksjs/the-settlers-iii-remake/issues/102"
-      ]
+      ],
+      "stateReason": null
     }
   },
   "master": {
@@ -2626,6 +2746,7 @@
       "type:epic",
       "priority:p0"
     ],
-    "milestone": null
+    "milestone": null,
+    "stateReason": null
   }
 }

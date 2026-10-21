@@ -8,6 +8,8 @@ Recorded 2026-10-21. This receipt separates source implementation, package publi
 
 All 120 entries passed live read-back verification of identities, labels, milestones, acceptance criteria, frontier labels, and recorded native relationships. The publisher has retained subprocess evidence for an interrupted create response, recovery without duplicates, authored metadata and parent preservation, denied relationship reads, repeat reconciliation, and read-back verification. Campaign issues contain explicit unchecked mission ledgers. [evidence.md](evidence.md) pins the preserved original manual and its hashes.
 
+There are 119 native parent links and 239 native blocker links, with no rejected relationships. S3-008 is completed with retained audit evidence; S3-009 and S3-021 are now ready. A blocker closed as not planned does not unlock dependent work. This lifecycle is covered by a 54-assertion subprocess regression that also fails against the prior publisher. The initial roadmap commit passed [GitHub CI](https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/39637794745), including production browser acceptance.
+
 ## Owning source changes
 
 | Owner | Implementation evidence | Release/adoption status |
