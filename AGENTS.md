@@ -1,0 +1,521 @@
+# AGENTS.md
+
+Canonical guidance for AI coding agents (Claude Code, OpenAI Codex CLI, Cursor, and others) working
+in this Stacks application. This is the one file every agent reads, and the only one committed -
+`buddy setup:ai` generates the rest (`CLAUDE.md`, `.claude/skills/`, `.cursor/rules/`, ...) from
+`storage/framework/defaults/ai/`, and they are gitignored because the agent you use is your choice.
+
+Stacks is a full-stack TypeScript framework that runs on Bun. Almost every subsystem has a dedicated
+skill under `storage/framework/defaults/ai/skills/` that documents it authoritatively. **This file is
+a map: it states the non-negotiable rules and points you to the right skill for the task.** Read the
+relevant `SKILL.md` before doing non-trivial work in that area rather than guessing an API.
+
+---
+
+## Project conventions (mandatory)
+
+### Linting
+- Use **pickier** for linting, never eslint directly.
+- Lint: `./buddy lint` . Auto-fix: `./buddy lint:fix` . These drive pickier through its SDK, so they
+  work the same in a vendored checkout and a package-based app; reach for `bunx --bun pickier .`
+  only when you need a flag the command does not expose.
+- For unused-variable warnings, prefer `// eslint-disable-next-line` over prefixing with `_`.
+
+### Frontend
+- Use **stx** for templating, never vanilla JS (`var`, `document._`, `window._`) in stx templates.
+- Use **ts-css** as the CSS framework (Tailwind-like utility classes).
+- stx `<script>` tags may only contain stx-compatible code (signals, composables, directives).
+
+### Dependencies
+- **buddy-bot** handles dependency updates, not renovatebot.
+- **better-dx** bundles the shared dev tooling (`typescript`, `pickier`, `bun-plugin-dtsx`,
+  `bun-git-hooks`, `@stacksjs/gitlint`, `bunfig`, `@types/bun`, ...). If `better-dx` is in a
+  `package.json`, do not also declare what it ships - two ranges for one tool only drift. A package
+  that *imports* one of them at runtime declares it as a real `dependency` instead.
+- If `better-dx` is in `package.json`, ensure `bunfig.toml` sets `linker = "hoisted"`.
+- Do not use Bun's `catalog:` protocol. Every dependency carries its version range in the
+  `package.json` that declares it, so vendored apps and `buddy-bot` both see a resolvable range.
+
+### Commits
+- Use conventional commit messages (`fix:`, `feat:`, `chore:`, ...).
+- Only commit or push when asked.
+
+### Requirements
+- Bun >= 1.3.0, SQLite >= 3.47.2. TypeScript throughout.
+
+---
+
+## Repository map
+
+| Path | What lives here |
+|---|---|
+| `app/` | Your application code (see the override model below): `Actions/`, `Jobs/`, `Listeners/`, `Middleware/`, `Mail/`, `Commands/`, `Models/`, `Skills/`, and top-level `Routes.ts`, `Events.ts`, `Gates.ts`, `Scheduler.ts`, `Middleware.ts`, `Listener.ts` |
+| `routes/` | Route files (`api.ts`, `web`, `v1.ts`, `users.ts`, ...), registered via `app/Routes.ts` |
+| `config/` | ~53 typed config files (`app.ts`, `database.ts`, `auth.ts`, `api` via `services.ts`, `queue.ts`, `cache.ts`, `email.ts`, `commerce.ts`, `cms.ts`, `payment.ts`, `ai.ts`, `cloud.ts`, `ui.ts`, `css.ts`, ...) |
+| `database/` | `migrations/`, seeders, and the local SQLite files |
+| `resources/` | stx frontend: `views/`, `components/`, `layouts/`, `partials/` |
+| `storage/framework/` | Framework internals + **defaults** (`defaults/app/` including the 107 built-in `Models/`, `defaults/ai/` with the agent skills, `core/` packages, `server/`, dashboard, and the auto-import manifests); read-only reference, do not edit unless working on the framework. In an app, `defaults/` is a gitignored link to `node_modules/@stacksjs/defaults` (`buddy publish:defaults` commits a copy instead) and `core/` is absent: the framework comes from `node_modules`. Import a default as `@stacksjs/defaults/<path>.ts` (no `.ts` in a `.stx` script) |
+| `storage/` | Also holds all machine-local runtime state: `framework/stx/` (stx build cache), `framework/runtime/` (migration lock, temp bundles), `cloud/` (cloud driver state). All gitignored, all safe to delete |
+| `tests/` | Test suites (Bun test) |
+| `cloud/` | AWS infrastructure (CDK / CloudFormation) for deploys |
+| `content/`, `docs/`, `locales/`, `public/` | CMS/markdown content, docs site, i18n strings, static assets |
+
+### The `app/` override model
+Stacks resolves files from `app/` first and falls back to `storage/framework/defaults/app/`. To
+customize a framework default (e.g. a CMS action), create the same path under `app/`
+(`app/Actions/Cms/PostIndexAction.ts`) and it wins. New files you add under `app/` are available to
+the app (e.g. `app/Actions/MyAction.ts` is referenced as `'Actions/MyAction'` in routes). There are
+673 default actions and 107 built-in models you can use or override.
+
+---
+
+## Building features: feature → skill index
+
+Read the skill before building. The full list lives in `storage/framework/defaults/ai/skills/`; run
+`buddy setup:ai` to expose it to your agent, and add project-specific skills in `app/Skills/`.
+Every skill also has a docs page at https://stacksjs.com/docs/skills, one per skill, grouped by section
+(`docs/skills/` in the framework repository; a scaffolded app's `docs/` is its own).
+
+Start with `stacks-native` when choosing a framework capability. Its generated
+catalog maps every current core package to a skill and source entrypoint;
+`CAPABILITIES.md` records driver evidence and limits. Prefer native model-to-
+migration, CRUD, form, queue, CMS, storage and delivery APIs before inventing
+parallel infrastructure. `buddy docs:native-skills:check` catches missing native
+package coverage and stale references.
+
+### Backend / API
+| Task | Skill |
+|---|---|
+| End-to-end new feature (model to migration to action to route to test) | `stacks-new-feature` |
+| API endpoints, routes, request/response, middleware, OpenAPI, HTTP client, the zero-generation typed client | `stacks-api`, `stacks-router`, `stacks-routes` |
+| Server actions in `app/Actions/`, auto-generated API actions (`useApi` trait), default actions | `stacks-actions` |
+| Data models: `defineModel()`, attributes, relationships, traits, factories, computed | `stacks-models`, `stacks-orm` |
+| Database: connections, queries, SQL helpers, SQLite/MySQL/Postgres/DynamoDB | `stacks-database`, `stacks-query-builder` |
+| Migrations (create, run, fresh, seed) | `stacks-migrations` |
+| Auth: authn/z, passkeys, TOTP/2FA, RBAC, gates (`app/Gates.ts`), policies, sessions, tokens | `stacks-auth`, `stacks-security` |
+| Middleware in `app/Middleware/` and the `app/Middleware.ts` registry | `stacks-middleware` |
+| Background jobs in `app/Jobs/`, queues, workers, batches, drivers | `stacks-jobs`, `stacks-queue` |
+| Scheduling (`app/Scheduler.ts`), cron | `stacks-scheduler`, `stacks-cron` |
+| Events (`app/Events.ts`) and listeners (`app/Listeners/`) | `stacks-events`, `stacks-listeners` |
+| Mail classes (`app/Mail/`) and the email framework (SES/SendGrid/Mailgun/SMTP) | `stacks-mail`, `stacks-email` |
+| Notifications (email/SMS/push/chat/database) | `stacks-notifications`, `stacks-sms`, `stacks-push`, `stacks-chat` |
+| Caching (memory/Redis, cache-aside) | `stacks-cache` |
+| File storage / uploads (local/S3) | `stacks-storage` |
+| Realtime / WebSockets / channels | `stacks-realtime` |
+| Full-text search (Meilisearch/Algolia, `useSearch` trait) | `stacks-search-engine` |
+| Validation, error handling (Result type, error pages) | `stacks-validation`, `stacks-error-handling` |
+| Env vars, config helpers, logging | `stacks-env`, `stacks-config`, `stacks-logging` |
+| AI (Anthropic/OpenAI/Bedrock/Ollama), RAG, embeddings, MCP | `stacks-ai` |
+
+### Domain packages
+| Task | Skill |
+|---|---|
+| E-commerce (products, orders, customers, coupons, payments, shipping, tax, ...) | `stacks-commerce`, `stacks-payments` |
+| CMS (posts, authors, pages, categories, tags, comments, RSS, sitemap) | `stacks-cms` |
+| Admin dashboard pages, model views, widgets (413 components) | `stacks-dashboard` |
+| i18n / translations / formatting | `stacks-i18n` |
+| Utilities: strings, arrays, collections, objects, datetime, slugs | `stacks-strings`, `stacks-arrays`, `stacks-collections`, `stacks-objects`, `stacks-datetime`, `stacks-slug` |
+
+### CLI, build, deploy, test
+| Task | Skill |
+|---|---|
+| The `buddy` / `bud` / `stacks` CLI (`buddy list` prints every command; the framework repository's `docs/guide/buddy/commands.md` is the same list, generated from the runtime registry), `make:*` scaffolding, custom commands in `app/Commands/` | `stacks-buddy`, `stacks-cli`, `stacks-scaffolding` |
+| Building (components, CLI binaries, server images, docs) | `stacks-build` |
+| Native iOS/Android apps, Craft bridge, mobile builds and components | `stacks-mobile` |
+| Deploying (server vs serverless, hooks, first deploy) and cloud infra (EC2/Lambda/CDK/Route53/SES/S3) | `stacks-deploy`, `stacks-cloud` |
+| Testing: the utilities, DB test setup, feature tests, config | `stacks-testing` |
+| Testing: the discipline, red-green loop, which seam to test at | `stacks-tdd` |
+| Dev server, HMR, reverse proxy, SSL | `stacks-development`, `stacks-server` |
+| Technical diagrams (architecture, workflow, sequence, data flow, lifecycle) | `stacks-technical-diagrams` |
+
+The recommended order for a new feature is **model, migration, action, route, test** (see
+`stacks-new-feature`), one **tracer bullet** at a time.
+
+### Engineering craft
+
+These shape *how* the work happens rather than which subsystem it touches. Where the tables above
+answer "which package", these answer "what do I do now". `stacks-flow` is the router over them: run
+it when you cannot remember which one fits.
+
+| Situation | Skill |
+|---|---|
+| Which skill or flow fits this situation, and where to cut a session | `stacks-flow` |
+| An idea needs stress-testing before anything is built | `stacks-office-hours`, `stacks-grilling` |
+| A design question needs a runnable answer, not an argument | `stacks-prototype` |
+| Scope, data flow, interfaces, test matrix, implementation plan | `stacks-plan-review` |
+| Where a seam goes, how deep a module should be, testability | `stacks-codebase-design` |
+| The project's domain language, `CONTEXT.md`, ADRs | `stacks-domain-modeling` |
+| Build it test-first, one vertical slice at a time | `stacks-tdd`, `stacks-new-feature` |
+| Something is broken, flaky or slow | `stacks-investigate` |
+| Review a diff on standards and spec | `stacks-review` |
+| QA it in a real browser | `stacks-browse` |
+| Security analysis (OWASP, STRIDE, attack surface) | `stacks-security-audit` |
+| Destructive-command guard, freeze mode, the PreToolUse hook | `stacks-guard` |
+| A step only a human can take (credentials, DNS, CI secrets, a cutover) | `stacks-wizard` |
+| Hand the work to another session, harness or person | `stacks-handoff` |
+| Improve the environment the next session runs in | `stacks-retro` |
+| Write a skill, an `AGENTS.md`, or any doc an agent reads | `stacks-writing-for-agents` |
+| Humanize prose with a broad editorial rewrite | `stacks-humanizer` |
+| Audit AI-sounding prose, suggest minimal edits, or learn and match a voice | `stacks-unslop` |
+| Persist design-interview decisions and domain terms | `stacks-grill-with-docs` |
+| Synthesize a spec and split it into dependency-linked tickets | `stacks-to-spec`, `stacks-to-tickets` |
+| Implement one ticket or an entire task graph | `stacks-implement`, `stacks-implement-spec` |
+| Triage incoming issues or plan a large unresolved effort | `stacks-triage`, `stacks-wayfinder` |
+| Find architecture improvements or enforce package entrypoints | `stacks-improve-codebase-architecture`, `stacks-setup-deep-modules` |
+| Gather primary-source research or write a PR description | `stacks-research`, `stacks-pr` |
+| Configure tracker conventions or improve typed test fixtures | `stacks-setup-engineering`, `stacks-test-fixtures` |
+| Build exercises or a learning workspace | `stacks-scaffold-exercises`, `stacks-teach` |
+| Capture writing fragments or shape an article | `stacks-writing-fragments`, `stacks-writing-shape`, `stacks-writing-beats` |
+| Draft a questionnaire, clarify a message, or specify a recurring workflow | `stacks-to-questionnaire`, `stacks-wait-what`, `stacks-loop` |
+| Coordinate an explicitly requested long-running effort | `stacks-chief-of-staff` |
+
+Several of these are adapted, with credit in each `SKILL.md`, from
+[mattpocock/skills](https://github.com/mattpocock/skills) (MIT).
+The prose skills adapt [blader/humanizer](https://github.com/blader/humanizer)
+and [theclaymethod/unslop](https://github.com/theclaymethod/unslop), with source
+and license details in each skill's `NOTICE.md`.
+The complete reviewed source-to-Stacks mapping is in
+`storage/framework/defaults/ai/skills/stacks-flow/upstream-skills.json`.
+
+### Marketing
+
+Read `stacks-marketing` to choose among the 50 marketing playbooks ported from
+[coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills).
+The complete index is `stacks-marketing/CATALOG.md` beside its `SKILL.md`.
+Marketing workflows complement the framework package skills; for example,
+`stacks-marketing-analytics` plans measurement while `stacks-analytics` documents
+the application's analytics API.
+
+| Task | Skills |
+|---|---|
+| Positioning, customer research, strategy, or offers | `stacks-marketing-product-marketing`, `stacks-marketing-customer-research`, `stacks-marketing-plan`, `stacks-marketing-offers` |
+| Copywriting, editing, content, social, email, or SMS | `stacks-marketing-copywriting`, `stacks-marketing-copy-editing`, `stacks-marketing-content-strategy`, `stacks-marketing-social`, `stacks-marketing-emails`, `stacks-marketing-sms` |
+| SEO, AI discovery, structured data, or site architecture | `stacks-marketing-seo-audit`, `stacks-marketing-ai-seo`, `stacks-marketing-programmatic-seo`, `stacks-marketing-schema`, `stacks-marketing-site-architecture` |
+| Conversion, signup, onboarding, paywalls, or retention | `stacks-marketing-cro`, `stacks-marketing-signup`, `stacks-marketing-onboarding`, `stacks-marketing-paywalls`, `stacks-marketing-churn-prevention` |
+| Advertising, creative, experiments, measurement, or attribution | `stacks-marketing-ads`, `stacks-marketing-ad-creative`, `stacks-marketing-ab-testing`, `stacks-marketing-analytics`, `stacks-marketing-attribution` |
+| Launches, pricing, sales, prospecting, or partner growth | `stacks-marketing-launch`, `stacks-marketing-pricing`, `stacks-marketing-sales-enablement`, `stacks-marketing-prospecting`, `stacks-marketing-referrals` |
+
+Use the established product brief, verified claims, and the shared marketing
+workflow. Drafting does not authorize sending, spending, publishing, or
+scheduling. Existing explicit authorization carries forward.
+
+---
+
+## Auto-imports
+
+Auto-imports let app code skip many `import` statements, but the rules differ by context and the
+framework's own code is the source of truth (verified against the manifests, not just the docs).
+Manifests: `storage/framework/{browser,server}-auto-imports.json`. Generated types:
+`storage/framework/types/*auto-imports.d.ts`. Regenerate with `buddy generate` (`--types` for the
+declarations). Full reference: `stacks-auto-imports`.
+
+**stx templates (browser)** - delivery has three paths: eager runtime bindings,
+compiler-provided bindings, and demand-inline composables emitted when a client
+script calls them. The marked list below is specifically the eager bare-window
+alias inventory. It is not the entire set a compiled client script can use.
+
+Do NOT use `storage/framework/browser-auto-imports.json` for this, despite its
+name and despite what this section used to say. Nothing reads it at build time;
+it feeds an ambient `.d.ts`, so it governs what `tsc` accepts and not what the
+browser has. It describes an injection
+`unplugin-auto-import` used to perform and no longer does, which is why it
+drifted this far without anyone noticing (stacksjs/stacks#2585).
+
+The practical consequence is that `buddy typecheck` alone cannot prove browser
+delivery. Inspect the installed stx runtime, compiler and demand registry;
+`stacks-composables/BROWSER.md` distinguishes their contracts.
+
+<!-- runtime-globals:begin - generated from the stx runtime and checked by
+     core/composables/tests/skill-runtime-globals.test.ts. Every name between
+     these markers must be attached to `window` by getCachedSignalsRuntime(),
+     and every name it attaches must appear here. Do not edit from
+     browser-auto-imports.json; see #2585. -->
+
+- The `use*` composables, in full, because a half-remembered name is the
+  whole problem: `useAsync`, `useClickOutside`, `useColorMode`, `useCounter`,
+  `useDark`, `useDebounce`, `useDebouncedValue`, `useEventListener`, `useFetch`,
+  `useFocus`, `useHead`, `useInterval`, `useLocalStorage`, `useMutation`,
+  `useQuery`, `useRef`, `useRoute`, `useSearchParams`, `useSeoMeta`,
+  `useSessionStorage`, `useStore`, `useThrottle`, `useTimeout`, `useToggle`,
+  `useWebSocket`.
+- Signals and lifecycle: `state`, `derived`, `effect`, `batch`, `memo`, `nextTick`,
+  `onMount`, `onDestroy`, `provide`, `defineStore`, `stx`.
+- Shared asynchronous work: `sharedRequest`.
+- Kept values: `keptState` is a state kept in localStorage between visits
+  (name, initial value, and a scope option), so a phone tab draws last launch's
+  data at once. Scope it to the signed-in account; a scope of false keeps
+  nothing. `setKeptScope` sets the scope that kept values and cached queries
+  use when they name none (the signed-in account), `flushKeptState` finishes
+  writing what is kept (before signing out, or in a test), and
+  `forgetKeptState` clears one scope, or every kept value, on sign-out.
+  `cachedQuery` is a query kept per account and refreshed behind: it answers
+  from the kept copy at once and replaces it with the fresh one.
+- Server-rendered data: `clearServerData`. The page embeds its hydration payload
+  in a `script[data-stx-server-data]` tag, which `useFetch` and `useQuery` read
+  once on mount instead of refetching. `clearServerData(key)` drops one entry and
+  `clearServerData()` drops all of it, so the next read goes to the network -
+  which is what you want after a mutation has made the embedded copy stale.
+- Routing and UI: `navigate`, `goBack`, `goForward`, `modal`, `drawer`, `toast`,
+  `stxAlert`, `stxConfirm`.
+- **Vue-compatible aliases onto the above**: `ref` (= `state`), `computed`
+  (= `derived`), `reactive`, `watch`, `watchEffect`. This section said all five
+  were NOT available, on the manifest's authority; they are, and they have been.
+  Prefer `state` / `derived` / `effect` in new code - the aliases exist so
+  familiar code runs, not to make Vue the idiom (see `stacks-stx`).
+
+<!-- runtime-globals:end -->
+
+- Current stx also provides compiler/runtime bindings such as `useMediaQuery`
+  and `usePreferredReducedMotion`, and demand-inline `useForm`,
+  `useIntersectionObserver`, `useScroll`, `useMouse`, and `useParallax`.
+  Demand delivery depends on the installed stx version and authored calls.
+- Bare stx `useForm(schema, initialValues)` differs from an explicitly imported
+  Stacks `useForm({ initialValues, schema, onSubmit })`. Browser getter/subscription
+  helpers also differ from the module package's Refs. Do not mix their signatures.
+- Utilities and provider helpers listed by an ambient manifest still need
+  explicit imports unless the actual runtime/compiler/demand registry supplies
+  them. A manifest entry is not delivery evidence. Imported TypeScript modules
+  always declare their own dependencies.
+- Your components under `resources/components/` (write `<Card />` directly, resolved by the stx
+  plugin) and your functions under `resources/functions/` (e.g. `increment`, `toggleDark`).
+
+Browser auto-imports are injected into the STX script entry only. A TypeScript
+module imported by that script must explicitly import every function, store,
+and type it uses; entry bindings do not leak into bundled module scope.
+
+**Server** (routes, `app/Actions/`, `app/Jobs/`, models) - injected into `globalThis`:
+- All 107 models (`User`, `Product`, `Order`, ...), so `await User.find(1)` works with no import.
+- Everything exported from `app/Jobs/`, `app/Controllers/` and `resources/functions/`.
+
+Models only - **not** their `Model` / `Request` / `RequestModel` "variants". This used to
+claim otherwise. `UserModel` is a TYPE, an interface exported from `@stacksjs/orm`, so it
+cannot be a runtime global and has to be imported; `UserRequest` and `UserRequestModel` do
+not exist at all, under any name, anywhere in the framework. Prefer `ModelRow<typeof User>`
+over `UserModel` in any case - it follows the model you actually have, including columns
+you added.
+
+The definitions exist on disk, while feature selection decides the running
+app's loaded models. Use the native registry/boot lifecycle and explicit app
+model imports for exact inference rather than assuming every declared global
+is initialized in every process.
+
+A model whose name would shadow a built-in is skipped rather than injected. There are
+`Error` and `Request` models, and a global `Error` would mean `throw new Error(…)`
+constructing a database row. Import those two directly.
+
+What is actually injected is verifiable rather than a matter of documentation:
+`storage/framework/types/server-auto-imports.d.ts` is generated from the models, jobs and
+controllers on disk, and `storage/framework/core/server/tests/generated-declarations.test.ts`
+fails if it ever declares a name the runtime does not provide.
+
+**Import these explicitly (the framework does).** `types/auto-imports.d.ts` also declares `Action`,
+`route`, `response`, `schema`, `slug`, `path`, `storage`, `log`, and `Auth` as ambient global types,
+but the built-in actions and models import them from their packages anyway (`@stacksjs/actions`,
+`@stacksjs/router`, `@stacksjs/validation`, ...), and so should you. `defineModel` is always imported
+from `@stacksjs/orm`. When unsure, copy the import pattern from `storage/framework/defaults/app/`.
+Add your own auto-imports by exporting from `resources/functions/` (browser) or the auto-import
+barrel, then run `buddy generate`.
+
+---
+
+## Data layer: models, ORM, query builder, migrations
+
+Stacks is Laravel-like (models, relationships, traits, factories, a fluent query builder), with one
+big difference: **migrations are derived from your models, not hand-written.** You describe the
+schema once in the model; Stacks diffs it against the database and generates the SQL. See
+`stacks-orm`, `stacks-models`, `stacks-migrations`, `stacks-database`, `stacks-query-builder`.
+
+### Define a model
+Models live in `app/Models/` (your custom models and overrides) and
+`storage/framework/defaults/app/Models/` (107 built-ins, grouped into `commerce/`, `Content/`, etc.).
+Use `defineModel()`; the whole schema, validation, factory, relationships, and behavior traits are
+declared in one place.
+
+```ts
+// app/Models/Product.ts
+// Models and app/Jobs are auto-imported as server globals; stx composables and
+// resources/components are auto-imported in templates. In a model file you still
+// import defineModel and schema explicitly, exactly as the built-in models do.
+import { defineModel } from '@stacksjs/orm'
+import { schema } from '@stacksjs/validation'
+
+export default defineModel({
+  name: 'Product',
+  table: 'products',
+
+  traits: {
+    useUuid: true,
+    useTimestamps: true,          // created_at / updated_at
+    useSeeder: { count: 20 },     // rows `buddy seed` generates from the factories below
+    useApi: {                     // auto-generate REST actions + routes
+      uri: 'products',
+      routes: ['index', 'store', 'show', 'update', 'destroy'],
+    },
+    useSearch: { searchable: ['name'], filterable: ['status'] },
+    observe: true,                // emit product:created / :updated / :deleted events
+  },
+
+  belongsTo: ['Category'],
+  hasMany: ['Review'],
+
+  attributes: {
+    name: {
+      fillable: true,
+      required: true,
+      validation: { rule: schema.string().max(100) },
+      factory: faker => faker.lorem.word(),
+    },
+    price: {
+      fillable: true,
+      validation: { rule: schema.number().min(1) },
+      factory: faker => faker.datatype.number({ min: 100, max: 10000 }),
+    },
+    status: {
+      fillable: true,
+      default: 'draft',
+      validation: { rule: schema.enum(['draft', 'published', 'archived']) },
+    },
+  },
+})
+```
+
+Traits do real work: `useApi` generates the REST actions and routes for the model, `useAuth` adds
+auth columns + passkeys, `useSearch` wires search-engine indexing, `useSeeder` sets how many rows
+`buddy seed` generates from the per-attribute `factory` functions, `useSoftDeletes` adds
+`deleted_at` plus its query scopes, and `billable` / `taggable` / `categorizable` / `commentable` /
+`likeable` add their relations and methods. See `stacks-models` for the full trait and attribute
+reference.
+
+### Model-driven migration workflow
+```bash
+# 1. Define or change a model in app/Models/ (or storage/framework/defaults/app/Models/)
+buddy generate:migrations     # 2. diff models vs current schema, emit SQL into database/migrations/
+# 3. review the generated migration file
+buddy migrate                 # 4. apply pending migrations   (--diff to preview SQL, --auth for auth tables)
+buddy migrate:fresh --seed    #    (dev) drop everything, re-migrate, then seed
+```
+`buddy make:migration <name>` still exists for hand-written migrations, and 239 migrations ship for
+the built-in models. `buddy migrate` verifies models exist before running.
+
+### Query builder
+Models expose a fluent, chainable query API (backed by `bun-query-builder`) plus create/update/delete
+and eager loading. Exact method surface is in `stacks-query-builder` / `stacks-orm`; typical shape:
+
+```ts
+const published = await Product.where('status', 'published').orderByDesc('created_at').all()
+const product = await Product.find(id)
+const created = await Product.create({ name: 'Widget', price: 1200 })
+await transaction(async () => { /_ ... atomic work ... _/ })
+```
+Eager loading, pagination, and the full method set are in `stacks-query-builder` / `stacks-orm`.
+
+---
+
+## The buddy CLI
+
+All of `./buddy`, `bud`, and `stacks` invoke the same CLI. (The `stx` bin belongs to the stx
+template engine, not buddy - see stacksjs/stacks#2081.) Run `buddy list` for everything and
+`buddy <command> --help` for flags. Full reference with every flag: `stacks-buddy`.
+
+**Develop & serve**
+- `buddy dev [frontend|api|docs|dashboard|desktop]` start dev server(s) + reverse proxy; `buddy dev:components` component playground
+- `buddy down` / `buddy up` enter / exit maintenance mode
+
+**Build & generate**
+- `buddy build [components|functions|views|docs|cli|server|stacks]` production builds
+- `buddy generate[:types|:openapi|:migrations|:entries|:ide-helpers]` types, OpenAPI spec, migration diffs, IDE helpers
+
+**Database**
+- `buddy migrate [--diff|--auth]`, `buddy migrate:fresh [--seed]`, `buddy seed`, `buddy generate:migrations`
+
+**Scaffold (`make:*`)**
+- `make:model`, `make:migration`, `make:action`, `make:component`, `make:view` (`make:page`), `make:job`, `make:middleware`, `make:notification`, `make:policy`, `make:resource`, `make:command`, `make:factory`, `make:function`, `make:lang`, `make:database`, `make:queue-table`, `make:stack`, `make:certificate`
+
+**Quality & test**
+- `buddy lint [--fix]` / `buddy lint:fix` / `buddy format[:check]` (pickier)
+- `buddy test [--unit|--feature]` / `test:unit` / `test:feature` / `test:ui` / `test:types` (`typecheck`)
+
+**Environment**
+- `buddy env:get|set|encrypt|decrypt|keypair|rotate|check` manage and encrypt `.env` values
+
+**Cloud & deploy**
+- `buddy deploy` full deploy workflow (prereqs, env, APP_KEY, AWS, DNS, mail records)
+- `buddy cloud [--ssh|--diff|--invalidate-cache]`, `cloud:add --jump-box`, `cloud:remove`, `cloud:cleanup`, `cloud:optimize-cost`
+
+**Domains & DNS**
+- `buddy domains:purchase|add|remove` (Route 53), `buddy dns [domain]` DNS query tool
+
+**Email & mail server**
+- `buddy email:verify|test|list|logs|status|inbox|reprocess` (SES / S3)
+- `buddy mail:user:add|list|delete`, `mail:proxy`, `mail:test`, `mail:credentials`, `mail:logs`, `mail:status`, `mail:server`, `mail:port25:*`
+
+**Project & framework**
+- `buddy install` / `fresh` / `clean` / `add` / `outdated`
+- `buddy upgrade[:all|:dependencies|:bun|:shell|:binary]` upgrade framework, deps, or Bun
+- `buddy about` / `buddy doctor` / `buddy list` info and health checks
+
+Custom commands live in `app/Commands/` and need no registration: every `.ts` file there is a
+command (`make:command` scaffolds one). Write them with `defineCommand()` from `@stacksjs/cli` - the
+declarative form infers the handler's `options` from the flags it declares, so there is no
+hand-written options interface. `app/Commands.ts` is optional and purely additive (ordering, aliases,
+disabling a command). See `stacks-cli` for building commands.
+
+---
+
+## Stack essentials (frontend)
+
+- **Templating:** stx `.stx` Single File Components (`<script server|client>`, `<template>`,
+  `<style>`; Blade directives `@if` / `@foreach` / `@layout`; `{{ x }}`; filters `{{ x | currency }}`).
+- **Never** use `var`, `document._`, or `window._` in stx `<script>` blocks. Use signals
+  (`state` / `derived` / `effect`) and composables. See `stacks-stx`, `stacks-composables`.
+- **CSS:** ts-css utilities, `dark:` variant, arbitrary values; dark mode via `useColorMode()` /
+  `useDark()`. See `stacks-ts-css`, `stacks-ui`.
+- **Icons:** Iconify classes `i-{collection}-{name}` (hugeicons by default). Never hand-roll SVG icon
+  paths; never add npm icon packages.
+- **Fonts:** the `fonts` config plus `<link>` / `@font-face` with `font-display: swap`. No `next/font`.
+- **Images:** `<img>` plus the stx asset pipeline / `@stacksjs/storage`. No `next/image`.
+- **Motion:** Stacks ships no animation library. Do NOT import `motion/react`, `framer-motion`, or
+  `gsap`. Use ts-css transitions, CSS keyframes, CSS scroll-driven animations
+  (`animation-timeline: view()` / `scroll()`), and composables (`useIntersectionObserver`,
+  `useScroll`, `useParallax`, `useMouse`). Gate anything beyond hover with
+  `usePreferredReducedMotion()`. Never attach `window.addEventListener('scroll', ...)` in a template.
+
+---
+
+## Design & anti-slop skills (read the SKILL.md before building UI)
+
+For any visually important page (landing, hero, marketing, portfolio, product, redesign), read the
+matching skill and follow it. These translate premium design discipline into stx + ts-css.
+
+| When the task is | Read |
+|---|---|
+| Any premium / anti-slop frontend (start here) | `stacks-design-taste` |
+| Stricter, award-level, high-variance + deterministic motion | `stacks-design-taste-codex` |
+| Aesthetic already chosen: expensive / soft | `stacks-design-soft` |
+| Aesthetic: editorial / minimalist (Notion / Linear) | `stacks-design-minimalist` |
+| Aesthetic: industrial / brutalist | `stacks-design-brutalist` |
+| Upgrading an existing UI (audit first) | `stacks-redesign` |
+| Agent keeps truncating / placeholder output | `stacks-design-output` |
+| Image-first: generate references, then implement | `stacks-image-to-code` |
+| Reference images only (web / mobile / brand) | `stacks-imagegen-web`, `stacks-imagegen-mobile`, `stacks-brandkit` |
+
+The flagship (`stacks-design-taste`) carries the shared rules: brief inference, the three dials
+(VARIANCE / MOTION / DENSITY), typography / color / layout discipline, the AI-Tells list, the redesign
+protocol, and a binding pre-flight check. The others refine it and defer to it.
+
+---
+
+## Hard rule: no em-dashes in user-visible output
+
+Never emit an em-dash (`—`) or a separator en-dash (`–`) in any user-visible string you generate:
+headlines, body copy, labels, buttons, alt text, captions. Use a regular hyphen `-`, a comma, or two
+sentences. This is the single most common AI design tell and it is a pre-flight failure.
+
+## Before finishing
+
+- Lint: `./buddy lint` (fix with `./buddy lint:fix`). Run relevant tests with `./buddy test`.
+- Type check what you touched: `./buddy typecheck` for `app/`, `config/`, `resources/` and
+  `routes/`; `bun run typecheck` for framework internals. Both run on TypeScript 7 (`tsc`, the
+  native Go compiler) and finish in a couple of seconds.
+- For UI work, run the pre-flight check in `stacks-design-taste` (Section 14). If a box cannot be
+  honestly ticked, the work is not done.

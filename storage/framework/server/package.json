@@ -1,0 +1,43 @@
+{
+  "name": "stacks-server",
+  "type": "module",
+  "version": "0.75.251",
+  "description": "The Stacks server.",
+  "license": "MIT",
+  "keywords": [
+    "cloud",
+    "serverless",
+    "infrastructure as code",
+    "automation",
+    "aws",
+    "stacks"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./*": {
+      "import": "./dist/*"
+    }
+  },
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "README.md",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "docker run -d -p 3000:3000 --name stacks-server --restart unless-stopped stacks",
+    "dev:local": "./dev local",
+    "build": "bun build.ts"
+  },
+  "devDependencies": {
+    "better-dx": "^0.2.24",
+    "@stacksjs/logging": "^0.75.251",
+    "@stacksjs/path": "^0.75.251",
+    "@stacksjs/router": "^0.75.251",
+    "@stacksjs/storage": "^0.75.251",
+    "@stacksjs/utils": "^0.75.251"
+  }
+}

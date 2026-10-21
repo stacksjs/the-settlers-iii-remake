@@ -1,0 +1,9 @@
+{
+  "name": "stacks-framework",
+  "type": "module",
+  "version": "0.75.251",
+  "private": true,
+  "description": "The Stacks framework.",
+  "license": "MIT",
+  "scripts": {}
+}

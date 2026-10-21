@@ -1,0 +1,35 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: game-ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  game:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Provision managed tools
+        uses: pantry-pm/pantry/packages/action@d160044a6fe4ad7e8463828f80dfbc55bcdc07d9
+        with:
+          version: '0.11.109'
+          install: 'false'
+          packages: bun.com@1.4.2 git-scm.org@2.53.0 sqlite.org@3.54.1
+      - run: bun install --frozen-lockfile
+      - run: ./buddy lint
+      - run: bun run typecheck
+      - run: ./buddy test --unit
+      - name: Cache verified demo download
+        uses: actions/cache@v4
+        with:
+          path: storage/reference/s3a_demo_us.exe
+          key: settlers-amazons-demo-ac87c418101aadeb
+      - run: bun run assets:import
+      - run: bun run assets:verify
+      - run: ./buddy build views
