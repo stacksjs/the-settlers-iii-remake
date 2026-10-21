@@ -66,7 +66,10 @@
     "roadmap:verify": "bun scripts/roadmap.ts --verify",
     "fidelity:check": "bun scripts/fidelity.ts --check",
     "fidelity:verify": "bun scripts/fidelity.ts --verify-sources",
-    "observations": "bun scripts/original-observations.ts"
+    "observations": "bun scripts/original-observations.ts",
+    "content:inventory": "bun scripts/content.ts --inventory",
+    "content:verify": "bun scripts/content.ts --verify",
+    "publication:check": "bun scripts/content.ts --publication"
   },
   "dependencies": {
     "@stacksjs/actions": "^0.75.255",

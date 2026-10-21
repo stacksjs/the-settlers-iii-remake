@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { campaignSteps } from './campaign-steps'
@@ -28,6 +28,17 @@ const [code, output, errors] = await Promise.all([
   browserProcess.exited, new Response(browserProcess.stdout).text(), new Response(browserProcess.stderr).text(),
 ])
 await writeFile(resolve(shots, 'campaign.json'), output)
+// Preserve the real raster locally for QA. Public CI retains only its identity
+// until the content policy records permission for publishing original media.
+const screenshot = await readFile(resolve(shots, 'campaign.png'))
+if (screenshot.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || screenshot.toString('ascii', 12, 16) !== 'IHDR') throw new Error('Campaign screenshot is not a PNG')
+await writeFile(resolve(shots, 'campaign-media.json'), `${JSON.stringify({
+  schemaVersion: 1,
+  screenshot: { sha256: new Bun.CryptoHasher('sha256').update(screenshot).digest('hex'), bytes: screenshot.length, width: screenshot.readUInt32BE(16), height: screenshot.readUInt32BE(20) },
+  browserExitCode: code,
+  rasterPublication: 'withheld-pending-redistribution-evidence',
+  evidenceLimit: 'This receipt identifies a locally captured screenshot. It does not provide public visual inspection.',
+}, null, 2)}\n`)
 if (errors) console.error(errors)
 if (code !== 0) throw new Error(`Production campaign browser check failed. See ${shots}/campaign.json`)
 console.log('Production campaign verified: keyboard construction, speed, pause, audio, background save and reload.')

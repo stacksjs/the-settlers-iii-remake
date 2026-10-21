@@ -36,6 +36,11 @@ jobs:
       - name: Install Dependencies
         run: bun install
 
+      - name: Convert and verify bundled content before publication
+        run: |
+          bun run assets:import
+          bun run publication:check --channel github-release
+
       - name: Create GitHub Release
         uses: stacksjs/action-releaser@v1.2.9
         env:
