@@ -75,7 +75,7 @@ onDestroy(() => game?.dispose())
         </div>
         <div class="guide-panel" :if="showGuide()">
           <h2>From a foothold to a kingdom.</h2>
-          <p>Build a woodcutter near trees, a sawmill and a stonecutter near rocks. Your settlers carry supplies automatically.</p>
+          <p>Build a woodcutter near trees, a sawmill and a stonecutter near rocks. Buildings share the settlement stock in this campaign.</p>
           <p>Fish feed miners. Grain becomes flour, then bread. Iron ore and coal become iron, then swords. Barracks need swords and bread to train soldiers.</p>
           <p>Guard towers extend the golden border. Claim the river crossing, train an army and march on the rival stronghold. Raids grow stronger over time.</p>
           <p >Drag to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and on backgrounding. Use Save and wait for confirmation before closing the browser.</p>

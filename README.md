@@ -1,6 +1,11 @@
 # The Settlers III Remake
 
-A browser settlement strategy game built with Stacks, stx and Craft.
+A browser settlement strategy prototype built with Stacks, stx and Craft.
+
+This is an original-assets prototype, with simplified logistics and combat.
+It does not yet reproduce the original game's worker, transport, military or
+faction systems. See the [fidelity audit](docs/fidelity-audit.md) for verified
+matches, gaps and the implementation priorities for a faithful remake.
 
 ## Play locally
 
