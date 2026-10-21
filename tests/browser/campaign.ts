@@ -30,4 +30,4 @@ const [code, output, errors] = await Promise.all([
 await writeFile(resolve(shots, 'campaign.json'), output)
 if (errors) console.error(errors)
 if (code !== 0) throw new Error(`Production campaign browser check failed. See ${shots}/campaign.json`)
-console.log('Production campaign verified: keyboard construction, speed, pause, durable save and reload.')
+console.log('Production campaign verified: keyboard construction, speed, pause, audio, background save and reload.')

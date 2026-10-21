@@ -61,6 +61,8 @@ territory, raids, win/loss, save validation and isometric picking. A full campai
 test reaches victory from the ordinary starting stock without resource grants.
 The browser check uses the framework's Chrome driver to place a building with
 the keyboard, change speed, pause, save, reload, and verify the saved settlement.
+It also activates audio with the keyboard and checks background saves through
+browser lifecycle events.
 
 ## Original material
 
