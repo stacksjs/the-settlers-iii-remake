@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "unexecuted-binary-inventory",
+  "edition": "amazons-demo",
+  "displayedVersion": null,
+  "executed": false,
+  "originalBehaviorAdmitted": false,
+  "inspectedAt": "2026-10-21",
+  "source": {
+    "referenceRepository": "paulwedeck/settlers-remake",
+    "referenceRevision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "downloadUrl": "https://archive.org/download/S3aDemoUs/s3a_demo_us.exe"
+  },
+  "archive": {
+    "path": "s3a_demo_us.exe",
+    "bytes": 50875904,
+    "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65"
+  },
+  "inspectedFiles": [
+    {
+      "path": "S3_A_Demo.exe",
+      "bytes": 3485743,
+      "sha256": "c9db1d76008058bf4be4034802f30b6300db6be18196d233a64b38f335cbb990"
+    },
+    {
+      "path": "Map/MULTI/Demo.map",
+      "bytes": 2597888,
+      "sha256": "aa0ce0c87b172657bbd8fdb627b23d6f1884900bd01caaad7af8a9724689fe08"
+    },
+    {
+      "path": "Map/SINGLE/demo.map",
+      "bytes": 1346328,
+      "sha256": "f07da93f2ff9c33ca2ff706259dc82f03a4353d4d14cb2a3e758b49aa2e8eeb1"
+    },
+    {
+      "path": "Map/TUTORIAL/T1.MAP",
+      "bytes": 535420,
+      "sha256": "395575b4f5d97e3d521003d18c3c574ad2b97ac22b17c4f7bd7efb63ed42be98"
+    },
+    {
+      "path": "Readme.txt",
+      "bytes": 13786,
+      "sha256": "48943edf197abd295116363d7f83c87808730c7d175bedef493db8f934dc6c34"
+    }
+  ],
+  "limits": [
+    "File identities alone do not authenticate publisher origin, redistribution rights or execution.",
+    "This is an Amazons demo candidate, not a Gold Edition installation.",
+    "No original-game run, timing, screenshot, audio or save has been recorded."
+  ]
+}

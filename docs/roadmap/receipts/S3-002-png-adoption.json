@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "package": "@stacksjs/ts-png",
+  "version": "0.1.10",
+  "sourceCommit": "96416a8b517bef4059fe3dc0dff80681243c7557",
+  "releaseCommit": "ea287d4f56be610578a9e0be9a8ba23f4bfd81be",
+  "tag": "v0.1.10",
+  "sourceCi": "https://github.com/stacksjs/ts-png/actions/runs/39679207029",
+  "releaseCi": "https://github.com/stacksjs/ts-png/actions/runs/39679516304",
+  "releaser": "https://github.com/stacksjs/ts-png/actions/runs/39679516763",
+  "publishIntegrityFromReleaser": "sha512-EtYI3BhCcR7AOVyyA1zmn6/ueZwGgxLKHmpTENHhKPIhxSy6/MUNLhb8cc2jI6PViz/fj37WuCc1iA7Dq5bVbw==",
+  "archive": {
+    "url": "https://registry.npmjs.org/@stacksjs/ts-png/-/ts-png-0.1.10.tgz",
+    "bytes": 24583,
+    "sha256": "e2f989649035f9410fc56b4aabbda24761bb1458b50cb3579c02aabd1fb728d9",
+    "integrity": "sha512-EtYI3BhCcR7AOVyyA1zmn6/ueZwGgxLKHmpTENHhKPIhxSy6/MUNLhb8cc2jI6PViz/fj37WuCc1iA7Dq5bVbw=="
+  },
+  "installedFiles": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "feb92ef374d3b28cf0a75b2853c8d4b87129c3dedbafaf44412876fb0ae1c297"
+    },
+    {
+      "path": "LICENSE.md",
+      "sha256": "f715c3d751115fc3583298885a212cf0a92177178f5969afbd841a3664365e1f"
+    },
+    {
+      "path": "README.md",
+      "sha256": "97da07bee00e56ab98a2861f7112f9b83eaba9125afff78eaa222aeed6437829"
+    },
+    {
+      "path": "dist/bitmapper.d.ts",
+      "sha256": "d69c77f32bd08dd79d91e685836f5af3670eb9eca4e0e26cda8076116e7590f4"
+    },
+    {
+      "path": "dist/bitpacker.d.ts",
+      "sha256": "2e4ce269fc4d08d7ba389096cff204541c041ba50997884a4aeff31c51228fe2"
+    },
+    {
+      "path": "dist/chunkstream.d.ts",
+      "sha256": "9aee3c5ccd91487824bd995960989979169e4a6debf128f5c8a38b38632b6261"
+    },
+    {
+      "path": "dist/constants.d.ts",
+      "sha256": "06f4647877a1235c72cf95ec7594df983852935e5a7d97e72fad9399c6d517f4"
+    },
+    {
+      "path": "dist/crc.d.ts",
+      "sha256": "2497af033f1c3329cc9820426360100b962d4a1ede3f38bd6b18bb74b1523327"
+    },
+    {
+      "path": "dist/decode-budget.d.ts",
+      "sha256": "4c65dd1e694d78d5ef9c1df1a0795ca7e8d1c5454f46106272dce7df1a4c8b06"
+    },
+    {
+      "path": "dist/filter-pack.d.ts",
+      "sha256": "f24f88da4e29f12a4da0f7f3c12f6f5c7f6c5240f074d32c6ccfecefc817a632"
+    },
+    {
+      "path": "dist/filter-parse-async.d.ts",
+      "sha256": "681124425dd8ccc0367a19b8c48913f045f83253f2f71085b1fc8f338527d3b3"
+    },
+    {
+      "path": "dist/filter-parse-sync.d.ts",
+      "sha256": "1d54ad9bb2bf16baf411d6dde218784218d8b05c33a933a7de973a449be2eee7"
+    },
+    {
+      "path": "dist/filter-parse.d.ts",
+      "sha256": "e58afb70effa15076bf0d6f805011f3b748bdfa6b08f1462dc08e09f0a525436"
+    },
+    {
+      "path": "dist/format-normalizer.d.ts",
+      "sha256": "a9fb2e5d01b6664245e17543008449054836a0de055f79083788b4a44d4df056"
+    },
+    {
+      "path": "dist/index.d.ts",
+      "sha256": "ef810f4911165b82476d5ed29e0d580690ffa1b8d08b267d42e10dc61a3964fb"
+    },
+    {
+      "path": "dist/index.js",
+      "sha256": "48c7250e2a7d1b911f3b4ff3013a23451170ad02f576727ee8decc1e4b68d6b5"
+    },
+    {
+      "path": "dist/interlace.d.ts",
+      "sha256": "1668bdc8330e50daeb3846bcc8718fd2d7b9cb56948780183c94394ae0405485"
+    },
+    {
+      "path": "dist/optimize.d.ts",
+      "sha256": "84ca424a914ec8a093ebdac16fcb8f2148b0cf8440b170728c09cdb7d7d3e462"
+    },
+    {
+      "path": "dist/packer-async.d.ts",
+      "sha256": "878027454b8d9dda645c9bdf8ae4f3f39b10c8ea5a169323ba110ac34fd53b9f"
+    },
+    {
+      "path": "dist/packer-sync.d.ts",
+      "sha256": "72a5606ef8dac0edf832bfe75a57ca30849313d7bfa84d869569d988d8707a64"
+    },
+    {
+      "path": "dist/packer.d.ts",
+      "sha256": "dcec7101853f2a553fbb1d6eaec0906775ff846231718d753f96f63b57b34aa7"
+    },
+    {
+      "path": "dist/paeth-predictor.d.ts",
+      "sha256": "a18987260cba1e31d03681a154ec6dcb61f6b88dda2d5f449444092a40f3916f"
+    },
+    {
+      "path": "dist/parser-async.d.ts",
+      "sha256": "2bce8dd414e46622ed28dff61f2ea6a814820c1a05267c0460fc74005e26a79e"
+    },
+    {
+      "path": "dist/parser-sync.d.ts",
+      "sha256": "a315fb5b641128dcdb14b739192b01092f323fea7b00149afda6527211995894"
+    },
+    {
+      "path": "dist/parser.d.ts",
+      "sha256": "3d5e5182c697be899d01fe2201c64303fd42e6f5b37970f6bc7a7fae9b3c8148"
+    },
+    {
+      "path": "dist/png-sync.d.ts",
+      "sha256": "2a700bf6973a5d98038f4965b9f93da06c66b7fc429df76c39231aa8e08ff71b"
+    },
+    {
+      "path": "dist/png.d.ts",
+      "sha256": "f93193d038914cbddd7d5bed0439c1ef650ab6cb98f089b418fde1c25b6e222a"
+    },
+    {
+      "path": "dist/sync-reader.d.ts",
+      "sha256": "a9b0796d16be14bcd8e57263080e5c0c6348f1d457b1aab82f4e33d85a53430d"
+    },
+    {
+      "path": "package.json",
+      "sha256": "2ec737ad15b215fccf33c97eb2c0695b9d1aa5aaf922787d9036e6e0621cc1ec"
+    }
+  ],
+  "consumerLockSha256": "8dd31df16415a1a14f3666071356d9abdee089151822d1ad5906cdb941911471",
+  "registrySignatures": [
+    {
+      "sig": "MEUCIQCY/9Y0z4t4HzOMpwuAP464at12U+UrVnNeMsXrojRS6wIgAuKmORgNO1cknkdIw+xjm1f6t+olR/IF4T4qyl6Oyf0=",
+      "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+    },
+    {
+      "sig": "MEQCICvLzFdD68jUkmJUD/ec1IrVdyI+bgxwPNWPp24FKM86AiASdym++3613y0cY4CH6kVyvjnkFP9333sCHrCclWe53A==",
+      "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+    }
+  ],
+  "attestation": {
+    "url": "https://registry.npmjs.org/-/npm/v1/attestations/@stacksjs%2fts-png@0.1.10",
+    "provenance": {
+      "predicateType": "https://slsa.dev/provenance/v1"
+    }
+  },
+  "registrySignatureVerification": {
+    "status": "passed",
+    "algorithm": "ECDSA-SHA256",
+    "message": "@stacksjs/ts-png@0.1.10:sha512-EtYI3BhCcR7AOVyyA1zmn6/ueZwGgxLKHmpTENHhKPIhxSy6/MUNLhb8cc2jI6PViz/fj37WuCc1iA7Dq5bVbw==",
+    "keys": [
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEY6Ya7W++7aUPzvMTrezH6Ycx3c+HOKYCcNGybJZSCJq/fd7Qa8uuAKtdIkUQtQiEKERhAmE5lMMJhP8OkDOa2g==",
+        "expires": null
+      },
+      {
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U",
+        "publicKey": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEY6Ya7W++7aUPzvMTrezH6Ycx3c+HOKYCcNGybJZSCJq/fd7Qa8uuAKtdIkUQtQiEKERhAmE5lMMJhP8OkDOa2g==",
+        "expires": null
+      }
+    ],
+    "documentation": "https://docs.npmjs.com/about-registry-signatures/"
+  },
+  "attestationSignatureVerified": false
+}
