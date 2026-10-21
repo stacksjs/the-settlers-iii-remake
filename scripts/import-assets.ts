@@ -4,6 +4,7 @@ import { mkdir, readdir, readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import { S3Dat } from './lib/s3-dat'
+import { verifiedDownload } from './lib/verified-download'
 
 const root = resolve(import.meta.dir, '..')
 const reference = resolve(root, 'storage/reference')
@@ -16,14 +17,8 @@ const sha1 = 'b6e9d8217e17fb0b9e028b0ad61542611a9eb07d'
 const sha256 = 'ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65'
 await mkdir(reference, { recursive: true }); await mkdir(output, { recursive: true })
 const archivePath = resolve(reference, 's3a_demo_us.exe')
-const archive = Bun.file(archivePath)
-if (!(await archive.exists())) {
-  console.log('Downloading the original Amazons demo...')
-  const response = await fetch(download, { signal: AbortSignal.timeout(120000) })
-  if (!response.ok) throw new Error(`Demo download failed: ${response.status}`)
-  await Bun.write(archive, response)
-}
-if (new Bun.CryptoHasher('sha256').update(await archive.arrayBuffer()).digest('hex') !== sha256) throw new Error('Demo checksum does not match the pinned original')
+console.log('Verifying the original Amazons demo, downloading it if needed...')
+await verifiedDownload(archivePath, download, sha256)
 const extraction = Bun.spawnSync(['unzip', '-q', '-o', archivePath, 'Gfx/*', 'Snd/*', 'Readme.txt', '-d', source], { stdout: 'inherit', stderr: 'inherit' })
 if (extraction.exitCode !== 0) throw new Error('Could not extract the demo data')
 const getReference = async (path: string): Promise<string> => {
