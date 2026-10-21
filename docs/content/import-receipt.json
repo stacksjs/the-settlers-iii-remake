@@ -1,0 +1,984 @@
+{
+  "schemaVersion": 1,
+  "originalSource": {
+    "id": "amazons-demo",
+    "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65"
+  },
+  "inputs": [
+    {
+      "id": "converter:scripts/import-assets.ts",
+      "kind": "converter",
+      "path": "scripts/import-assets.ts",
+      "bytes": 12826,
+      "sha256": "2b0d2c1da1eb2ee309e6a692b3cbc20b90c057242b50df3748a24f176e15e305"
+    },
+    {
+      "id": "converter:scripts/lib/s3-dat.ts",
+      "kind": "converter",
+      "path": "scripts/lib/s3-dat.ts",
+      "bytes": 3937,
+      "sha256": "58bdb4ea3bbcdb78ab8b4c32c82ab12177430d267a704a2acaf31d59e49759ae"
+    },
+    {
+      "id": "converter:scripts/lib/content-provenance.ts",
+      "kind": "converter",
+      "path": "scripts/lib/content-provenance.ts",
+      "bytes": 11864,
+      "sha256": "16ad2e13ac982a59c3e36509fdaacb4781b48bec155352a2362d33a3253715c8"
+    },
+    {
+      "id": "converter:scripts/lib/verified-download.ts",
+      "kind": "converter",
+      "path": "scripts/lib/verified-download.ts",
+      "bytes": 731,
+      "sha256": "9bd6e17a7fe0ded3654dc467bb0398ef65c8e8477ee6a60998a2b253e55da0fc"
+    },
+    {
+      "id": "converter:package.json",
+      "kind": "converter",
+      "path": "package.json",
+      "bytes": 4185,
+      "sha256": "8491f8cddb0925e0bdf8f42c924b940d95c0fd5a78313ecb90805c9d7ce29e1e"
+    },
+    {
+      "id": "converter:bun.lock",
+      "kind": "converter",
+      "path": "bun.lock",
+      "bytes": 84500,
+      "sha256": "14f671b336f76c0b08d96d6ac6549dbcc33d031fc37ac0ad57d34d73f3d1eeae"
+    },
+    {
+      "id": "demo:Readme.txt",
+      "kind": "original-file",
+      "path": "Readme.txt",
+      "bytes": 13786,
+      "sha256": "48943edf197abd295116363d7f83c87808730c7d175bedef493db8f934dc6c34"
+    },
+    {
+      "id": "reference:README.md",
+      "kind": "reference-source",
+      "path": "README.md",
+      "bytes": 7182,
+      "sha256": "dada8515450dbd3542765b794badec0612a3c499edf2e6c2c48f851e8e753e56",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/README.md"
+    },
+    {
+      "id": "reference:LICENSE.txt",
+      "kind": "reference-source",
+      "path": "LICENSE.txt",
+      "bytes": 1065,
+      "sha256": "c0be9ad7f3e2240058471932ea6bf19d4070e34d53501e26fde7e240e806c315",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/LICENSE.txt"
+    },
+    {
+      "id": "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+      "kind": "reference-source",
+      "path": "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+      "bytes": 29998,
+      "sha256": "51255419f32c813ba24853f70549cb0f638956e3375f018159096cbecdd8e5bc",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml",
+      "bytes": 6935,
+      "sha256": "bd57e35748caf77476f33971018fb1f4a891911daf3dbd4b1442d88762664e69",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml"
+    },
+    {
+      "id": "demo:Gfx/Siedler3_13.f8007e01f.dat",
+      "kind": "original-file",
+      "path": "Gfx/Siedler3_13.f8007e01f.dat",
+      "bytes": 4343228,
+      "sha256": "6c6279aba9de74f9cbb9a2e5fa8c0f8a480de459d63dd6acfa58fb25ada1146e"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml",
+      "bytes": 3218,
+      "sha256": "bfb9ce8d7efa745753af2c991676bb1f0e11ef2e4a96d38d14a47dd0703d6621",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml",
+      "bytes": 4144,
+      "sha256": "5c4aed4250c6829f05a296b2c91d67f7d67440f938e22922e4bb23ba4dfdecb1",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml",
+      "bytes": 3198,
+      "sha256": "2b86870356e0f58699f5cc7dc2dedd9b2a2a5cb8c28d11db116e45e3b0a8a46e",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml",
+      "bytes": 2398,
+      "sha256": "88f00d2a7414dd4574eace3e6681ea9119858827d5e183ca306c41ac3ed41f43",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml",
+      "bytes": 5023,
+      "sha256": "054ab63923aa30c4bb95eaa4b6c026737786b090f721f934a01be261b9bdc41f",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml",
+      "bytes": 2467,
+      "sha256": "0b67784dd8736be9b7f78eece66544201783c5c4a02e0ae2e51df56b21785dca",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml",
+      "bytes": 3127,
+      "sha256": "43038e0da611ac97eb75c65e74f6a5f9c825e276ef4143cf4dc3d7ecba9d516e",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml",
+      "bytes": 2963,
+      "sha256": "88fe5f8b94a202ccd79316de87e8aa912271779cf935888f2ff916add1b671e7",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml",
+      "bytes": 2931,
+      "sha256": "cfbddbee9fa259b79370b07379e542f80319bfafd51c8bcb2394927f6303a16b",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml",
+      "bytes": 4336,
+      "sha256": "7e192f0f16387907d575eb6c4a1cc379e89a09b245501ecd82aaf9e44be54822",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml",
+      "bytes": 3843,
+      "sha256": "06e825efffb55e2bb1a141261e3c592a42dd0752561f1b88dd3b68522693cc4b",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml",
+      "bytes": 4118,
+      "sha256": "b70706c7b1989634b4be5ea749509e8d94bbc121d598c4a37f6670b367dd5fd0",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml",
+      "bytes": 2876,
+      "sha256": "ed2946ad676a42fa42e97f258ba652f59154fcb356c68119df0315265d2e522d",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml",
+      "bytes": 2798,
+      "sha256": "022ae0bcb9de6aeeadf2e5841ed733ace6f38e04c28e377dd4b90286e2abc935",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml"
+    },
+    {
+      "id": "demo:Gfx/Siedler3_01.f8007e01f.dat",
+      "kind": "original-file",
+      "path": "Gfx/Siedler3_01.f8007e01f.dat",
+      "bytes": 4973764,
+      "sha256": "cf8d7a23b3188e6326b3e5918f135527de790ad38747b181b595e8dcfc11ad0a"
+    },
+    {
+      "id": "demo:Gfx/siedler3_10.f8007e01f.dat",
+      "kind": "original-file",
+      "path": "Gfx/siedler3_10.f8007e01f.dat",
+      "bytes": 2806576,
+      "sha256": "1c74a23ebaedd4f62cf2dfcf79ec5e79e9d8e7d0bd5b2ee1ca4cdf1e7298b18f"
+    },
+    {
+      "id": "demo:Gfx/siedler3_00.f8007e01f.dat",
+      "kind": "original-file",
+      "path": "Gfx/siedler3_00.f8007e01f.dat",
+      "bytes": 993674,
+      "sha256": "f800aeaaf6c80faded3cd3a5c39210046492c4e03504fcb07d1db1e8cbacc09c"
+    },
+    {
+      "id": "demo:Snd/Siedler3_00.dat",
+      "kind": "original-file",
+      "path": "Snd/Siedler3_00.dat",
+      "bytes": 5954086,
+      "sha256": "65b12f89c6c74395a59e4f39500359ce40c0f30100890e8c32be4cdc77a698cf"
+    }
+  ],
+  "files": [
+    {
+      "path": "sprites.png",
+      "categories": [
+        "buildings",
+        "terrain",
+        "vegetation-and-deposits",
+        "settlers-and-soldiers"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat",
+        "demo:Gfx/siedler3_10.f8007e01f.dat",
+        "demo:Gfx/siedler3_00.f8007e01f.dat"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=16,demo-sequence=16,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=16,demo-sequence=16,frame=2",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=1,demo-sequence=1,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=3,demo-sequence=3,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=22,demo-sequence=22,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=21,demo-sequence=21,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=14,demo-sequence=14,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=23,demo-sequence=23,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=4,demo-sequence=4,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=6,demo-sequence=6,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=9,demo-sequence=9,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=11,demo-sequence=11,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=34,demo-sequence=34,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=17,demo-sequence=17,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=17,demo-sequence=17,frame=2",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=24,demo-sequence=24,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=1,demo-sequence=1,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=2,demo-sequence=2,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=4,demo-sequence=4,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=7,demo-sequence=7,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=8,demo-sequence=8,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=16,demo-sequence=16,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=17,demo-sequence=17,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=31,demo-sequence=31,frame=0",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=31,demo-sequence=31,frame=4",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=31,demo-sequence=31,frame=8",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=0",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=0,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=1",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=1,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=2",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=2,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=3",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=3,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=4",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=4,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=5",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=5,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=6",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=6,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=7",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=7,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=8",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=8,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=9",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=9,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=10",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=10,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=11",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=11,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=12",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=12,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=13",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=13,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=14",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=14,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=15",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=15,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=16",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=16,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=17",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=17,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=18",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=18,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=19",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=19,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=20",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=20,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=21",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=21,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=22",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=22,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=23",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=23,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=24",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=24,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=25",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=25,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=26",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=26,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=27",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=27,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=28",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=28,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=29",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=29,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=30",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=30,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=31",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=31,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=32",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=32,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=33",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=33,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=34,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=35",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=35,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=36",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=36,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=37",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=37,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=38",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=38,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=39",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=39,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=40",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=40,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=41",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=41,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=42",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=42,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=43",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=43,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=44",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=44,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=45",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=45,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=46",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=46,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=47",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=47,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=48",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=48,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=49",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=49,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=50",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=50,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=51",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=51,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=52",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=52,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=53",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=53,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=54",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=54,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=55",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=55,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=56",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=56,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=57",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=57,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=58",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=58,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=59",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=59,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=60",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=60,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=61",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=61,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=62",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=62,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=63",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=63,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=64",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=64,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=65",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=65,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=66",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=66,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=67",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=67,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=68",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=68,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=69",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=69,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=70",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=70,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=71",
+        "demo:Gfx/siedler3_10.f8007e01f.dat:section=0x3112,demo-sequence=0,frame=71,torso-tint=0.88/0.72/0.34",
+        "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=0,frame=0,color=565",
+        "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=17,frame=0,color=565",
+        "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=21,frame=0,color=565",
+        "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=31,frame=0,color=565"
+      ],
+      "bytes": 577080,
+      "sha256": "988b1b7e401cb17cb4dedde2244d44bbfe4ce3310bd72b83eb90a7853d07eb7a"
+    },
+    {
+      "path": "manifest.json",
+      "categories": [
+        "generated-metadata"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml",
+        "demo:Gfx/Siedler3_01.f8007e01f.dat",
+        "demo:Gfx/siedler3_10.f8007e01f.dat",
+        "demo:Gfx/siedler3_00.f8007e01f.dat"
+      ],
+      "selection": [
+        "Original atlas selectors, dimensions, displacements and pinned source identities"
+      ],
+      "bytes": 74681,
+      "sha256": "4231f87212d8b7980258ec9028e97e544027afa5471a71f0726fd678c759dd17"
+    },
+    {
+      "path": "headquarters.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/castle.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=16,demo-sequence=16,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=16,demo-sequence=16,frame=2"
+      ],
+      "bytes": 48832,
+      "sha256": "62ebf9ec79e4687e33c5ae6d1af58d5aed8ec65efb7d2f3373c8759eddb3d7b7"
+    },
+    {
+      "path": "woodcutter.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lumberjack.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=0,demo-sequence=0,frame=0"
+      ],
+      "bytes": 16288,
+      "sha256": "a8a3b3a30f0ab0d5652249271c58cf958815b7e50b72ff056975b03e10275b1e"
+    },
+    {
+      "path": "sawmill.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/sawmill.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=1,demo-sequence=1,frame=0"
+      ],
+      "bytes": 20966,
+      "sha256": "4de35ee24d4af9014cfecc1ad0b423b580ff30ca69e88136f52ca1bdce77e13f"
+    },
+    {
+      "path": "quarry.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stonecutter.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=3,demo-sequence=3,frame=0"
+      ],
+      "bytes": 13738,
+      "sha256": "3a552696a4acdae8726ec4e075e56622b72826aa163a4b985e58cd01123dcb7a"
+    },
+    {
+      "path": "fishery.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/fisher.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=22,demo-sequence=22,frame=0"
+      ],
+      "bytes": 11528,
+      "sha256": "0e1a2ea54b4a661867ecd4c5cb17af50ac22e137878432c5f0aad8a7177ae614"
+    },
+    {
+      "path": "farm.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/farm.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=21,demo-sequence=21,frame=0"
+      ],
+      "bytes": 26467,
+      "sha256": "83eeb101d622882b3385f34561143bc3d25dacf450b1ae8e27d9d3e962f62bec"
+    },
+    {
+      "path": "mill.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/mill.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=14,demo-sequence=14,frame=0"
+      ],
+      "bytes": 15458,
+      "sha256": "e2108361b87d795787ea6a10eab824f8f0fcfe4adaf74b45ec96d9208a02f3c7"
+    },
+    {
+      "path": "bakery.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/baker.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=23,demo-sequence=23,frame=0"
+      ],
+      "bytes": 16708,
+      "sha256": "3dd6b69e9e73e911e2c48776c5720810799a3f2f54200ba2bc74bedc0db1f3f8"
+    },
+    {
+      "path": "ironmine.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmine.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=4,demo-sequence=4,frame=0"
+      ],
+      "bytes": 10079,
+      "sha256": "68d268b63fcbf1936cb54cc871e0e2302e5d2d3e6cab3c2372997e119b0e54a0"
+    },
+    {
+      "path": "coalmine.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/coalmine.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=6,demo-sequence=6,frame=0"
+      ],
+      "bytes": 12200,
+      "sha256": "141c43ebe989d20bd846cb8c9da64045724676e9644a16cc430c2edd012d9892"
+    },
+    {
+      "path": "smelter.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/ironmelt.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=9,demo-sequence=9,frame=0"
+      ],
+      "bytes": 26588,
+      "sha256": "0532ef9b75d9a398ebfc9dd01c34acd916465268221eda8790c67f0d16c6ea6a"
+    },
+    {
+      "path": "smith.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/weaponsmith.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=11,demo-sequence=11,frame=0"
+      ],
+      "bytes": 27856,
+      "sha256": "77116dfaf7138c64b874d31b60a7c70d69a8b3c392898b3fe2cd4fa561535cc0"
+    },
+    {
+      "path": "barracks.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/barrack.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=34,demo-sequence=34,frame=0"
+      ],
+      "bytes": 22086,
+      "sha256": "86529d0dbc06f9b9d4e2111c50da9a799c9bc8aa8350788230786fd87179a1fa"
+    },
+    {
+      "path": "tower.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/tower.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=17,demo-sequence=17,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=17,demo-sequence=17,frame=2"
+      ],
+      "bytes": 17616,
+      "sha256": "1bc40fd389d4dd11a6d88679cc223426f68293c80937ff70d2ee290ccac8b7d0"
+    },
+    {
+      "path": "residence.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/small_livinghouse.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=24,demo-sequence=24,frame=0"
+      ],
+      "bytes": 18366,
+      "sha256": "7bebe73210d1ae6e76c9490a3d1b44206fd4cd4707a0e80b5036c3da0679119d"
+    },
+    {
+      "path": "build.wav",
+      "categories": [
+        "sound-effects"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=1,sample=0,pcm-offset=82492,pcm-bytes=3454,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 3498,
+      "sha256": "0f4345933c789097fd40ca9bd90f1cddf71706d62cf9a316f9c8fff75846522b"
+    },
+    {
+      "path": "wood.wav",
+      "categories": [
+        "sound-effects"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=0,sample=0,pcm-offset=560,pcm-bytes=22648,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 22692,
+      "sha256": "7a75218ecfee2b001866e5f5b9c7f57dbe802a67a746c8c674ae5075db3b290b"
+    },
+    {
+      "path": "click.wav",
+      "categories": [
+        "sound-effects"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=62,sample=0,pcm-offset=2532247,pcm-bytes=3792,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 3836,
+      "sha256": "102d7e510066d95088b64e301eadb1aaa0f39f24531c551f6ee903b90722504b"
+    },
+    {
+      "path": "birds.wav",
+      "categories": [
+        "ambience"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=69,sample=0,pcm-offset=2894160,pcm-bytes=21520,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 21564,
+      "sha256": "70cbbabf29df833f3a98b7541166c59701a2550c2a2d4e5f71718c71b5210cfb"
+    },
+    {
+      "path": "river.wav",
+      "categories": [
+        "ambience"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=71,sample=0,pcm-offset=3091112,pcm-bytes=39174,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 39218,
+      "sha256": "ce4206820634bdf82ad4960d966357a101296b401b8e4d4fd2db19b395ba0c61"
+    },
+    {
+      "path": "raid.wav",
+      "categories": [
+        "sound-effects"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "demo:Snd/Siedler3_00.dat:group=80,sample=0,pcm-offset=4384947,pcm-bytes=32886,rate=11025,channels=1,bits=16"
+      ],
+      "bytes": 32930,
+      "sha256": "92c279a799563efb090a7cc7d16d00247eacb8c117616b65b1ddb3f15808f73e"
+    },
+    {
+      "path": "sounds.json",
+      "categories": [
+        "generated-metadata"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Snd/Siedler3_00.dat"
+      ],
+      "selection": [
+        "Names and source group selectors for six converted PCM WAV files"
+      ],
+      "bytes": 142,
+      "sha256": "994c9fb70bc8e1cd27da8f9ef277d130c441301844640d4216e90450471322db"
+    }
+  ]
+}

@@ -2,6 +2,8 @@ import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import type { AtlasFrame } from '../resources/game/assets'
+import { contentPolicy } from '../docs/content/policy'
+import { inspectContentBundle } from './lib/content-provenance'
 
 const directory = resolve(import.meta.dir, '../public/assets/settlers-original')
 const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { version: number, width: number, height: number, source: { sha256: string }, sprites: AtlasFrame[] }
@@ -17,3 +19,5 @@ for (const [key, file] of Object.entries(sounds)) {
   if (bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WAVE' || bytes.readUInt32LE(4) !== bytes.length - 8 || bytes.readUInt32LE(40) !== bytes.length - 44 || bytes.readUInt16LE(20) !== 1 || bytes.readUInt16LE(22) !== 1 || bytes.readUInt16LE(34) !== 16) throw new Error(`Invalid PCM WAV ${key}`)
 }
 console.log(`Verified ${manifest.sprites.length} original sprite frames, RGBA transparency, source provenance and ${Object.keys(sounds).length} PCM WAV sounds.`)
+const provenance = await inspectContentBundle(directory, contentPolicy)
+console.log(`Verified complete byte and input provenance for ${provenance.files.length} converted files. Redistribution evidence is checked separately by publication:check.`)

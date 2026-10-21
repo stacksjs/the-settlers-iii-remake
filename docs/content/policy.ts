@@ -1,0 +1,35 @@
+import type { ContentPolicy } from '../../scripts/lib/content-provenance'
+
+/** Reviewed source evidence is in provenance.md. Empty grants are intentional. */
+export const contentPolicy: ContentPolicy = {
+  schemaVersion: 1,
+  originalSources: [{ id: 'amazons-demo', sha256: 'ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65', rightsStatus: 'unverified', permittedChannels: [] }],
+  inventory: [
+    { id: 'terrain', status: 'partial', description: 'Selected original demo landscape frames. All factions and terrain variants remain uninventoried.' },
+    { id: 'vegetation-and-deposits', status: 'partial', description: 'Selected trees and stone frames. Other decorations and finite-deposit media remain uninventoried.' },
+    { id: 'buildings', status: 'partial', description: 'Selected final Roman building images. Construction, destruction and other faction sets remain uninventoried.' },
+    { id: 'settlers-and-soldiers', status: 'partial', description: 'One original worker sequence and torso layers. Other professions, armies and actions remain uninventoried.' },
+    { id: 'ships-and-vehicles', status: 'not-imported', description: 'Ships, donkey transport, siege and their directional/action sequences.' },
+    { id: 'goods-and-wares', status: 'not-imported', description: 'Ground, stockpile and carried goods, tools, weapons and other ware sprites.' },
+    { id: 'animals-and-wildlife', status: 'not-imported', description: 'Livestock, wildlife and their directional/action sequences.' },
+    { id: 'effects-and-magic', status: 'not-imported', description: 'Spell effects, projectiles, fire, smoke, explosions and other transient visual media.' },
+    { id: 'interface-and-icons', status: 'not-imported', description: 'Control-center chrome, minimap symbols, goods/building/unit icons, portraits, faction symbols and cursors.' },
+    { id: 'fonts', status: 'not-imported', description: 'Original font files, glyphs and localization coverage.' },
+    { id: 'localized-text', status: 'not-imported', description: 'Original interface, error, objective and help strings for each supported locale.' },
+    { id: 'sound-effects', status: 'partial', description: 'Four selected demo effects, without a complete action-to-sound catalog.' },
+    { id: 'ambience', status: 'partial', description: 'Selected birds and river clips. Complete regional ambience remains uninventoried.' },
+    { id: 'music', status: 'not-imported', description: 'Original music tracks, arrangements and distribution-specific rights.' },
+    { id: 'voices', status: 'not-imported', description: 'Narration, briefings, unit speech and locale-specific recordings.' },
+    { id: 'cinematics', status: 'not-imported', description: 'Introductions, faction/campaign films, credits and endings.' },
+    { id: 'skirmish-maps', status: 'not-imported', description: 'Original single/multiplayer terrain and random-map resources.' },
+    { id: 'tutorials', status: 'not-imported', description: 'All original tutorial maps, triggers, text and media.' },
+    { id: 'base-campaigns', status: 'not-imported', description: 'Roman, Egyptian and Asian original campaign maps and progression.' },
+    { id: 'mission-cd-campaigns', status: 'not-imported', description: 'Mission CD campaigns, maps, progression and related media.' },
+    { id: 'amazon-campaigns', status: 'not-imported', description: 'Amazon and Three Gods paths, maps, progression and related media.' },
+    { id: 'mission-runtime-data', status: 'not-imported', description: 'Objectives, triggers, starting state, victory/failure and mission identifiers.' },
+    { id: 'briefings-and-endings', status: 'not-imported', description: 'Campaign briefing/debriefing text, images, branch and ending material.' },
+    { id: 'branding', status: 'not-imported', description: 'Original logos, title graphics and attribution media, separate from project-authored labels.' },
+    { id: 'generated-metadata', status: 'generated', description: 'Conversion manifests and selectors. They do not license the media they describe.' },
+  ],
+  grants: [],
+}

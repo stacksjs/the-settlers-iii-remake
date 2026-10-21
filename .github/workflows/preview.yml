@@ -73,6 +73,12 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
+      - name: Verify preview content publication rights
+        if: steps.check.outputs.configured == 'true' && github.event.action != 'closed'
+        run: |
+          bun run assets:import
+          bun run publication:check --channel preview
+
       - name: Load the deploy key
         if: steps.check.outputs.configured == 'true'
         env:

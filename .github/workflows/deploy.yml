@@ -63,6 +63,12 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
+      - name: Verify bundled content publication rights
+        if: steps.check.outputs.configured == 'true'
+        run: |
+          bun run assets:import
+          bun run publication:check --channel web
+
       # The deploy talks to the server as root over SSH with BatchMode on, so
       # the key has to be in an agent before it runs — there is no prompt to
       # fall back to.

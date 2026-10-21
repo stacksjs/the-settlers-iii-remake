@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-21T21:29:11.609593+00:00",
+  "bunVersion": "1.4.2",
+  "baseCommit": "7093093809f8d80f9f6406500566533fa60f9710",
+  "implementationIdentity": "Exact converter/package/lockfile identities are in import-receipt.json; the implementation commit is recorded with review evidence.",
+  "provenanceSha256": "2ea847101b5c8480512a91e34a5e6c0d8dff8425fc3535c26d13cf27f832ca63",
+  "convertedFiles": 24,
+  "sourceInputs": 30,
+  "inventoryCategories": 25,
+  "repeatImportByteIdentical": true,
+  "publicationChecks": [
+    {
+      "channel": "web",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on web"
+    },
+    {
+      "channel": "preview",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on preview"
+    },
+    {
+      "channel": "desktop",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on desktop"
+    },
+    {
+      "channel": "ios",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on ios"
+    },
+    {
+      "channel": "android",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on android"
+    },
+    {
+      "channel": "github-release",
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: No recorded redistribution evidence for original source amazons-demo on github-release"
+    },
+    {
+      "channel": null,
+      "exitCode": 1,
+      "diagnostic": "Content publication blocked: Missing or unknown publication channel or clock"
+    }
+  ],
+  "checks": [
+    {
+      "command": "./buddy lint",
+      "result": "0 errors, 0 warnings, 286 files"
+    },
+    {
+      "command": "bun run typecheck",
+      "result": "Application, tools and stx types pass"
+    },
+    {
+      "command": "./buddy test --unit",
+      "result": "38 tests pass, 2604 assertions; final inventory additions also covered by the focused rerun"
+    },
+    {
+      "command": "bun test tests/unit/content-provenance.test.ts",
+      "result": "8 tests pass, 40 assertions"
+    },
+    {
+      "command": "bun run assets:verify",
+      "result": "103 sprite frames, 6 PCM WAVs and all 24 converted files pass"
+    },
+    {
+      "command": "./buddy build views",
+      "result": "Production SSG build passes, 1 page"
+    },
+    {
+      "command": "bun run test:browser http://127.0.0.1:3457/",
+      "result": "29 steps pass, 0 console errors, 0 failed requests; actual PNG inspected locally"
+    }
+  ],
+  "browserEvidence": {
+    "schemaVersion": 1,
+    "screenshot": {
+      "sha256": "b54d0a3ae700c99494aa5ddddb7a5966261fc1ebd4ff443860be39bf96171834",
+      "bytes": 736959,
+      "width": 1440,
+      "height": 960
+    },
+    "browserExitCode": 0,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+  },
+  "rightsConclusion": "Unverified original-media redistribution rights; no grants or permitted publication channels.",
+  "acceptance": {
+    "categoryInventory": "Implemented; explicit coverage limits remain for original file sets",
+    "convertedFileMapping": "Implemented for all 24 currently bundled converted files",
+    "rightsAndChannels": "Recorded as unverified with zero grants and no authorized channels",
+    "bundledPublicationGate": "Application and workflow gate implemented; upstream direct Buddy gate publication/adoption remains required",
+    "actualLicensedBundledDistribution": "Not established; S3-003 remains partial and open"
+  },
+  "directBuddyEnforcement": "Upstream source fix required; published version and downstream adoption are not asserted by this application receipt.",
+  "evidenceLimit": "Identity and policy checks only. No public raster evidence, original Gold runtime observations, or native execution claimed."
+}

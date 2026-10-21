@@ -91,6 +91,16 @@ art and sound have their own ownership; downloads and converted original assets
 are local, ignored files. GitHub contains the importer and source provenance.
 Run the importer after cloning the project to create the browser assets.
 
+Every converted file now has exact byte, input-file and conversion-selector
+provenance. The [content inventory and evidence](docs/content/provenance.md)
+separate source-code licensing from original media. Redistribution permission
+for the demo artwork and sounds remains unverified, with no authorized public
+channels recorded. `bun run content:verify` checks local conversion provenance;
+`bun run publication:check --channel web` and the corresponding native/release
+channels block bundled publication until reviewed evidence covers it. Local
+builds and regression tests establish behavior and do not grant distribution
+rights.
+
 The importer includes six worker directions; current carriers render two of them.
 The campaign uses the original buildings, seven tree types, stone deposits, landscape textures
 and optional bird ambience and construction

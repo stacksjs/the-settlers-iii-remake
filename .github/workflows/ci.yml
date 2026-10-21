@@ -26,11 +26,8 @@ jobs:
       - run: ./buddy lint
       - run: bun run typecheck
       - run: ./buddy test --unit
-      - name: Cache verified demo download
-        uses: actions/cache@v4
-        with:
-          path: storage/reference/s3a_demo_us.exe
-          key: settlers-amazons-demo-ac87c418101aadeb
+      # The original archive is verified per run and is not republished in a
+      # shared Actions cache while redistribution evidence is unverified.
       - run: bun run assets:import
       - run: bun run assets:verify
       - run: ./buddy build views
@@ -44,12 +41,15 @@ jobs:
           settlers_server_pid=$!
           trap 'kill "$settlers_server_pid"' EXIT
           bun run test:browser http://127.0.0.1:3450/
-      - name: Retain browser diagnostics
+      # Original-media rasters remain local until reviewed permission exists.
+      # Any future raster upload must pass publication:check for its channel.
+      - name: Retain non-media browser diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: campaign-browser-check
           path: |
-            storage/framework/runtime/shots/campaign.*
+            storage/framework/runtime/shots/campaign.json
+            storage/framework/runtime/shots/campaign-media.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

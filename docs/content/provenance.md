@@ -1,0 +1,41 @@
+# Original content provenance and publication policy
+
+The converted demo media currently has **unverified redistribution rights and no permitted publication channels**. Download availability, successful conversion, and the reference remake's code license do not establish permission to publish the original graphics, sound, maps or campaign material. This is an evidence record, not a legal conclusion about the historical demo's complete terms.
+
+## Inspected sources
+
+| Source | Pinned identity | Finding and limit |
+|---|---|---|
+| [Amazons demo archive](https://archive.org/download/S3aDemoUs/s3a_demo_us.exe) | SHA-256 `ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65`, 50,875,904 bytes | The importer verifies the complete downloaded archive before extraction. Availability does not establish a redistribution grant. |
+| Demo `Readme.txt` | SHA-256 `48943edf197abd295116363d7f83c87808730c7d175bedef493db8f934dc6c34` | Inspected gameplay, shortcuts, multiplayer and troubleshooting instructions. No redistribution grant was identified in this file. Installer dialogs and CAB contents have not been fully reviewed for terms. |
+| [Reference README](https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/README.md) | Revision `6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0`, SHA-256 `dada8515450dbd3542765b794badec0612a3c499edf2e6c2c48f851e8e753e56` | Describes using installed original GFX/SND/MAP data or extracting the demo. Separately identifies original and replacement textures. These technical instructions are not recorded as original-media permission. |
+| [Reference code license](https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/LICENSE.txt) | Same revision, SHA-256 `c0be9ad7f3e2240058471932ea6bf19d4070e34d53501e26fde7e240e806c315` | MIT license for the inspected reference code, including the adapted DAT reader. Its notice is retained in `third-party/settlers-remake-LICENSE.txt`. It is not recorded as permission for original game media. |
+| [Preserved manual](https://github.com/JakeSteam/settlers/tree/8426388935b436e65b0697ac401c4247ab097364) | Revision `8426388935b436e65b0697ac401c4247ab097364` | Documentary evidence for game and campaign categories. It does not supply permission to redistribute their content. |
+| [Ubisoft product page](https://www.ubisoft.com/en-us/games/the-settlers-iii-history-edition) and [History Collection announcement](https://news.ubisoft.com/en-us/article/4URbd4lF5dYqgPiBzeaocE/the-settlers-history-collection-out-now) | Reviewed 2026-10-21 | The announcement identifies the base game, Mission CD and Quest of the Amazons as included content. Neither page supplies a remake redistribution grant. |
+| [Ubisoft general EULA](https://www.ubisoft.com/legal/documents/eula/en-US) | Reviewed 2026-10-21; displayed update January 2023 | Describes a personal license and reserved intellectual-property rights. Its applicability to this exact historical demo is unverified. It is not recorded as a remake redistribution grant. |
+
+The archived ZIP has 82 entries. A filename inventory did not identify a separate license document. This is narrower than asserting that every embedded installer term has been inspected. No original Gold installer, original save, or owner-provided permission document is available in this project.
+
+## Inventory and exact conversion mapping
+
+[`policy.ts`](policy.ts) inventories 25 categories: terrain; vegetation and deposits; buildings; settlers and soldiers; ships and vehicles; goods and wares; animals and wildlife; visual effects and magic; interface and icons; fonts; localized text; sound effects; ambience; music; voices; cinematics; skirmish maps; tutorials; base campaigns; Mission CD campaigns; Amazon campaigns; mission runtime data; briefings and endings; branding; generated metadata. Every entry states its current coverage. A complete category inventory does not imply all original files have been imported or that campaign parity is complete.
+
+`bun run assets:import` produces 24 converted files and a control manifest at the gitignored `public/assets/settlers-original/provenance.json`. Each converted file records its SHA-256, byte count, categories, original input identities and exact selectors. The atlas also records each frame's DAT section, original and demo sequence, frame index and offsets. Building composites identify all constituent layers and the pinned reference XML. WAV records identify the sound bank, group, sample, PCM byte range, rate, channel count and bit depth. Worker layers record the applied torso tint.
+
+The manifest identifies the exact original DAT/SND bytes, pinned reference mappings and XML, source converter files, dependency manifest and lockfile. `import-receipt.json` retains these identities and selectors without the graphics or audio bytes. It is a reproducible conversion record, not independent proof of permission or original gameplay behavior. The manifest itself is the control file and is not self-hashed as a converted output. `content:verify` rejects extra, missing, changed, symlinked or incompletely mapped converted files.
+
+## Publication decisions
+
+`bun run content:inventory` checks the category/source policy without requiring converted media. `bun run assets:verify` and `bun run content:verify` verify local conversion integrity. They do not authorize publication. A private developer build and local browser regression can therefore run while rights remain unverified.
+
+Actual bundled publication must run `bun run publication:check --channel <channel>` or the native framework's mandatory `publication:check` script with `STACKS_PUBLICATION_CHANNEL`. Supported channels are `web`, `preview`, `desktop`, `ios`, `android` and `github-release`. Missing or unknown channels fail closed. The release, deployment and preview workflows check explicitly before publishing or configuring SSH credentials. Preview deletion may remove an existing publication without introducing new content.
+
+For approval, a source must be reviewed for the requested channel and every converted file/category must have active evidence covering both conversion and redistribution. Each record identifies the source, issuer, scope, permitted categories and channels, reviewer, UTC review date, validity start and optional expiry. The referenced regular document under `docs/content/permissions/` must be present and match its recorded SHA-256. Missing, changed, revoked, future, expired, malformed or insufficient evidence blocks publication. Reviewed policy changes are required; there is no allow-missing or skip-policy flag. Converter and lockfile identity must still match the verified conversion.
+
+The current policy has zero grants. All six publication channels consequently fail. The framework's direct Buddy entrypoint enforcement is delivered upstream; the S3-003 execution receipt records the adopted version when available. Workflow checks are additional protection and do not substitute for that source fix.
+
+## Browser evidence
+
+The campaign regression still captures `storage/framework/runtime/shots/campaign.png` and runs every browser assertion. Local QA must inspect that actual PNG. CI retains explicit JSON diagnostics, screenshot SHA-256, dimensions, byte count, browser exit code and the server log. It withholds the raster and does not republish the original demo in an Actions cache because redistribution evidence has not been established. A retained hash does not provide public visual inspection. Adding raster or original-archive artifact publication requires reviewed rights and the same strict publication check for that channel before upload.
+
+This work establishes traceable imports and an enforceable absence of permission. It does not claim licensed bundled distribution, original Gold campaign parity, original runtime observation, or native output.
