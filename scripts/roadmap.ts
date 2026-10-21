@@ -188,10 +188,15 @@ async function listIssues(repository: string): Promise<RemoteIssue[]> {
 
 async function ensureLabels(repository: string): Promise<void> {
   const existing = new Set((await pages<{ name: string }>(`repos/${repository}/labels`)).map(label => label.name))
-  const labels: Record<string, string> = { 'settlers-gold': 'b99342', 'type:epic': '7057ff', 'type:feature': 'a2eeef', 'type:research': '0075ca', 'priority:p0': 'b60205', 'priority:p1': 'fbca04', 'priority:p2': '0e8a16', 'ready-for-agent': '0e8a16' }
+  const labels: Record<string, string> = { 'settlers-gold': 'b99342', 'type:epic': '7057ff', 'type:feature': 'a2eeef', 'type:bug': 'b60205', 'type:research': '0075ca', 'priority:p0': 'b60205', 'priority:p1': 'fbca04', 'priority:p2': '0e8a16', 'ready-for-agent': '0e8a16' }
   for (let i = 1; i <= epics.length; i++) labels[`subsystem:${i.toString().padStart(2, '0')}`] = '1d76db'
-  for (const name of ['browser', 'native', 'desktop', 'mobile']) labels[`platform:${name}`] = 'bfdadc'
+  for (const name of ['browser', 'native', 'desktop', 'mobile', 'homeos']) labels[`platform:${name}`] = 'bfdadc'
   for (const [name, color] of Object.entries(labels)) if (!existing.has(name)) await api(`repos/${repository}/labels`, 'POST', { name, color, description: 'Settlers Gold Edition implementation roadmap' })
+}
+
+function platformLabels(ticket: Ticket): string[] {
+  if (ticket.repository === 'home-lang/home-os') return ['platform:homeos']
+  return ['platform:browser', 'platform:native', ...(ticket.epic === 2 || ticket.epic === 11 ? ['platform:desktop', 'platform:mobile'] : [])]
 }
 
 async function ensureIssue(repository: string, key: string, title: string, body: string, labels: string[], cached: RemoteIssue[], milestone?: number, reuse?: number): Promise<Entry> {
@@ -315,8 +320,7 @@ async function publish(registry: Registry): Promise<void> {
   }).map(ticket => ticket.key))
   for (const ticket of tickets) {
     const labels = ['settlers-gold', ticket.key === 'S3-001' || ticket.key === 'S3-002' || ticket.key === 'S3-003' || ticket.key === 'S3-008' ? 'type:research' : 'type:feature', `priority:${ticket.priority}`, `subsystem:${ticket.epic.toString().padStart(2, '0')}`]
-    if (ticket.repository !== 'home-lang/home-os') labels.push('platform:browser', 'platform:native')
-    if (ticket.epic === 2 || ticket.epic === 11) labels.push('platform:desktop', 'platform:mobile')
+    labels.push(...platformLabels(ticket))
     if (remoteForTicket(ticket)?.state !== 'closed' && ticket.blockers.every(key => satisfied.has(key))) labels.push('ready-for-agent')
     registry.tickets[ticket.key] = await ensureIssue(ticket.repository, ticket.key, `[${ticket.key}] ${ticket.title}`, bodyFor(ticket, registry), labels, lists.get(ticket.repository)!, milestones.get(ticket.repository)!.get(epics[ticket.epic - 1]!.milestone), reuseIssues[ticket.key])
     await persist(registry)
@@ -356,8 +360,7 @@ async function verify(registry: Registry): Promise<void> {
       if (!item.reused && remote.title !== `[${ticket.key}] ${ticket.title}`) throw new Error(`Title differs from catalog: ${key}`)
       if (!item.reused && remote.milestone?.title !== epics[ticket.epic - 1]!.milestone) throw new Error(`Milestone differs from catalog: ${key}`)
       const requiredLabels = ['settlers-gold', `priority:${ticket.priority}`, `subsystem:${ticket.epic.toString().padStart(2, '0')}`, ['S3-001', 'S3-002', 'S3-003', 'S3-008'].includes(key) ? 'type:research' : 'type:feature']
-      if (ticket.repository !== 'home-lang/home-os') requiredLabels.push('platform:browser', 'platform:native')
-      if (ticket.epic === 2 || ticket.epic === 11) requiredLabels.push('platform:desktop', 'platform:mobile')
+      requiredLabels.push(...platformLabels(ticket))
       for (const label of requiredLabels) if (!remote.labels.some(actual => actual.name === label)) throw new Error(`Required catalog label missing: ${key} ${label}`)
       for (const criterion of ticket.criteria) if (!remote.body.includes(criterion)) throw new Error(`Missing acceptance criterion: ${key}`)
       for (const blocker of ticket.blockers) if (!remote.body.includes(registry.tickets[blocker]!.url)) throw new Error(`Missing blocker body link: ${key}`)

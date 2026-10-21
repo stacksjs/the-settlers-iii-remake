@@ -755,8 +755,7 @@
         "type:feature",
         "priority:p2",
         "subsystem:02",
-        "platform:desktop",
-        "platform:mobile"
+        "platform:homeos"
       ],
       "milestone": 11,
       "nativeParent": true,

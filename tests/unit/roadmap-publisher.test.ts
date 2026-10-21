@@ -75,6 +75,8 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     expect(published.tickets['S3-010']!.relationshipLimits?.join('\n')).toContain('Fixture denies dependency listing')
     const spriteIssue = allIssues.find(issue => issue.id === published.tickets['S3-010']!.id)!
     expect(spriteIssue.body).toContain(published.tickets['S3-009']!.url)
+    const homeIssue = allIssues.find(issue => issue.id === published.tickets['S3-024']!.id)!
+    expect(homeIssue.labels.map(label => label.name).filter(name => name.startsWith('platform:'))).toEqual(['platform:homeos'])
 
     const withHumanFollowUp = remote()
     withHumanFollowUp.repositories[stacks]!.issues.find(issue => issue.number === 2059)!.body += '\nHuman follow-up after the managed section.\n'
