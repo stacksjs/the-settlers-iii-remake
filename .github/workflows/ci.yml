@@ -13,6 +13,7 @@ concurrency:
 jobs:
   game:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - name: Provision managed tools
@@ -33,3 +34,22 @@ jobs:
       - run: bun run assets:import
       - run: bun run assets:verify
       - run: ./buddy build views
+      - name: Verify the production campaign in Chrome
+        env:
+          APP_ENV: production
+          APP_KEY: base64:MTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTE=
+        run: |
+          mkdir -p storage/framework/runtime
+          ./buddy serve --port 3450 > storage/framework/runtime/browser-server.log 2>&1 &
+          settlers_server_pid=$!
+          trap 'kill "$settlers_server_pid"' EXIT
+          bun run test:browser http://127.0.0.1:3450/
+      - name: Retain browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: campaign-browser-check
+          path: |
+            storage/framework/runtime/shots/campaign.*
+            storage/framework/runtime/browser-server.log
+          if-no-files-found: ignore

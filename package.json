@@ -50,6 +50,7 @@
     "types:check": "bun run typecheck",
     "types:fix": "./buddy types:fix",
     "test": "./buddy test",
+    "test:browser": "bun tests/browser/campaign.ts",
     "test:ui": "./buddy test:ui",
     "test:coverage": "./buddy test:coverage",
     "test:types": "./buddy test:types",
@@ -62,12 +63,12 @@
     "typecheck:tools": "bun x --bun tsc --noEmit -p tsconfig.tools.json --pretty false"
   },
   "dependencies": {
-    "@stacksjs/actions": "^0.75.251",
-    "@stacksjs/env": "^0.75.251",
-    "@stacksjs/path": "^0.75.251",
+    "@stacksjs/actions": "^0.75.253",
+    "@stacksjs/env": "^0.75.253",
+    "@stacksjs/path": "^0.75.253",
     "@stacksjs/stx": "0.2.631",
     "craft-native": "0.0.262",
-    "stacks": "^0.75.251"
+    "stacks": "^0.75.253"
   },
   "workspaces": [
     "storage/framework",

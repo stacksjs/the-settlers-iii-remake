@@ -32,6 +32,7 @@ onDestroy(() => game?.dispose())
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172c26">
+  <link rel="icon" type="image/png" href="/assets/settlers-original/headquarters.png">
   <meta name="description" content="Settle a new shore. Build a living economy, claim the river crossing and lead your settlers to victory in a browser strategy game built with Stacks.">
   <title>The Settlers III Remake | A new shore</title>
 </head>

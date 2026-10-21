@@ -5,12 +5,12 @@
     "": {
       "name": "the-settlers-iii-remake",
       "dependencies": {
-        "@stacksjs/actions": "^0.75.251",
-        "@stacksjs/env": "^0.75.251",
-        "@stacksjs/path": "^0.75.251",
+        "@stacksjs/actions": "^0.75.253",
+        "@stacksjs/env": "^0.75.253",
+        "@stacksjs/path": "^0.75.253",
         "@stacksjs/stx": "0.2.631",
         "craft-native": "0.0.262",
-        "stacks": "^0.75.251"
+        "stacks": "^0.75.253"
       },
       "devDependencies": {
         "@stacksjs/components": "0.2.631",
@@ -85,12 +85,6 @@
       "version": "0.21.1",
       "source": "pantry",
       "resolved": "registry:gnu.org/gettext@0.21.1"
-    },
-    "gnu.org/gettext@1.0.0": {
-      "name": "gnu.org/gettext",
-      "version": "1.0.0",
-      "source": "pantry",
-      "resolved": "registry:gnu.org/gettext@1.0.0"
     },
     "gnu.org/libidn2@2.3.8": {
       "name": "gnu.org/libidn2",

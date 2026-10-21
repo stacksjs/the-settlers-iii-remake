@@ -51,11 +51,16 @@ add application shims for framework failures.
 bun run typecheck
 ./buddy test --unit
 ./buddy build views
+./buddy serve --port 3450
+# In another terminal:
+bun run test:browser http://127.0.0.1:3450/
 ```
 
 The retained simulation tests cover resource accounting, placement, construction,
 territory, raids, win/loss, save validation and isometric picking. A full campaign
 test reaches victory from the ordinary starting stock without resource grants.
+The browser check uses the framework's Chrome driver to place a building with
+the keyboard, change speed, pause, save, reload, and verify the saved settlement.
 
 ## Original material
 

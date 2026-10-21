@@ -1,0 +1,18 @@
+export const campaignSteps = [
+  { action: 'wait', ms: 1200 },
+  { action: 'click', selector: '.building-choice', text: 'Sawmill' },
+  { action: 'press', key: 'ArrowDown' },
+  { action: 'press', key: 'Enter' },
+  { action: 'assert', selector: '.settlement-count', text: '2 buildings' },
+  { action: 'click', selector: '.map-button', text: '4x' },
+  { action: 'assert', selector: '.map-button[aria-pressed=true]', text: '4x' },
+  { action: 'wait', ms: 1200 },
+  { action: 'click', selector: '.map-button', text: 'Pause' },
+  { action: 'assert', selector: '.map-button[aria-pressed=true]', text: 'Play' },
+  { action: 'click', selector: 'header button', text: 'Save' },
+  { action: 'wait', ms: 200 },
+  { action: 'assert', selector: '[role=status]', text: 'Campaign saved on this device.' },
+  { action: 'evaluate', expression: 'location.reload(); true' },
+  { action: 'wait', ms: 1200 },
+  { action: 'assert', selector: '.settlement-count', text: '2 buildings' },
+]
