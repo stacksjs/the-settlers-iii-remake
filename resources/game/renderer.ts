@@ -164,8 +164,21 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
         sprite(item.sprite, item.view, item.frame)
         if (item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
-        else if (item.action === 'working') { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
+        else if (item.action === 'working' && item.health === undefined) { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
+        if (item.health !== undefined) {
+          // Soldiers show remaining health above their heads.
+          ctx!.fillStyle = '#1d1a14cc'; ctx!.fillRect(p.x - 5 * z, p.y - 39 * z, 10 * z, 2 * z)
+          ctx!.fillStyle = item.health > 0.5 ? '#9fd27a' : item.health > 0.25 ? '#e8c35a' : '#e4765a'; ctx!.fillRect(p.x - 5 * z, p.y - 39 * z, 10 * z * item.health, 2 * z)
+        }
         return
+      case 'arrow': {
+        // No arrow sprite is mapped from the original data yet, so arrows are drawn as short shafts along their flight.
+        const from = item.from!, to = item.to!, length = Math.hypot(to.x - from.x, to.y - from.y) || 1
+        const ux = (to.x - from.x) / length, uy = (to.y - from.y) / length
+        ctx!.strokeStyle = '#3a2a1a'; ctx!.lineWidth = Math.max(1, z * 0.8)
+        ctx!.beginPath(); ctx!.moveTo(p.x - ux * 5 * z, p.y - uy * 5 * z); ctx!.lineTo(p.x + ux * 5 * z, p.y + uy * 5 * z); ctx!.stroke()
+        return
+      }
       case 'sign': {
         const color = item.good === 'coal' ? '#2b2b2b' : item.good === 'ironore' ? '#b5643c' : item.good === 'goldore' ? '#e3c04d' : '#eeeeee'
         ctx!.fillStyle = '#5b4632'; ctx!.fillRect(p.x - 0.6 * z, p.y - 8 * z, 1.2 * z, 8 * z); ctx!.fillStyle = color; ctx!.fillRect(p.x - 2.5 * z, p.y - 10 * z, 5 * z, 3 * z)

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { checksum, createSession, describeMap, generateMap, pick, qualificationGaps, record, restore, rulesIdentity, save, SaveError, toView, validateRules, verify } from '../../resources/game/engine'
+import { checksum, createSession, PUBLISHED_RULES, describeMap, generateMap, pick, qualificationGaps, record, restore, rulesIdentity, save, SaveError, toView, validateRules, verify } from '../../resources/game/engine'
 import { area, distance, DIRECTIONS, fromView, indexOf, neighbours } from '../../resources/game/engine/geometry'
 import { passable } from '../../resources/game/engine/context'
 import { sha256 } from '../../resources/game/engine/hash'
@@ -21,7 +21,7 @@ describe('rules catalog', () => {
   test('any change to the rules changes the profile version', () => {
     // Saves name rules by id, version and digest. Changing a value without a new version would make
     // older saves fail with a message that names the version they already have.
-    const pinned: Record<string, string> = { '0.2.0': 'a9a1cb0bd34fa08f3b498738fdae7fbc1f04173c627e7f6ee3824248678578c7' }
+    const pinned: Record<string, string> = { '0.2.0': 'a9a1cb0bd34fa08f3b498738fdae7fbc1f04173c627e7f6ee3824248678578c7', '0.3.0': '0a78e27ff86cf37e81f103b08120395ae59301bef207bb21b2c209eed1e0af72' }
     expect(rulesIdentity(rules).digest).toBe(pinned[rules.version]!)
   })
   test('rejects duplicated, dangling, contradictory and unevidenced definitions', () => {
@@ -287,18 +287,18 @@ describe('saves and replays', () => {
     expect(code(JSON.stringify(envelope))).toBe('restored')
   })
   test('format 1 saves are verified under their own checksum, then migrated to the current format', () => {
-    // Written by the engine at 7b1cc36, before saves carried mission progress.
-    const restored = restore(structuredClone(formatOne), rules)
+    // Written by the engine at 7b1cc36, before saves carried mission progress, with the frozen 0.2.0 rules.
+    const restored = restore(structuredClone(formatOne), PUBLISHED_RULES)
     expect(restored.state.mission).toBeNull()
     expect(restored.state.tick).toBe(formatOne.tick)
     expect(restored.state.buildings.size).toBe(2)
     restored.advance(100)
     const current = save(restored)
     expect(current.version).toBe(2)
-    expect(checksum(restore(JSON.parse(JSON.stringify(current)), rules).state)).toBe(checksum(restored.state))
+    expect(checksum(restore(JSON.parse(JSON.stringify(current)), PUBLISHED_RULES).state)).toBe(checksum(restored.state))
     const tampered = structuredClone(formatOne)
     tampered.state.settlers[0]!.x += 1
-    expect(() => restore(tampered, rules)).toThrow('checksum does not match')
+    expect(() => restore(tampered, PUBLISHED_RULES)).toThrow('checksum does not match')
   })
   test('replays verify across a restored runtime and report the first divergent tick', () => {
     const s = session(), recorder = record(s)

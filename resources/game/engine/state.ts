@@ -24,6 +24,10 @@ export interface PlayerSettings {
   toolWeights: Record<string, number>, urgentTools: string[]
   /** Goods carriers move from doorsteps into storage areas. */
   stored: string[]
+  /** Barracks orders: recruit whenever weapons and carriers allow, or work through a queue per class. */
+  recruit?: { automatic: boolean, queue: Record<string, number> }
+  /** Rank given to soldiers recruited from now on; existing soldiers keep theirs. */
+  rank?: number
 }
 export interface Sign { tile: number, good: string | null, amount: number, until: number }
 export interface Player {
@@ -43,6 +47,10 @@ export type Op =
 export interface Program { kind: string, ref: number, steps: Op[], pc: number }
 
 export type Action = 'idle' | 'walking' | 'waiting' | 'working' | 'inside'
+/** Present only on soldiers. Order is a target tile, -1 for none or -2 while holding a chosen position; attack and garrison are building ids or 0. */
+export interface Soldier { rank: number, health: number, cooldown: number, order: number, attack: number, garrison: number }
+/** An arrow in flight: it lands on a tile at a tick and hurts whoever it was aimed at if they are still there. */
+export interface Projectile { id: number, owner: number, from: number, to: number, target: number, damage: number, fired: number, arrives: number }
 export interface Settler {
   id: number, owner: number, profession: string, tool: string | null
   x: number, y: number, dir: Direction
@@ -56,6 +64,7 @@ export interface Settler {
   program: Program | null
   workplace: number, inside: number
   diagnostic: string | null
+  soldier?: Soldier
 }
 
 export type StackRole = 'ground' | 'input' | 'output' | 'construction' | 'storage'
@@ -80,8 +89,12 @@ export type Job =
   | { id: number, kind: 'deliver', owner: number, good: string, source: number, target: number, carrier: number, picked: boolean }
   | { id: number, kind: 'equip', owner: number, tool: string | null, source: number, settler: number, profession: string, building: number, picked: boolean }
 
-/** Goods accounting per player: end stock = created + produced + recovered - consumed - destroyed - equipped. */
-export interface Ledger { created: Goods, produced: Goods, recovered: Goods, consumed: Goods, destroyed: Goods, equipped: Goods, births: number, deaths: number, transitions: number }
+/** Goods accounting per player: end stock = created + produced + recovered + gained - consumed - destroyed - equipped - lost. */
+export interface Ledger {
+  created: Goods, produced: Goods, recovered: Goods, consumed: Goods, destroyed: Goods, equipped: Goods, births: number, deaths: number, transitions: number
+  /** Goods that changed owner through capture, received and lost. Absent until the first capture. */
+  gained?: Goods, lost?: Goods
+}
 export interface GameEvent { tick: number, player: number, type: string, text: string, tile?: number, entity?: number }
 
 export interface Command { tick: number, player: number, seq: number, type: string, [key: string]: unknown }
@@ -111,6 +124,8 @@ export interface State {
   pending: Command[]
   /** Objective and trigger progress for a scenario mission, saved with the world. */
   mission: MissionState | null
+  /** Arrows in flight. Absent in saves made before soldiers existed. */
+  projectiles?: Projectile[]
   /** Increments whenever static traversal changes, so cached paths can be revalidated. */
   navigation: number
 }

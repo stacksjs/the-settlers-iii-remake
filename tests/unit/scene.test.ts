@@ -76,4 +76,25 @@ describe('render scene', () => {
     expect(scene(s, { player: 2 }).filter(i => i.kind === 'settler').every(i => i.owner === 2)).toBe(true)
     expect(indexOf(map, 76, 30)).toBeGreaterThan(0)
   })
+  test('soldiers wear their rank and show their health; arrows in flight are drawn where they fly', () => {
+    const s = createSession({
+      rules, map: session().state.map, seed: 1,
+      players: [
+        { name: 'Rome', civilization: 'roman', start: anchors.castle, scenario: { buildings: [{ type: 'castle', x: 40, y: 40 }], settlers: [{ profession: 'bowman', x: 40, y: 54, rank: 2 }] } },
+        { name: 'Enemy', civilization: 'roman', start: anchors.castle, scenario: { buildings: [], settlers: [{ profession: 'pikeman', x: 40, y: 64, rank: 3 }] } },
+      ],
+    })
+    const bowman = [...s.state.settlers.values()].find(p => p.profession === 'bowman')!
+    s.enqueue({ tick: 0, player: 1, seq: 0, type: 'move-soldiers', soldiers: [bowman.id], x: 40, y: 54 })
+    until(s, () => (s.state.projectiles ?? []).length > 0, 400)
+    s.advance(5)
+    const items = scene(s, { player: 1 })
+    const soldiers = items.filter(i => i.kind === 'settler' && i.rank)
+    expect(soldiers.map(i => [i.sprite, i.health])).toEqual([['soldier:bowman-2', 1], ['soldier:pikeman-3', expect.any(Number)]])
+    const arrow = items.find(i => i.kind === 'arrow')!
+    const p = s.state.projectiles![0]!
+    expect(arrow.entity).toBe(p.id)
+    // Between its ends, raised along a curve.
+    expect(arrow.view.y).toBeLessThan(Math.max(arrow.from!.y, arrow.to!.y))
+  })
 })

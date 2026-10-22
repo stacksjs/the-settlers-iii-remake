@@ -27,7 +27,8 @@ export function freeTileNear(ctx: Context, tile: number, owner = 0, limit = 400)
 }
 
 export function spawn(ctx: Context, owner: number, profession: string, near: number, reason: 'birth' | 'scenario'): Settler | null {
-  const tile = freeTileNear(ctx, near, owner)
+  // Specialists and soldiers are not bound to their territory, so they may arrive outside it.
+  const tile = freeTileNear(ctx, near, ctx.profession.get(profession)?.specialist ? 0 : owner)
   if (tile === null) return null
   const p = pointAt(ctx, tile)
   const s: Settler = { id: nextId(ctx), owner, profession, tool: null, x: p.x, y: p.y, dir: 3, action: 'idle', next: -1, path: [], step: 0, stepTicks: 0, waited: 0, retries: 0, holding: false, cargo: null, program: null, workplace: 0, inside: 0, diagnostic: null }

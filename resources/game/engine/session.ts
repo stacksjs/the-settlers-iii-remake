@@ -5,6 +5,7 @@ import type { Building, Command, CommandResult, GameEvent, MapState, Player, Pla
 import { createContext, doorOf, emit, footprint, markFootprint, nextId, objectAt, record, ruleOf, terrainAt, tileOf } from './context'
 import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
+import { arm, command as militaryCommand, garrisonCount, wage } from './military'
 import { advanceMission, startMission, validateMission } from './mission'
 import type { MissionDefinition } from './mission'
 import { grow, work } from './production'
@@ -15,7 +16,8 @@ import { dispatch, updateVisibility } from './territory'
 import { complete, release, staff } from './workforce'
 
 /** Buildings and settlers a scenario places for one player, instead of the default start. */
-export interface PlayerScenario { buildings: { type: string, x: number, y: number }[], settlers: { profession: string, x: number, y: number }[] }
+/** Scenario soldiers may name their rank; it defaults to the first. */
+export interface PlayerScenario { buildings: { type: string, x: number, y: number }[], settlers: { profession: string, x: number, y: number, rank?: number }[] }
 export interface ScenarioPile { good: string, x: number, y: number, amount: number }
 export interface PlayerSetup {
   name: string, civilization: string, controller?: Player['controller'], start: Point
@@ -85,7 +87,7 @@ export function populate(ctx: Context, setup: SessionSetup): Record<string, numb
     if (p.scenario) {
       for (const s of p.scenario.settlers) {
         const settler = spawn(ctx, owner, s.profession, indexOf(map, Math.min(map.width - 1, Math.max(0, s.x)), Math.min(map.height - 1, Math.max(0, s.y))), 'scenario')
-        if (settler) settler.tool = ctx.profession.get(s.profession)?.tool ?? null
+        if (settler) equipArrival(ctx, settler, s.profession, s.rank)
         else note(`settler ${s.profession} has no room`)
       }
       return
@@ -93,8 +95,7 @@ export function populate(ctx: Context, setup: SessionSetup): Record<string, numb
     const castle = [...ctx.state.buildings.values()].find(b => b.owner === owner)!
     const door = doorOf(ctx, castle)
     for (const [profession, n] of Object.entries(p.settlers ?? DEFAULT_START.settlers)) {
-      const tool = ctx.profession.get(profession)?.tool ?? null
-      for (let k = 0; k < n; k++) { const s = spawn(ctx, owner, profession, door, 'scenario'); if (s) s.tool = tool }
+      for (let k = 0; k < n; k++) { const s = spawn(ctx, owner, profession, door, 'scenario'); if (s) equipArrival(ctx, s, profession) }
     }
     for (const [good, n] of Object.entries(p.goods ?? DEFAULT_START.goods)) {
       const left = dropToGround(ctx, owner, door, good, n)
@@ -110,6 +111,13 @@ export function populate(ctx: Context, setup: SessionSetup): Record<string, numb
   }
   updateVisibility(ctx)
   return skipped
+}
+
+/** Scenario arrivals bring their profession's tool; soldiers arrive armed at the first rank. */
+function equipArrival(ctx: Context, s: Settler, profession: string, rank = 1): void {
+  const rule = ctx.profession.get(profession)
+  if (rule?.soldier && ctx.rules.military) arm(ctx, s, profession, Math.max(1, Math.min(ctx.rules.military.ranks, Math.floor(rank) || 1)))
+  else s.tool = rule?.tool ?? null
 }
 
 function createBuilding(ctx: Context, owner: number, type: string, x: number, y: number): Building {
@@ -187,6 +195,11 @@ function settings(player: Player, value: Record<string, unknown>, rules: RulesPr
     const weights = value.toolWeights
     if (!weights || typeof weights !== 'object' || !Object.entries(weights).every(([t, w]) => rules.tools.includes(t) && Number.isInteger(w) && (w as number) >= 0 && (w as number) <= 10)) return 'Tool weights must be 0 to 10.'
     next.toolWeights = { ...next.toolWeights, ...(weights as Record<string, number>) }
+  }
+  if ('recruitAutomatic' in value || 'rank' in value) {
+    if (!rules.military) return 'These rules have no soldiers.'
+    if ('recruitAutomatic' in value) { if (typeof value.recruitAutomatic !== 'boolean') return 'Automatic recruitment is on or off.'; next.recruit = { automatic: value.recruitAutomatic, queue: next.recruit?.queue ?? {} } }
+    if ('rank' in value) { if (!Number.isInteger(value.rank) || (value.rank as number) < 1 || (value.rank as number) > rules.military.ranks) return `Rank must be 1 to ${rules.military.ranks}.`; next.rank = value.rank as number }
   }
   player.settings = next
   return null
@@ -266,17 +279,34 @@ function execute(ctx: Context, command: Command): CommandResult {
       const sent = dispatch(ctx, player.id, command.profession, indexOf(state.map, command.x, command.y), command.count)
       return sent ? result(true) : result(false, `No ${command.profession} could be equipped.`)
     }
+    case 'recruit': {
+      const soldier = typeof command.profession === 'string' ? ctx.profession.get(command.profession)?.soldier : undefined
+      if (!rules.military || !soldier || !integer(command.count, 1, 100)) return result(false, 'Malformed recruitment order.')
+      const orders = player.settings.recruit ??= { automatic: false, queue: {} }
+      const queued = orders.queue[command.profession as string] ?? 0
+      if (queued + command.count > 1000) return result(false, 'Too many recruits are waiting.')
+      orders.queue[command.profession as string] = queued + command.count
+      return result(true)
+    }
+    case 'move-soldiers':
+    case 'attack': {
+      const error = militaryCommand(ctx, player.id, command)
+      return error ? result(false, error) : result(true)
+    }
     default: return result(false, 'Unknown command.')
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number
   explored: Uint8Array, visible: Uint8Array, owner: Uint8Array
-  settlers: Pick<Settler, 'id' | 'owner' | 'profession' | 'x' | 'y' | 'next' | 'step' | 'stepTicks' | 'dir' | 'action' | 'cargo' | 'inside' | 'tool' | 'diagnostic'>[]
-  buildings: (Pick<Building, 'id' | 'owner' | 'type' | 'x' | 'y' | 'phase' | 'suspended' | 'shortage' | 'worker' | 'levelRemaining' | 'workRemaining' | 'workArea' | 'cycle'> & { door: number })[]
+  settlers: (Pick<Settler, 'id' | 'owner' | 'profession' | 'x' | 'y' | 'next' | 'step' | 'stepTicks' | 'dir' | 'action' | 'cargo' | 'inside' | 'tool' | 'diagnostic'> & { rank?: number, health?: number })[]
+  /** Garrison counts are known for the player's own buildings only. */
+  buildings: (Pick<Building, 'id' | 'owner' | 'type' | 'x' | 'y' | 'phase' | 'suspended' | 'shortage' | 'worker' | 'levelRemaining' | 'workRemaining' | 'workArea' | 'cycle'> & { door: number, garrison?: number })[]
+  /** Arrows in flight where the player can see them. */
+  projectiles: { from: number, to: number, fired: number, arrives: number }[]
   stacks: Pick<Stack, 'id' | 'owner' | 'tile' | 'building' | 'role' | 'good' | 'amount' | 'capacity'>[]
   goods: Goods, professions: Record<string, number>, population: number
   signs: Player['signs'], events: GameEvent[], results: CommandResult[]
@@ -312,6 +342,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     grow(context)
     if (state.tick % rules.logistics.assignmentInterval === 0) { staff(context); assignDeliveries(context) }
     for (const s of [...state.settlers.values()]) tickSettler(context, s)
+    wage(context)
     work(context)
     advanceMission(context)
     if (state.tick % rules.visibility.interval === 0) updateVisibility(context)
@@ -364,9 +395,10 @@ export function view(ctx: Context, playerId: number): PlayerView {
   for (let t = 0; t < owner.length; t++) if (!player.explored[t]) owner[t] = 0
   return {
     tick: state.tick, player: playerId, width: state.map.width, height: state.map.height, explored: player.explored.slice(), visible: player.visible.slice(), owner,
-    settlers: [...state.settlers.values()].filter(s => own(s.owner) || (!s.inside && seen(tileOf(ctx, s)))).map(s => ({ id: s.id, owner: s.owner, profession: s.profession, x: s.x, y: s.y, next: s.next, step: s.step, stepTicks: s.stepTicks, dir: s.dir, action: s.action, cargo: s.cargo, inside: s.inside, tool: s.tool, diagnostic: own(s.owner) ? s.diagnostic : null })),
-    buildings: [...state.buildings.values()].filter(b => own(b.owner) || footprint(ruleOf(ctx, b), b).some(p => seen(tileOf(ctx, p)))).map(b => ({ id: b.id, owner: b.owner, type: b.type, x: b.x, y: b.y, phase: b.phase, suspended: own(b.owner) && b.suspended, shortage: own(b.owner) ? b.shortage : null, worker: own(b.owner) ? b.worker : 0, levelRemaining: b.levelRemaining, workRemaining: b.workRemaining, workArea: own(b.owner) ? b.workArea : { x: b.x, y: b.y }, cycle: own(b.owner) ? b.cycle : 0, door: doorOf(ctx, b) })),
+    settlers: [...state.settlers.values()].filter(s => own(s.owner) || (!s.inside && seen(tileOf(ctx, s)))).map(s => ({ id: s.id, owner: s.owner, profession: s.profession, x: s.x, y: s.y, next: s.next, step: s.step, stepTicks: s.stepTicks, dir: s.dir, action: s.action, cargo: s.cargo, inside: s.inside, tool: s.tool, diagnostic: own(s.owner) ? s.diagnostic : null, ...(s.soldier ? { rank: s.soldier.rank, health: s.soldier.health } : {}) })),
+    buildings: [...state.buildings.values()].filter(b => own(b.owner) || footprint(ruleOf(ctx, b), b).some(p => seen(tileOf(ctx, p)))).map(b => ({ id: b.id, owner: b.owner, type: b.type, x: b.x, y: b.y, phase: b.phase, suspended: own(b.owner) && b.suspended, shortage: own(b.owner) ? b.shortage : null, worker: own(b.owner) ? b.worker : 0, levelRemaining: b.levelRemaining, workRemaining: b.workRemaining, workArea: own(b.owner) ? b.workArea : { x: b.x, y: b.y }, cycle: own(b.owner) ? b.cycle : 0, door: doorOf(ctx, b), ...(own(b.owner) && ruleOf(ctx, b).garrison ? { garrison: garrisonCount(ctx, b) } : {}) })),
     stacks: [...state.stacks.values()].filter(s => s.amount > 0 && (own(s.owner) || seen(s.tile))).map(s => ({ id: s.id, owner: s.owner, tile: s.tile, building: s.building, role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
+    projectiles: (state.projectiles ?? []).filter(p => seen(p.from) || seen(p.to)).map(p => ({ from: p.from, to: p.to, fired: p.fired, arrives: p.arrives })),
     goods, professions, population: people,
     signs: player.signs.filter(sign => sign.until > state.tick),
     events: state.events.filter(e => e.player === playerId).slice(-32),

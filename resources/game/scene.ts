@@ -5,8 +5,8 @@ import { toView } from './engine'
 // session and that player's sight. The canvas painter draws it; tests compare it
 // with the simulation. Nothing here is decorative: every item is an entity.
 export interface SceneItem {
-  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'sign'
-  /** Sprite key and frame in the original atlas. Signs have no sprite. */
+  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'sign' | 'arrow'
+  /** Sprite key and frame in the original atlas. Signs and arrows have no sprite. */
   sprite: string, frame: number
   view: Point, depth: number
   /** Simulation entity: tile for objects and signs, id for piles, buildings and settlers. */
@@ -16,6 +16,10 @@ export interface SceneItem {
   /** Growth share for saplings and crops. */
   growth?: number
   good?: string, amount?: number, action?: string, phase?: string, suspended?: boolean
+  /** Soldier rank and remaining health share. */
+  rank?: number, health?: number
+  /** Where an arrow flies from and to, in view coordinates. */
+  from?: Point, to?: Point
 }
 export interface SceneOptions { player: number, rows?: [number, number], columns?: (y: number) => [number, number], reduceMotion?: boolean }
 
@@ -82,7 +86,18 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       view = { x: view.x + (to.x - view.x) * step, y: view.y + (to.y - view.y) * step }
     }
     const frame = spriteDirection(s.dir) * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
-    items.push({ kind: 'settler', sprite: s.cargo ? `carry:${s.cargo}` : 'worker', frame, view, depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}) })
+    // Soldiers wear their rank's original sequence; health is shown as a share of the rank's maximum.
+    const soldier = s.soldier ? rules.professions.find(p => p.id === s.profession)?.soldier : undefined
+    const sprite = soldier ? `soldier:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : 'worker'
+    items.push({ kind: 'settler', sprite, frame, view, depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
+  }
+  for (const p of state.projectiles ?? []) {
+    if (!seen(p.from) && !seen(p.to)) continue
+    const at = (t: number): Point => toView(t % map.width, Math.floor(t / map.width), map.elevation[t]!)
+    const from = at(p.from), to = at(p.to), share = Math.min(1, Math.max(0, (state.tick - p.fired) / Math.max(1, p.arrives - p.fired)))
+    // Arrows rise and fall along their flight; the simulation only knows when they land.
+    const view = { x: from.x + (to.x - from.x) * share, y: from.y + (to.y - from.y) * share - Math.sin(share * Math.PI) * 24 }
+    items.push({ kind: 'arrow', sprite: '', frame: 0, view, depth: view.y + 2, entity: p.id, owner: p.owner, from, to })
   }
   for (const sign of viewer.signs) {
     if (sign.until <= state.tick) continue

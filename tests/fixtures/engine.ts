@@ -54,11 +54,12 @@ export function present(s: Session, owner: number): Goods {
   return goods
 }
 
-/** The conservation oracle from the fidelity contract: present = created + produced + recovered - consumed - destroyed - equipped. */
+/** The conservation oracle from the fidelity contract: present = created + produced + recovered + gained - consumed - destroyed - equipped - lost. */
 export function expected(s: Session, owner: number): Goods {
-  const l = s.state.ledger[owner]!, goods: Goods = {}
+  const l = s.state.ledger[owner], goods: Goods = {}
+  if (!l) return goods
   const add = (g: Goods, sign: number): void => { for (const [k, n] of Object.entries(g)) { goods[k] = (goods[k] ?? 0) + n * sign; if (!goods[k]) delete goods[k] } }
-  add(l.created, 1); add(l.produced, 1); add(l.recovered, 1); add(l.consumed, -1); add(l.destroyed, -1); add(l.equipped, -1)
+  add(l.created, 1); add(l.produced, 1); add(l.recovered, 1); add(l.gained ?? {}, 1); add(l.consumed, -1); add(l.destroyed, -1); add(l.equipped, -1); add(l.lost ?? {}, -1)
   return goods
 }
 

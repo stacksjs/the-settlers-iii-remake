@@ -8,13 +8,13 @@ import { offsetTile, ruleOf, tileOf } from './context'
  */
 export function audit(ctx: Context): string[] {
   const { state } = ctx, problems: string[] = []
-  // Goods: present = created + produced + recovered - consumed - destroyed - equipped, per player and good.
+  // Goods: present = created + produced + recovered + gained - consumed - destroyed - equipped - lost, per player and good.
   for (const player of state.players) {
     const present: Record<string, number> = {}, expected: Record<string, number> = {}
     for (const s of state.stacks.values()) if (s.owner === player.id) present[s.good] = (present[s.good] ?? 0) + s.amount
     for (const s of state.settlers.values()) if (s.owner === player.id && s.cargo) present[s.cargo] = (present[s.cargo] ?? 0) + 1
     const l = state.ledger[player.id]
-    if (l) for (const [kind, sign] of [['created', 1], ['produced', 1], ['recovered', 1], ['consumed', -1], ['destroyed', -1], ['equipped', -1]] as const) for (const [g, n] of Object.entries(l[kind])) expected[g] = (expected[g] ?? 0) + n * sign
+    if (l) for (const [kind, sign] of [['created', 1], ['produced', 1], ['recovered', 1], ['gained', 1], ['consumed', -1], ['destroyed', -1], ['equipped', -1], ['lost', -1]] as const) for (const [g, n] of Object.entries(l[kind] ?? {})) expected[g] = (expected[g] ?? 0) + n * sign
     for (const g of new Set([...Object.keys(present), ...Object.keys(expected)])) if ((present[g] ?? 0) !== (expected[g] ?? 0)) problems.push(`player ${player.id} has ${present[g] ?? 0} ${g}, ledger expects ${expected[g] ?? 0}`)
     // People: every settler is a scenario arrival or a recorded birth, minus recorded deaths.
     const people = [...state.settlers.values()].filter(s => s.owner === player.id).length

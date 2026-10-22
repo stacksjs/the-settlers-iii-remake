@@ -14,7 +14,7 @@ const free = (s: Settler): boolean => !s.program && !s.workplace && !s.inside &&
 export function release(ctx: Context, s: Settler, reason: string): void {
   const program = s.program
   if (program) {
-    const job = program.kind === 'equip' || program.kind === 'deliver' ? ctx.state.jobs.get(program.ref) : undefined
+    const job = program.kind === 'equip' || program.kind === 'enlist' || program.kind === 'deliver' ? ctx.state.jobs.get(program.ref) : undefined
     s.program = null
     if (job) cancelJob(ctx, job, reason)
   }

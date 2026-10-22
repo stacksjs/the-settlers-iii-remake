@@ -32,13 +32,15 @@ function describe(id: string): string {
   const b = rules.buildings.find(r => r.id === id)!, w = b.workflow
   if (b.storage) return `Stores up to ${b.storage.piles} piles of ${b.storage.capacity} goods marked for storage.`
   if (b.residents) return `Houses ${b.residents.count} new settlers, who arrive one at a time.`
+  if (b.garrison) return `Claims land within ${b.territory} tiles and holds ${b.garrison.infantry} infantry and ${b.garrison.bowmen} bowmen.`
+  if (b.id === 'barracks') return 'Turns carriers into soldiers with the swords, spears and bows delivered here.'
   if (b.territory) return `Claims land within ${b.territory} tiles once completed.`
   if (w.kind === 'harvest') return `A ${b.worker} fetches ${w.object === 'tree' ? 'trees' : 'stone'} within ${w.radius} tiles and returns ${w.output}.`
   if (w.kind === 'plant') return `A ${b.worker} plants saplings within ${w.radius} tiles.`
   if (w.kind === 'cultivate') return `A ${b.worker} sows fields and harvests ripe ${w.output}.`
   if (w.kind === 'extract') return w.food ? `A miner digs ${w.output} from the deposit below. Prefers ${w.food.preferred}.` : `A ${b.worker} brings ${w.output} from nearby water.`
   if (w.kind === 'process') return `Turns ${Object.keys(w.inputs).join(' and ')} into ${Object.keys(w.outputs).join(' and ')}.`
-  if (w.kind === 'craft') return `Forges ${w.choices.length > 1 ? 'tools' : w.choices[0]} from iron and coal.`
+  if (w.kind === 'craft') return `Forges ${b.id === 'weaponsmith' ? 'swords, spears and bows' : w.choices.length > 1 ? 'tools' : w.choices[0]} from iron and coal.`
   return b.name
 }
 
@@ -57,7 +59,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false) {
-  if (!session) return { carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
+  if (!session) return { army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -75,6 +77,20 @@ export function snapshot(session: Session | null, selected: number | null, messa
     objectives: view.mission?.objectives ?? [],
     outcome: view.mission?.outcome ?? 'playing',
     ...economy(session),
+    army: army(session),
+  }
+}
+
+/** Soldiers by class and rank, and the barracks orders that make more. */
+function army(session: Session | null) {
+  const classes = rules.professions.filter(p => p.soldier).map(p => p.id)
+  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0 })), outside: 0, rank: 1, ranks: rules.military?.ranks ?? 1, automatic: false }
+  const player = session.state.players[PLAYER - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+  return {
+    soldiers: classes.map(name => ({ name, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0 })),
+    outside: own.filter(s => !s.inside).length,
+    rank: player.settings.rank ?? 1, ranks: rules.military?.ranks ?? 1,
+    automatic: player.settings.recruit?.automatic ?? false,
   }
 }
 
@@ -99,6 +115,7 @@ function inspect(session: Session, id: number) {
     progress: b.phase === 'leveling' ? 0 : b.phase === 'building' ? (total - b.workRemaining) / total : 'work' in rule.workflow ? b.cycle / rule.workflow.work : 1,
     worker: worker ? `${worker.profession} #${worker.id}` : rule.worker ? 'none' : 'not needed',
     stocks: [...session.state.stacks.values()].filter(s => s.building === b.id).map(s => ({ role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
+    garrison: rule.garrison ? `${session.view(PLAYER).buildings.find(v => v.id === b.id)?.garrison ?? 0} of ${rule.garrison.infantry + rule.garrison.bowmen} soldiers inside` : null,
     description: describe(b.type),
   }
 }
@@ -225,6 +242,17 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
 
   const act = (): void => {
     if (!cursor || !session) return
+    if (tool === 'march') {
+      // Soldiers standing outside obey first; otherwise garrisons send all but their last soldier.
+      const own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+      const outside = own.filter(s => !s.inside), soldiers = (outside.length ? outside : own).map(s => s.id)
+      if (!soldiers.length) { report('You have no soldiers yet. Build a barracks and recruit some.'); return }
+      const map = session.state.map, target = session.state.buildings.get(session.context.index.buildingAt[cursor.y * map.width + cursor.x]!)
+      const enemy = target && target.owner !== PLAYER && rules.buildings.find(r => r.id === target.type)?.garrison
+      const error = enemy ? send('attack', { soldiers, building: target.id }) : send('move-soldiers', { soldiers, x: cursor.x, y: cursor.y })
+      report(error ?? (enemy ? 'Your soldiers march to attack.' : 'Your soldiers march there and hold the position.'))
+      return
+    }
     if (tool === 'pioneer' || tool === 'geologist') {
       const error = send('specialists', { profession: tool, x: cursor.x, y: cursor.y, count: 1 })
       report(error ?? `A ${tool} is on the way.`)
@@ -323,6 +351,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
         }
         report(`${describe(kind)} Choose open ground inside your border.`)
       }
+      else if (kind === 'march') report('Click open ground to send your soldiers there, or an enemy tower or castle to attack it.')
       else if (kind) report(`Choose where the ${kind} should go.`)
       else report('Select a building to inspect it.')
       canvas.focus()
@@ -360,6 +389,20 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const stored = session.state.players[PLAYER - 1]!.settings.stored
       const next = stored.includes(good) ? stored.filter(g => g !== good) : [...stored, good]
       report(send('settings', { settings: { stored: next } }) ?? (next.includes(good) ? `Carriers will take ${good} to storage areas.` : `${good} will stay at the doorsteps.`))
+    },
+    recruit(profession: string) {
+      if (!session) return
+      report(send('recruit', { profession, count: 1 }) ?? `A ${profession} will be recruited when a barracks has the weapon and a carrier is free.`)
+    },
+    recruitAutomatic() {
+      if (!session) return
+      const next = !session.state.players[PLAYER - 1]!.settings.recruit?.automatic
+      report(send('settings', { settings: { recruitAutomatic: next } }) ?? (next ? 'Barracks recruit whenever weapons arrive.' : 'Barracks recruit only the soldiers you order.'))
+    },
+    rank(delta: number) {
+      if (!session) return
+      const value = Math.max(1, Math.min(rules.military?.ranks ?? 1, (session.state.players[PLAYER - 1]!.settings.rank ?? 1) + delta))
+      report(send('settings', { settings: { rank: value } }) ?? `New soldiers join at rank ${value}. Soldiers already serving keep their rank.`)
     },
     carrierRatio(delta: number) {
       if (!session) return

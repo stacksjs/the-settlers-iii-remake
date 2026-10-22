@@ -16,7 +16,7 @@ export const referenceFiles: Record<string, string> = {
 // Reference material names mapped to engine goods; NO_MATERIAL marks a storage pile.
 const materials: Record<string, string> = {
   TRUNK: 'log', PLANK: 'plank', STONE: 'stone', CROP: 'grain', FLOUR: 'flour', WATER: 'water', BREAD: 'bread', PIG: 'pig', MEAT: 'meat', FISH: 'fish', COAL: 'coal', IRONORE: 'ironore',
-  GOLDORE: 'goldore', IRON: 'iron', GOLD: 'gold', HAMMER: 'hammer', BLADE: 'shovel', AXE: 'axe', SAW: 'saw', PICK: 'pickaxe', SCYTHE: 'scythe', FISHINGROD: 'fishingrod', SWORD: 'sword', NO_MATERIAL: '*',
+  GOLDORE: 'goldore', IRON: 'iron', GOLD: 'gold', HAMMER: 'hammer', BLADE: 'shovel', AXE: 'axe', SAW: 'saw', PICK: 'pickaxe', SCYTHE: 'scythe', FISHINGROD: 'fishingrod', SWORD: 'sword', SPEAR: 'spear', BOW: 'bow', NO_MATERIAL: '*',
 }
 
 type Attrs = Record<string, string>

@@ -110,6 +110,7 @@ const goodsSprites: Record<string, { stack: number, carry: number }> = {
   bread: { stack: 49, carry: 5 }, pig: { stack: 73, carry: 3 }, meat: { stack: 52, carry: 10 }, fish: { stack: 47, carry: 9 }, coal: { stack: 34, carry: 6 }, ironore: { stack: 39, carry: 8 },
   goldore: { stack: 36, carry: 7 }, iron: { stack: 42, carry: 13 }, gold: { stack: 37, carry: 14 }, hammer: { stack: 51, carry: 16 }, shovel: { stack: 55, carry: 21 }, axe: { stack: 46, carry: 35 },
   saw: { stack: 54, carry: 20 }, pickaxe: { stack: 53, carry: 17 }, scythe: { stack: 56, carry: 19 }, fishingrod: { stack: 66, carry: 18 }, sword: { stack: 59, carry: 24 },
+  spear: { stack: 60, carry: 23 }, bow: { stack: 63, carry: 22 },
 }
 const materialTables = ['jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables.txt']
 for (const path of materialTables) await getReference(path)
@@ -123,12 +124,15 @@ await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
 for (const [i, seq] of [1, 2, 4, 7, 8, 16, 17].entries()) await sequence(`tree-${i}`, 1, seq, [0])
 await sequence('stone-deposit', 1, 31, [0, 4, 8])
 await sequence('worker', 10, 0, 'all')
-const worker = await dat(10)
-for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key.startsWith('carry:'))) {
+// Roman soldiers by rank, from the reference remake's movables-ROMAN table (file 12, ranks 1 to 3).
+const soldierSprites: Record<string, [number, number, number]> = { swordsman: [9, 11, 10], pikeman: [15, 17, 16], bowman: [21, 23, 22] }
+for (const [profession, ranks] of Object.entries(soldierSprites)) for (const [rank, seq] of ranks.entries()) await sequence(`soldier:${profession}-${rank + 1}`, 12, seq, 'all', materialRefs, true)
+for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:'))) {
+  const worker = await dat(entry.source.file)
   const torsoFrames = worker.frames(entry.source.actualSequence, 0x3112)
   if (!torsoFrames[entry.source.frame]) continue
   const torso = worker.decode(torsoFrames[entry.source.frame]!, 'torso'), body = entry.sprite
-  entry.selection.push(`${datInputs.get(10)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=0.88/0.72/0.34`)
+  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=0.88/0.72/0.34`)
   for (let y = 0; y < torso.height; y++) for (let x = 0; x < torso.width; x++) {
     const from = (y * torso.width + x) * 4, dx = x + torso.offsetX - body.offsetX, dy = y + torso.offsetY - body.offsetY
     if (!torso.data[from + 3] || dx < 0 || dy < 0 || dx >= body.width || dy >= body.height) continue

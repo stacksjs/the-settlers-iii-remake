@@ -10,7 +10,9 @@ export type Offset = readonly [number, number]
 
 export interface TerrainRule { id: string, walkable: boolean, buildable: boolean, water: boolean, moveCost: number }
 export interface ObjectRule { id: string, blocks: boolean, amount: number, grows?: { into: string, ticks: number } }
-export interface ProfessionRule { id: string, tool: string | null, specialist: boolean }
+/** Combat values per rank (index 0 is rank 1). Ranges are lattice steps; attackTicks is the time between blows or shots. */
+export interface SoldierRule { weapon: string, health: number[], strength: number[], range: [number, number], attackTicks: number, ranged: boolean }
+export interface ProfessionRule { id: string, tool: string | null, specialist: boolean, soldier?: SoldierRule }
 export interface MineFood { preferred: string, accepted: string[], preferredCycles: number, otherCycles: number }
 export type Workflow =
   | { kind: 'none' }
@@ -29,6 +31,8 @@ export interface BuildingRule {
   storage?: { piles: number, capacity: number }, residents?: { count: number, interval: number }, territory?: number, vision: number, military?: boolean
   /** Terrain the footprint must stand on; defaults to every buildable terrain. */
   ground?: string[]
+  /** Soldiers a military building holds: infantry at the door, bowmen on the walls. */
+  garrison?: { infantry: number, bowmen: number }
 }
 export interface RulesProfile {
   id: string, version: string, fidelity: 'engineering' | 'original', description: string
@@ -41,6 +45,8 @@ export interface RulesProfile {
   territory: { pioneerWork: number, pioneerRadius: number }
   visibility: { settler: number, interval: number }
   survey: { radius: number, work: number, signTicks: number }
+  /** Absent in profiles published before soldiers existed. */
+  military?: { searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number }
   evidence: Record<string, Evidence>
 }
 
@@ -72,6 +78,15 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   for (const t of rules.terrain) { positive(t.moveCost, `terrain ${t.id} move cost`); if (t.buildable && !t.walkable) problems.push(`terrain ${t.id} is buildable but not walkable`) }
   for (const o of rules.objects) { positive(o.amount, `object ${o.id} amount`); if (o.grows) { positive(o.grows.ticks, `object ${o.id} growth`); if (!objects.has(o.grows.into) || o.grows.into === o.id) problems.push(`object ${o.id} grows into invalid ${o.grows.into}`) } }
   for (const p of rules.professions) if (p.tool !== null && !rules.tools.includes(p.tool)) problems.push(`profession ${p.id} needs unknown tool ${p.tool}`)
+  for (const p of rules.professions) {
+    const soldier = p.soldier
+    if (!soldier) continue
+    good(soldier.weapon, `soldier ${p.id}`)
+    if (!rules.military) { problems.push(`soldier ${p.id} needs a military section`); continue }
+    if (soldier.health.length !== rules.military.ranks || soldier.strength.length !== rules.military.ranks || ![...soldier.health, ...soldier.strength].every(n => Number.isFinite(n) && n > 0)) problems.push(`soldier ${p.id} needs positive health and strength for each rank`)
+    if (!Number.isInteger(soldier.range[0]) || !Number.isInteger(soldier.range[1]) || soldier.range[0] < 0 || soldier.range[1] < Math.max(1, soldier.range[0])) problems.push(`soldier ${p.id} has an invalid range`)
+    positive(soldier.attackTicks, `soldier ${p.id} attack`)
+  }
   for (const id of ['carrier', 'builder', 'digger']) if (!professions.has(id)) problems.push(`profession ${id} is required`)
   for (const b of rules.buildings) {
     const label = `building ${b.id}`, cells = new Set(b.footprint.map(([x, y]) => `${x},${y}`))
@@ -95,16 +110,17 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     if (b.storage) { positive(b.storage.piles, `${label} storage piles`); positive(b.storage.capacity, `${label} storage capacity`) }
     if (b.residents) { positive(b.residents.count, `${label} residents`); positive(b.residents.interval, `${label} resident interval`) }
     if (b.territory !== undefined) positive(b.territory, `${label} territory`)
+    if (b.garrison && (!b.military || !Number.isInteger(b.garrison.infantry) || !Number.isInteger(b.garrison.bowmen) || b.garrison.infantry < 1 || b.garrison.bowmen < 0)) problems.push(`${label} garrison needs a military building with at least one infantry place`)
     for (const id of b.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`)
   }
   positive(rules.tickRate, 'tick rate')
-  for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
+  for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey, ...(rules.military ? { military: rules.military } : {}) })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
   if (rules.logistics.carrierCapacity !== 1) problems.push('Only single-good carrier loads are supported')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -126,6 +142,7 @@ export function qualificationGaps(rules: RulesProfile): string[] {
 
 const MANUAL = 'https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en'
 const sources = {
+  military: `${MANUAL}/military/military.htm (sha256 1609d51c59a335194f10be6d2cf51c612f3b1fe28ae507c5e2a8aafa922911f7)`,
   table: `${MANUAL}/ec_build/building.htm#Table of Building Materials (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`,
   demolish: `${MANUAL}/ec_build/building.htm#General Comments on the Buildings (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`,
   economy: `${MANUAL}/ec_basic/basics.htm (sha256 a6a10487a4818f87e7d622d730190cb2077b12dcab99852d428f149c6d53c899)`,
@@ -165,11 +182,11 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.2.0',
+  version: '0.3.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
-  goods: ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword'],
+  goods: ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword', 'spear', 'bow'],
   tools: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'],
   foods: ['bread', 'meat', 'fish'],
   terrain: [
@@ -198,13 +215,17 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     { id: 'pigfarmer', tool: null, specialist: false }, { id: 'butcher', tool: null, specialist: false }, { id: 'miner', tool: 'pickaxe', specialist: false },
     { id: 'smelter', tool: null, specialist: false }, { id: 'toolsmith', tool: 'hammer', specialist: false }, { id: 'weaponsmith', tool: 'hammer', specialist: false },
     { id: 'geologist', tool: 'hammer', specialist: true }, { id: 'pioneer', tool: 'shovel', specialist: true },
+    // Reference-remake EMovableType health and strength by rank; attack timing and ranges from its Constants.
+    { id: 'swordsman', tool: null, specialist: true, soldier: { weapon: 'sword', health: [100, 120, 150], strength: [10, 14, 20], range: [0, 1], attackTicks: 20, ranged: false } },
+    { id: 'pikeman', tool: null, specialist: true, soldier: { weapon: 'spear', health: [200, 240, 300], strength: [4, 5, 6], range: [0, 2], attackTicks: 20, ranged: false } },
+    { id: 'bowman', tool: null, specialist: true, soldier: { weapon: 'bow', health: [100, 120, 150], strength: [5, 6, 7], range: [7, 15], attackTicks: 24, ranged: true } },
   ],
   buildings: [
-    define({ id: 'castle', name: 'Castle', category: 'Military', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 24, vision: 24, military: true }),
+    define({ id: 'castle', name: 'Castle', category: 'Military', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 24, vision: 24, military: true, garrison: { infantry: 5, bowmen: 6 } }),
     define({ id: 'storage', name: 'Storage area', category: 'Misc', cost: cost(2, 2), worker: null, storage: { piles: 6, capacity: 8 } }),
     define({ id: 'small-residence', name: 'Small residence', category: 'Misc', cost: cost(2, 3), worker: null, residents: { count: 6, interval: 200 } }),
     define({ id: 'medium-residence', name: 'Medium residence', category: 'Misc', cost: cost(5, 8), worker: null, residents: { count: 15, interval: 120 } }),
-    define({ id: 'small-tower', name: 'Small guard tower', category: 'Military', cost: cost(2, 3), worker: null, territory: 16, vision: 16, military: true }),
+    define({ id: 'small-tower', name: 'Small guard tower', category: 'Military', cost: cost(2, 3), worker: null, territory: 16, vision: 16, military: true, garrison: { infantry: 1, bowmen: 2 } }),
     define({ id: 'woodcutter', name: "Woodcutter's hut", category: 'Building', cost: cost(2, 2), worker: 'woodcutter', outputs: doorstep('log'), workflow: { kind: 'harvest', object: 'tree', output: 'log', work: 60, radius: 7 } }),
     define({ id: 'forester', name: "Forester's hut", category: 'Building', cost: cost(3, 1), worker: 'forester', workflow: { kind: 'plant', object: 'sapling', work: 40, radius: 6 } }),
     define({ id: 'stonecutter', name: "Stonecutter's hut", category: 'Building', cost: cost(2, 3), worker: 'stonecutter', outputs: doorstep('stone'), workflow: { kind: 'harvest', object: 'stone', output: 'stone', work: 80, radius: 7 } }),
@@ -222,7 +243,8 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     define({ id: 'iron-smelter', name: 'Iron smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { ironore: 8, coal: 8 }, outputs: doorstep('iron'), workflow: { kind: 'process', inputs: { ironore: 1, coal: 1 }, outputs: { iron: 1 }, work: 80 } }),
     define({ id: 'gold-smelter', name: 'Gold smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { goldore: 8, coal: 8 }, outputs: doorstep('gold'), workflow: { kind: 'process', inputs: { goldore: 1, coal: 1 }, outputs: { gold: 1 }, work: 80 } }),
     define({ id: 'toolsmith', name: "Tool smith's works", category: 'Metal', cost: cost(3, 5), worker: 'toolsmith', inputs: { iron: 8, coal: 8 }, outputs: { hammer: 8, shovel: 8, axe: 8, saw: 8, pickaxe: 8, scythe: 8, fishingrod: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], work: 90 } }),
-    define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: doorstep('sword'), workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword'], work: 90 } }),
+    define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: { sword: 8, spear: 8, bow: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword', 'spear', 'bow'], work: 90 } }),
+    define({ id: 'barracks', name: 'Barracks', category: 'Military', cost: cost(4, 5), worker: null, inputs: { sword: 8, spear: 8, bow: 8 } }),
   ],
   movement: { ticksPerStep: 8, slopeTicks: 1, maxClimb: 4, searchLimit: 40000, waitTicks: 6, retries: 4 },
   logistics: { carrierCapacity: 1, groundPileCapacity: 8, assignmentInterval: 4, assignmentsPerPass: 16 },
@@ -231,6 +253,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   territory: { pioneerWork: 30, pioneerRadius: 1 },
   visibility: { settler: 5, interval: 10 },
   survey: { radius: 3, work: 30, signTicks: 6000 },
+  military: { searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3 },
   evidence: {
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
@@ -252,9 +275,14 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'territory': U('Territory radii and pioneer work rate are unobserved.', 'S3-038'),
     'visibility': U('Vision radii and refresh cadence are placeholders.', 'S3-036'),
     'survey': U('Geologist survey radius, timing and sign lifetime are unobserved.', 'S3-037'),
+    'professions.soldiers': E(`${sources.reference}/jsettlers.common/src/main/java/jsettlers/common/movable/EMovableType.java and jsettlers.logic/src/main/java/jsettlers/logic/constants/Constants.java`, 'Soldier health and strength by rank, melee and pike reach, bow range 7 to 15 and 25 from towers, and one second between blows (1.2 for bows) follow the reference remake; not original observations.'),
+    'military': U('Recruitment time, search radius in this engine and defence reach are placeholders; the search radius and tower bow range follow reference constants.', 'S3-053'),
+    'military.promotion': M(sources.military, 'Promotion affects soldiers recruited afterwards; existing soldiers keep their rank.', 'S3-057'),
+    'buildings.garrison': E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman (occupyer entries)`, 'A small tower holds one infantry place and two bowman places; the castle holds five and six.'),
+    'buildings.barracks.cost-discrepancy': U('The manual table gives 4 planks and 5 stone; the reference definition gives 5 planks and 4 stone. The manual candidate is used until observed.', 'S3-007'),
     ...Object.fromEntries([
       'castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse',
-      'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith',
+      'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith', 'barracks',
     ].flatMap(id => [
       [`buildings.${id}.cost`, M(sources.table, 'Roman wood (planks) and stone columns of the building material table.', 'S3-032')],
       [`buildings.${id}.geometry`, E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman (sha256 ${(REFERENCE_GEOMETRY as Record<string, { sha256: string }>)[id]!.sha256})`, 'Blocked and protected tiles, door, pile positions and builder spots from the reference remake definition; not yet compared with original building data.')],

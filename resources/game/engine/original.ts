@@ -7,14 +7,16 @@ import { emptyMap } from './map'
 // pinned reference remake's OriginalLandscape, EOriginalMapObjectType and
 // material tables (paulwedeck/settlers-remake@6ad8c42): reference-remake
 // evidence, not original observation. Records the engine cannot represent yet
-// are counted in diagnostics instead of being approximated.
+// are counted in diagnostics instead of being approximated. Soldiers keep the
+// class and rank the map gives them, including those stationed in buildings.
 
 /** The decoded fields this builder reads; scripts/lib/s3-map.ts produces a superset. */
 export interface OriginalMapInput {
   area: { size: number, elevation: ArrayLike<number>, landscape: ArrayLike<number>, objects: ArrayLike<number>, resourceType: ArrayLike<number>, resourceAmount: ArrayLike<number> }
   players: { index: number, civilization: number, startX: number, startY: number, name: string }[]
   settlers: { player: number, referenceName: string | null, x: number, y: number }[]
-  buildings: { player: number, referenceName: string | null, x: number, y: number }[]
+  /** Garrison counts by class and rank, as the original stores them per building. */
+  buildings: { player: number, referenceName: string | null, x: number, y: number, soldiers?: Partial<Record<'sword1' | 'sword2' | 'sword3' | 'archer1' | 'archer2' | 'archer3' | 'spear1' | 'spear2' | 'spear3', number>> }[]
   stacks: { x: number, y: number, referenceName: string | null, amount: number }[]
 }
 
@@ -37,9 +39,14 @@ const PROFESSIONS: Record<string, string> = {
   // The original distinguishes no tool smith from weapon smith settler; the reference names both SMITH.
   SMITH: 'toolsmith',
 }
+const SOLDIERS: Record<string, [string, number]> = {
+  SWORDSMAN_L1: ['swordsman', 1], SWORDSMAN_L2: ['swordsman', 2], SWORDSMAN_L3: ['swordsman', 3], PIKEMAN_L1: ['pikeman', 1], PIKEMAN_L2: ['pikeman', 2], PIKEMAN_L3: ['pikeman', 3],
+  BOWMAN_L1: ['bowman', 1], BOWMAN_L2: ['bowman', 2], BOWMAN_L3: ['bowman', 3],
+}
+const GARRISON: Record<string, string> = { sword: 'swordsman', archer: 'bowman', spear: 'pikeman' }
 const GOODS: Record<string, string> = {
   PLANK: 'plank', STONE: 'stone', TRUNK: 'log', BREAD: 'bread', COAL: 'coal', GOLDORE: 'goldore', IRONORE: 'ironore', FISH: 'fish', CROP: 'grain', GOLD: 'gold', IRON: 'iron',
-  SPADE: 'shovel', HAMMER: 'hammer', AXE: 'axe', PICK: 'pickaxe', SAW: 'saw', FISHINGROD: 'fishingrod', SWORD: 'sword', FLOUR: 'flour', PIG: 'pig', MEAT: 'meat', WATER: 'water', SCYTHE: 'scythe',
+  SPADE: 'shovel', HAMMER: 'hammer', AXE: 'axe', PICK: 'pickaxe', SAW: 'saw', FISHINGROD: 'fishingrod', SWORD: 'sword', BOW: 'bow', SPEAR: 'spear', FLOUR: 'flour', PIG: 'pig', MEAT: 'meat', WATER: 'water', SCYTHE: 'scythe',
 }
 
 export interface OriginalWorld { map: MapState, players: PlayerSetup[], piles: ScenarioPile[], diagnostics: Record<string, number> }
@@ -87,12 +94,20 @@ export function worldFromOriginal(rules: RulesProfile, input: OriginalMapInput):
     if (!s) { note('buildings of unsupported players'); continue }
     if (!type || !rules.buildings.some(r => r.id === type)) { note(`building ${b.referenceName} not in the ${rules.id} profile`); continue }
     s.buildings.push({ type, x: b.x, y: b.y })
+    // Soldiers the map stations in a building arrive beside it and take their places in its garrison.
+    for (const [key, count] of Object.entries(b.soldiers ?? {})) {
+      if (!count) continue
+      const profession = GARRISON[key.slice(0, -1)]!, rank = Number(key.slice(-1))
+      if (!rules.military || !rules.professions.some(p => p.id === profession && p.soldier)) { note(`garrisoned ${profession} not in the ${rules.id} profile`, count); continue }
+      for (let i = 0; i < count; i++) s.settlers.push({ profession, x: b.x, y: b.y, rank })
+    }
   }
   for (const settler of input.settlers) {
-    const s = scenarioOf(settler.player), profession = PROFESSIONS[settler.referenceName ?? '']
+    const s = scenarioOf(settler.player), soldier = SOLDIERS[settler.referenceName ?? '']
+    const profession = soldier && rules.military && rules.professions.some(p => p.id === soldier[0] && p.soldier) ? soldier[0] : PROFESSIONS[settler.referenceName ?? '']
     if (!s) { note('settlers of unsupported players'); continue }
     if (!profession) { note(`settler ${settler.referenceName} not represented`); continue }
-    s.settlers.push({ profession, x: settler.x, y: settler.y })
+    s.settlers.push({ profession, x: settler.x, y: settler.y, ...(soldier && profession === soldier[0] ? { rank: soldier[1] } : {}) })
   }
   // Map piles belong to whoever owns their tile once the scenario's buildings stand.
   const piles: ScenarioPile[] = []

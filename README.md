@@ -6,9 +6,10 @@ toward a faithful remake of The Settlers III Gold Edition.
 The game runs on a deterministic simulation in which every settler, tool and good
 is real. Carriers fetch each plank and stone from where it lies, diggers level
 sites, builders build from delivered material, and a workplace opens only when a
-settler has walked there with the right tool. It does not yet reproduce the
-original game's military, other civilizations, ships, campaigns or measured
-timings. See the [fidelity audit](docs/fidelity-audit.md) for verified matches
+settler has walked there with the right tool. Soldiers are recruited from
+carriers with real weapons, garrison towers, fight and capture buildings. It does
+not yet reproduce the original game's promotions, other civilizations, ships,
+campaigns or measured timings. See the [fidelity audit](docs/fidelity-audit.md) for verified matches
 and gaps.
 
 The [Gold Edition roadmap](docs/roadmap/README.md) tracks the original game,

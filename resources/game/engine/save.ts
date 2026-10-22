@@ -1,6 +1,6 @@
 import type { RulesProfile } from './rules'
 import type { Session } from './session'
-import type { Building, Command, Job, Ledger, MapState, Op, Player, Settler, Stack, State } from './state'
+import type { Building, Command, Job, Ledger, MapState, Op, Player, Projectile, Settler, Stack, State } from './state'
 import { canonical } from './hash'
 import { MAX_MAP_SIZE } from './map'
 import type { MissionDefinition, MissionState } from './mission'
@@ -24,6 +24,8 @@ export interface EncodedState {
   claims: [number, number][], growth: [number, number][], cooldowns: [string, number][]
   ledger: Record<string, Ledger>, events: State['events'], results: State['results'], pending: Command[]
   mission: MissionState | null
+  /** Present once a soldier has shot. */
+  projectiles?: Projectile[]
 }
 export interface SaveEnvelope {
   format: typeof SAVE_FORMAT, version: number
@@ -105,6 +107,7 @@ function encodeEntities(state: State): Omit<EncodedState, 'map' | 'players'> & {
     settlers: [...state.settlers.values()], buildings: [...state.buildings.values()], stacks: [...state.stacks.values()], jobs: [...state.jobs.values()],
     claims: [...state.claims], growth: state.growth, cooldowns: [...state.cooldowns], ledger: Object.fromEntries(Object.entries(state.ledger)),
     events: state.events, results: state.results, pending: state.pending, mission: state.mission,
+    ...(state.projectiles ? { projectiles: state.projectiles } : {}),
   }
 }
 
@@ -174,6 +177,9 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   const tile = (v: unknown): v is number => int(v, 0, size - 1)
   const owner = (v: unknown): v is number => int(v, 1, players.length)
   const good = (v: unknown): v is string => typeof v === 'string' && rules.goods.includes(v)
+  // Soldiers carry their weapon as equipment the way workers carry tools.
+  const weapon = (profession: string): string | undefined => rules.military ? rules.professions.find(p => p.id === profession)?.soldier?.weapon : undefined
+  const equipment = (profession: string, item: unknown): boolean => item === null || (typeof item === 'string' && (rules.tools.includes(item) || item === weapon(profession)))
   const decodedPlayers: Player[] = players.map((p, i) => {
     check(isObject(p) && p.id === i + 1 && str(p.name, 64) && str(p.civilization, 32) && ['human', 'computer', 'observer'].includes(p.controller), `player ${i + 1} is invalid`)
     const s = p.settings
@@ -182,6 +188,8 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     check(Array.isArray(s.stored) && s.stored.every(good) && new Set(s.stored).size === s.stored.length, `player ${p.id} storage settings are invalid`)
     check(isObject(s.toolWeights) && Object.entries(s.toolWeights).every(([t, w]) => rules.tools.includes(t) && int(w, 0, 10)), `player ${p.id} tool weights are invalid`)
     check(Array.isArray(s.urgentTools) && s.urgentTools.length <= 64 && s.urgentTools.every(t => rules.tools.includes(t)), `player ${p.id} urgent tools are invalid`)
+    check(s.recruit === undefined || (isObject(s.recruit) && typeof s.recruit.automatic === 'boolean' && isObject(s.recruit.queue) && Object.entries(s.recruit.queue).every(([k, n]) => !!weapon(k) && int(n, 1, 1000))), `player ${p.id} recruitment is invalid`)
+    check(s.rank === undefined || int(s.rank, 1, rules.military?.ranks ?? 0), `player ${p.id} rank is invalid`)
     check(int(p.craftCursor, 0, 1000), `player ${p.id} craft cursor is invalid`)
     const signs = list<Player['signs'][number]>(p.signs, 512, 'sign')
     check(signs.every(sign => isObject(sign) && tile(sign.tile) && (sign.good === null || good(sign.good)) && int(sign.amount, 0, 65535) && int(sign.until, 0, 0xFFFFFFFF)), `player ${p.id} signs are invalid`)
@@ -207,12 +215,17 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   for (const s of settlers) {
     check(isObject(s), 'settler is malformed')
     id(s.id, 'settler'); settlerIds.add(s.id)
-    check(owner(s.owner) && rules.professions.some(p => p.id === s.profession) && (s.tool === null || rules.tools.includes(s.tool)) && int(s.x, 0, width - 1) && int(s.y, 0, height - 1) && int(s.dir, 0, 5), `settler ${s.id} header is invalid`)
+    check(owner(s.owner) && rules.professions.some(p => p.id === s.profession) && equipment(s.profession, s.tool) && int(s.x, 0, width - 1) && int(s.y, 0, height - 1) && int(s.dir, 0, 5), `settler ${s.id} header is invalid`)
     check(['idle', 'walking', 'waiting', 'working', 'inside'].includes(s.action) && (s.next === -1 || tile(s.next)) && int(s.step, 0, 1e6) && int(s.stepTicks, 0, 1e6) && int(s.waited, 0, 1e6) && int(s.retries, 0, 1000), `settler ${s.id} motion is invalid`)
     check(Array.isArray(s.path) && s.path.length <= size && s.path.every(tile) && (s.cargo === null || good(s.cargo)) && (s.diagnostic === null || str(s.diagnostic)), `settler ${s.id} path or cargo is invalid`)
     check((s.workplace === 0 || buildingIds.has(s.workplace)) && (s.inside === 0 || buildingIds.has(s.inside)), `settler ${s.id} workplace is invalid`)
     check((s.action === 'walking') === (s.next !== -1) && typeof s.holding === 'boolean' && !(s.holding && (s.inside || s.action === 'walking')), `settler ${s.id} walking state is inconsistent`)
     if (s.program !== null) validateProgram(s.program, size, e.nextId, `settler ${s.id}`)
+    if (s.soldier !== undefined) {
+      const rule = rules.professions.find(p => p.id === s.profession)?.soldier, x = s.soldier
+      check(rule && rules.military && isObject(x) && int(x.rank, 1, rules.military.ranks) && int(x.health, 1, rule.health[x.rank - 1] ?? 0) && int(x.cooldown, 0, rule.attackTicks) && int(x.order, -2, size - 1) && int(x.attack, 0, e.nextId) && int(x.garrison, 0, e.nextId) && s.tool === rule.weapon, `settler ${s.id} soldier state is invalid`)
+    }
+    else check(!rules.professions.find(p => p.id === s.profession)?.soldier, `settler ${s.id} is a soldier without soldier state`)
     if (s.holding) { const t = s.y * width + s.x; check(!standing.has(t), `two settlers rest on tile ${t}`); standing.add(t) }
   }
   for (const b of buildings) check((b.worker === 0 || settlerIds.has(b.worker)) && b.workers.every(w => settlerIds.has(w)), `building ${b.id} refers to a missing worker`)
@@ -229,7 +242,7 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     id(j.id, 'job')
     check(owner(j.owner) && (stackIds.has(j.source) || (j.picked === true && int(j.source, 1, e.nextId))), `job ${j.id} source is invalid`)
     if (j.kind === 'deliver') check(good(j.good) && stackIds.has(j.target) && settlerIds.has(j.carrier) && typeof j.picked === 'boolean', `job ${j.id} is invalid`)
-    else check(j.kind === 'equip' && (j.tool === null || rules.tools.includes(j.tool)) && settlerIds.has(j.settler) && rules.professions.some(p => p.id === j.profession) && int(j.building, 0, e.nextId) && typeof j.picked === 'boolean', `job ${j.id} is invalid`)
+    else check(j.kind === 'equip' && equipment(j.profession, j.tool) && settlerIds.has(j.settler) && rules.professions.some(p => p.id === j.profession) && int(j.building, 0, e.nextId) && typeof j.picked === 'boolean', `job ${j.id} is invalid`)
   }
   const claims = list<[number, number]>(e.claims, size, 'claim')
   check(claims.every(c => Array.isArray(c) && tile(c[0]) && settlerIds.has(c[1])), 'claims are invalid')
@@ -240,6 +253,7 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   check(isObject(e.ledger) && Object.entries(e.ledger).every(([k, l]) => owner(Number(k)) && isObject(l)), 'ledger is invalid')
   for (const l of Object.values(e.ledger)) {
     for (const kind of ['created', 'produced', 'recovered', 'consumed', 'destroyed', 'equipped'] as const) goodsMap(l[kind], rules, 'ledger')
+    for (const kind of ['gained', 'lost'] as const) if (l[kind] !== undefined) goodsMap(l[kind], rules, 'ledger')
     check(int(l.births, 0, 1e9) && int(l.deaths, 0, 1e9) && int(l.transitions, 0, 1e9), 'ledger counters are invalid')
   }
   const events = list<State['events'][number]>(e.events, 256, 'event')
@@ -248,6 +262,15 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   check(results.every(r => isObject(r) && int(r.tick, 0, 0xFFFFFFFF) && int(r.player, 0, players.length) && int(r.seq, 0, Number.MAX_SAFE_INTEGER) && str(r.type, 40) && typeof r.ok === 'boolean'), 'results are invalid')
   const pending = list<Command>(e.pending, 10_000, 'command')
   check(pending.every((c, i) => isObject(c) && int(c.tick, e.tick, 0xFFFFFFFF) && owner(c.player) && int(c.seq, 0, Number.MAX_SAFE_INTEGER) && str(c.type, 40) && JSON.stringify(c).length <= 4096 && (i === 0 || c.tick >= pending[i - 1]!.tick)), 'pending commands are invalid')
+  let projectiles: Projectile[] | undefined
+  if (e.projectiles !== undefined) {
+    projectiles = list<Projectile>(e.projectiles, 100_000, 'projectile')
+    for (const p of projectiles) {
+      check(isObject(p), 'projectile is malformed')
+      id(p.id, 'projectile')
+      check(owner(p.owner) && tile(p.from) && tile(p.to) && int(p.target, 1, e.nextId) && int(p.damage, 0, 1e6) && int(p.fired, 0, e.tick) && int(p.arrives, e.tick, 0xFFFFFFFF), `projectile ${p.id} is invalid`)
+    }
+  }
   let mission: MissionState | null = null
   if (e.mission !== null) {
     check(isObject(e.mission), 'mission is malformed')
@@ -262,6 +285,7 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   }
   return {
     mission,
+    ...(projectiles ? { projectiles: structuredClone(projectiles) } : {}),
     schema: 1, tick: e.tick, random: [...e.random] as State['random'], nextId: e.nextId, navigation: e.navigation, map, players: decodedPlayers,
     settlers: new Map(settlers.map(s => [s.id, structuredClone(s)])), buildings: new Map(buildings.map(b => [b.id, structuredClone(b)])), stacks: new Map(stacks.map(s => [s.id, structuredClone(s)])), jobs: new Map(jobs.map(j => [j.id, structuredClone(j)])),
     claims: new Map(claims), growth: structuredClone(growth), cooldowns: new Map(cooldowns), ledger: structuredClone(e.ledger) as Record<number, Ledger>, events: structuredClone(events), results: structuredClone(results), pending: structuredClone(pending),
