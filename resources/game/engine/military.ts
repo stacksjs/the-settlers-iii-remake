@@ -2,7 +2,8 @@ import type { Context } from './context'
 import type { SoldierRule } from './rules'
 import type { Building, Job, Projectile, Settler } from './state'
 import { doorOf, emit, ledger, markFootprint, nextId, occupy, passable, pointAt, record, ruleOf, tileOf, vacate } from './context'
-import { area, distance, neighbours } from './geometry'
+import type { Direction, Point } from './geometry'
+import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { cancelJob, cancelJobsFor, dropCargo, moveStackGoodsToGround, slot } from './logistics'
 import { changeProfession, effects, finishers, freeTileNear, start } from './settlers'
 import { release } from './workforce'
@@ -175,9 +176,17 @@ export function strength(ctx: Context, owner: number, tile: number): number {
   return ctx.state.map.owner[tile] === owner ? Math.max(value, wealth.ownGround) : value
 }
 
+/** The lattice direction that brings a step closest to a target, for facing it. */
+function facing(from: Point, to: Point): Direction {
+  let best = 0
+  for (let d = 1; d < 6; d++) if (distance({ x: from.x + DIRECTIONS[d]![0], y: from.y + DIRECTIONS[d]![1] }, to) < distance({ x: from.x + DIRECTIONS[best]![0], y: from.y + DIRECTIONS[best]![1] }, to)) best = d
+  return best as Direction
+}
+
 /** A blow or a shot. Arrows fly two ticks per step plus a release time and are resolved when they land. */
 function strike(ctx: Context, attacker: Settler, target: Settler, from: number): void {
   const rule = soldierRule(ctx, attacker)!
+  attacker.dir = facing(pointAt(ctx, from), target)
   // Damage is the rank's strength scaled by the player's fighting strength where the soldier stands, at least one point.
   const damage = Math.max(1, Math.round(rule.strength[attacker.soldier!.rank - 1]! * strength(ctx, attacker.owner, tileOf(ctx, attacker)) / 1000))
   attacker.soldier!.cooldown = rule.attackTicks

@@ -16,6 +16,8 @@ export class S3Dat {
   }
   private u16(offset: number): number { if (offset < 0 || offset + 2 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt16LE(offset) }
   private u32(offset: number): number { if (offset < 0 || offset + 4 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt32LE(offset) }
+  /** Whether a section holds a sequence; layers such as torsos exist only for some sequences. */
+  has(sequence: number, type = 0x106): boolean { return this.sections.get(type)?.[sequence] !== undefined }
   frames(sequence: number, type = 0x106): number[] {
     const start = this.sections.get(type)?.[sequence]
     if (start === undefined) throw new Error(`Missing DAT sequence ${type}:${sequence}`)

@@ -174,7 +174,12 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       case 'settler':
         ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
         if (marked?.has(item.entity)) { ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = Math.max(1, z); ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 7 * z, 3 * z, 0, 0, Math.PI * 2); ctx!.stroke() }
-        sprite(item.sprite, item.view, item.frame)
+        if (item.progress === undefined) sprite(item.sprite, item.view, item.frame)
+        else {
+          // Strike sequences hold an equal run of frames per direction, twelve for blows and twenty-four for shots.
+          const per = Math.max(1, Math.floor((atlas!.frames.get(item.sprite)?.length ?? 6) / 6))
+          sprite(item.sprite, item.view, item.frame * per + Math.min(per - 1, Math.floor(item.progress * per)))
+        }
         if (item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
         else if (item.action === 'working' && item.health === undefined) { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
         if (item.health !== undefined) {

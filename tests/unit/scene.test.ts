@@ -90,7 +90,11 @@ describe('render scene', () => {
     s.advance(5)
     const items = scene(s, { player: 1 })
     const soldiers = items.filter(i => i.kind === 'settler' && i.rank)
-    expect(soldiers.map(i => [i.sprite, i.health])).toEqual([['soldier:bowman-2', 1], ['soldier:pikeman-3', expect.any(Number)]])
+    // The bowman who just shot plays his rank's shot, facing the pikeman to the south-west (sprite direction 0).
+    expect(soldiers.map(i => [i.sprite, i.health])).toEqual([['strike:bowman-2', 1], ['soldier:pikeman-3', expect.any(Number)]])
+    expect(soldiers[0]!.frame).toBe(0)
+    expect(soldiers[0]!.progress).toBeGreaterThan(0)
+    expect(soldiers[0]!.progress).toBeLessThan(1)
     const arrow = items.find(i => i.kind === 'arrow')!
     const p = s.state.projectiles![0]!
     expect(arrow.entity).toBe(p.id)

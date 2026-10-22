@@ -18,6 +18,8 @@ export interface SceneItem {
   good?: string, amount?: number, action?: string, phase?: string, suspended?: boolean
   /** Soldier rank and remaining health share. */
   rank?: number, health?: number
+  /** Share of a strike or shot completed; the frame is then the direction, and the painter picks the step within it. */
+  progress?: number
   /** Where an arrow flies from and to, in view coordinates. */
   from?: Point, to?: Point
 }
@@ -88,8 +90,10 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const frame = spriteDirection(s.dir) * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
     // Soldiers wear their rank's original sequence; health is shown as a share of the rank's maximum.
     const soldier = s.soldier ? rules.professions.find(p => p.id === s.profession)?.soldier : undefined
-    const sprite = soldier ? `soldier:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : 'worker'
-    items.push({ kind: 'settler', sprite, frame, view, depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
+    // A soldier between blows plays its rank's strike sequence; its direction faces the target.
+    const striking = !!soldier && s.action === 'working' && s.soldier!.cooldown > 0
+    const sprite = soldier ? `${striking ? 'strike' : 'soldier'}:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : 'worker'
+    items.push({ kind: 'settler', sprite, frame: striking ? spriteDirection(s.dir) : frame, view, ...(striking ? { progress: 1 - s.soldier!.cooldown / soldier!.attackTicks } : {}), depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
   }
   for (const p of state.projectiles ?? []) {
     if (!seen(p.from) && !seen(p.to)) continue
