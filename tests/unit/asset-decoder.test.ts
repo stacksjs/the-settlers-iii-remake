@@ -25,6 +25,14 @@ test('DAT conversion refuses truncated, oversized or out-of-bounds data', () => 
   expect(() => new S3Dat(data).decode(173)).toThrow('dimensions')
 })
 
+test('DAT frame enumeration rejects pointers into its table or outside the archive', () => {
+  for (const relative of [0, 11, 94, 5000]) {
+    const data = fixture()
+    data.writeUInt32LE(relative, 168)
+    expect(() => new S3Dat(data).frames(0)).toThrow('frame offset')
+  }
+})
+
 test('DAT player-color torso shades composite as opaque settlement gold', () => {
   const data = fixture(); data[188] = 31
   const sprite = new S3Dat(data).decode(173, 'torso')

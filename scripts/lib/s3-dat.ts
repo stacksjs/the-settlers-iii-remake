@@ -22,7 +22,13 @@ export class S3Dat {
     if (type === 0x2412 || type === 0x11306) return [start]
     if (this.u32(start) !== 0x1402 || this.bytes[start + 4] !== 8) throw new Error('Invalid DAT sequence header')
     const count = this.u16(start + 6) >> 8
-    return Array.from({ length: count }, (_, i) => start + this.u32(start + 8 + i * 4))
+    const tableEnd = start + 8 + count * 4
+    if (tableEnd > this.bytes.length) throw new Error('Truncated DAT frame table')
+    return Array.from({ length: count }, (_, i) => {
+      const frame = start + this.u32(start + 8 + i * 4)
+      if (frame < tableEnd || frame + 12 > this.bytes.length) throw new Error('Invalid DAT frame offset')
+      return frame
+    })
   }
   decode(offset: number, color: '565' | '555' | 'torso' = '565', header: 'displaced' | 'landscape' = 'displaced'): Sprite {
     if (header === 'displaced' && this.u32(offset) !== 12) throw new Error('Unsupported DAT sprite header')
