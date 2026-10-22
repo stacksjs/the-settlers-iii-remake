@@ -4,13 +4,17 @@ import type { Renderer } from './renderer'
 import { useAnimationFrame } from '@stacksjs/stx/composables'
 import { createBrowserPlatform } from 'craft-native/browser'
 import { loadOriginalAssets } from './assets'
+import type { Checkpoints } from './checkpoint'
+import { createCheckpoints } from './checkpoint'
 import { createSession, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 
 const rules = ROMAN_ENGINEERING
 export const PLAYER = 1
-const SAVE_KEY = 'gold-session'
+// Checkpoints live in two slots plus a head under this prefix; the earlier single-key save is still read.
+const SAVE_PREFIX = 'gold-checkpoint'
+const LEGACY_SAVE_KEY = 'gold-session'
 const PROTOTYPE_KEY = 'campaign'
 const MAP_SIZE = 96
 
@@ -149,18 +153,19 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     const result = session.state.results.find(r => r.seq === command.seq && r.player === PLAYER)
     return result?.ok ? null : result?.reason ?? 'That order was refused.'
   }
+  let checkpoints: Checkpoints | null = null
   const persist = async (): Promise<void> => {
-    if (!platform || !ready || !session) return
-    try {
-      await platform.call('Storage', 'set', [SAVE_KEY, JSON.stringify(save(session))], lifetime.signal)
-      if (!disposed) report('Settlement saved on this device.')
-    }
-    catch { if (!disposed) report('Save failed. Device storage may be full or unavailable. Your settlement is still running.') }
+    if (!checkpoints || !ready || !session) return
+    const result = await checkpoints.save(JSON.stringify(save(session)))
+    if (disposed) return
+    // Success is reported only once the checkpoint is verified and its head stored.
+    if (result.ok) report('Settlement saved on this device.')
+    else if (result.reason !== 'superseded') report(`Save failed. ${result.message} Your settlement is still running.`)
   }
   const load = async (): Promise<void> => {
-    if (!ready || !platform) { report('Device storage is not ready.'); return }
+    if (!ready || !checkpoints) { report('Device storage is not ready.'); return }
     try {
-      const saved = await platform.call('Storage', 'get', [SAVE_KEY], lifetime.signal)
+      const saved = await checkpoints.load()
       if (!saved) { report('There is no saved settlement on this device yet.'); return }
       const next = restore(saved, rules)
       if (disposed) return
@@ -171,8 +176,12 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   void createBrowserPlatform({ namespace: 'the-settlers-iii-remake' }).then(async host => {
     if (disposed) { host.dispose(); return }
     platform = host
+    checkpoints = createCheckpoints({
+      get: (key, signal) => host.call('Storage', 'get', [key], signal),
+      set: async (key, value, signal) => { await host.call('Storage', 'set', [key, value], signal) },
+    }, SAVE_PREFIX, LEGACY_SAVE_KEY)
     try {
-      const saved = await host.call('Storage', 'get', [SAVE_KEY], lifetime.signal)
+      const saved = await checkpoints.load()
       // The Riverlands prototype save stays untouched under its own key; it is never reinterpreted.
       prototypeKept = !!(await host.call('Storage', 'get', [PROTOTYPE_KEY], lifetime.signal))
       if (saved && !disposed) { adopt(restore(saved, rules)); message = 'Welcome back. Your settlement has been restored.' }
@@ -331,9 +340,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     },
     dispose() {
       if (disposed) return
-      void persist()
-      disposed = true; clock.stop(); resize.disconnect()
-      lifetime.abort(); platform?.dispose(); session?.dispose()
+      // A last checkpoint is written before storage is released; the session itself stops now.
+      const final = checkpoints && session && ready ? checkpoints.save(JSON.stringify(save(session))) : Promise.resolve()
+      disposed = true; clock.stop(); resize.disconnect(); session?.dispose()
+      void final.finally(() => { checkpoints?.dispose(); lifetime.abort(); platform?.dispose() })
     },
   }
 }
