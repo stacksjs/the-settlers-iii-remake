@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { mapName, newSession, PLAYER, snapshot, status } from '../../resources/game/controller'
+import { mapName, newSession, PLAYER, rivalSession, snapshot, status } from '../../resources/game/controller'
 import { save } from '../../resources/game/engine'
 
 test('every generated landscape has room for the castle and its settlers', () => {
@@ -25,4 +25,15 @@ test('the control panel reports the simulation it is given', () => {
   expect(status('building', 'tool:hammer', false, false, true)).toBe('Needs a hammer for its crew')
   expect(status('active', null, true, true, true)).toBe('Work paused')
   expect(status('building', null, false, false, true)).toBe('Builders are at work')
+})
+
+test('rival landscapes start a computer player on the far side', () => {
+  for (const seed of [1, 2, 3, 4, 5]) {
+    const session = rivalSession(seed)
+    const castles = [...session.state.buildings.values()].filter(b => b.type === 'castle')
+    expect(castles.map(b => b.owner)).toEqual([1, 2])
+    expect(Math.abs(castles[0]!.x - castles[1]!.x)).toBeGreaterThanOrEqual(40)
+    expect(session.state.players[1]!.controller).toBe('computer')
+    expect(mapName(session)).toBe('Computer rival')
+  }
 })

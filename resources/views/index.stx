@@ -14,7 +14,7 @@ const options = derived(() => catalog.filter(item => item.category === category(
 const stocked = derived(() => view().goods.filter(item => item.amount > 0))
 function choose(kind: string): void { selectedTool.set(kind); game?.choose(kind) }
 function inspect(): void { selectedTool.set(''); game?.choose(null) }
-function restart(landscape: 'generated' | 'tutorial'): void { void game?.restart(landscape); confirmRestart.set(false); selectedTool.set('') }
+function restart(landscape: 'generated' | 'tutorial' | 'rival'): void { void game?.restart(landscape); confirmRestart.set(false); selectedTool.set('') }
 onMount(() => {
   if (!map.current) return
   try { game = mountGame(map.current, value => { view.set(value); selectedTool.set(value.tool ?? '') }, () => reduceMotion()) }
@@ -62,7 +62,7 @@ onDestroy(() => game?.dispose())
       <section class="map-region" aria-label="Settlement map">
         <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag to pan, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
-        <div class="map-caption"><span class="map-location">Free settlement</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : 'A generated landscape, not an original map' }}</span></div>
+        <div class="map-caption"><span class="map-location">Free settlement</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy builds to the east by the same rules' : 'A generated landscape, not an original map' }}</span></div>
         <div class="flex gap-1 map-controls" aria-label="Simulation speed">
           <button type="button" class="map-button" @click="game?.home()" title="Center on the castle (H)" aria-label="Center on the castle"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 0" @click="game?.speed(view().speed === 0 ? 1 : 0)" aria-label="Pause or resume simulation">{{ view().speed === 0 ? 'Play' : 'Pause' }}</button>
@@ -81,8 +81,8 @@ onDestroy(() => game?.dispose())
         </div>
         <div class="guide-panel restart-panel" :if="confirmRestart()">
           <h2>Start a new settlement?</h2><p>This replaces the settlement saved on this device. {{ view().prototypeKept ? 'Your Riverlands prototype save stays untouched.' : '' }}</p>
-          <p>The original tutorial map brings its own Roman tower, settlers and goods. Its tutorial script and rival are not played yet.</p>
-          <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
+          <p>The original tutorial map brings its own Roman tower, settlers and goods. Its tutorial script and rival are not played yet. A computer rival builds its own economy with the same commands you use; there is no fighting yet.</p>
+          <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
         </div>
         <div class="advisor"><span class="advisor-icon i-hugeicons-quill-pen-01" aria-hidden="true"></span><div><strong>Settlement dispatch</strong><p role="status" aria-live="polite">{{ view().message }}</p></div></div>
       </section>

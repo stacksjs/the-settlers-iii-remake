@@ -6,7 +6,8 @@ import { createBrowserPlatform } from 'craft-native/browser'
 import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
-import { createSession, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError, statistics, worldFromOriginal } from './engine'
+import type { EconomicAI } from './engine'
+import { createSession, economicAI, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 
@@ -104,8 +105,17 @@ function inspect(session: Session, id: number) {
 export type Snapshot = ReturnType<typeof snapshot>
 export type Game = ReturnType<typeof mountGame>
 
-export type Landscape = 'generated' | 'tutorial'
-export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : 'Generated landscape'
+export type Landscape = 'generated' | 'tutorial' | 'rival'
+export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : 'Generated landscape'
+const RIVAL_SIZE = 128
+
+/** Two Roman settlements on a wider generated landscape; the second is the economic computer player. */
+export function rivalSession(seed: number): Session {
+  const map = generateMap(rules, RIVAL_SIZE, RIVAL_SIZE, seed)
+  const west = findStart(rules, map, { x: 34, y: 64 }, 10), east = findStart(rules, map, { x: 94, y: 64 }, 10)
+  if (!west || !east || Math.abs(west.x - east.x) < 40) throw new Error('This landscape has no room for two settlements. Start another one.')
+  return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start: west }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: east }], content: { id: `rival-${RIVAL_SIZE}`, digest: `seed:${seed}` } })
+}
 
 /** A Roman start on the Amazons demo's original T1 tutorial map. Its missions and AI are not yet played. */
 export async function tutorialSession(seed: number): Promise<Session> {
@@ -129,6 +139,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
   let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
   let prototypeKept = false
+  // Computer players act through the same command queue as the person playing.
+  let computers: { ai: EconomicAI, sequence: { next: number } }[] = []
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
   const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady); value.prototypeKept = prototypeKept; update(value) }
   const report = (text: string): void => { message = text; emit() }
@@ -144,7 +156,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
   const adopt = (next: Session): void => {
     session?.dispose(); session = next; selected = null; tool = null; accumulator = 0
-    seq = Math.max(0, ...next.state.pending.map(c => c.seq + 1), ...next.state.results.map(r => r.seq + 1))
+    const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
+    seq = nextSeq(PLAYER)
+    computers = next.state.players.filter(p => p.controller === 'computer').map(p => ({ ai: economicAI(p.id), sequence: { next: nextSeq(p.id) } }))
     renderer.invalidate(); center(); cursor = castle()
   }
   const finishBoot = (): void => {
@@ -282,7 +296,11 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       sinceUpdate += delta; sinceSave += delta
       accumulator = Math.min(accumulator + delta / 1000 * speed * rules.tickRate, rules.tickRate * 2)
       const ticks = Math.floor(accumulator)
-      if (ticks > 0) { session.advance(ticks); accumulator -= ticks }
+      if (ticks > 0) {
+        if (!computers.length) session.advance(ticks)
+        else for (let i = 0; i < ticks; i++) { for (const c of computers) stepAI(session, c.ai, c.sequence); session.advance(1) }
+        accumulator -= ticks
+      }
       if (sinceUpdate >= 250) { sinceUpdate = 0; emit() }
       if (sinceSave >= 30000) { sinceSave = 0; void persist() }
     }
@@ -327,10 +345,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!ready) return
       const seed = 1 + Math.floor(Math.random() * 1_000_000)
       try {
-        const next = landscape === 'tutorial' ? await tutorialSession(seed) : newSession(seed)
+        const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed)
         if (disposed) return
         adopt(next); speed = 1
-        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : 'A new landscape. Your settlers have arrived.')
+        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : landscape === 'rival' ? 'A computer settlement grows to the east, building by the same rules. You only see it where your settlers can.' : 'A new landscape. Your settlers have arrived.')
         void persist()
       }
       catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not open that map.') }

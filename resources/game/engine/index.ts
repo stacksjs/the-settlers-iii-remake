@@ -1,6 +1,8 @@
 // Public interface of the deterministic game session shared by browser, native and server hosts.
 export { checksum, MIGRATIONS, restore, save, SAVE_FORMAT, SAVE_VERSION, SaveError } from './save'
 export type { SaveEnvelope } from './save'
+export { economicAI, observe, stepAI } from './ai'
+export type { EconomicAI, Observation } from './ai'
 export { audit } from './audit'
 export { statistics } from './statistics'
 export type { Statistics } from './statistics'
