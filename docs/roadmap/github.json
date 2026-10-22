@@ -227,10 +227,10 @@
         "settlers-gold",
         "type:research",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:01",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -250,10 +250,10 @@
         "settlers-gold",
         "type:research",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:01",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -387,12 +387,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
-        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -681,12 +681,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
-        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 4,
       "nativeParent": true,
@@ -771,8 +771,8 @@
       "id": 5964120864,
       "number": 27,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/27",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-025] Introduce the deterministic game session and world model",
       "labels": [
         "settlers-gold",
@@ -816,8 +816,8 @@
       "id": 5964121457,
       "number": 29,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/29",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-027] Implement individual settlers and spatial movement",
       "labels": [
         "settlers-gold",
@@ -838,8 +838,8 @@
       "id": 5964121678,
       "number": 30,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/30",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-028] Implement routing and dynamic obstruction recovery",
       "labels": [
         "settlers-gold",
@@ -860,8 +860,8 @@
       "id": 5964122078,
       "number": 31,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/31",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-029] Implement physical goods, piles, and bounded inventories",
       "labels": [
         "settlers-gold",
@@ -882,8 +882,8 @@
       "id": 5964122375,
       "number": 32,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/32",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-030] Implement real carrier delivery jobs",
       "labels": [
         "settlers-gold",
@@ -905,8 +905,8 @@
       "id": 5964122669,
       "number": 33,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/33",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-031] Implement professions, tools, and worker assignment",
       "labels": [
         "settlers-gold",
@@ -927,8 +927,8 @@
       "id": 5964123145,
       "number": 34,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/34",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-032] Implement physical building construction",
       "labels": [
         "settlers-gold",
@@ -960,7 +960,8 @@
         "priority:p0",
         "subsystem:03",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -973,8 +974,8 @@
       "id": 5964123911,
       "number": 36,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/36",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-034] Implement storage areas and transport priorities",
       "labels": [
         "settlers-gold",
@@ -1005,7 +1006,8 @@
         "priority:p0",
         "subsystem:03",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1019,8 +1021,8 @@
       "id": 5964124636,
       "number": 38,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/38",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-036] Implement exploration and player-specific visibility",
       "labels": [
         "settlers-gold",
@@ -1041,8 +1043,8 @@
       "id": 5964125071,
       "number": 39,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-037] Implement finite deposits, surveying, and terrain changes",
       "labels": [
         "settlers-gold",
@@ -1073,7 +1075,8 @@
         "priority:p0",
         "subsystem:03",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1087,8 +1090,8 @@
       "id": 5964125839,
       "number": 41,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/41",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-039] Render actual simulation workers and cargo",
       "labels": [
         "settlers-gold",
@@ -1110,8 +1113,8 @@
       "id": 5964126104,
       "number": 42,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/42",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-040] Prove world and logistics conservation",
       "labels": [
         "settlers-gold",
@@ -1146,7 +1149,8 @@
         "priority:p1",
         "subsystem:04",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1250,8 +1254,8 @@
       "id": 5964128279,
       "number": 48,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/48",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-046] Complete working-area and production controls",
       "labels": [
         "settlers-gold",
@@ -1938,8 +1942,8 @@
       "id": 5964139300,
       "number": 77,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/77",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-075] Implement a safe mission and objective runtime",
       "labels": [
         "settlers-gold",
@@ -2299,8 +2303,8 @@
       "id": 5964144857,
       "number": 92,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/92",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-090] Implement complete versioned saves and migration policy",
       "labels": [
         "settlers-gold",
