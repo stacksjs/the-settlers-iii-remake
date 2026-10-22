@@ -48,6 +48,7 @@ export { isCraftNative, ensureCraftNativeSidebarMarker, useCraft, useCraftSideba
 export type { CraftSidebarSelectEvent } from '@stacksjs/defaults/functions/craft.ts'
 export { dashboardApi, dashboardStream, dashboardDownload, DashboardApiError } from '@stacksjs/defaults/functions/dashboard-api.ts'
 export type { ApiRequestOptions } from '@stacksjs/defaults/functions/dashboard-api.ts'
+export { parseDashboardDate } from '@stacksjs/defaults/functions/dashboard-dates.ts'
 export { formErrorMessages } from '@stacksjs/defaults/functions/dashboard-form.ts'
 export { pageControls, useRecordsDashboard } from '@stacksjs/defaults/functions/dashboard-list.ts'
 export type { PageControls, RecordsDashboardOptions, RecordsDashboard } from '@stacksjs/defaults/functions/dashboard-list.ts'

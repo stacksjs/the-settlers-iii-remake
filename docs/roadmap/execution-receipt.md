@@ -4,6 +4,8 @@ Recorded 2026-10-22. This receipt separates source implementation, package publi
 
 ## Current checkpoint
 
+The game now installs Stacks **0.75.271**, STX **0.2.668** and Craft SDK **0.0.296** through the normal package and Buddy commands. The [current plan](receipts/framework-0.75.271-plan.json) and [executed installed-consumer receipt](receipts/framework-0.75.271-receipt.json) verify all 86 framework, six STX and one Craft package against original published archive identities and installed files. All seven checks passed, including the real production browser campaign. The [local build and browser record](receipts/framework-0.75.271-local-checks.json) retains log and fresh screenshot identities. The public `UiConfig` type replaces the old temporary type extension. Audio assertions now wait for observable completion through the published browser driver. Earlier adoption entries below remain historical evidence, not the current installed versions. This upgrade does not establish original Gold parity or complete native game presentation.
+
 This checkpoint supersedes the initial release statuses retained below. The supplied remake repository remains the available reference; no installed original Gold executable or original execution captures have been supplied.
 
 - S3-001 is completed with [validated edition profiles](receipts/S3-001.md). S3-002 has a [partial observation harness](receipts/S3-002.md), with no executed original observation or independent repeat. S3-003 has [converted-content provenance](../content/provenance.md), with zero redistribution grants. Both partial issues remain open.

@@ -19,13 +19,11 @@ export const campaignSteps = [
   { action: 'assert', selector: '.settlement-count', text: '2 buildings' },
   { action: 'focus', selector: 'header button', text: 'Sound off' },
   { action: 'press', key: 'Enter' },
-  // The first activation fetches and decodes the ambience before the button changes.
-  { action: 'wait', ms: 1000 },
-  { action: 'assert', selector: 'header button', text: 'Sound on' },
+  // Observe completion of the first ambience fetch and decode.
+  { action: 'assert', selector: 'header button', text: 'Sound on', timeoutMs: 2000 },
   { action: 'focus', selector: 'header button', text: 'Sound on' },
   { action: 'press', key: 'Enter' },
-  { action: 'wait', ms: 100 },
-  { action: 'assert', selector: 'header button', text: 'Sound off' },
+  { action: 'assert', selector: 'header button', text: 'Sound off', timeoutMs: 2000 },
   { action: 'click', selector: '.building-choice', text: "Woodcutter's hut" },
   { action: 'evaluate', expression: "dispatchEvent(new PageTransitionEvent('pagehide')); true" },
   { action: 'wait', ms: 200 },

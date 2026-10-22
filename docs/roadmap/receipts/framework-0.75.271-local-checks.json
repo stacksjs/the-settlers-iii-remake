@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-22T22:16:27.873Z",
+  "installation": "Normal buddy upgrade --stable, exact Bun STX installs, Pantry install and frozen Bun 1.4.2 install. No source-path or node_modules patches.",
+  "checks": [
+    {
+      "log": "game-framework-271-upgrade-preview.log",
+      "sha256": "13cf8b3b78d42b7be9c0eef553556d4fc4c12e7d045b43fefd0cfd5064d9267e",
+      "bytes": 2969,
+      "exitCode": 0
+    },
+    {
+      "log": "game-framework-271-upgrade.log",
+      "sha256": "35f33318b8a5507065a4b3c039c5dbe7cf20f292df995fcb74682358de4573bc",
+      "bytes": 4111,
+      "exitCode": 0
+    },
+    {
+      "log": "game-stx-668-install.log",
+      "sha256": "3b6be65e82b8d7d3fc932e30dca5898970a328985f4a1a9dc20fde3bc01fb587",
+      "bytes": 347,
+      "exitCode": 0
+    },
+    {
+      "log": "game-framework-271-pantry.log",
+      "sha256": "10e1e3ca7c8d5ac12b52c1605d03b77842bd8fc6eb091413a11274dc3c08eb3e",
+      "bytes": 113,
+      "exitCode": 0
+    },
+    {
+      "log": "game-framework-271-frozen.log",
+      "sha256": "1c2cea3ef6b0ce126dcf03fc77bbaf1708b1611e527a1d4c74598c3bceda80b7",
+      "bytes": 112,
+      "exitCode": 0
+    },
+    {
+      "log": "game-framework-271-build.log",
+      "sha256": "4dafbddeb66f3c85d5f64970e2ad1bf8dcbd952909f403d419805fe7ea3d3ed9",
+      "bytes": 1889,
+      "exitCode": 0
+    },
+    {
+      "log": "game-framework-271-installed-consumer.log",
+      "sha256": "809e828c0073fa8fdea2146fb4321f56b74910f13c983958ef0df2b5cccfc860",
+      "bytes": 89,
+      "exitCode": 0
+    }
+  ],
+  "browser": {
+    "schemaVersion": 1,
+    "screenshot": {
+      "sha256": "dda9ccfffff64bc3cc9799641014c40cb1a5dac8ee4d78c87e7aecf109837433",
+      "bytes": 798481,
+      "width": 1440,
+      "height": 960
+    },
+    "captureStatus": "captured",
+    "browserExitCode": 0,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+  },
+  "visualInspection": "Fresh 1440x960 campaign screenshot inspected locally. Original converted terrain, buildings and settlers render. Construction, pause, speed, keyboard audio, save, reload and background lifecycle assertions passed with no console errors or failed requests.",
+  "limits": [
+    "Generated landscape and browser interface do not establish original UI or game-rule parity.",
+    "Only the supplied remake source is available; original Gold execution timings and balance remain unverified.",
+    "Native game presentation, newer Craft graphics publication and original-media redistribution are separate open gates."
+  ]
+}

@@ -1,4 +1,4 @@
-import type { StxOptions as UiOptions } from '@stacksjs/stx'
+import type { UiConfig } from '@stacksjs/types'
 import app from './app'
 
 /**
@@ -69,7 +69,4 @@ export default {
       description: app.description || app.name,
     },
   },
-// `plugins` landed in stx after the pinned @stacksjs/stx types — widen until the dep updates.
-// `imageWarmup` is read by bun-plugin-stx's serve() from this config but is not yet part of StxConfig
-// (stacksjs/stx#2113).
-} satisfies UiOptions & { plugins?: string[], defaultViews?: boolean | string[], imageWarmup?: boolean | 'auto' }
+} satisfies UiConfig
