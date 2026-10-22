@@ -68,6 +68,7 @@
     "fidelity:verify": "bun scripts/fidelity.ts --verify-sources",
     "observations": "bun scripts/original-observations.ts",
     "content:inventory": "bun scripts/content.ts --inventory",
+    "maps:inventory": "bun scripts/maps.ts --inventory",
     "content:verify": "bun scripts/content.ts --verify",
     "publication:check": "bun scripts/content.ts --publication"
   },

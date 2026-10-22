@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "unexecuted-binary-decode",
+  "executed": false,
+  "originalBehaviorAdmitted": false,
+  "decoder": {
+    "module": "scripts/lib/s3-map.ts",
+    "adaptedFrom": {
+      "repository": "paulwedeck/settlers-remake",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "evidence": "reference-remake"
+    }
+  },
+  "archive": {
+    "path": "s3a_demo_us.exe",
+    "bytes": 50875904,
+    "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65"
+  },
+  "maps": [
+    {
+      "path": "Map/MULTI/Demo.map",
+      "bytes": 2597888,
+      "sha256": "aa0ce0c87b172657bbd8fdb627b23d6f1884900bd01caaad7af8a9724689fe08",
+      "version": 10,
+      "versionReferenceName": "DEFAULT",
+      "checksumValid": true,
+      "width": 640,
+      "height": 640,
+      "parts": 15,
+      "unsupportedParts": 7,
+      "counts": {
+        "size": 640,
+        "tiles": 409600,
+        "players": 4,
+        "teamSets": 4,
+        "elevatedTiles": 192493,
+        "nonzeroLandscapeTiles": 402652,
+        "distinctLandscapeIds": 26,
+        "objectTiles": 6237,
+        "referenceTreeTiles": 2189,
+        "referenceStoneTiles": 771,
+        "referenceDecorationTiles": 475,
+        "resourceTiles": 31447,
+        "settlers": 0,
+        "buildings": 0,
+        "stacks": 0,
+        "questTextCharacters": 0,
+        "questTipCharacters": 0
+      },
+      "diagnostics": [
+        {
+          "code": "unsupported-part",
+          "partType": 1330,
+          "offset": 8,
+          "length": 1463,
+          "message": "Part type 1330 (sub 525) at file offset 8, 1455 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 66,
+          "offset": 1471,
+          "length": 28,
+          "message": "Part type 66 (sub 0) at file offset 1471, 20 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 256,
+          "offset": 1915,
+          "length": 12,
+          "message": "Part type 256 (sub 0) at file offset 1915, 4 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1342,
+          "offset": 1927,
+          "length": 1888,
+          "message": "Part type 1342 (sub 2968) at file offset 1927, 1880 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 2426,
+          "offset": 3815,
+          "length": 1449,
+          "message": "Part type 2426 (sub 776) at file offset 3815, 1441 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 2385,
+          "offset": 2593960,
+          "length": 2879,
+          "message": "Part type 2385 (sub 1331) at file offset 2593960, 2871 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1020,
+          "offset": 2596839,
+          "length": 1038,
+          "message": "Part type 1020 (sub 489) at file offset 2596839, 1030 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unnamed-id",
+          "partType": 6,
+          "offset": 136356,
+          "length": 2457604,
+          "message": "2802 object tiles use 44 ids the reference gives no tree, stone or decoration class: 9, 10, 11, 12, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 43, 44, 45, 46, 47, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 111, 112, 113, 114"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 3,
+          "offset": 1760,
+          "length": 32,
+          "message": "4 team set records carry 32 bytes after their 33 byte names; the reference defines no TEAM_INFO decoder, so they are kept raw and not interpreted"
+        }
+      ]
+    },
+    {
+      "path": "Map/SINGLE/demo.map",
+      "bytes": 1346328,
+      "sha256": "f07da93f2ff9c33ca2ff706259dc82f03a4353d4d14cb2a3e758b49aa2e8eeb1",
+      "version": 11,
+      "versionReferenceName": "AMAZONS",
+      "checksumValid": true,
+      "width": 448,
+      "height": 448,
+      "parts": 18,
+      "unsupportedParts": 7,
+      "counts": {
+        "size": 448,
+        "tiles": 200704,
+        "players": 2,
+        "teamSets": 1,
+        "elevatedTiles": 91126,
+        "nonzeroLandscapeTiles": 195590,
+        "distinctLandscapeIds": 22,
+        "objectTiles": 1457,
+        "referenceTreeTiles": 449,
+        "referenceStoneTiles": 358,
+        "referenceDecorationTiles": 12,
+        "resourceTiles": 2430,
+        "settlers": 82,
+        "buildings": 28,
+        "stacks": 67,
+        "questTextCharacters": 303,
+        "questTipCharacters": 209
+      },
+      "diagnostics": [
+        {
+          "code": "unsupported-part",
+          "partType": 1330,
+          "offset": 8,
+          "length": 1463,
+          "message": "Part type 1330 (sub 525) at file offset 8, 1455 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 66,
+          "offset": 1471,
+          "length": 28,
+          "message": "Part type 66 (sub 0) at file offset 1471, 20 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 256,
+          "offset": 1674,
+          "length": 12,
+          "message": "Part type 256 (sub 0) at file offset 1674, 4 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1342,
+          "offset": 1686,
+          "length": 1888,
+          "message": "Part type 1342 (sub 2968) at file offset 1686, 1880 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 2426,
+          "offset": 3574,
+          "length": 1449,
+          "message": "Part type 2426 (sub 776) at file offset 3574, 1441 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 2385,
+          "offset": 1340343,
+          "length": 2879,
+          "message": "Part type 2385 (sub 1331) at file offset 1340343, 2871 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1020,
+          "offset": 1345279,
+          "length": 1038,
+          "message": "Part type 1020 (sub 489) at file offset 1345279, 1030 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unnamed-id",
+          "partType": 6,
+          "offset": 136115,
+          "length": 1204228,
+          "message": "638 object tiles use 43 ids the reference gives no tree, stone or decoration class: 9, 10, 13, 14, 15, 16, 17, 18, 19, 21, 27, 34, 35, 36, 37, 38, 39, 40, 43, 44, 45, 46, 47, 48, 49, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 111, 112, 113, 114"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 3,
+          "offset": 1670,
+          "length": 4,
+          "message": "1 team set records carry 4 bytes after their 33 byte names; the reference defines no TEAM_INFO decoder, so they are kept raw and not interpreted"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 8,
+          "offset": 1343744,
+          "length": 3,
+          "message": "3 of 28 building records have a nonzero byte 6, which the reference skips as unused"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 9,
+          "offset": 1344092,
+          "length": 67,
+          "message": "67 of 67 stack records carry nonzero bytes 6-7, which the reference skips as padding (values 0x00fe)"
+        },
+        {
+          "code": "interpretation",
+          "partType": 10,
+          "offset": 1344739,
+          "length": 10,
+          "message": "produce-goods goals are read as a 16-bit amount followed by a good id byte; the reference reads the good id from the high byte of the amount, so this layout is an unverified engineering reading"
+        }
+      ]
+    },
+    {
+      "path": "Map/TUTORIAL/T1.MAP",
+      "bytes": 535420,
+      "sha256": "395575b4f5d97e3d521003d18c3c574ad2b97ac22b17c4f7bd7efb63ed42be98",
+      "version": 11,
+      "versionReferenceName": "AMAZONS",
+      "checksumValid": true,
+      "width": 256,
+      "height": 256,
+      "parts": 15,
+      "unsupportedParts": 6,
+      "counts": {
+        "size": 256,
+        "tiles": 65536,
+        "players": 2,
+        "teamSets": 1,
+        "elevatedTiles": 31250,
+        "nonzeroLandscapeTiles": 60936,
+        "distinctLandscapeIds": 23,
+        "objectTiles": 504,
+        "referenceTreeTiles": 208,
+        "referenceStoneTiles": 114,
+        "referenceDecorationTiles": 24,
+        "resourceTiles": 1653,
+        "settlers": 54,
+        "buildings": 2,
+        "stacks": 31,
+        "questTextCharacters": 0,
+        "questTipCharacters": 0
+      },
+      "diagnostics": [
+        {
+          "code": "unsupported-part",
+          "partType": 2138,
+          "offset": 8,
+          "length": 2251,
+          "message": "Part type 2138 (sub 3067) at file offset 8, 2243 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 66,
+          "offset": 2259,
+          "length": 28,
+          "message": "Part type 66 (sub 0) at file offset 2259, 20 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1902,
+          "offset": 2462,
+          "length": 2733,
+          "message": "Part type 1902 (sub 933) at file offset 2462, 2725 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 1875,
+          "offset": 5195,
+          "length": 1401,
+          "message": "Part type 1875 (sub 3744) at file offset 5195, 1393 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 600,
+          "offset": 530908,
+          "length": 1763,
+          "message": "Part type 600 (sub 2448) at file offset 530908, 1755 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unsupported-part",
+          "partType": 571,
+          "offset": 533430,
+          "length": 1981,
+          "message": "Part type 571 (sub 2802) at file offset 533430, 1973 payload bytes: not a reference part type; contents not decoded"
+        },
+        {
+          "code": "unnamed-id",
+          "partType": 6,
+          "offset": 137688,
+          "length": 393220,
+          "message": "158 object tiles use 25 ids the reference gives no tree, stone or decoration class: 9, 10, 11, 12, 29, 35, 36, 37, 38, 39, 40, 41, 42, 43, 50, 51, 52, 53, 54, 55, 56, 57, 62, 64, 66"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 2,
+          "offset": 2384,
+          "length": 33,
+          "message": "player 1 name field holds 3 nonzero bytes after its terminator"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 3,
+          "offset": 2458,
+          "length": 4,
+          "message": "1 team set records carry 4 bytes after their 33 byte names; the reference defines no TEAM_INFO decoder, so they are kept raw and not interpreted"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 8,
+          "offset": 533029,
+          "length": 2,
+          "message": "2 of 2 building records have a nonzero low nibble in byte 10, which the reference leaves unlabeled"
+        },
+        {
+          "code": "uninterpreted-bytes",
+          "partType": 9,
+          "offset": 533061,
+          "length": 31,
+          "message": "31 of 31 stack records carry nonzero bytes 6-7, which the reference skips as padding (values 0x00fe)"
+        },
+        {
+          "code": "interpretation",
+          "partType": 10,
+          "offset": 533420,
+          "length": 10,
+          "message": "produce-goods goals are read as a 16-bit amount followed by a good id byte; the reference reads the good id from the high byte of the amount, so this layout is an unverified engineering reading"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Decoded from original map bytes without running the original game; no runtime behavior is admitted.",
+    "Version and type names are reference-remake labels, not original identifiers.",
+    "Tree, stone and decoration counts use the reference remake object classes.",
+    "Mission objective semantics, team set bytes and unsupported part types remain unverified.",
+    "The file checksum matches all three maps, but its OR step can absorb a changed bit, so it is not a full integrity check; SHA-256 identity is."
+  ]
+}
