@@ -435,12 +435,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -460,12 +460,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -583,12 +583,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -608,12 +608,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -759,9 +759,9 @@
         "settlers-gold",
         "type:feature",
         "priority:p2",
+        "ready-for-agent",
         "subsystem:02",
-        "platform:homeos",
-        "ready-for-agent"
+        "platform:homeos"
       ],
       "milestone": 11,
       "nativeParent": true,
@@ -1400,8 +1400,8 @@
       "id": 5964130470,
       "number": 54,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/54",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-052] Implement original troop selection and commands",
       "labels": [
         "settlers-gold",
@@ -1409,8 +1409,7 @@
         "priority:p1",
         "subsystem:05",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 3,
       "nativeParent": true,
@@ -2360,10 +2359,10 @@
         "settlers-gold",
         "type:feature",
         "priority:p1",
+        "ready-for-agent",
         "subsystem:10",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 6,
       "nativeParent": true,
