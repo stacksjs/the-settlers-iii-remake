@@ -70,7 +70,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -102,6 +102,8 @@ function controls(session: Session) {
     crafts: made.map(key => ({ key, urgent: settings.urgentTools.filter(t => t === key).length, weight: settings.toolWeights[key] ?? 1, weapon: !rules.tools.includes(key) })),
     transport: settings.transportPriority.map((key, rank) => ({ key, rank: rank + 1, stored: settings.stored.includes(key) })),
     limits: { builders: settings.builderLimit, diggers: settings.diggerLimit },
+    // Goods more than one kind of building uses, with each kind's share (manual: Distribution of Goods).
+    distribution: rules.goods.map(good => ({ good, types: rules.buildings.filter(b => b.inputs[good]).map(b => ({ type: b.id, name: b.name, weight: settings.distribution?.[good]?.[b.id] ?? 1 })) })).filter(d => d.types.length > 1),
   }
 }
 
@@ -579,6 +581,11 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const to = move === 'top' ? 0 : move === 'bottom' ? list.length : Math.max(0, Math.min(list.length, at + (move === 'up' ? -1 : 1)))
       list.splice(to, 0, key)
       report(send('settings', { settings: { transportPriority: list } }) ?? `${key} is carried ${to + 1}${to === 0 ? 'st' : to === 1 ? 'nd' : to === 2 ? 'rd' : 'th'} in line.`)
+    },
+    distribute(good: string, type: string, delta: number) {
+      if (!session) return
+      const value = Math.max(0, Math.min(10, (session.state.players[PLAYER - 1]!.settings.distribution?.[good]?.[type] ?? 1) + delta))
+      report(send('settings', { settings: { distribution: { [good]: { [type]: value } } } }) ?? (value ? `The ${rules.buildings.find(b => b.id === type)?.name ?? type} now gets share ${value} of the ${good}.` : `No ${good} goes to the ${rules.buildings.find(b => b.id === type)?.name ?? type} now.`))
     },
     limit(kind: 'builders' | 'diggers', delta: number) {
       if (!session) return

@@ -200,6 +200,14 @@ function settings(player: Player, value: Record<string, unknown>, rules: RulesPr
     if (!weights || typeof weights !== 'object' || !Object.entries(weights).every(([t, w]) => crafted(rules).includes(t) && Number.isInteger(w) && (w as number) >= 0 && (w as number) <= 10)) return 'Tool weights must be 0 to 10.'
     next.toolWeights = { ...next.toolWeights, ...(weights as Record<string, number>) }
   }
+  if ('distribution' in value) {
+    // Only building types that take a good as an input can receive a share of it.
+    const d = value.distribution
+    if (!d || typeof d !== 'object' || !Object.entries(d).every(([good, types]) => rules.goods.includes(good) && !!types && typeof types === 'object' && Object.entries(types).every(([type, w]) => !!rules.buildings.find(b => b.id === type)?.inputs[good] && Number.isInteger(w) && (w as number) >= 0 && (w as number) <= 10))) return 'Distribution shares must be 0 to 10 for buildings that use the good.'
+    const merged = structuredClone(next.distribution ?? {})
+    for (const [good, types] of Object.entries(d as Record<string, Record<string, number>>)) merged[good] = { ...merged[good], ...types }
+    next.distribution = merged
+  }
   if ('recruitAutomatic' in value || 'rank' in value) {
     if (!rules.military) return 'These rules have no soldiers.'
     if ('recruitAutomatic' in value) { if (typeof value.recruitAutomatic !== 'boolean') return 'Automatic recruitment is on or off.'; next.recruit = { automatic: value.recruitAutomatic, queue: next.recruit?.queue ?? {} } }

@@ -204,6 +204,9 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     check(Array.isArray(s.urgentTools) && s.urgentTools.length <= 64 && s.urgentTools.every(t => crafted(rules).includes(t)), `player ${p.id} urgent tools are invalid`)
     check(s.recruit === undefined || (isObject(s.recruit) && typeof s.recruit.automatic === 'boolean' && isObject(s.recruit.queue) && Object.entries(s.recruit.queue).every(([k, n]) => !!weapon(k) && int(n, 1, 1000))), `player ${p.id} recruitment is invalid`)
     check(s.rank === undefined || int(s.rank, 1, rules.military?.ranks ?? 0), `player ${p.id} rank is invalid`)
+    const shares = (v: unknown, max: number): boolean => v === undefined || (isObject(v) && Object.entries(v).every(([good, types]) => rules.goods.includes(good) && isObject(types) && Object.entries(types).every(([type, n]) => !!rules.buildings.find(b => b.id === type)?.inputs[good] && int(n, 0, max))))
+    check(shares(s.distribution, 10), `player ${p.id} distribution is invalid`)
+    check(shares(p.delivered, 1e9), `player ${p.id} delivery counts are invalid`)
     check(int(p.craftCursor, 0, 1000), `player ${p.id} craft cursor is invalid`)
     const r = p.religion
     check(r === undefined || (!!rules.religion && isObject(r) && int(r.manna, 0, 1e9) && int(r.produced, r.manna, 1e9) && int(r.promotions, 0, rules.religion.promotions.length) && typeof r.templeLost === 'boolean'
@@ -211,7 +214,7 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
       && (r.casts === undefined || (isObject(r.casts) && Object.entries(r.casts).every(([k, n]) => !!rules.religion?.interventions?.some(i => i.id === k) && int(n, 1, 1e6))))), `player ${p.id} religion is invalid`)
     const signs = list<Player['signs'][number]>(p.signs, 512, 'sign')
     check(signs.every(sign => isObject(sign) && tile(sign.tile) && (sign.good === null || good(sign.good)) && int(sign.amount, 0, 65535) && int(sign.until, 0, 0xFFFFFFFF)), `player ${p.id} signs are invalid`)
-    return { ...(r ? { religion: structuredClone(r) } : {}), id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored: decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible: decodeLayer(p.visible, size, 1, 'visible') as Uint8Array }
+    return { ...(p.delivered ? { delivered: structuredClone(p.delivered) } : {}), ...(r ? { religion: structuredClone(r) } : {}), id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored: decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible: decodeLayer(p.visible, size, 1, 'visible') as Uint8Array }
   })
   const buildings = list<Building>(e.buildings, 100_000, 'building')
   const buildingIds = new Set<number>()

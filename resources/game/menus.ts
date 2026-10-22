@@ -5,7 +5,7 @@
 
 export const MENUS = {
   buildings: ['resources', 'food', 'military', 'misc'],
-  goods: ['inventory', 'tools', 'transport'],
+  goods: ['inventory', 'tools', 'distribution', 'transport'],
   settlers: ['statistics', 'occupations', 'military'],
 } as const
 export type Main = keyof typeof MENUS
@@ -15,7 +15,7 @@ export interface MenuState { main: Main, sub: string, last: Partial<Record<Main,
 export const LABELS: Record<string, string> = {
   buildings: 'Buildings', goods: 'Goods', settlers: 'Settlers',
   resources: 'Resources', food: 'Food', military: 'Military', misc: 'Misc.',
-  inventory: 'Inventory', tools: 'Tools and weapons', transport: 'Transport',
+  inventory: 'Inventory', tools: 'Tools and weapons', distribution: 'Distribution', transport: 'Transport',
   statistics: 'Statistics', occupations: 'Occupations',
 }
 

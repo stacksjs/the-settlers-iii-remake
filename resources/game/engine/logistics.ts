@@ -111,14 +111,38 @@ function requests(ctx: Context, owner: number): Request[] {
       }
     }
   }
+  // Distribution of goods (manual: Goods menu): among consumers of one good, the building type furthest below its share comes first.
+  const share = (good: string, type: string, planned: number): number => {
+    const weight = player.settings.distribution?.[good]?.[type] ?? 1
+    return weight ? ((player.delivered?.[good]?.[type] ?? 0) + planned) / weight : Infinity
+  }
+  const inputs: Request[] = []
   for (const b of buildings) {
     if (b.phase !== 'active') continue
     const rule = ruleOf(ctx, b), door = doorOf(ctx, b)
     for (const [good, capacity] of Object.entries(rule.inputs)) {
+      if ((player.settings.distribution?.[good]?.[b.type] ?? 1) === 0) continue
       const stack = slot(ctx, b, 'input', good, capacity)
-      if (room(stack) > 0) list.push({ building: b, good, need: room(stack), rank: 2000 + rank(good), tile: door, storage: false })
+      if (room(stack) > 0) inputs.push({ building: b, good, need: room(stack), rank: 2000 + rank(good), tile: door, storage: false })
     }
   }
+  // Each unit of need is placed in turn with the request whose type then has the smallest share, so one pass
+  // spreads a good between consumers instead of filling the first in line.
+  const planned = new Map<string, number>()
+  const units: Request[] = []
+  const before = (a: Request, sa: number, b: Request, sb: number): boolean => a.rank !== b.rank ? a.rank < b.rank : sa !== sb ? sa < sb : a.building.order !== b.building.order ? a.building.order < b.building.order : a.building.id < b.building.id
+  for (;;) {
+    let next: Request | null = null, nextShare = 0
+    for (const r of inputs) {
+      if (r.need <= 0) continue
+      const value = share(r.good, r.building.type, planned.get(`${r.good}:${r.building.type}`) ?? 0)
+      if (!next || before(r, value, next, nextShare)) { next = r; nextShare = value }
+    }
+    if (!next) break
+    units.push({ ...next, need: 1 }); next.need--
+    planned.set(`${next.good}:${next.building.type}`, (planned.get(`${next.good}:${next.building.type}`) ?? 0) + 1)
+  }
+  list.push(...units)
   for (const b of buildings) {
     const rule = ruleOf(ctx, b)
     if (b.phase !== 'active' || !rule.storage) continue
@@ -129,8 +153,9 @@ function requests(ctx: Context, owner: number): Request[] {
       else if (piles.length < rule.storage.piles) list.push({ building: b, good, need: rule.storage.capacity, rank: 4000 + rank(good), tile: doorOf(ctx, b), storage: true })
     }
   }
-  // Construction first (manual M-01), then consumers by transport priority, then storage.
-  return list.sort((a, b) => a.rank - b.rank || a.building.order - b.building.order || a.building.id - b.building.id)
+  // Construction first (manual M-01), then consumers by transport priority and distribution share, then storage.
+  // The sort is stable, so consumers keep their distribution order within a good.
+  return list.sort((a, b) => a.rank - b.rank || (a.rank >= 2000 && a.rank < 4000 ? 0 : a.building.order - b.building.order || a.building.id - b.building.id))
 }
 
 function target(ctx: Context, request: Request): Stack {
@@ -179,6 +204,7 @@ export function assignDeliveries(ctx: Context): void {
         const job: Job = { id: nextId(ctx), kind: 'deliver', owner: player.id, good: request.good, source: best.id, target: destination.id, carrier: carrier.id, picked: false }
         state.jobs.set(job.id, job)
         best.reservedOut++; destination.reservedIn++
+        if (destination.role === 'input') { const counts = (player.delivered ??= {})[request.good] ??= {}; counts[request.building.type] = (counts[request.building.type] ?? 0) + 1 }
         start(ctx, carrier, 'deliver', job.id, [{ op: 'go', tile: best.tile }, { op: 'do', effect: 'pickup', args: { job: job.id } }, { op: 'go', tile: destination.tile }, { op: 'do', effect: 'drop', args: { job: job.id } }])
         need--; budget--
       }

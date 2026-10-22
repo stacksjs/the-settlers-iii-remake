@@ -28,6 +28,8 @@ export interface PlayerSettings {
   recruit?: { automatic: boolean, queue: Record<string, number> }
   /** Rank given to soldiers recruited from now on; existing soldiers keep theirs. */
   rank?: number
+  /** Distribution of goods: per good, how large a share each consuming building type receives (0 to 10, default 1). */
+  distribution?: Record<string, Record<string, number>>
 }
 export interface Sign { tile: number, good: string | null, amount: number, until: number }
 export interface Player {
@@ -38,6 +40,8 @@ export interface Player {
   craftCursor: number
   /** Manna and promotion progress, once a rules profile has religion. Levels count promotions per soldier class. */
   religion?: Religion
+  /** Input deliveries started per good and building type, which the distribution shares are measured against. */
+  delivered?: Record<string, Record<string, number>>
 }
 export interface Religion {
   manna: number, produced: number, promotions: number, levels: Record<string, number>, templeLost: boolean
