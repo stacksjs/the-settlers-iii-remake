@@ -1,7 +1,10 @@
 import type { RulesProfile } from './rules'
 import type { Session } from './session'
 import type { Building, Command, Job, Ledger, MapState, Op, Player, Settler, Stack, State } from './state'
+import { canonical } from './hash'
 import { MAX_MAP_SIZE } from './map'
+import type { MissionDefinition, MissionState } from './mission'
+import { MissionError, validateMission } from './mission'
 import { validRandomState } from './random'
 import { rulesIdentity } from './rules'
 import { openSession } from './session'
@@ -20,6 +23,7 @@ export interface EncodedState {
   settlers: Settler[], buildings: Building[], stacks: Stack[], jobs: Job[]
   claims: [number, number][], growth: [number, number][], cooldowns: [string, number][]
   ledger: Record<string, Ledger>, events: State['events'], results: State['results'], pending: Command[]
+  mission: MissionState | null
 }
 export interface SaveEnvelope {
   format: typeof SAVE_FORMAT, version: number
@@ -75,7 +79,8 @@ export function checksum(state: State): string {
   const text = (s: string): void => { for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); byte(c); byte(c >> 8) } }
   const map = state.map
   for (const name of Object.keys(LAYERS) as LayerName[]) { const layer = map[name]; for (let i = 0; i < layer.length; i++) { const v = layer[i]!; byte(v); if (v > 255) { byte(v >> 8); byte(v >> 16); byte(v >> 24) } } }
-  text(JSON.stringify({ ...encodeEntities(state), map: undefined }))
+  // Canonical text sorts keys, so equal state checksums equally however its objects were built.
+  text(canonical(encodeEntities(state)))
   for (const p of state.players) { for (let i = 0; i < p.explored.length; i++) byte(p.explored[i]! | (p.visible[i]! << 1)) }
   return h.toString(16).padStart(8, '0')
 }
@@ -86,7 +91,7 @@ function encodeEntities(state: State): Omit<EncodedState, 'map' | 'players'> & {
     players: state.players.map(({ explored: _e, visible: _v, ...p }) => p),
     settlers: [...state.settlers.values()], buildings: [...state.buildings.values()], stacks: [...state.stacks.values()], jobs: [...state.jobs.values()],
     claims: [...state.claims], growth: state.growth, cooldowns: [...state.cooldowns], ledger: Object.fromEntries(Object.entries(state.ledger)),
-    events: state.events, results: state.results, pending: state.pending,
+    events: state.events, results: state.results, pending: state.pending, mission: state.mission,
   }
 }
 
@@ -227,7 +232,20 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
   check(results.every(r => isObject(r) && int(r.tick, 0, 0xFFFFFFFF) && int(r.player, 0, players.length) && int(r.seq, 0, Number.MAX_SAFE_INTEGER) && str(r.type, 40) && typeof r.ok === 'boolean'), 'results are invalid')
   const pending = list<Command>(e.pending, 10_000, 'command')
   check(pending.every((c, i) => isObject(c) && int(c.tick, e.tick, 0xFFFFFFFF) && owner(c.player) && int(c.seq, 0, Number.MAX_SAFE_INTEGER) && str(c.type, 40) && JSON.stringify(c).length <= 4096 && (i === 0 || c.tick >= pending[i - 1]!.tick)), 'pending commands are invalid')
+  let mission: MissionState | null = null
+  if (e.mission !== null) {
+    check(isObject(e.mission), 'mission is malformed')
+    let definition: MissionDefinition
+    try { definition = validateMission(e.mission.definition, { players: players.length, width, height, goods: rules.goods, buildings: rules.buildings.map(b => b.id) }) }
+    catch (error) { throw damaged(error instanceof MissionError ? error.message : 'mission is invalid') }
+    const objectives = e.mission.objectives, fired = e.mission.fired, outcome = e.mission.outcome
+    check(isObject(objectives) && Object.keys(objectives).length === definition.objectives.length && definition.objectives.every(o => ['open', 'complete', 'failed'].includes((objectives as Record<string, string>)[o.id]!)), 'mission objectives are invalid')
+    check(Array.isArray(fired) && fired.length <= definition.triggers.length && new Set(fired).size === fired.length && fired.every(t => definition.triggers.some(d => d.id === t)), 'mission triggers are invalid')
+    check(isObject(outcome) && Object.keys(outcome).length === players.length && Object.entries(outcome).every(([k, v]) => owner(Number(k)) && ['playing', 'won', 'lost'].includes(v as string)), 'mission outcome is invalid')
+    mission = { definition, objectives: structuredClone(objectives) as MissionState['objectives'], fired: [...fired], outcome: structuredClone(outcome) as MissionState['outcome'] }
+  }
   return {
+    mission,
     schema: 1, tick: e.tick, random: [...e.random] as State['random'], nextId: e.nextId, navigation: e.navigation, map, players: decodedPlayers,
     settlers: new Map(settlers.map(s => [s.id, structuredClone(s)])), buildings: new Map(buildings.map(b => [b.id, structuredClone(b)])), stacks: new Map(stacks.map(s => [s.id, structuredClone(s)])), jobs: new Map(jobs.map(j => [j.id, structuredClone(j)])),
     claims: new Map(claims), growth: structuredClone(growth), cooldowns: new Map(cooldowns), ledger: structuredClone(e.ledger) as Record<number, Ledger>, events: structuredClone(events), results: structuredClone(results), pending: structuredClone(pending),

@@ -7,6 +7,8 @@ export { createSession, DEFAULT_START, openSession, placementError, view } from 
 export type { PlayerSetup, PlayerView, Session, SessionSetup } from './session'
 export { describeMap, findStart, generateMap, pick } from './map'
 export { worldFromOriginal } from './original'
+export { missionFromVictory, MissionError, validateMission } from './mission'
+export type { Action, Condition, MissionDefinition } from './mission'
 export type { OriginalMapInput, OriginalWorld } from './original'
 export { qualificationGaps, ROMAN_ENGINEERING, rulesIdentity, validateRules, RulesError } from './rules'
 export type { BuildingRule, Evidence, RulesProfile } from './rules'

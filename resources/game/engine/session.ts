@@ -5,6 +5,8 @@ import type { Building, Command, CommandResult, GameEvent, MapState, Player, Pla
 import { createContext, doorOf, emit, footprint, markFootprint, nextId, objectAt, record, ruleOf, terrainAt, tileOf } from './context'
 import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
+import { advanceMission, startMission, validateMission } from './mission'
+import type { MissionDefinition } from './mission'
 import { grow, work } from './production'
 import { seedRandom } from './random'
 import { rulesIdentity, validateRules } from './rules'
@@ -23,6 +25,8 @@ export interface SessionSetup {
   rules: RulesProfile, map: MapState, seed: number, players: PlayerSetup[], content?: { id: string, digest: string }, startBuilding?: string
   /** Goods lying on the map at the start; each pile belongs to the owner of its tile. */
   piles?: ScenarioPile[]
+  /** Declarative mission data, validated before the session starts. */
+  mission?: MissionDefinition
 }
 
 /** Engineering start conditions; original start resources remain unverified (S3-074). */
@@ -45,6 +49,7 @@ export function createState(setup: SessionSetup): State {
     schema: 1, tick: 0, random: seedRandom(setup.seed), nextId: 1, map,
     players: setup.players.map((p, i) => ({ id: i + 1, name: p.name, civilization: p.civilization, controller: p.controller ?? 'human', settings: { ...defaultSettings(rules), ...p.settings }, explored: new Uint8Array(size), visible: new Uint8Array(size), signs: [], craftCursor: 0 })),
     settlers: new Map(), buildings: new Map(), stacks: new Map(), jobs: new Map(), claims: new Map(), growth: [], ledger: {}, events: [], results: [], cooldowns: new Map(), pending: [], navigation: 0,
+    mission: setup.mission ? startMission(validateMission(setup.mission, { players: setup.players.length, width: map.width, height: map.height, goods: rules.goods, buildings: rules.buildings.map(b => b.id) }), setup.players.length) : null,
   }
 }
 
@@ -275,6 +280,7 @@ export interface PlayerView {
   stacks: Pick<Stack, 'id' | 'owner' | 'tile' | 'building' | 'role' | 'good' | 'amount' | 'capacity'>[]
   goods: Goods, professions: Record<string, number>, population: number
   signs: Player['signs'], events: GameEvent[], results: CommandResult[]
+  mission: { objectives: { id: string, text: string, status: 'open' | 'complete' | 'failed' }[], outcome: 'playing' | 'won' | 'lost' } | null
 }
 
 export interface Session {
@@ -307,6 +313,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     if (state.tick % rules.logistics.assignmentInterval === 0) { staff(context); assignDeliveries(context) }
     for (const s of [...state.settlers.values()]) tickSettler(context, s)
     work(context)
+    advanceMission(context)
     if (state.tick % rules.visibility.interval === 0) updateVisibility(context)
     state.tick++
   }
@@ -364,6 +371,7 @@ export function view(ctx: Context, playerId: number): PlayerView {
     signs: player.signs.filter(sign => sign.until > state.tick),
     events: state.events.filter(e => e.player === playerId).slice(-32),
     results: state.results.filter(r => r.player === playerId).slice(-32),
+    mission: state.mission ? { objectives: state.mission.definition.objectives.filter(o => o.player === playerId).map(o => ({ id: o.id, text: o.text, status: state.mission!.objectives[o.id]! })), outcome: state.mission.outcome[String(playerId)] ?? 'playing' } : null,
   }
 }
 

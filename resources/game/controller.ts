@@ -52,7 +52,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false) {
-  if (!session) return { map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
+  if (!session) return { objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -67,6 +67,8 @@ export function snapshot(session: Session | null, selected: number | null, messa
     events: view.events.slice(-6).reverse().map(e => e.text),
     prototypeKept: false,
     map: mapName(session),
+    objectives: view.mission?.objectives ?? [],
+    outcome: view.mission?.outcome ?? 'playing',
   }
 }
 

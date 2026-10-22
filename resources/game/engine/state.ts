@@ -1,4 +1,5 @@
 import type { Direction, Point } from './geometry'
+import type { MissionState } from './mission'
 import type { RandomState } from './random'
 import type { Goods } from './rules'
 
@@ -108,6 +109,8 @@ export interface State {
   cooldowns: Map<string, number>
   /** Commands accepted for future ticks, executed in (tick, player, seq) order. */
   pending: Command[]
+  /** Objective and trigger progress for a scenario mission, saved with the world. */
+  mission: MissionState | null
   /** Increments whenever static traversal changes, so cached paths can be revalidated. */
   navigation: number
 }
