@@ -1283,8 +1283,8 @@
       "id": 5964128641,
       "number": 49,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/49",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-047] Complete economic distribution controls",
       "labels": [
         "settlers-gold",
@@ -1860,7 +1860,8 @@
         "priority:p1",
         "subsystem:07",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 4,
       "nativeParent": true,
@@ -2186,8 +2187,8 @@
       "id": 5964143159,
       "number": 87,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/87",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-085] Complete minimap, alerts, and original navigation",
       "labels": [
         "settlers-gold",
