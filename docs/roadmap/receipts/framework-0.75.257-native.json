@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-22T01:00:42.896290+00:00",
+  "repository": "stacksjs/stacks",
+  "commit": "bfaea22985c3c8e8e2864ee93fc326b4667891a6",
+  "tag": "v0.75.257",
+  "releaseRun": 39698950160,
+  "sourceCiRun": 39698949845,
+  "manifestSha256": "36e02cd705412faf36ea755abce3f8cb49e6b8f4bdb74853427d2be1ee949078",
+  "assets": [
+    {
+      "name": "buddy-linux-x64.zip",
+      "size": 42687840,
+      "sha256": "9ad2d55a47aba6c86227003dd3bf4e40cd964ef3e9f6e9a082cad56b94045b38",
+      "url": "https://github.com/stacksjs/stacks/releases/download/v0.75.257/buddy-linux-x64.zip",
+      "githubDigest": "sha256:9ad2d55a47aba6c86227003dd3bf4e40cd964ef3e9f6e9a082cad56b94045b38"
+    },
+    {
+      "name": "buddy-linux-arm64.zip",
+      "size": 42665295,
+      "sha256": "d8d0afd3e8031fc6a82be50ea31f35fea28af38cec12c4952377273cc5084f1d",
+      "url": "https://github.com/stacksjs/stacks/releases/download/v0.75.257/buddy-linux-arm64.zip",
+      "githubDigest": "sha256:d8d0afd3e8031fc6a82be50ea31f35fea28af38cec12c4952377273cc5084f1d"
+    },
+    {
+      "name": "buddy-windows-x64.zip",
+      "size": 45835930,
+      "sha256": "1b3c6bf9fdfaa310f78c29cb800196cfaf386eb0d893ecad2d24f837d7355895",
+      "url": "https://github.com/stacksjs/stacks/releases/download/v0.75.257/buddy-windows-x64.zip",
+      "githubDigest": "sha256:1b3c6bf9fdfaa310f78c29cb800196cfaf386eb0d893ecad2d24f837d7355895"
+    },
+    {
+      "name": "buddy-darwin-x64.zip",
+      "size": 34483933,
+      "sha256": "75edab2f4d9e41ad74935643316bcb5f7e838d5f169f2d7d70d75758f0e3dc10",
+      "url": "https://github.com/stacksjs/stacks/releases/download/v0.75.257/buddy-darwin-x64.zip",
+      "githubDigest": "sha256:75edab2f4d9e41ad74935643316bcb5f7e838d5f169f2d7d70d75758f0e3dc10"
+    },
+    {
+      "name": "buddy-darwin-arm64.zip",
+      "size": 31936059,
+      "sha256": "56a92ffef8429f259aa6f7be7a89d438e578ab07fc86e9db7607cc276320f08b",
+      "url": "https://github.com/stacksjs/stacks/releases/download/v0.75.257/buddy-darwin-arm64.zip",
+      "githubDigest": "sha256:56a92ffef8429f259aa6f7be7a89d438e578ab07fc86e9db7607cc276320f08b"
+    }
+  ],
+  "executed": {
+    "platform": "darwin-arm64",
+    "member": "buddy-darwin-arm64",
+    "sha256": "1186a7a90f63cb1d8a277eb695b731508df625983b9aa40e2d761d43c19bb212",
+    "version": "buddy/0.75.257 stacks/0.75.257 darwin-arm64 bun-v1.4.2"
+  },
+  "sourceCiJobs": [
+    {
+      "name": "deployment-target",
+      "conclusion": "success"
+    },
+    {
+      "name": "Release evidence (windows-latest)",
+      "conclusion": "success"
+    },
+    {
+      "name": "typecheck",
+      "conclusion": "success"
+    },
+    {
+      "name": "Release evidence (ubuntu-latest)",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (core-2)",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (auth-2)",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (auth-1)",
+      "conclusion": "success"
+    },
+    {
+      "name": "compile",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (buddy)",
+      "conclusion": "success"
+    },
+    {
+      "name": "Release evidence (macos-latest)",
+      "conclusion": "success"
+    },
+    {
+      "name": "scaffold-smoke",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (auth-3)",
+      "conclusion": "success"
+    },
+    {
+      "name": "lint",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (core-1)",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (auth-4)",
+      "conclusion": "success"
+    },
+    {
+      "name": "artifact-freshness",
+      "conclusion": "success"
+    },
+    {
+      "name": "dependency-locks",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "deploy",
+      "conclusion": "success"
+    },
+    {
+      "name": "publish-commit",
+      "conclusion": "skipped"
+    }
+  ]
+}
