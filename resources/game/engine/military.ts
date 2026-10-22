@@ -55,7 +55,7 @@ function enlist(ctx: Context): void {
         state.jobs.set(job.id, job)
         stack.reservedOut++
         if (!orders.automatic) { orders.queue[profession] = wanted - 1; if (!orders.queue[profession]) delete orders.queue[profession] }
-        start(ctx, carrier, 'enlist', job.id, [{ op: 'go', tile: stack.tile }, { op: 'do', effect: 'pickup', args: { job: job.id } }, { op: 'go', tile: doorOf(ctx, b) }, { op: 'work', ticks: military(ctx).recruitWork }, { op: 'do', effect: 'enlist', args: { job: job.id } }])
+        start(ctx, carrier, 'enlist', job.id, [{ op: 'go', tile: stack.tile }, { op: 'do', effect: 'pickup', args: { job: job.id } }, { op: 'go', tile: doorOf(ctx, b) }, { op: 'work', ticks: military(ctx).recruitWork }, { op: 'do', effect: 'enlist', args: { job: job.id, profession } }])
       }
     }
   }
@@ -75,10 +75,16 @@ effects.set('enlist', (ctx, s, args) => {
   return true
 })
 
-finishers.set('enlist', (ctx, s, program, _ok, reason) => {
+finishers.set('enlist', (ctx, s, program, ok, reason) => {
   const job = ctx.state.jobs.get(program.ref)
   if (job) cancelJob(ctx, job, reason ?? 'recruitment interrupted')
   if (s.cargo) dropCargo(ctx, s)
+  if (ok) return
+  // An interrupted recruitment returns to the queue, so a manual order is never silently lost.
+  const step = program.steps.find(op => op.op === 'do' && op.effect === 'enlist')
+  const profession = step?.op === 'do' ? String(step.args?.profession ?? '') : ''
+  const orders = ctx.state.players.find(p => p.id === s.owner)?.settings.recruit
+  if (orders && !orders.automatic && ctx.profession.get(profession)?.soldier) orders.queue[profession] = Math.min(1000, (orders.queue[profession] ?? 0) + 1)
 })
 
 const garrisonOf = (ctx: Context, b: Building): Settler[] => [...ctx.state.settlers.values()].filter(s => s.soldier?.garrison === b.id && s.inside === b.id).sort((a, c) => a.id - c.id)

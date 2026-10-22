@@ -60,6 +60,26 @@ describe('recruitment', () => {
     expect(s.state.ledger[1]!.equipped.bow).toBe(3)
   }, 60_000)
 
+  test('a recruitment interrupted on the way drops the weapon and keeps the order', () => {
+    const s = createSession({ rules, map: landscape(), seed: 5, players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { plank: 30, stone: 30, sword: 1 } }] })
+    const barracks = place(s, 'barracks', anchors.west)
+    until(s, () => s.state.buildings.get(barracks)!.phase === 'active', 6000)
+    until(s, () => [...s.state.stacks.values()].some(st => st.building === barracks && st.good === 'sword' && st.amount === 1), 2000)
+    order(s, 'recruit', { profession: 'swordsman', count: 1 })
+    const recruit = (): ReturnType<typeof soldiers>[number] | undefined => [...s.state.settlers.values()].find(p => p.program?.kind === 'enlist')
+    until(s, () => recruit()?.cargo === 'sword', 600)
+    const carrier = recruit()!
+    order(s, 'demolish', { building: barracks })
+    run(s, 200)
+    expect(carrier.profession).toBe('carrier')
+    expect(carrier.cargo).toBeNull()
+    expect(soldiers(s, 1)).toEqual([])
+    expect(s.state.players[0]!.settings.recruit!.queue.swordsman).toBe(1)
+    expect([...s.state.stacks.values()].filter(st => st.good === 'sword').reduce((n, st) => n + st.amount, 0)).toBe(1)
+    expect(s.state.ledger[1]!.equipped.sword).toBeUndefined()
+    expect(audit(s.context)).toEqual([])
+  }, 60_000)
+
   test('malformed and impossible orders are refused', () => {
     const s = field([{ profession: 'swordsman', x: 40, y: 70 }], [{ profession: 'swordsman', x: 70, y: 70 }])
     let seq = 1000
@@ -146,10 +166,10 @@ describe('combat', () => {
 describe('garrisons and capture', () => {
   function war(): Session {
     return createSession({
-      rules, map: landscape(), seed: 9,
+      rules, map: landscape([{ kind: 'object', id: 'tree', x: 77, y: 57, radius: 2, density: 0.8 }]), seed: 9,
       players: [
         { name: 'Rome', civilization: 'roman', start: anchors.castle, scenario: scenario([{ profession: 'swordsman', x: 44, y: 46 }, { profession: 'swordsman', x: 45, y: 46 }, { profession: 'swordsman', x: 46, y: 46 }], [{ type: 'castle', x: 40, y: 40 }]) },
-        { name: 'Enemy', civilization: 'roman', start: { x: 80, y: 40 }, settings: { stored: ['plank'] }, scenario: scenario([{ profession: 'swordsman', x: 84, y: 46 }, { profession: 'carrier', x: 82, y: 47 }, { profession: 'carrier', x: 83, y: 47 }], [{ type: 'castle', x: 80, y: 40 }, { type: 'woodcutter', x: 70, y: 52 }]) },
+        { name: 'Enemy', civilization: 'roman', start: { x: 80, y: 40 }, settings: { stored: ['plank'] }, scenario: scenario([{ profession: 'swordsman', x: 84, y: 46 }, { profession: 'carrier', x: 82, y: 47 }, { profession: 'carrier', x: 83, y: 47 }, { profession: 'woodcutter', x: 76, y: 54 }], [{ type: 'castle', x: 80, y: 40 }, { type: 'woodcutter', x: 74, y: 52 }]) },
       ],
       piles: [{ good: 'plank', x: 84, y: 50, amount: 4 }],
     })
@@ -161,6 +181,8 @@ describe('garrisons and capture', () => {
     const ours = [...s.state.buildings.values()].find(b => b.owner === 1 && b.type === 'castle')!
     const theirs = [...s.state.buildings.values()].find(b => b.owner === 2 && b.type === 'castle')!
     until(s, () => soldiers(s, 1).every(p => p.inside === ours.id) && soldiers(s, 2).every(p => p.inside === theirs.id), 1000)
+    // The enemy's woodcutter is at work when the attack comes.
+    until(s, () => [...s.state.settlers.values()].some(p => p.profession === 'woodcutter' && p.workplace && p.program?.kind === 'work'), 600)
     // The enemy stores its planks in its castle.
     until(s, () => [...s.state.stacks.values()].some(st => st.building === theirs.id && st.good === 'plank' && st.amount === 4), 3000)
     const [one, two, three] = soldiers(s, 1).map(p => p.id)
@@ -181,6 +203,11 @@ describe('garrisons and capture', () => {
     // The land it held is now ours, and the enemy's woodcutter on that land is gone.
     expect(s.state.map.owner[theirs.y * 96 + theirs.x]).toBe(1)
     expect([...s.state.buildings.values()].some(b => b.type === 'woodcutter')).toBe(false)
+    // Its woodcutter lost his workplace mid-job and keeps his axe; anything he carried lies on the ground.
+    const woodcutter = [...s.state.settlers.values()].find(p => p.profession === 'woodcutter')!
+    expect(woodcutter.workplace).toBe(0)
+    expect(woodcutter.cargo).toBeNull()
+    expect(woodcutter.tool).toBe('axe')
     expect(s.state.events.some(e => e.player === 2 && e.type === 'captured')).toBe(true)
     // A conqueror moves in.
     until(s, () => soldiers(s, 1).some(p => p.inside === theirs.id), 400)
