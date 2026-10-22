@@ -177,13 +177,19 @@ async function render(registry: Registry): Promise<void> {
   await Bun.write(resolve(root, 'docs/roadmap/README.md'), `# Settlers III Gold Edition roadmap\n\n${registry.master ? `Master issue: ${registry.master.url}` : 'Publishing has not completed yet.'}\n\nThe approved scope is recorded in [specification.md](specification.md). Source ownership and release rules are in [upstream-workflow.md](upstream-workflow.md). Each implementation issue has a durable [draft](issues/) and a stable identifier. The JSON registry records actual GitHub URLs, database IDs, relationship results, and issue states; the catalog records behavior, acceptance, tests, and dependencies.\n\n## Epics\n\n${epics.map((epic, i) => `- ${registry.epics[String(i + 1)]?.url ?? `S3-E${i + 1}`} - ${epic.title}`).join('\n')}\n\n## Implementation graph\n\n| Stable ID | Source owner | Deliverable | Blocked by |\n|---|---|---|---|\n${table}\n\n## Publish and verify\n\nRun \`bun scripts/roadmap.ts --check\` to validate and render local drafts. Run \`bun scripts/roadmap.ts --publish\` to reconcile the authorized GitHub graph. Run \`bun scripts/roadmap.ts --verify\` to read back issues and verify relationships. Publishing resumes from stable remote markers and preserves adopted issue content. It never closes implementation issues.\n`)
 }
 
-async function listIssues(repository: string): Promise<RemoteIssue[]> {
+async function listIssues(repository: string, known: Entry[] = []): Promise<RemoteIssue[]> {
   const all: RemoteIssue[] = []
   for (let page = 1; ; page++) {
-    const batch = await api<RemoteIssue[]>(`repos/${repository}/issues?state=all&per_page=100&page=${page}`)
+    const batch = await api<RemoteIssue[] | null>(`repos/${repository}/issues?state=all&per_page=100&page=${page}`)
+    if (!Array.isArray(batch)) throw new Error(`GitHub returned no issue listing for ${repository}; refusing to publish from an unknown remote state`)
     all.push(...batch.filter(issue => !issue.pull_request))
-    if (batch.length < 100) return all
+    if (batch.length < 100) break
   }
+  // Publishing creates any tracked issue it cannot find. A listing missing issues the registry already
+  // recorded (an interrupted or truncated response) would recreate the whole graph, so stop instead.
+  const missing = known.filter(item => !all.some(issue => issue.number === item.number))
+  if (missing.length) throw new Error(`Issue listing for ${repository} is incomplete: ${missing.length} recorded issues are missing (first ${missing[0]!.url}); refusing to create duplicates`)
+  return all
 }
 
 async function ensureLabels(repository: string): Promise<void> {
@@ -199,8 +205,10 @@ function platformLabels(ticket: Ticket): string[] {
   return ['platform:browser', 'platform:native', ...(ticket.epic === 2 || ticket.epic === 11 ? ['platform:desktop', 'platform:mobile'] : [])]
 }
 
-async function ensureIssue(repository: string, key: string, title: string, body: string, labels: string[], cached: RemoteIssue[], milestone?: number, reuse?: number): Promise<Entry> {
-  let found = cached.find(issue => issue.body?.includes(marker(key)))
+async function ensureIssue(repository: string, key: string, title: string, body: string, labels: string[], cached: RemoteIssue[], milestone?: number, reuse?: number, known?: Entry): Promise<Entry> {
+  // The recorded issue wins over any other carrying the same marker, so a stray copy is never adopted.
+  let found = (known?.repository === repository ? cached.find(issue => issue.number === known.number) : undefined) ?? cached.find(issue => issue.body?.includes(marker(key)))
+  if (!found && known?.repository === repository) found = await api<RemoteIssue>(`repos/${repository}/issues/${known.number}`)
   if (!found && reuse) found = await api<RemoteIssue>(`repos/${repository}/issues/${reuse}`)
   if (found) {
     const adopted = reuse !== undefined && found.number === reuse
@@ -301,16 +309,17 @@ async function publish(registry: Registry): Promise<void> {
   const repositories = [...new Set([gameRepository, ...tickets.map(ticket => ticket.repository)])]
   const lists = new Map<string, RemoteIssue[]>()
   const milestones = new Map<string, Map<string, number>>()
+  const recorded = [registry.master, ...Object.values(registry.epics), ...Object.values(registry.tickets)].filter((item): item is Entry => !!item)
   for (const repository of repositories) {
-    lists.set(repository, await listIssues(repository)); await ensureLabels(repository)
+    lists.set(repository, await listIssues(repository, recorded.filter(item => item.repository === repository))); await ensureLabels(repository)
     milestones.set(repository, await ensureMilestones(repository))
     console.log(`Prepared ${repository}`)
   }
-  registry.master = await ensureIssue(gameRepository, 'S3-MASTER', 'Settlers III Gold Edition: complete fidelity and cross-platform delivery', masterBody(registry), ['settlers-gold', 'type:epic', 'priority:p0'], lists.get(gameRepository)!)
+  registry.master = await ensureIssue(gameRepository, 'S3-MASTER', 'Settlers III Gold Edition: complete fidelity and cross-platform delivery', masterBody(registry), ['settlers-gold', 'type:epic', 'priority:p0'], lists.get(gameRepository)!, undefined, undefined, registry.master)
   await persist(registry)
   for (const [i, epic] of epics.entries()) {
     const key = String(i + 1)
-    registry.epics[key] = await ensureIssue(gameRepository, `S3-E${key.padStart(2, '0')}`, `Gold Edition epic ${key}: ${epic.title}`, epicBody(i + 1, registry), ['settlers-gold', 'type:epic', `subsystem:${key.padStart(2, '0')}`], lists.get(gameRepository)!, milestones.get(gameRepository)!.get(epic.milestone))
+    registry.epics[key] = await ensureIssue(gameRepository, `S3-E${key.padStart(2, '0')}`, `Gold Edition epic ${key}: ${epic.title}`, epicBody(i + 1, registry), ['settlers-gold', 'type:epic', `subsystem:${key.padStart(2, '0')}`], lists.get(gameRepository)!, milestones.get(gameRepository)!.get(epic.milestone), undefined, registry.epics[key])
     await persist(registry)
   }
   const remoteForTicket = (ticket: Ticket): RemoteIssue | undefined => lists.get(ticket.repository)!.find(issue => issue.body?.includes(marker(ticket.key)) || issue.number === reuseIssues[ticket.key])
@@ -322,7 +331,7 @@ async function publish(registry: Registry): Promise<void> {
     const labels = ['settlers-gold', ticket.key === 'S3-001' || ticket.key === 'S3-002' || ticket.key === 'S3-003' || ticket.key === 'S3-008' ? 'type:research' : 'type:feature', `priority:${ticket.priority}`, `subsystem:${ticket.epic.toString().padStart(2, '0')}`]
     labels.push(...platformLabels(ticket))
     if (remoteForTicket(ticket)?.state !== 'closed' && ticket.blockers.every(key => satisfied.has(key))) labels.push('ready-for-agent')
-    registry.tickets[ticket.key] = await ensureIssue(ticket.repository, ticket.key, `[${ticket.key}] ${ticket.title}`, bodyFor(ticket, registry), labels, lists.get(ticket.repository)!, milestones.get(ticket.repository)!.get(epics[ticket.epic - 1]!.milestone), reuseIssues[ticket.key])
+    registry.tickets[ticket.key] = await ensureIssue(ticket.repository, ticket.key, `[${ticket.key}] ${ticket.title}`, bodyFor(ticket, registry), labels, lists.get(ticket.repository)!, milestones.get(ticket.repository)!.get(epics[ticket.epic - 1]!.milestone), reuseIssues[ticket.key], registry.tickets[ticket.key])
     await persist(registry)
     console.log(`${ticket.key}: ${registry.tickets[ticket.key]!.url}`)
   }

@@ -18,6 +18,8 @@ interface Repository {
 interface Remote {
   nextId: number
   interrupted: boolean
+  /** Repositories whose issue listing comes back empty, as an interrupted response did. */
+  truncatedListings?: string[]
   repositories: Record<string, Repository>
   parents: Record<string, number>
   blockers: Record<string, number[]>
@@ -63,7 +65,7 @@ if (route.length === 1 && route[0] === 'milestones') {
 }
 if (route[0] !== 'issues') throw new Error(`Unknown fixture resource: ${url.pathname}`)
 if (route.length === 1) {
-  if (method === 'GET') output(page(repository.issues))
+  if (method === 'GET') output(state.truncatedListings?.includes(repositoryName) ? [] : page([...repository.issues].reverse()))
   if (method === 'POST') {
     const number = Math.max(0, ...repository.issues.map(issue => issue.number)) + 1
     const issue: Issue = {

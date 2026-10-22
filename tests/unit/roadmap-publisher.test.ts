@@ -149,6 +149,27 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     const verifiedCancellation = await run('--verify')
     expect(verifiedCancellation.code, verifiedCancellation.output).toBe(0)
     expect(verifiedCancellation.output).toContain('Verified 120 tracking entries')
+
+    // An interrupted listing that omits recorded issues must not recreate the graph.
+    const truncated = remote() as Remote & { truncatedListings?: string[] }
+    truncated.truncatedListings = [game]
+    writeFileSync(statePath, JSON.stringify(truncated))
+    const beforeTruncated = Object.values(remote().repositories).flatMap(repository => repository.issues).length
+    const refused = await run('--publish')
+    expect(refused.code).not.toBe(0)
+    expect(refused.output).toContain('is incomplete')
+    expect(Object.values(remote().repositories).flatMap(repository => repository.issues)).toHaveLength(beforeTruncated)
+    expect(registry()).toEqual(afterCancelledRegistry)
+
+    // A newer stray issue carrying a tracked marker is never adopted over the recorded issue.
+    const strayed = remote() as Remote & { truncatedListings?: string[] }
+    strayed.truncatedListings = []
+    const recordedAudit = strayed.repositories[game]!.issues.find(issue => issue.id === current.tickets['S3-025']!.id)!
+    strayed.repositories[game]!.issues.push({ ...recordedAudit, id: 99_999, number: 999, html_url: `https://github.com/${game}/issues/999`, labels: [] })
+    writeFileSync(statePath, JSON.stringify(strayed))
+    const kept = await run('--publish')
+    expect(kept.code, kept.output).toBe(0)
+    expect(registry().tickets['S3-025']!.id).toBe(current.tickets['S3-025']!.id)
   }
   finally {
     rmSync(directory, { recursive: true, force: true })
