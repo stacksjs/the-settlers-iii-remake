@@ -13,6 +13,7 @@ import { createRenderer } from './renderer'
 import { scene } from './scene'
 import type { MinimapOptions } from './minimap'
 import { alertTarget, fromMinimap, minimapPixels, minimapSize, toMinimap } from './minimap'
+import { BUILDING_MENU } from './menus'
 import { createTroops } from './troops'
 
 const rules = ROMAN_ENGINEERING
@@ -25,7 +26,7 @@ const MAP_SIZE = 96
 
 /** Building catalog for the control center, grouped as the manual groups the build menu. */
 export const catalog = rules.buildings.filter(b => b.id !== 'castle').map(b => ({
-  id: b.id, name: b.name, category: b.category,
+  id: b.id, name: b.name, category: b.category, menu: BUILDING_MENU[b.id] ?? 'misc',
   cost: Object.entries(b.cost).map(([good, n]) => `${n} ${good}`).join(' + '),
   description: describe(b.id),
 }))
@@ -69,7 +70,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -89,6 +90,18 @@ export function snapshot(session: Session | null, selected: number | null, messa
     outcome: view.mission?.outcome ?? 'playing',
     ...economy(session),
     army: army(session),
+    ...controls(session),
+  }
+}
+
+/** The Goods and Settlers menus' settings: urgent orders and priorities for smiths, transport order, and occupation limits. */
+function controls(session: Session) {
+  const settings = session.state.players[PLAYER - 1]!.settings, rules = session.rules
+  const made = [...rules.tools, ...rules.professions.flatMap(p => p.soldier ? [p.soldier.weapon] : [])]
+  return {
+    crafts: made.map(key => ({ key, urgent: settings.urgentTools.filter(t => t === key).length, weight: settings.toolWeights[key] ?? 1, weapon: !rules.tools.includes(key) })),
+    transport: settings.transportPriority.map((key, rank) => ({ key, rank: rank + 1, stored: settings.stored.includes(key) })),
+    limits: { builders: settings.builderLimit, diggers: settings.diggerLimit },
   }
 }
 
@@ -549,6 +562,29 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     thieves() {
       if (!session) return
       report(send('thieves', { count: 1 }) ?? 'A carrier became a thief. Click him, then right-click with Alt where he should pilfer.')
+    },
+    /** Adds one urgent order for a tool or weapon; smiths make urgent orders first, top to bottom (manual). */
+    urgent(key: string) { if (!session) return; report(send('urgent-tool', { tool: key }) ?? `The next ${key} will be made first.`) },
+    weight(key: string, delta: number) {
+      if (!session) return
+      const value = Math.max(0, Math.min(10, (session.state.players[PLAYER - 1]!.settings.toolWeights[key] ?? 1) + delta))
+      report(send('settings', { settings: { toolWeights: { [key]: value } } }) ?? `${key} priority set to ${value}.`)
+    },
+    /** Moves a good in the transport chain: up or down one place, or to the top or bottom (manual: Transportation Priorities). */
+    priority(key: string, move: 'up' | 'down' | 'top' | 'bottom') {
+      if (!session) return
+      const list = [...session.state.players[PLAYER - 1]!.settings.transportPriority], at = list.indexOf(key)
+      if (at < 0) return
+      list.splice(at, 1)
+      const to = move === 'top' ? 0 : move === 'bottom' ? list.length : Math.max(0, Math.min(list.length, at + (move === 'up' ? -1 : 1)))
+      list.splice(to, 0, key)
+      report(send('settings', { settings: { transportPriority: list } }) ?? `${key} is carried ${to + 1}${to === 0 ? 'st' : to === 1 ? 'nd' : to === 2 ? 'rd' : 'th'} in line.`)
+    },
+    limit(kind: 'builders' | 'diggers', delta: number) {
+      if (!session) return
+      const settings = session.state.players[PLAYER - 1]!.settings, key = kind === 'builders' ? 'builderLimit' : 'diggerLimit'
+      const value = Math.max(0, Math.min(1000, settings[key] + delta))
+      report(send('settings', { settings: { [key]: value } }) ?? `At most ${value} ${kind}.`)
     },
     carrierRatio(delta: number) {
       if (!session) return

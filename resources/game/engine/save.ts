@@ -7,7 +7,7 @@ import { MAX_MAP_SIZE } from './map'
 import type { MissionDefinition, MissionState } from './mission'
 import { MissionError, validateMission } from './mission'
 import { validRandomState } from './random'
-import { rulesIdentity } from './rules'
+import { crafted, rulesIdentity } from './rules'
 import { openSession } from './session'
 
 export const SAVE_FORMAT = 'settlers-iii-remake/session'
@@ -200,8 +200,8 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     check(isObject(s) && int(s.carrierRatio, 0, 100) && int(s.builderLimit, 0, 1000) && int(s.diggerLimit, 0, 1000), `player ${p.id} settings are invalid`)
     check(Array.isArray(s.transportPriority) && s.transportPriority.length === rules.goods.length && new Set(s.transportPriority).size === rules.goods.length && s.transportPriority.every(good), `player ${p.id} transport priority is invalid`)
     check(Array.isArray(s.stored) && s.stored.every(good) && new Set(s.stored).size === s.stored.length, `player ${p.id} storage settings are invalid`)
-    check(isObject(s.toolWeights) && Object.entries(s.toolWeights).every(([t, w]) => rules.tools.includes(t) && int(w, 0, 10)), `player ${p.id} tool weights are invalid`)
-    check(Array.isArray(s.urgentTools) && s.urgentTools.length <= 64 && s.urgentTools.every(t => rules.tools.includes(t)), `player ${p.id} urgent tools are invalid`)
+    check(isObject(s.toolWeights) && Object.entries(s.toolWeights).every(([t, w]) => crafted(rules).includes(t) && int(w, 0, 10)), `player ${p.id} tool weights are invalid`)
+    check(Array.isArray(s.urgentTools) && s.urgentTools.length <= 64 && s.urgentTools.every(t => crafted(rules).includes(t)), `player ${p.id} urgent tools are invalid`)
     check(s.recruit === undefined || (isObject(s.recruit) && typeof s.recruit.automatic === 'boolean' && isObject(s.recruit.queue) && Object.entries(s.recruit.queue).every(([k, n]) => !!weapon(k) && int(n, 1, 1000))), `player ${p.id} recruitment is invalid`)
     check(s.rank === undefined || int(s.rank, 1, rules.military?.ranks ?? 0), `player ${p.id} rank is invalid`)
     check(int(p.craftCursor, 0, 1000), `player ${p.id} craft cursor is invalid`)

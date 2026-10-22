@@ -14,7 +14,7 @@ import { advanceMission, startMission, validateMission } from './mission'
 import type { MissionDefinition } from './mission'
 import { grow, work } from './production'
 import { seedRandom } from './random'
-import { rulesIdentity, validateRules } from './rules'
+import { crafted, rulesIdentity, validateRules } from './rules'
 import { spawn, tickSettler } from './settlers'
 import { dispatch, updateVisibility } from './territory'
 import { complete, release, staff } from './workforce'
@@ -197,7 +197,7 @@ function settings(player: Player, value: Record<string, unknown>, rules: RulesPr
   }
   if ('toolWeights' in value) {
     const weights = value.toolWeights
-    if (!weights || typeof weights !== 'object' || !Object.entries(weights).every(([t, w]) => rules.tools.includes(t) && Number.isInteger(w) && (w as number) >= 0 && (w as number) <= 10)) return 'Tool weights must be 0 to 10.'
+    if (!weights || typeof weights !== 'object' || !Object.entries(weights).every(([t, w]) => crafted(rules).includes(t) && Number.isInteger(w) && (w as number) >= 0 && (w as number) <= 10)) return 'Tool weights must be 0 to 10.'
     next.toolWeights = { ...next.toolWeights, ...(weights as Record<string, number>) }
   }
   if ('recruitAutomatic' in value || 'rank' in value) {
@@ -276,7 +276,7 @@ function execute(ctx: Context, command: Command): CommandResult {
       return error ? result(false, error) : result(true)
     }
     case 'urgent-tool': {
-      if (typeof command.tool !== 'string' || !rules.tools.includes(command.tool) || player.settings.urgentTools.length >= 64) return result(false, 'Unknown tool order.')
+      if (typeof command.tool !== 'string' || !crafted(rules).includes(command.tool) || player.settings.urgentTools.length >= 64) return result(false, 'Unknown tool order.')
       player.settings.urgentTools.push(command.tool)
       return result(true)
     }

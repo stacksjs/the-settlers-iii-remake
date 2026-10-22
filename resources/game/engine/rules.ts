@@ -214,6 +214,8 @@ export function validateRules(rules: RulesProfile): RulesProfile {
 export const rulesDigest = (rules: RulesProfile): string => digest(rules)
 export const rulesIdentity = (rules: RulesProfile): { id: string, version: string, digest: string } => ({ id: rules.id, version: rules.version, digest: rulesDigest(rules) })
 export const building = (rules: RulesProfile, id: string): BuildingRule => { const found = rules.buildings.find(b => b.id === id); if (!found) throw new RangeError(`Unknown building ${id}`); return found }
+/** Goods a smith makes to order: tools, and the weapons soldiers carry (manual: Goods menu, Tools and Weapons). */
+export const crafted = (rules: RulesProfile): string[] => [...rules.tools, ...rules.professions.flatMap(p => p.soldier ? [p.soldier.weapon] : [])]
 export const profession = (rules: RulesProfile, id: string): ProfessionRule => { const found = rules.professions.find(p => p.id === id); if (!found) throw new RangeError(`Unknown profession ${id}`); return found }
 
 /** Release qualification refuses profiles that still contain unverified or engineering-only values. */
