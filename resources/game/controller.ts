@@ -7,10 +7,12 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, DEFAULT_START, economicAI, findStart, generateMap, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
+import { createSession, DEFAULT_START, economicAI, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 import { scene } from './scene'
+import type { MinimapOptions } from './minimap'
+import { alertTarget, fromMinimap, minimapPixels, minimapSize, toMinimap } from './minimap'
 import { createTroops } from './troops'
 
 const rules = ROMAN_ENGINEERING
@@ -64,12 +66,14 @@ export function status(phase: string, shortage: string | null, suspended: boolea
   return needsWorker ? 'Working' : 'Ready'
 }
 
+export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
+
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
+  if (!session) return { minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
-    ready, message, speed, tool, sound, marked,
+    ready, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP,
     time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`,
     population: view.population,
     professions: Object.entries(view.professions).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count })),
@@ -77,7 +81,8 @@ export function snapshot(session: Session | null, selected: number | null, messa
     buildings: view.buildings.filter(b => b.owner === PLAYER).length,
     carrierRatio: player.settings.carrierRatio,
     selected: selected ? inspect(session, selected) : null,
-    events: view.events.slice(-6).reverse().map(e => e.text),
+    // Alerts point at what they are about, where the player may look (manual: the Information Center).
+    events: view.events.slice(-6).reverse().map(e => ({ text: e.text, at: alertTarget({ explored: t => view.explored[t] === 1, view, width: view.width }, e) })),
     prototypeKept: false,
     map: mapName(session),
     objectives: view.mission?.objectives ?? [],
@@ -167,7 +172,7 @@ export function newSession(seed: number): Session {
   return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
 }
 
-export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) => void, reduceMotion: () => boolean) {
+export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) => void, reduceMotion: () => boolean, overview?: HTMLCanvasElement) {
   let session: Session | null = null, selected: number | null = null, tool: string | null = null, cursor: Point | null = null
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
   let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
@@ -177,7 +182,35 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
   // Marked soldiers and numbered groups are interface state; only the orders they produce enter the simulation.
   let troops = createTroops(() => session, PLAYER), band: { x0: number, y0: number, x1: number, y1: number } | null = null
-  const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length); value.prototypeKept = prototypeKept; update(value) }
+  let minimap: MinimapOptions = { ...DEFAULT_MINIMAP }, sinceMinimap = 0
+  const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length); value.prototypeKept = prototypeKept; value.minimap = minimap; update(value) }
+  /** Draws the overview map from the player's observation and frames the part of the land on screen. */
+  const drawOverview = (): void => {
+    const target = overview?.getContext('2d')
+    if (!overview || !target || !session) return
+    const { map } = session.state, size = minimapSize(map.width, map.height), image = new ImageData(minimapPixels(observe(session, PLAYER), minimap), size.width, size.height)
+    const scratch = document.createElement('canvas')
+    scratch.width = size.width; scratch.height = size.height
+    scratch.getContext('2d')!.putImageData(image, 0, 0)
+    overview.width = overview.clientWidth * 2 || size.width * 2; overview.height = overview.clientHeight * 2 || size.height * 2
+    target.imageSmoothingEnabled = false
+    target.drawImage(scratch, 0, 0, overview.width, overview.height)
+    // The white frame is the playing area currently on screen.
+    const rect = canvas.getBoundingClientRect(), sx = overview.width / size.width, sy = overview.height / size.height
+    const corners = [[rect.left, rect.top], [rect.right, rect.top], [rect.right, rect.bottom], [rect.left, rect.bottom]].map(([x, y]) => renderer.pick(session!, x!, y!)).filter(Boolean).map(p => toMinimap(p!, map.height))
+    if (corners.length === 4) {
+      target.strokeStyle = '#ffffff'; target.lineWidth = 2; target.beginPath()
+      corners.forEach((p, i) => i ? target.lineTo(p.x * sx, p.y * sy) : target.moveTo(p.x * sx, p.y * sy))
+      target.closePath(); target.stroke()
+    }
+  }
+  overview?.addEventListener('click', event => {
+    if (!session) return
+    const rect = overview.getBoundingClientRect(), { map } = session.state, size = minimapSize(map.width, map.height)
+    const tile = fromMinimap({ x: Math.floor((event.clientX - rect.left) / rect.width * size.width), y: Math.floor((event.clientY - rect.top) / rect.height * size.height) }, map.height)
+    if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return
+    renderer.home(tile, map.elevation[tile.y * map.width + tile.x]); cursor = tile; drawOverview()
+  }, { signal: lifetime.signal })
   const report = (text: string): void => { message = text; emit() }
   // The castle on generated starts, otherwise the first building or settler an original map gives the player.
   const castle = (): Point | null => {
@@ -421,6 +454,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
         accumulator -= ticks
       }
       if (sinceUpdate >= 250) { sinceUpdate = 0; emit() }
+      sinceMinimap += delta
+      if (sinceMinimap >= 500) { sinceMinimap = 0; drawOverview() }
       if (sinceSave >= 30000) { sinceSave = 0; void persist() }
     }
     if (session) {
@@ -460,6 +495,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       finally { soundPending = false }
     },
     speed(value: number) { speed = value; emit() },
+    /** Switches the overview's territory, settler or building display (manual: The Overview Map). */
+    overview(change: Partial<MinimapOptions>) { minimap = { ...minimap, ...change }; drawOverview(); emit() },
+    /** Centres the playing area on a tile, as clicking an alert does. */
+    goto(x: number, y: number) { if (!session) return; const { map } = session.state; renderer.home({ x, y }, map.elevation[y * map.width + x]); cursor = { x, y }; drawOverview() },
     home: center,
     save: persist, load,
     async restart(landscape: Landscape = 'generated') {
