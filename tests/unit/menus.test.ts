@@ -23,7 +23,11 @@ describe('control center', () => {
   })
 
   test('every building the player can place appears in exactly one Buildings sub-menu', () => {
-    for (const b of rules.buildings.filter(b => b.id !== 'castle')) expect(MENUS.buildings as readonly string[]).toContain(BUILDING_MENU[b.id])
+    for (const b of rules.buildings.filter(b => b.id !== 'castle')) {
+      const menu = BUILDING_MENU[b.id]
+      if (menu === undefined) throw new Error(`Placeable building ${b.id} has no control center menu`)
+      expect(MENUS.buildings as readonly string[]).toContain(menu)
+    }
     expect(catalog.every(item => (MENUS.buildings as readonly string[]).includes(item.menu))).toBe(true)
     // The manual's contents: mines and the tool smith under resources, the weapon smith under military, temples under misc.
     expect(BUILDING_MENU['iron-mine']).toBe('resources')
