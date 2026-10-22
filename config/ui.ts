@@ -34,6 +34,12 @@ export default {
 
   layoutsDir: 'layouts',
 
+  // The game draws its converted original sprites itself and uses no <StxImage>.
+  // Warming responsive variants would re-encode that media into lossy derivatives
+  // outside the content provenance record, and on a cold cache it holds the
+  // production server's bind for up to 45 seconds.
+  imageWarmup: false,
+
   partialsDir: 'partials',
 
   // Whether this app serves the framework's default views: the auth pages
@@ -64,4 +70,5 @@ export default {
     },
   },
 // `plugins` landed in stx after the pinned @stacksjs/stx types — widen until the dep updates.
-} satisfies UiOptions & { plugins?: string[], defaultViews?: boolean | string[] }
+// `imageWarmup` is read by bun-plugin-stx's serve() from this config but is not yet part of StxConfig.
+} satisfies UiOptions & { plugins?: string[], defaultViews?: boolean | string[], imageWarmup?: boolean | 'auto' }
