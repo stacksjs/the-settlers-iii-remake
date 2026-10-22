@@ -60,7 +60,7 @@ onDestroy(() => game?.dispose())
 
     <main class="playfield">
       <section class="map-region" aria-label="Settlement map">
-        <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag to pan, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
+        <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag with the right button to pan and with the left to mark soldiers, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
         <div class="map-caption"><span class="map-location">Free settlement</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy builds to the east by the same rules' : 'A generated landscape, not an original map' }}</span></div>
         <div class="flex gap-1 map-controls" aria-label="Simulation speed">
@@ -76,7 +76,8 @@ onDestroy(() => game?.dispose())
           <p>Woodcutters and stonecutters walk to the nearest tree or granite in their working area. Foresters replant. Full doorsteps stop production until goods are used or taken to a storage area.</p>
           <p>Mark goods for storage in the Goods panel. Send pioneers to push your border and geologists to survey mountains. Miners work longer after their favourite meal.</p>
           <p>A barracks turns carriers into swordsmen, pikemen and bowmen with the weapons delivered to it. Soldiers fill your towers; send them to hold ground or to attack an enemy tower. A building whose defenders have all fallen is taken with its goods and land.</p>
-          <p>Drag to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
+          <p>Click a soldier or drag a rectangle to mark soldiers; Shift adds, Alt marks one type. Right-click to move them: Ctrl ignores enemies, Shift adds up to three waypoints, Alt patrols. Alt and a number stores a group, the number marks it, twice centers on it.</p>
+          <p>Drag with the right mouse button to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
           <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
           <button type="button" class="primary-button" @click="showGuide.set(false)">Back to the settlement</button>
         </div>
@@ -121,7 +122,7 @@ onDestroy(() => game?.dispose())
             <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="view().army.automatic" @click="game?.recruitAutomatic()" title="Recruit whenever a barracks has weapons">Recruit automatically</button>
             <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'march'" @click="choose('march')" title="Send soldiers to a place or against an enemy building">Send soldiers</button>
           </div>
-          <p class="carried">{{ view().army.outside }} {{ view().army.outside === 1 ? 'soldier stands' : 'soldiers stand' }} outside the garrisons.</p>
+          <p class="carried">{{ view().army.outside }} {{ view().army.outside === 1 ? 'soldier stands' : 'soldiers stand' }} outside the garrisons.{{ view().marked ? ' ' + view().marked + ' marked.' : '' }}</p>
         </section>
         <section class="settlers-panel" aria-label="Settlers">
           <div class="flex items-center justify-between"><h2>Settlers</h2><span class="ratio">Carriers at least {{ view().carrierRatio }}% <button type="button" class="text-button" @click="game?.carrierRatio(-10)" aria-label="Lower the carrier ratio">-</button> <button type="button" class="text-button" @click="game?.carrierRatio(10)" aria-label="Raise the carrier ratio">+</button></span></div>

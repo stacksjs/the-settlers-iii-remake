@@ -224,6 +224,7 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     if (s.soldier !== undefined) {
       const rule = rules.professions.find(p => p.id === s.profession)?.soldier, x = s.soldier
       check(rule && rules.military && isObject(x) && int(x.rank, 1, rules.military.ranks) && int(x.health, 1, rule.health[x.rank - 1] ?? 0) && int(x.cooldown, 0, rule.attackTicks) && int(x.order, -2, size - 1) && int(x.attack, 0, e.nextId) && int(x.garrison, 0, e.nextId) && s.tool === rule.weapon, `settler ${s.id} soldier state is invalid`)
+      check((x.route === undefined || (Array.isArray(x.route) && x.route.length >= 1 && x.route.length < 4 && x.route.every(tile))) && (x.patrol === undefined || (Array.isArray(x.patrol) && x.patrol.length === 2 && x.patrol.every(tile))) && (x.forced === undefined || x.forced === true), `settler ${s.id} soldier orders are invalid`)
     }
     else check(!rules.professions.find(p => p.id === s.profession)?.soldier, `settler ${s.id} is a soldier without soldier state`)
     if (s.holding) { const t = s.y * width + s.x; check(!standing.has(t), `two settlers rest on tile ${t}`); standing.add(t) }

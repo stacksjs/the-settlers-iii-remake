@@ -10,6 +10,8 @@ import type { EconomicAI } from './engine'
 import { createSession, economicAI, findStart, generateMap, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
+import { scene } from './scene'
+import { createTroops } from './troops'
 
 const rules = ROMAN_ENGINEERING
 export const PLAYER = 1
@@ -58,12 +60,12 @@ export function status(phase: string, shortage: string | null, suspended: boolea
   return needsWorker ? 'Working' : 'Ready'
 }
 
-export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false) {
-  if (!session) return { army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
+export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
+  if (!session) return { marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
-    ready, message, speed, tool, sound,
+    ready, message, speed, tool, sound, marked,
     time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`,
     population: view.population,
     professions: Object.entries(view.professions).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count })),
@@ -159,7 +161,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   // Computer players act through the same command queue as the person playing.
   let computers: { ai: EconomicAI, sequence: { next: number } }[] = []
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
-  const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady); value.prototypeKept = prototypeKept; update(value) }
+  // Marked soldiers and numbered groups are interface state; only the orders they produce enter the simulation.
+  let troops = createTroops(() => session, PLAYER), band: { x0: number, y0: number, x1: number, y1: number } | null = null
+  const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length); value.prototypeKept = prototypeKept; update(value) }
   const report = (text: string): void => { message = text; emit() }
   // The castle on generated starts, otherwise the first building or settler an original map gives the player.
   const castle = (): Point | null => {
@@ -173,6 +177,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
   const adopt = (next: Session): void => {
     session?.dispose(); session = next; selected = null; tool = null; accumulator = 0
+    troops = createTroops(() => session, PLAYER)
     const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
     seq = nextSeq(PLAYER)
     computers = next.state.players.filter(p => p.controller === 'computer').map(p => ({ ai: economicAI(p.id), sequence: { next: nextSeq(p.id) } }))
@@ -245,7 +250,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (tool === 'march') {
       // Soldiers standing outside obey first; otherwise garrisons send all but their last soldier.
       const own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
-      const outside = own.filter(s => !s.inside), soldiers = (outside.length ? outside : own).map(s => s.id)
+      const outside = own.filter(s => !s.inside), marked = troops.selected()
+      const soldiers = marked.length ? marked : (outside.length ? outside : own).map(s => s.id)
       if (!soldiers.length) { report('You have no soldiers yet. Build a barracks and recruit some.'); return }
       const map = session.state.map, target = session.state.buildings.get(session.context.index.buildingAt[cursor.y * map.width + cursor.x]!)
       const enemy = target && target.owner !== PLAYER && rules.buildings.find(r => r.id === target.type)?.garrison
@@ -271,27 +277,68 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     emit()
   }
 
-  let pointer: { x: number, y: number, cameraX: number, cameraY: number, moved: boolean } | null = null
+  let pointer: { x: number, y: number, cameraX: number, cameraY: number, moved: boolean, button: number, touch: boolean } | null = null
+  const modifiers = (event: MouseEvent | KeyboardEvent) => ({ shift: event.shiftKey, alt: event.altKey, ctrl: event.ctrlKey || event.metaKey })
+  /** Own soldiers on the map with their canvas positions, as the scene draws them. */
+  const soldiersOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.rank && i.owner === PLAYER).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
+  const local = (event: MouseEvent): Point => { const rect = canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
+  const soldierAt = (point: Point): number | null => {
+    const z = renderer.camera.zoom
+    const hits = soldiersOnScreen().filter(({ at }) => Math.abs(point.x - at.x) <= 9 * z && point.y >= at.y - 32 * z && point.y <= at.y + 4 * z)
+    return hits.sort((a, b) => Math.hypot(point.x - a.at.x, point.y - a.at.y + 14 * z) - Math.hypot(point.x - b.at.x, point.y - b.at.y + 14 * z) || a.id - b.id)[0]?.id ?? null
+  }
+  const command = (target: Point, mods: ReturnType<typeof modifiers>): void => {
+    const order = troops.order(target, mods)
+    if (!order) { report('Mark soldiers first: click one, or drag a rectangle around them.'); return }
+    const { type, ...fields } = order
+    const error = send(type, fields)
+    const how = type === 'attack' ? 'march to attack' : 'mode' in fields && fields.mode === 'patrol' ? 'patrol between here and there' : 'append' in fields ? 'add that waypoint' : 'mode' in fields && fields.mode === 'forced' ? 'march there, ignoring enemies' : 'march there'
+    report(error ?? `${order.soldiers.length} ${order.soldiers.length === 1 ? 'soldier will' : 'soldiers will'} ${how}.`)
+  }
   const on = <K extends keyof HTMLElementEventMap>(name: K, handler: (event: HTMLElementEventMap[K]) => void, options: AddEventListenerOptions = {}): void => canvas.addEventListener(name, handler as EventListener, { ...options, signal: lifetime.signal })
-  on('pointerdown', event => { if (event.button !== 0) return; canvas.focus(); pointer = { x: event.clientX, y: event.clientY, cameraX: renderer.camera.x, cameraY: renderer.camera.y, moved: false }; canvas.setPointerCapture(event.pointerId) })
+  // Left drag marks soldiers in a rectangle, as in the original; the right or middle button, or a finger, pans.
+  on('pointerdown', event => { if (event.button > 2) return; canvas.focus(); pointer = { x: event.clientX, y: event.clientY, cameraX: renderer.camera.x, cameraY: renderer.camera.y, moved: false, button: event.button, touch: event.pointerType !== 'mouse' }; canvas.setPointerCapture(event.pointerId) })
   on('pointermove', event => {
     if (session) cursor = renderer.pick(session, event.clientX, event.clientY) ?? cursor
     if (pointer) {
       const dx = event.clientX - pointer.x, dy = event.clientY - pointer.y
       if (Math.hypot(dx, dy) > 6) pointer.moved = true
-      if (pointer.moved) { renderer.camera.x = pointer.cameraX + dx; renderer.camera.y = pointer.cameraY + dy }
+      if (!pointer.moved) return
+      if (pointer.button === 0 && !pointer.touch && !tool) { const start = local({ clientX: pointer.x, clientY: pointer.y } as MouseEvent), end = local(event); band = { x0: start.x, y0: start.y, x1: end.x, y1: end.y } }
+      else { renderer.camera.x = pointer.cameraX + dx; renderer.camera.y = pointer.cameraY + dy }
     }
   })
   on('pointerup', event => {
-    if (pointer && !pointer.moved && ready && assetsReady && session) {
-      cursor = renderer.pick(session, event.clientX, event.clientY)
-      const placing = tool
-      act()
-      if (placing && !event.shiftKey && tool === placing && message.includes('placed')) { tool = null; emit() }
+    const ready_ = ready && assetsReady && !!session
+    if (pointer && band && ready_) {
+      const { x0, y0, x1, y1 } = band, z = renderer.camera.zoom
+      const inside = soldiersOnScreen().filter(({ at }) => at.x >= Math.min(x0, x1) && at.x <= Math.max(x0, x1) && at.y - 14 * z >= Math.min(y0, y1) && at.y - 14 * z <= Math.max(y0, y1)).map(s => s.id)
+      troops.band(inside, modifiers(event))
+      report(troops.selected().length ? `${troops.selected().length} soldiers marked. Right-click to move them; hold Ctrl to ignore enemies, Shift to add waypoints, Alt to patrol.` : 'No soldiers in that area.')
     }
-    pointer = null
+    else if (pointer && !pointer.moved && ready_ && pointer.button === 2) {
+      cursor = renderer.pick(session!, event.clientX, event.clientY)
+      if (cursor) command(cursor, modifiers(event))
+    }
+    else if (pointer && !pointer.moved && ready_ && pointer.button === 0) {
+      cursor = renderer.pick(session!, event.clientX, event.clientY)
+      const hit = tool ? null : soldierAt(local(event))
+      if (hit !== null) {
+        troops.click(hit, modifiers(event))
+        const count = troops.selected().length
+        report(`${count} ${count === 1 ? 'soldier' : 'soldiers'} marked. Right-click where they should go.`)
+      }
+      else {
+        if (!tool && !event.shiftKey) troops.clear()
+        const placing = tool
+        act()
+        if (placing && !event.shiftKey && tool === placing && message.includes('placed')) { tool = null; emit() }
+      }
+    }
+    pointer = null; band = null
   })
-  on('pointercancel', () => { pointer = null })
+  on('pointercancel', () => { pointer = null; band = null })
+  on('contextmenu', event => event.preventDefault())
   on('wheel', event => {
     event.preventDefault()
     const bounds = canvas.getBoundingClientRect(), x = event.clientX - bounds.left, y = event.clientY - bounds.top, old = renderer.camera.zoom
@@ -309,8 +356,16 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (event.key === 'ArrowLeft') cursor = { x: Math.max(0, cursor.x - 1), y: cursor.y }
     if (event.key === 'ArrowRight') cursor = { x: Math.min(map.width - 1, cursor.x + 1), y: cursor.y }
     if (event.key === 'Enter' && ready && assetsReady) act()
+    const digit = /^Digit([1-9])$/.exec(event.code)
+    if (digit && ready) {
+      event.preventDefault()
+      const n = Number(digit[1]), center = troops.key(n, modifiers(event))
+      if (event.altKey) report(`Group ${n} holds ${troops.selected().length} soldiers. Press ${n} to mark them, twice to find them.`)
+      else if (center) renderer.home(center, map.elevation[center.y * map.width + center.x])
+      else report(troops.selected().length ? `Group ${n}: ${troops.selected().length} soldiers marked.` : `Group ${n} is empty. Mark soldiers and press Alt+${n}.`)
+    }
     if (event.key === ' ') speed = speed === 0 ? 1 : 0
-    if (event.key === 'Escape') { tool = null; selected = null }
+    if (event.key === 'Escape') { tool = null; selected = null; troops.clear() }
     if (event.key.toLowerCase() === 'h') center()
     if (event.key.toLowerCase() === 's') void persist()
     canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${tool ? `Press Enter to place ${rules.buildings.find(b => b.id === tool)?.name ?? `a ${tool}`}.` : 'Press Enter to inspect.'}`)
@@ -334,7 +389,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     }
     if (session) {
       const placement = tool && cursor && session.context.building.has(tool) ? session.placement(PLAYER, tool, cursor.x, cursor.y) : null
-      renderer.draw(session, { player: PLAYER, cursor, tool, selected, time: elapsed, reduceMotion: reduceMotion(), placement })
+      renderer.draw(session, { player: PLAYER, cursor, tool, selected, time: elapsed, reduceMotion: reduceMotion(), placement, marked: new Set(troops.selected()), band })
     }
   })
   emit()

@@ -163,6 +163,87 @@ describe('combat', () => {
   })
 })
 
+describe('movement orders', () => {
+  const tile = (s: Session, x: number, y: number): number => y * s.state.map.width + x
+
+  test('waypoints are visited in order, at most three before the destination', () => {
+    const s = field([{ profession: 'swordsman', x: 30, y: 70 }], [{ profession: 'swordsman', x: 90, y: 90 }])
+    const id = soldiers(s, 1)[0]!.id, visited: number[] = []
+    order(s, 'move-soldiers', { soldiers: [id], x: 36, y: 70 })
+    order(s, 'move-soldiers', { soldiers: [id], x: 36, y: 76, append: true })
+    order(s, 'move-soldiers', { soldiers: [id], x: 30, y: 76, append: true })
+    order(s, 'move-soldiers', { soldiers: [id], x: 30, y: 80, append: true })
+    s.enqueue({ tick: s.state.tick, player: 1, seq: 900, type: 'move-soldiers', soldiers: [id], x: 20, y: 80, append: true })
+    s.advance(1)
+    expect(s.state.results.at(-1)!.reason).toBe('A move has at most three waypoints before its destination.')
+    const me = s.state.settlers.get(id)!
+    until(s, () => {
+      const here = tile(s, me.x, me.y)
+      if ([tile(s, 36, 70), tile(s, 36, 76), tile(s, 30, 76), tile(s, 30, 80)].includes(here) && visited.at(-1) !== here) visited.push(here)
+      return me.soldier!.order === -2
+    }, 2000)
+    expect(visited).toEqual([tile(s, 36, 70), tile(s, 36, 76), tile(s, 30, 76), tile(s, 30, 80)])
+    expect(me.soldier!.route).toBeUndefined()
+  })
+
+  test('a patrol turns around at both ends until another move cancels it, and survives a restore', () => {
+    const s = field([{ profession: 'pikeman', x: 30, y: 70 }], [{ profession: 'swordsman', x: 90, y: 90 }])
+    const id = soldiers(s, 1)[0]!.id, me = s.state.settlers.get(id)!, start = tile(s, me.x, me.y), end = tile(s, 38, 70)
+    order(s, 'move-soldiers', { soldiers: [id], x: 38, y: 70, mode: 'patrol' })
+    expect(me.soldier!.patrol).toEqual([start, end])
+    let turns = 0, last = start
+    until(s, () => { const here = tile(s, me.x, me.y); if ((here === start || here === end) && here !== last) { turns++; last = here } return turns >= 3 }, 3000)
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    s.advance(150); copy.advance(150)
+    expect(checksum(copy.state)).toBe(checksum(s.state))
+    order(s, 'move-soldiers', { soldiers: [id], x: 34, y: 74 })
+    expect(me.soldier!.patrol).toBeUndefined()
+    until(s, () => me.soldier!.order === -2, 600)
+    expect([me.x, me.y]).toEqual([34, 74])
+  })
+
+  test('a forced move ignores enemies on the way; a normal move is diverted to fight', () => {
+    const setup = (): Session => field([{ profession: 'swordsman', x: 30, y: 70 }], [{ profession: 'swordsman', x: 40, y: 70 }])
+    const march = (s: Session, mode?: 'forced'): void => {
+      const id = soldiers(s, 1)[0]!.id
+      order(s, 'move-soldiers', { soldiers: [id], x: 50, y: 70, ...(mode ? { mode } : {}) })
+      until(s, () => s.state.settlers.get(id)?.soldier?.order === -2 || soldiers(s, 1).length === 0 || soldiers(s, 2).length === 0, 2000)
+    }
+    // Forced: the enemy may strike, but ours never strikes back on the way and arrives.
+    const forced = setup()
+    march(forced, 'forced')
+    const ours = soldiers(forced, 1)[0]!
+    expect([ours.x, ours.y]).toEqual([50, 70])
+    expect(ours.soldier!.forced).toBeUndefined()
+    expect(soldiers(forced, 2)[0]!.soldier!.health).toBe(100)
+    // Normal: the enemy in reach diverts the march into a fight to the death.
+    const normal = setup()
+    march(normal)
+    expect((normal.state.ledger[1]?.deaths ?? 0) + (normal.state.ledger[2]?.deaths ?? 0)).toBe(1)
+  })
+
+  test('a forced move pulls a soldier out of a fight in progress', () => {
+    const s = field([{ profession: 'pikeman', x: 30, y: 70 }], [{ profession: 'swordsman', x: 33, y: 70 }])
+    const pikeman = soldiers(s, 1)[0]!
+    until(s, () => pikeman.soldier!.health < 300, 400)
+    order(s, 'move-soldiers', { soldiers: [pikeman.id], x: 20, y: 60, mode: 'forced' })
+    until(s, () => pikeman.soldier!.order === -2 || !s.state.settlers.has(pikeman.id), 1000)
+    expect(s.state.settlers.has(pikeman.id)).toBe(true)
+    expect([pikeman.x, pikeman.y]).toEqual([20, 60])
+  })
+
+  test('orders that make no sense are refused', () => {
+    const s = field([{ profession: 'swordsman', x: 30, y: 70 }], [{ profession: 'swordsman', x: 90, y: 90 }])
+    const id = soldiers(s, 1)[0]!.id
+    s.enqueue({ tick: s.state.tick, player: 1, seq: 901, type: 'move-soldiers', soldiers: [id], x: 31, y: 70, mode: 'sideways' })
+    s.advance(1)
+    expect(s.state.results.at(-1)!.reason).toBe('Unknown kind of move.')
+    const envelope = save(s)
+    envelope.state.settlers.find(p => p.id === id)!.soldier!.route = [1, 2, 3, 4]
+    expect(() => restore(envelope, rules)).toThrow('soldier orders are invalid')
+  })
+})
+
 describe('garrisons and capture', () => {
   function war(): Session {
     return createSession({

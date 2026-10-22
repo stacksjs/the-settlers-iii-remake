@@ -110,7 +110,11 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     camera.x = width / 2 - v.x * camera.zoom; camera.y = height / 2 - v.y * camera.zoom
   }
 
-  interface DrawOptions { player: number, cursor: Point | null, tool: string | null, selected: number | null, time: number, reduceMotion: boolean, placement: string | null }
+  interface DrawOptions {
+    player: number, cursor: Point | null, tool: string | null, selected: number | null, time: number, reduceMotion: boolean, placement: string | null
+    /** Marked soldiers and the rectangle being dragged to mark them, in canvas coordinates. */
+    marked?: ReadonlySet<number>, band?: { x0: number, y0: number, x1: number, y1: number } | null
+  }
   function draw(session: Session, options: DrawOptions): void {
     ctx!.fillStyle = '#0d1714'; ctx!.fillRect(0, 0, width, height)
     if (!atlas) return
@@ -141,7 +145,13 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       if (b.owner === options.player || rule.footprint.some(([dx, dy]) => viewer.visible[(b.y + dy) * map.width + b.x + dx])) outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
       if (selected && 'radius' in rule.workflow) ring(session, b.workArea, rule.workflow.radius)
     }
+    marked = options.marked ?? null
     for (const item of items) paint(item, options.player)
+    if (options.band) {
+      const { x0, y0, x1, y1 } = options.band
+      ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = 1; ctx!.fillStyle = '#f2df9c18'
+      ctx!.fillRect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0)); ctx!.strokeRect(Math.min(x0, x1) + 0.5, Math.min(y0, y1) + 0.5, Math.abs(x1 - x0), Math.abs(y1 - y0))
+    }
 
     if (options.cursor) {
       const c = options.cursor
@@ -154,6 +164,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     }
   }
 
+  let marked: ReadonlySet<number> | null = null
   function paint(item: SceneItem, player: number): void {
     const z = camera.zoom, p = toScreen(item.view)
     switch (item.kind) {
@@ -162,6 +173,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       case 'site': if (item.phase === 'building') for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i, 1, Math.max(0.08, item.reveal ?? 0)); break
       case 'settler':
         ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
+        if (marked?.has(item.entity)) { ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = Math.max(1, z); ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 7 * z, 3 * z, 0, 0, Math.PI * 2); ctx!.stroke() }
         sprite(item.sprite, item.view, item.frame)
         if (item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
         else if (item.action === 'working' && item.health === undefined) { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
@@ -216,6 +228,8 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   resize()
   return {
     camera, resize, draw, home,
+    /** Canvas coordinates of a view point under the current camera. */
+    screen: toScreen,
     setAssets(value: Atlas) { atlas = value; patterns = null; chunks.clear() },
     invalidate() { chunks.clear() },
     pick(session: Session, clientX: number, clientY: number): Point | null {

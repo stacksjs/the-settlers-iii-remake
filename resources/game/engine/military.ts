@@ -112,11 +112,21 @@ function station(ctx: Context): void {
 
 finishers.set('garrison', (_ctx, s, _program, ok) => { if (!ok && s.soldier && !s.inside) s.soldier.garrison = 0 })
 finishers.set('march', (_ctx, s, _program, ok) => {
-  if (!s.soldier) return
-  // Arrived soldiers hold the position they were sent to; an unreachable target ends the order.
-  if (s.soldier.order >= 0) s.soldier.order = ok ? HOLDING : NO_ORDER
-  if (!ok) s.soldier.attack = 0
+  const soldier = s.soldier
+  if (!soldier) return
+  if (!ok) { soldier.attack = 0; if (soldier.order >= 0) stand(soldier, NO_ORDER); return }
+  if (soldier.order < 0) return
+  // Arrived: walk on to the next waypoint, turn around on patrol, or hold the position.
+  if (soldier.route?.length) { soldier.order = soldier.route.shift()!; if (!soldier.route.length) delete soldier.route }
+  else if (soldier.patrol) soldier.order = soldier.order === soldier.patrol[1] ? soldier.patrol[0] : soldier.patrol[1]
+  else stand(soldier, HOLDING)
 })
+
+/** Ends every movement order: no route, patrol or forced march remains. */
+function stand(soldier: NonNullable<Settler['soldier']>, order: number): void {
+  soldier.order = order
+  delete soldier.route; delete soldier.patrol; delete soldier.forced
+}
 finishers.set('chase', () => {})
 
 /** Takes a soldier out of its building onto the door or the nearest free tile. A garrison keeps its last soldier. */
@@ -181,7 +191,8 @@ function act(ctx: Context, s: Settler): void {
   if (s.program && !['march', 'chase', 'settle'].includes(s.program.kind)) return
   // Marching soldiers only answer enemies within reach; others look as far as they search.
   const marching = s.program?.kind === 'march' && soldier.order >= 0
-  const target = enemiesNear(ctx, s, s, marching ? rule.range[1] : military(ctx).searchRadius)[0]
+  // A forced move ignores every enemy until it arrives (manual: "Ignoring the Opponent").
+  const target = soldier.forced && soldier.order >= 0 ? undefined : enemiesNear(ctx, s, s, marching ? rule.range[1] : military(ctx).searchRadius)[0]
   if (s.action === 'walking') {
     // A step cannot be interrupted: stop on the tile being entered once the target is in reach from there,
     // or turn toward a newly seen enemy after this step.
@@ -217,7 +228,7 @@ const attackable = (ctx: Context, b: Building | undefined, owner: number): b is 
 /** At an enemy military building: its soldiers come out one at a time to fight; with none left inside, it is taken. */
 function assault(ctx: Context, s: Settler): void {
   const b = ctx.state.buildings.get(s.soldier!.attack)
-  if (!attackable(ctx, b, s.owner)) { s.soldier!.attack = 0; s.soldier!.order = NO_ORDER; return }
+  if (!attackable(ctx, b, s.owner)) { s.soldier!.attack = 0; stand(s.soldier!, NO_ORDER); return }
   const door = doorOf(ctx, b)
   if (distance(s, pointAt(ctx, door)) > military(ctx).defendRadius) {
     if (!s.program) start(ctx, s, 'march', door, [{ op: 'go', tile: door, adjacent: true }])
@@ -253,7 +264,7 @@ export function capture(ctx: Context, b: Building, conqueror: Settler): void {
   }
   b.owner = winner
   b.suspended = false
-  conqueror.soldier!.attack = 0; conqueror.soldier!.order = NO_ORDER; conqueror.soldier!.garrison = b.id
+  conqueror.soldier!.attack = 0; stand(conqueror.soldier!, NO_ORDER); conqueror.soldier!.garrison = b.id
   start(ctx, conqueror, 'garrison', b.id, [{ op: 'go', tile: doorOf(ctx, b) }, { op: 'enter', building: b.id }])
   emit(ctx, { player: winner, type: 'capture', text: `You captured a ${rule.name}`, entity: b.id, tile: doorOf(ctx, b) })
   emit(ctx, { player: loser, type: 'captured', text: `Your ${rule.name} was captured`, entity: b.id, tile: doorOf(ctx, b) })
@@ -330,7 +341,15 @@ export function wage(ctx: Context): void {
   regroup(ctx)
 }
 
-/** Move and attack orders from the command queue. Returns a rejection reason, or null when at least one soldier obeys. */
+/** Most moves one order may hold: three waypoints plus the final destination (manual: "Setting Waypoints"). */
+export const MAX_MOVES = 4
+
+/**
+ * Move and attack orders from the command queue. A move may be forced (ignoring
+ * enemies), a patrol between the soldier's position and the target, or appended
+ * as a waypoint to a move in progress. Any other move cancels the previous one.
+ * Returns a rejection reason, or null when at least one soldier obeys.
+ */
 export function command(ctx: Context, player: number, value: Record<string, unknown>): string | null {
   if (!ctx.rules.military) return 'These rules have no soldiers.'
   const { state } = ctx
@@ -350,15 +369,30 @@ export function command(ctx: Context, player: number, value: Record<string, unkn
     if (!Number.isInteger(x) || !Number.isInteger(y) || (x as number) < 0 || (y as number) < 0 || (x as number) >= state.map.width || (y as number) >= state.map.height) return 'Choose a tile on the map.'
     tile = tileOf(ctx, { x: x as number, y: y as number })
   }
-  let sent = 0
+  const mode = value.mode ?? 'move', append = value.append ?? false
+  if (!['move', 'forced', 'patrol'].includes(mode as string) || typeof append !== 'boolean' || (building && (mode !== 'move' || append))) return 'Unknown kind of move.'
+  let sent = 0, full = 0
   for (const s of soldiers as Settler[]) {
+    const soldier = s.soldier!
+    if (append && soldier.order >= 0 && !soldier.attack && !soldier.patrol) {
+      // A waypoint joins the move in progress, up to four moves in all.
+      const route = soldier.route ?? []
+      if (route.length + 1 >= MAX_MOVES) { full++; continue }
+      soldier.route = [...route, tile]
+      if (mode === 'forced') soldier.forced = true
+      sent++
+      continue
+    }
     if (!leave(ctx, s)) continue
     s.program = null; s.path = []
-    s.soldier!.attack = building
-    s.soldier!.order = tile
+    stand(soldier, tile)
+    soldier.attack = building
+    if (mode === 'forced') soldier.forced = true
+    if (mode === 'patrol' && tileOf(ctx, s) !== tile) soldier.patrol = [tileOf(ctx, s), tile]
     sent++
   }
-  return sent ? null : 'Each garrison keeps its last soldier.'
+  if (sent) return null
+  return full ? 'A move has at most three waypoints before its destination.' : 'Each garrison keeps its last soldier.'
 }
 
 export const garrisonCount = (ctx: Context, b: Building): number => garrisonOf(ctx, b).length

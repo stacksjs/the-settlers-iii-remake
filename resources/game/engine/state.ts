@@ -48,7 +48,15 @@ export interface Program { kind: string, ref: number, steps: Op[], pc: number }
 
 export type Action = 'idle' | 'walking' | 'waiting' | 'working' | 'inside'
 /** Present only on soldiers. Order is a target tile, -1 for none or -2 while holding a chosen position; attack and garrison are building ids or 0. */
-export interface Soldier { rank: number, health: number, cooldown: number, order: number, attack: number, garrison: number }
+export interface Soldier {
+  rank: number, health: number, cooldown: number, order: number, attack: number, garrison: number
+  /** Further destinations after the current order, at most three waypoints in all. */
+  route?: number[]
+  /** The two ends of a patrol: where the soldier started and the turn-around point. */
+  patrol?: [number, number]
+  /** A forced move ignores enemies until the soldier arrives. */
+  forced?: boolean
+}
 /** An arrow in flight: it lands on a tile at a tick and hurts whoever it was aimed at if they are still there. */
 export interface Projectile { id: number, owner: number, from: number, to: number, target: number, damage: number, fired: number, arrives: number }
 export interface Settler {
