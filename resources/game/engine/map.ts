@@ -79,3 +79,29 @@ export function pick(map: MapState, viewX: number, viewY: number): Point | null 
   }
   return bestError <= 1 ? best : null
 }
+
+/**
+ * Finds open, level land for a starting castle near a preferred point:
+ * buildable terrain without water or objects in a radius, searched in rings.
+ * An engineering choice for generated maps; original maps carry their own starts.
+ */
+export function findStart(rules: RulesProfile, map: MapState, near: Point, radius = 6): Point | null {
+  const open = (x: number, y: number): boolean => {
+    let low = 255, high = 0
+    for (let dy = -radius; dy <= radius; dy++) {
+      for (let dx = -radius; dx <= radius; dx++) {
+        const px = x + dx, py = y + dy
+        if (distance({ x, y }, { x: px, y: py }) > radius) continue
+        if (!inside(map, px, py)) return false
+        const t = indexOf(map, px, py), terrain = rules.terrain[map.terrain[t]!]!
+        if (!terrain.buildable || (distance({ x, y }, { x: px, y: py }) <= 3 && map.object[t])) return false
+        low = Math.min(low, map.elevation[t]!); high = Math.max(high, map.elevation[t]!)
+      }
+    }
+    return high - low <= 2
+  }
+  for (let r = 0; r < Math.max(map.width, map.height); r++) {
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r && open(near.x + dx, near.y + dy)) return { x: near.x + dx, y: near.y + dy }
+  }
+  return null
+}

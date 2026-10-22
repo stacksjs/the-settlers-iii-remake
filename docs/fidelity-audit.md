@@ -4,6 +4,17 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: physical economy engine (2026-10-22)
+
+The table below records the 2026-10-21 prototype review and is kept as that record. Since then the browser game runs on `resources/game/engine`, which changes several verdicts:
+
+- **Logistics, workers and construction:** goods live in piles, building slots or a carrier's hands. Deliveries reserve source and destination and change the destination only on arrival. Diggers level real elevation and builders consume delivered material. Workers are individual settlers who fetch a physical tool before taking up a profession. Doorstep backpressure, storage areas, construction-first delivery, the carrier ratio and residences are implemented. A ledger-based oracle checks goods conservation every tick in the engine suites.
+- **Production:** woodcutters, foresters, stonecutters, fishermen, farmers, waterworks, millers, bakers, pig farmers, butchers, miners with preferred meals, smelters and smiths run on physical work cycles with finite trees, stone, fish and deposits.
+- **Terrain and territory:** the map is a six-neighbour lattice with elevation, slope-aware routing, fog of war and per-player views. Territory comes from military buildings and pioneers. Geologists leave survey signs. Building footprints, protected tiles, doors and pile positions follow the pinned reference remake definitions.
+- **Presentation:** carriers render in all six directions, holding the goods they actually carry. Piles, construction stages, saplings and crops are drawn from state.
+
+Still not matched: no value is an admitted original observation. Costs, capacities and preferred meals are manual candidates. Geometry is reference-remake evidence; for barracks the reference definition (5 planks, 4 stone) differs from the manual table (4 planks, 5 stone). Timings, radii and population values are explicit placeholders that name their owning issues. Military, other civilizations, ships, trade, AI, campaigns, original maps in play, the original control center and multiplayer remain open roadmap work.
+
 ## Confirmed matches and gaps
 
 | Area | Evidence and verdict |

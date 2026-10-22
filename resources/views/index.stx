@@ -1,20 +1,18 @@
 <script client>
-import { catalog, mountGame, snapshot } from '../game/controller'
+import { catalog, categories, mountGame, snapshot } from '../game/controller'
 import type { Game } from '../game/controller'
-import type { Kind } from '../game/simulation'
-import { createWorld } from '../game/simulation'
 
 const map = useRef<HTMLCanvasElement>('island')
-const view = state(snapshot(createWorld(), 1, 'Preparing your island...', 1))
+const view = state(snapshot(null, null, 'Preparing your settlement...', 1))
 const selectedTool = state('')
-const category = state('Materials')
+const category = state('Building')
 const showGuide = state(false)
 const confirmRestart = state(false)
 const reduceMotion = usePreferredReducedMotion()
-const categories = ['Materials', 'Food', 'Industry', 'Military', 'Settlement']
 let game: Game | null = null
 const options = derived(() => catalog.filter(item => item.category === category()))
-function choose(kind: Kind): void { selectedTool.set(kind); game?.choose(kind) }
+const stocked = derived(() => view().goods.filter(item => item.amount > 0))
+function choose(kind: string): void { selectedTool.set(kind); game?.choose(kind) }
 function inspect(): void { selectedTool.set(''); game?.choose(null) }
 function restart(): void { game?.restart(); confirmRestart.set(false); selectedTool.set('') }
 onMount(() => {
@@ -32,89 +30,95 @@ onDestroy(() => game?.dispose())
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#172c26">
-  <link rel="icon" type="image/png" href="/assets/settlers-original/headquarters.png">
-  <meta name="description" content="Settle a new shore. Build a living economy, claim the river crossing and lead your settlers to victory in a browser strategy game built with Stacks.">
-  <title>The Settlers III Remake | A new shore</title>
+  <link rel="icon" type="image/png" href="/assets/settlers-original/castle.png">
+  <meta name="description" content="Found a Roman settlement where every settler, tool and good is real: carriers deliver, diggers level, builders build and workers fetch their own resources.">
+  <title>The Settlers III Remake | Roman settlement</title>
 </head>
 <body class="m-0 antialiased">
   <div class="game-shell">
     <header class="flex gap-4 items-center justify-between px-5 masthead">
       <a href="/" class="flex gap-3 items-center brand" aria-label="The Settlers III Remake home">
         <span class="brand-mark i-hugeicons-castle-01" aria-hidden="true"></span>
-        <span><strong>The Settlers <span class="roman">III</span></strong><small>A NEW SHORE</small></span>
+        <span><strong>The Settlers <span class="roman">III</span></strong><small>ROMAN SETTLEMENT</small></span>
       </a>
-      <div class="flex gap-5 items-center campaign"><span class="campaign-name">The Riverlands</span><span class="day">Day {{ view().day }}</span></div>
-      <nav class="flex gap-2 items-center" aria-label="Campaign controls">
-        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.save()" title="Save campaign on this device"><span class="i-hugeicons-floppy-disk" aria-hidden="true"></span><span>Save</span></button>
-        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.load()" title="Restore the last saved campaign">Load</button>
+      <div class="flex gap-5 items-center campaign"><span class="campaign-name">Free settlement</span><span class="day">{{ view().time }}</span></div>
+      <nav class="flex gap-2 items-center" aria-label="Settlement controls">
+        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.save()" title="Save settlement on this device"><span class="i-hugeicons-floppy-disk" aria-hidden="true"></span><span>Save</span></button>
+        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.load()" title="Restore the last saved settlement">Load</button>
         <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="view().sound" @click="game?.toggleSound()">{{ view().sound ? 'Sound on' : 'Sound off' }}</button>
         <button type="button" class="quiet-button" @click="showGuide.set(!showGuide())" :aria-expanded="showGuide()">Guide</button>
-        <button type="button" class="new-island quiet-button" :disabled="!view().ready" @click="confirmRestart.set(!confirmRestart())">New island</button>
+        <button type="button" class="new-island quiet-button" :disabled="!view().ready" @click="confirmRestart.set(!confirmRestart())">New settlement</button>
       </nav>
     </header>
 
-    <section class="flex items-center resource-strip" aria-label="Settlement resources">
-      <div class="flex gap-2 items-center population" title="Employed settlers / total settlers"><span class="i-hugeicons-user-group" aria-hidden="true"></span><strong>{{ view().employed }}/{{ view().settlers }}</strong><small>settlers</small></div>
+    <section class="flex items-center resource-strip" aria-label="Goods in your settlement">
+      <div class="flex gap-2 items-center population" title="Settlers in your settlement"><span class="i-hugeicons-user-group" aria-hidden="true"></span><strong>{{ view().population }}</strong><small>settlers</small></div>
       <div class="flex items-center stocks">
-        <div :for="item in view().resources" class="stock" :title="item.key"><span>{{ item.key }}</span><strong>{{ item.amount }}</strong></div>
+        <div :for="item in stocked()" class="stock" :title="item.key"><span>{{ item.key }}</span><strong>{{ item.amount }}</strong></div>
       </div>
-      <div class="flex gap-2 items-center army"><span class="i-hugeicons-sword-01" aria-hidden="true"></span><strong>{{ view().soldiers }}</strong><small>soldiers</small></div>
     </section>
 
     <main class="playfield">
-      <section class="map-region" aria-label="Island and campaign">
-        <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Island map. Drag to pan, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
+      <section class="map-region" aria-label="Settlement map">
+        <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag to pan, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
-        <div class="map-caption"><span class="map-location">The Riverlands</span><span>A foothold on the western shore</span></div>
+        <div class="map-caption"><span class="map-location">Free settlement</span><span>A generated landscape, not an original map</span></div>
         <div class="flex gap-1 map-controls" aria-label="Simulation speed">
-          <button type="button" class="map-button" @click="game?.home()" title="Center island (H)" aria-label="Center island"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
+          <button type="button" class="map-button" @click="game?.home()" title="Center on the castle (H)" aria-label="Center on the castle"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 0" @click="game?.speed(view().speed === 0 ? 1 : 0)" aria-label="Pause or resume simulation">{{ view().speed === 0 ? 'Play' : 'Pause' }}</button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 1" @click="game?.speed(1)">1x</button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 2" @click="game?.speed(2)">2x</button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 4" @click="game?.speed(4)">4x</button>
         </div>
         <div class="guide-panel" :if="showGuide()">
-          <h2>From a foothold to a kingdom.</h2>
-          <p>Build a woodcutter near trees, a sawmill and a stonecutter near rocks. Buildings share the settlement stock in this campaign.</p>
-          <p>Fish feed miners. Grain becomes flour, then bread. Iron ore and coal become iron, then swords. Barracks need swords and bread to train soldiers.</p>
-          <p>Guard towers extend the golden border. Claim the river crossing, train an army and march on the rival stronghold. Raids grow stronger over time.</p>
-          <p >Drag to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and on backgrounding. Use Save and wait for confirmation before closing the browser.</p>
-          <button type="button" class="primary-button" @click="showGuide.set(false)">Back to the island</button>
+          <h2>Every good is carried.</h2>
+          <p>Carriers fetch each plank and stone from where it lies. Diggers level the site, builders build it, and a worker needs the right tool before a workplace opens.</p>
+          <p>Woodcutters and stonecutters walk to the nearest tree or granite in their working area. Foresters replant. Full doorsteps stop production until goods are used or taken to a storage area.</p>
+          <p>Mark goods for storage in the Goods panel. Send pioneers to push your border and geologists to survey mountains. Miners work longer after their favourite meal.</p>
+          <p>Drag to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
+          <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
+          <button type="button" class="primary-button" @click="showGuide.set(false)">Back to the settlement</button>
         </div>
         <div class="guide-panel restart-panel" :if="confirmRestart()">
-          <h2>Set sail for a new island?</h2><p>This replaces the campaign saved on this device.</p>
-          <div class="flex gap-2"><button type="button" class="primary-button" @click="restart()">Start a new campaign</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
-        </div>
-        <div class="result-panel" :if="view().result !== 'playing'">
-          <p class="result-label">{{ view().result === 'won' ? 'THE VALLEY IS YOURS' : 'THE SETTLEMENT HAS FALLEN' }}</p>
-          <h2>{{ view().result === 'won' ? 'A kingdom, built together.' : 'Another shore awaits.' }}</h2>
-          <p>{{ view().result === 'won' ? 'Your settlers have captured the rival stronghold. The Riverlands are at peace.' : 'Your headquarters could not withstand the raids. Build your supply lines and border defenses earlier next time.' }}</p>
-          <button type="button" class="primary-button" @click="confirmRestart.set(true)">Set sail again</button>
+          <h2>Start a new settlement?</h2><p>This replaces the settlement saved on this device. {{ view().prototypeKept ? 'Your Riverlands prototype save stays untouched.' : '' }}</p>
+          <div class="flex gap-2"><button type="button" class="primary-button" @click="restart()">Start a new settlement</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
         </div>
         <div class="advisor"><span class="advisor-icon i-hugeicons-quill-pen-01" aria-hidden="true"></span><div><strong>Settlement dispatch</strong><p role="status" aria-live="polite">{{ view().message }}</p></div></div>
       </section>
 
       <aside class="sidebar" aria-label="Settlement management">
-        <div class="settlement-heading"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>A new shore</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Headquarters strength <strong>{{ view().health }}/20</strong></p></div>
+        <div class="settlement-heading"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
         <section class="construction" aria-label="Construction">
-          <div class="flex items-center justify-between section-heading"><h2>Build your settlement</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
+          <div class="flex items-center justify-between section-heading"><h2>Build</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
           <div class="flex flex-wrap gap-1 category-list" aria-label="Building categories"><button :for="name in categories" type="button" :aria-pressed="category() === name" @click="category.set(name)">{{ name }}</button></div>
           <div class="building-catalog">
-            <button :for="item in options()" type="button" class="building-choice" :disabled="!view().ready" :aria-pressed="selectedTool() === item.kind" :title="item.description" @click="choose(item.kind)">
-              <img class="building-symbol" :src="'/assets/settlers-original/' + item.kind + '.png'" width="42" height="42" alt=""><strong>{{ item.name }}</strong><small>{{ item.costLabel }}</small>
+            <button :for="item in options()" type="button" class="building-choice" :disabled="!view().ready" :aria-pressed="selectedTool() === item.id" :title="item.description" @click="choose(item.id)">
+              <img class="building-symbol" :src="'/assets/settlers-original/' + item.id + '.png'" width="42" height="42" alt=""><strong>{{ item.name }}</strong><small>{{ item.cost }}</small>
             </button>
+          </div>
+          <div class="flex gap-2 mt-3 specialists" aria-label="Specialists">
+            <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'pioneer'" @click="choose('pioneer')" title="Send a pioneer to claim land at the border">Pioneer</button>
+            <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'geologist'" @click="choose('geologist')" title="Send a geologist to survey a mountain">Geologist</button>
           </div>
         </section>
         <section class="inspector" :if="view().selected" aria-label="Selected building">
           <div class="flex items-center justify-between"><h2>{{ view().selected?.name }}</h2><span class="building-status">{{ view().selected?.status }}</span></div>
           <p>{{ view().selected?.description }}</p>
-          <progress :value="view().selected?.progress" max="1" aria-label="Building or production progress"></progress>
-          <div class="flex gap-3 mt-2" :if="view().selected?.kind !== 'headquarters'"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.enabled ? 'Pause work' : 'Resume work' }}</button><button type="button" class="text-button" @click="game?.demolish()">Dismantle</button></div>
+          <progress :value="view().selected?.progress" max="1" aria-label="Construction or work progress"></progress>
+          <p class="worker-line">Worker: {{ view().selected?.worker }}</p>
+          <ul class="stock-list" :if="view().selected?.stocks.length"><li :for="stock in view().selected?.stocks"><span>{{ stock.role }} {{ stock.good }}</span><strong>{{ stock.amount }}/{{ stock.capacity }}</strong></li></ul>
+          <div class="flex gap-3 mt-2" :if="!view().selected?.castle"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.suspended ? 'Resume work' : 'Pause work' }}</button><button type="button" class="text-button" @click="game?.demolish()">Tear down</button></div>
         </section>
-        <section class="objectives" aria-label="Campaign objectives"><h2>The path to victory</h2><ol><li :for="goal in view().objectives" :class="goal.done ? 'complete' : ''"><span :class="goal.done ? 'i-hugeicons-checkmark-circle-02' : 'i-hugeicons-circle'" aria-hidden="true"></span><span>{{ goal.text }}</span><span class="sr-only">{{ goal.done ? 'Complete' : 'Incomplete' }}</span></li></ol></section>
-        <section class="border-report"><div class="flex items-center justify-between"><h2>The eastern rival</h2><span class="raid-time">Raid in {{ view().raidIn }}s</span></div><p>{{ view().enemy }} defenders hold the stronghold.</p><button type="button" class="w-full primary-button" :disabled="!view().ready" @click="game?.attack()"><span class="i-hugeicons-sword-01" aria-hidden="true"></span>March on the stronghold</button></section>
-        <details class="chronicle"><summary>Settlement chronicle</summary><p :for="line in view().log">{{ line }}</p></details>
-        <footer class="sidebar-footer">Built with Stacks, stx and Craft. Original demo sprites, converted for the browser.</footer>
+        <section class="settlers-panel" aria-label="Settlers">
+          <div class="flex items-center justify-between"><h2>Settlers</h2><span class="ratio">Carriers at least {{ view().carrierRatio }}% <button type="button" class="text-button" @click="game?.carrierRatio(-10)" aria-label="Lower the carrier ratio">-</button> <button type="button" class="text-button" @click="game?.carrierRatio(10)" aria-label="Raise the carrier ratio">+</button></span></div>
+          <ul class="profession-list"><li :for="item in view().professions"><span>{{ item.name }}</span><strong>{{ item.count }}</strong></li></ul>
+        </section>
+        <section class="goods-panel" aria-label="Goods and storage">
+          <h2>Goods</h2><p>Marked goods are carried into storage areas instead of waiting at doorsteps.</p>
+          <div class="goods-grid"><button :for="item in view().goods" type="button" class="good-toggle" :aria-pressed="item.stored" @click="game?.store(item.key)"><span>{{ item.key }}</span><strong>{{ item.amount }}</strong></button></div>
+        </section>
+        <details class="chronicle" open><summary>Settlement chronicle</summary><p :for="line in view().events">{{ line }}</p></details>
+        <footer class="sidebar-footer">Built with Stacks, stx and Craft. Original demo sprites, converted for the browser. Rules are the Roman engineering profile, not a verified original ruleset.</footer>
       </aside>
     </main>
   </div>
@@ -124,6 +128,7 @@ onDestroy(() => game?.dispose())
 <style>
 :root { color-scheme: dark; --ink:#e9e5cf; --muted:#a7b4a5; --panel:#1e332b; --line:#ffffff12; --gold:#e1c381; --surface:#172c26; font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif; background:var(--surface); color:var(--ink); }
 * { box-sizing:border-box; } body { margin:0; } button,a { -webkit-tap-highlight-color:transparent; } button { font:inherit; cursor:pointer; color:inherit; } button:focus-visible,a:focus-visible,canvas:focus-visible { outline:2px solid var(--gold); outline-offset:-3px; } button:disabled { opacity:.5; cursor:wait; } button { transition:background .15s,color .15s; } a { color:inherit; text-decoration:none; } .game-shell { height:100dvh; min-height:650px; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:76px 58px minmax(0,1fr); } .masthead { background:#132820; border-bottom:1px solid var(--line); } .brand strong { font:600 25px/1.05 Georgia,"Times New Roman",serif; letter-spacing:-.6px; } .brand .roman { color:var(--gold); font-weight:400; padding-left:3px; } .brand small { display:block; font-size:9px; letter-spacing:3.2px; color:var(--gold); margin-top:7px; } .brand-mark { width:34px; height:34px; color:var(--gold); } .campaign { font-size:12px; } .campaign-name { color:var(--muted); } .day { border-left:1px solid #ffffff25; padding-left:20px; } .quiet-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; background:transparent; border:1px solid #ffffff1c; padding:9px 12px; border-radius:3px; font-size:12px; min-height:38px; white-space:nowrap; } .quiet-button:hover { background:#ffffff0c; } .quiet-button>span[aria-hidden="true"] { width:14px; height:14px; } .new-island { color:var(--gold); } .resource-strip { background:#21392e; border-bottom:1px solid #0003; padding:0 20px; gap:22px; font-size:12px; } .population,.army { white-space:nowrap; } .population>span,.army>span { width:20px; height:20px; color:var(--gold); } .population small,.army small { color:var(--muted); font-size:10px; } .stocks { min-width:0; flex:1; justify-content:space-around; overflow:auto; gap:14px; padding:8px 17px; border-left:1px solid var(--line); border-right:1px solid var(--line); } .stock { display:flex; flex-direction:column; align-items:center; min-width:30px; } .stock span { text-transform:capitalize; font-size:9px; color:var(--muted); } .stock strong { font-size:16px; font-weight:500; font-variant-numeric:tabular-nums; margin-top:2px; } .playfield { display:grid; grid-template-columns:minmax(0,1fr) 330px; min-height:0; } .map-region { position:relative; min-width:0; overflow:hidden; background:#243e37; } .island-map { display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; } .map-caption { position:absolute; pointer-events:none; left:27px; top:25px; display:flex; flex-direction:column; gap:6px; color:#c4d1bd; font-size:11px; text-shadow:0 1px 4px #172c26; } .map-location { font:24px Georgia,serif; color:#e9e5cf; } .map-controls { position:absolute; right:18px; top:22px; background:#162d25e8; padding:4px; border:1px solid #ffffff15; border-radius:3px; } .map-button { min-width:32px; min-height:31px; padding:5px 7px; font-size:11px; background:transparent; border:0; border-radius:2px; } .map-button>span { display:block; width:17px; height:17px; } .map-button:hover,.map-button[aria-pressed="true"] { background:#e1c381; color:#192e25; } .advisor { position:absolute; left:22px; bottom:22px; right:22px; display:flex; align-items:center; gap:13px; background:#142b23ed; border:1px solid #a7b78335; box-shadow:0 8px 30px #0002; padding:16px 18px; border-radius:3px; pointer-events:none; } .advisor-icon { min-width:27px; height:27px; color:var(--gold); } .advisor strong { color:var(--gold); font-size:11px; font-weight:500; } .advisor p { font-size:12px; margin:4px 0 0; color:#e4e7d5; line-height:1.55; } .sidebar { min-height:0; overflow:auto; background:var(--panel); border-left:1px solid #d2ce9f1c; scrollbar-width:thin; scrollbar-color:#657055 transparent; } .sidebar section { padding:18px 21px; border-bottom:1px solid var(--line); } .settlement-heading { padding:22px 21px 18px; background:#233b2e; } .eyebrow { font-size:9px; letter-spacing:2px; color:var(--gold); } .settlement-heading h1 { margin:9px 0; font:26px Georgia,serif; } .settlement-count { color:var(--muted); font-size:10px; } .settlement-heading p { font-size:11px; color:var(--muted); margin:5px 0 0; } .settlement-heading strong { color:var(--ink); font-weight:500; float:right; } h2 { font-size:13px; font-weight:500; margin:0; } .text-button { border:0; background:transparent; font-size:11px; color:var(--gold); padding:4px 0; text-underline-offset:3px; } .text-button:hover { text-decoration:underline; } .category-list { margin:14px 0; } .category-list button { background:transparent; border:0; border-radius:2px; padding:7px 8px; font-size:10px; color:var(--muted); } .category-list button[aria-pressed="true"] { background:#d2bd7920; color:var(--gold); } .building-catalog { display:grid; grid-template-columns:1fr 1fr; gap:7px; } .building-choice { min-height:91px; text-align:left; display:grid; grid-template-columns:42px 1fr; align-content:center; column-gap:6px; background:#294234; border:1px solid #ffffff12; border-radius:3px; padding:11px 10px; } .building-choice:hover,.building-choice[aria-pressed="true"] { background:#3a5037; border-color:#d3bc77; } .building-symbol { width:42px; height:42px; object-fit:contain; image-rendering:pixelated; color:var(--gold); grid-row:span 2; align-self:center; } .building-choice strong { font-size:11px; font-weight:500; line-height:1.4; } .building-choice small { font-size:9px; color:#b7c0a7; margin-top:5px; line-height:1.4; } .inspector p,.border-report p { color:#b7c1ae; font-size:11px; line-height:1.7; margin:10px 0; } .building-status { color:var(--gold); font-size:9px; margin-left:8px; } progress { width:100%; height:3px; border:0; accent-color:var(--gold); background:#ffffff15; } progress::-webkit-progress-bar { background:#ffffff15; } progress::-webkit-progress-value { background:var(--gold); } .objectives ol { list-style:none; padding:0; margin:14px 0 0; } .objectives li { display:flex; align-items:flex-start; gap:10px; font-size:11px; line-height:1.6; color:#bac3b1; margin:10px 0; } .objectives li>span:first-child { flex-shrink:0; width:13px; height:13px; margin-top:3px; color:#7e917a; } .objectives li.complete { color:var(--gold); } .objectives li.complete>span:first-child { color:var(--gold); } .raid-time { font-size:10px; color:#dcc091; } .primary-button { display:inline-flex; gap:8px; justify-content:center; align-items:center; font-size:11px; font-weight:600; background:var(--gold); color:#172d24; border:1px solid #edd59c; border-radius:3px; min-height:38px; padding:10px 14px; } .primary-button:hover { background:#efd69b; } .primary-button span { width:16px; height:16px; } .chronicle { padding:15px 21px; font-size:11px; color:var(--muted); } .chronicle summary { cursor:pointer; color:var(--ink); } .chronicle p { line-height:1.6; } .sidebar-footer { font-size:9px; line-height:1.6; color:#97a68f; padding:12px 21px 22px; } .guide-panel,.result-panel { position:absolute; top:85px; left:26px; max-width:min(430px,calc(100% - 52px)); background:#1a3128fa; border:1px solid #d1b97c66; padding:24px; border-radius:3px; box-shadow:0 16px 40px #0004; z-index:4; } .guide-panel h2,.result-panel h2 { font:25px Georgia,serif; line-height:1.2; } .guide-panel p,.result-panel p { color:#c5cebc; font-size:12px; line-height:1.75; } .result-label { color:var(--gold)!important; font-size:10px!important; letter-spacing:2px; } .result-panel { top:25%; left:50%; transform:translateX(-50%); width:430px; z-index:3; } .restart-panel { z-index:5; } .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.specialists .quiet-button { flex:1; } .specialists .quiet-button[aria-pressed="true"] { background:#d2bd7920; color:var(--gold); border-color:#d3bc77; } .worker-line { margin:8px 0 4px!important; } .stock-list,.profession-list { list-style:none; padding:0; margin:8px 0 0; font-size:11px; } .stock-list li,.profession-list li { display:flex; justify-content:space-between; padding:3px 0; color:#bac3b1; text-transform:capitalize; border-bottom:1px solid #ffffff08; } .stock-list strong,.profession-list strong { color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums; } .ratio { font-size:10px; color:var(--muted); } .ratio .text-button { font-size:13px; padding:0 4px; } .goods-panel p { color:#b7c1ae; font-size:11px; line-height:1.6; margin:8px 0; } .goods-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; } .good-toggle { display:flex; justify-content:space-between; gap:4px; background:#294234; border:1px solid #ffffff10; border-radius:3px; padding:6px 7px; font-size:10px; text-transform:capitalize; } .good-toggle strong { font-weight:500; font-variant-numeric:tabular-nums; } .good-toggle[aria-pressed="true"] { border-color:#d3bc77; color:var(--gold); background:#3a5037; } .guide-note { font-size:11px!important; color:#9fb09b!important; }
 @media(max-width:1100px) { .campaign-name { display:none; } .day { border:0; padding:0; } .playfield { grid-template-columns:minmax(0,1fr) 300px; } .stocks { gap:12px; padding:8px 12px; } .resource-strip { gap:12px; } .population small,.army small { display:none; } .map-caption { left:20px; top:72px; } }
 @media(max-width:760px) { .game-shell { height:auto; min-height:100dvh; grid-template-rows:118px 58px auto; } .masthead { padding:12px 14px; flex-wrap:wrap; gap:8px; } .masthead nav { min-width:0; width:100%; justify-content:space-between; gap:4px; } .brand strong { font-size:19px; } .brand-mark,.campaign,.quiet-button>span[aria-hidden="true"] { display:none; } .brand small { font-size:8px; letter-spacing:2px; } .quiet-button { padding:7px 9px; font-size:11px; } .playfield { display:flex; flex-direction:column; } .map-region { height:65dvh; min-height:420px; } .sidebar { min-width:0; overflow:visible; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .settlement-heading { grid-column:span 2; } .sidebar section { min-width:0; padding:17px; } .building-catalog { grid-template-columns:1fr; } .building-choice { min-height:66px; } .sidebar-footer,.chronicle { grid-column:span 2; } .stocks { justify-content:flex-start; flex-shrink:1; } .population { font-size:11px; } .army { display:none; } .resource-strip { padding:0 12px; gap:9px; } .map-caption { top:75px; } .advisor { left:12px; right:12px; bottom:12px; padding:12px; } .guide-panel { left:14px; max-width:calc(100% - 28px); top:66px; padding:18px; max-height:calc(100% - 80px); overflow:auto; } .result-panel { max-width:calc(100% - 28px); } }
 @media(max-width:480px) { .sidebar { display:block; } .building-catalog { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .quiet-button { padding:7px; } .inspector>div:first-child,.border-report>div:first-child { flex-wrap:wrap; gap:6px; } }

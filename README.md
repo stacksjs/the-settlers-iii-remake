@@ -1,11 +1,15 @@
 # The Settlers III Remake
 
-A browser settlement strategy prototype built with Stacks, stx and Craft.
+A browser settlement strategy game built with Stacks, stx and Craft, working
+toward a faithful remake of The Settlers III Gold Edition.
 
-This is an original-assets prototype, with simplified logistics and combat.
-It does not yet reproduce the original game's worker, transport, military or
-faction systems. See the [fidelity audit](docs/fidelity-audit.md) for verified
-matches, gaps and the implementation priorities for a faithful remake.
+The game runs on a deterministic simulation in which every settler, tool and good
+is real. Carriers fetch each plank and stone from where it lies, diggers level
+sites, builders build from delivered material, and a workplace opens only when a
+settler has walked there with the right tool. It does not yet reproduce the
+original game's military, other civilizations, ships, campaigns or measured
+timings. See the [fidelity audit](docs/fidelity-audit.md) for verified matches
+and gaps.
 
 The [Gold Edition roadmap](docs/roadmap/README.md) tracks the original game,
 Mission CD and Amazons, true native rendering, multiplayer and automated store
@@ -21,35 +25,53 @@ bun run assets:import
 ./buddy dev frontend
 ```
 
-Open http://localhost:3000. The first campaign, The Riverlands, starts immediately.
-Build within the golden border. Hover a building for its cost, choose it, then
-click clear ground. Hold Shift to keep placing. Drag the map to pan, scroll to
-zoom, or use arrow keys and Enter to choose tiles. Space pauses; H centers the
-map; S saves; Escape cancels construction mode.
+Open http://localhost:3000. A Roman settlement starts on a generated landscape:
+a castle, 38 settlers and the goods they brought. Choose a building, then click
+open ground inside your border; with the keyboard, choosing a building moves the
+cursor to the nearest valid site and Enter places it. Hold Shift to keep placing.
+Drag to pan, scroll to zoom. Space pauses, H centers on the castle, S saves and
+Escape cancels.
 
-## The campaign
+## The settlement
 
-- Woodcutters harvest logs, sawmills make planks and stonecutters supply stone.
-- Fisheries feed miners. Farms supply windmills and bakeries.
-- Iron mines and coal mines supply smelters and weaponsmiths.
-- Barracks turn swords and bread into soldiers. Residences add worker capacity.
-- Guard towers extend the border and defend against growing raids.
-- Claim the river crossing and march on the rival stronghold to win.
+- Sites are levelled by diggers and built by builders from materials carriers
+  deliver one at a time. Construction deliveries come before storage.
+- Workers need a tool: woodcutters an axe, stonecutters and miners a pick,
+  sawyers a saw, farmers a scythe, fishermen a rod. A workplace without its tool
+  says so instead of hiring a phantom worker.
+- Woodcutters and stonecutters walk to the nearest tree or granite in their
+  working area; foresters replant; farmers sow fields that ripen; fishermen
+  empty their waters; miners dig finite deposits and work longer after their
+  favourite meal.
+- Eight goods at a doorstep stop production. Mark goods for storage and carriers
+  take them to storage areas, six piles of eight.
+- Residences add settlers one at a time. The carrier ratio keeps a share of the
+  population as carriers. Pioneers push the border; geologists survey mountains.
+- Tearing a building down puts its stored goods and half its construction
+  material on the ground.
 
-Campaigns save on this device every 30 seconds and when the page moves into the
-background. Save and Load are also available in the header. A new island replaces
-the saved campaign after confirmation. Wait for the Save confirmation before closing the browser. Browser termination
-can interrupt a queued background checkpoint. No account or server is needed
-for a match.
+Settlements save on this device every 30 seconds and when the page is hidden.
+Saves are versioned envelopes validated as untrusted input. A save made with
+different rules is refused rather than reinterpreted, and the earlier Riverlands
+prototype save is kept untouched under its own key.
 
 ## Implementation
 
-The STX page owns reactive UI state. The TypeScript simulation is independent of
-the renderer and advances in fixed 50 ms steps. Canvas 2D draws the isometric
-landscape, buildings and settlers. stx's `useAnimationFrame` supplies a clock that
-suspends hidden tabs and caps frame stalls. Craft's browser platform supplies
-scoped storage and native-compatible lifecycle events. Device storage failures
-are reported without stopping the live game.
+`resources/game/engine` is a browser-independent simulation. It advances integer
+ticks from ordered commands with seeded randomness, and offers a player view that
+withholds what that player cannot see, versioned saves and replays that report the
+first divergent tick. A goods ledger proves conservation: every good is always in a
+pile or a carrier's hands. Rules are a versioned profile in which every value names
+its evidence: manual candidates, reference-remake geometry, engineering decisions,
+or unverified placeholders owned by a roadmap issue. The current profile cannot
+qualify a release.
+
+Building footprints, doors, pile positions and builder spots come from the pinned
+reference remake's Roman definitions (`bun scripts/reference-geometry.ts`). The
+Canvas 2D renderer draws the lattice terrain with elevation shading, fog of war,
+borders and the actual settlers, cargo, piles and construction stages from the
+session. stx's `useAnimationFrame` supplies the clock and Craft's browser platform
+supplies storage and lifecycle events.
 
 Framework defects are repaired in their owning source repositories, released and
 installed as packages. Do not patch node_modules, duplicate platform runtimes or
@@ -67,13 +89,11 @@ bun run typecheck
 bun run test:browser http://127.0.0.1:3450/
 ```
 
-The retained simulation tests cover resource accounting, placement, construction,
-territory, raids, win/loss, save validation and isometric picking. A full campaign
-test reaches victory from the ordinary starting stock without resource grants.
-The browser check uses the framework's Chrome driver to place a building with
-the keyboard, change speed, pause, save, reload, and verify the saved settlement.
-It also activates audio with the keyboard and checks background saves through
-browser lifecycle events.
+The engine suites check conservation every tick through construction,
+demolition in every phase, production, depletion and restore, and cover routing,
+determinism, saves, replays and player views. The browser check places a building
+with the keyboard, changes speed, pauses, saves, reloads and verifies the restored
+settlement, activates audio and checks background saves.
 
 ## Original material
 
@@ -101,7 +121,9 @@ channels block bundled publication until reviewed evidence covers it. Local
 builds and regression tests establish behavior and do not grant distribution
 rights.
 
-The importer includes six worker directions; current carriers render two of them.
-The campaign uses the original buildings, seven tree types, stone deposits, landscape textures
-and optional bird ambience and construction
-sound through Craft's browser audio API. Enable sound with the header control.
+The importer converts all 24 Roman buildings with their construction stages,
+goods piles, carriers walking in six directions with each good, saplings, crops,
+seven tree types, stone deposits and landscape textures, plus optional bird
+ambience and construction sound through Craft's browser audio API. Enable sound
+with the header control. `bun run maps:inventory` decodes the demo's original maps
+without converting or publishing them.
