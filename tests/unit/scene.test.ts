@@ -1,10 +1,17 @@
 import { describe, expect, test } from 'bun:test'
 import { createSession, generateMap, toView } from '../../resources/game/engine'
 import { area, indexOf } from '../../resources/game/engine/geometry'
-import { scene } from '../../resources/game/scene'
+import { scene, spriteDirection } from '../../resources/game/scene'
 import { anchors, place, rules, session, until } from '../fixtures/engine'
 
 describe('render scene', () => {
+  test('settlers face the way they walk: engine directions map onto the original sprite order', () => {
+    // movables.txt: SOUTH_WEST 0, WEST 12, NORTH_WEST 24, NORTH_EAST 36, EAST 48, SOUTH_EAST 60.
+    const original = { 'south-west': 0, 'west': 12, 'north-west': 24, 'north-east': 36, 'east': 48, 'south-east': 60 }
+    const engine = ['north-east', 'east', 'south-east', 'south-west', 'west', 'north-west'] as const
+    engine.forEach((name, dir) => expect(spriteDirection(dir) * 12).toBe(original[name]))
+  })
+
   test('draws exactly the settlers, cargo, piles and sites the simulation holds', () => {
     const s = session()
     const id = place(s, 'sawmill', anchors.west)
@@ -16,7 +23,7 @@ describe('render scene', () => {
     for (const item of settlers) {
       const p = s.state.settlers.get(item.entity)!
       expect(item.sprite).toBe(p.cargo ? `carry:${p.cargo}` : 'worker')
-      expect(Math.floor(item.frame / 12)).toBe(p.dir)
+      expect(Math.floor(item.frame / 12)).toBe(spriteDirection(p.dir))
       // A walking settler is drawn between the tile it left and the tile it enters.
       const from = toView(p.x, p.y, s.state.map.elevation[p.y * 96 + p.x]!)
       const to = p.next >= 0 ? toView(p.next % 96, Math.floor(p.next / 96), s.state.map.elevation[p.next]!) : from

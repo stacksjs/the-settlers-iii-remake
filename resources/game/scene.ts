@@ -19,6 +19,13 @@ export interface SceneItem {
 }
 export interface SceneOptions { player: number, rows?: [number, number], columns?: (y: number) => [number, number], reduceMotion?: boolean }
 
+/**
+ * Original settler sequences hold twelve frames per direction in the order south-west, west,
+ * north-west, north-east, east, south-east (the reference remake's movables.txt). The engine's
+ * directions run north-east, east, south-east, south-west, west, north-west.
+ */
+export const spriteDirection = (direction: number): number => (direction + 3) % 6
+
 export function scene(session: Session, options: SceneOptions): SceneItem[] {
   const { state, rules } = session, { map } = state, viewer = state.players.find(p => p.id === options.player)!
   const [yMin, yMax] = options.rows ?? [0, map.height - 1]
@@ -74,7 +81,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       const to = toView(s.next % map.width, Math.floor(s.next / map.width), map.elevation[s.next]!)
       view = { x: view.x + (to.x - view.x) * step, y: view.y + (to.y - view.y) * step }
     }
-    const frame = s.dir * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
+    const frame = spriteDirection(s.dir) * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
     items.push({ kind: 'settler', sprite: s.cargo ? `carry:${s.cargo}` : 'worker', frame, view, depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}) })
   }
   for (const sign of viewer.signs) {
