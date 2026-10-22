@@ -1470,8 +1470,8 @@
       "id": 5964131433,
       "number": 57,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/57",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-055] Implement healers, thieves, and specialist military interactions",
       "labels": [
         "settlers-gold",
