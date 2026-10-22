@@ -18,7 +18,7 @@ export function audit(ctx: Context): string[] {
     for (const g of new Set([...Object.keys(present), ...Object.keys(expected)])) if ((present[g] ?? 0) !== (expected[g] ?? 0)) problems.push(`player ${player.id} has ${present[g] ?? 0} ${g}, ledger expects ${expected[g] ?? 0}`)
     // People: every settler is a scenario arrival or a recorded birth, minus recorded deaths.
     const people = [...state.settlers.values()].filter(s => s.owner === player.id).length
-    if (l && people < l.births - l.deaths) problems.push(`player ${player.id} has ${people} settlers but recorded ${l.births} births`)
+    if (l && people < l.births - l.deaths - (l.left ?? 0) + (l.joined ?? 0)) problems.push(`player ${player.id} has ${people} settlers but recorded ${l.births} births`)
   }
   // Reservations: each stack's reserved counts equal what live jobs and trips hold on it.
   const out = new Map<number, number>(), into = new Map<number, number>()

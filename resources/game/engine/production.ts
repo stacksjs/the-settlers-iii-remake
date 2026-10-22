@@ -228,7 +228,9 @@ effects.set('plant', (ctx, s, args) => {
   const id = ctx.objectIndex.get(String(args.object))!, rule = ctx.objects[id - 1]!
   map.object[tile] = id; map.objectAmount[tile] = rule.amount; map.objectSince[tile] = ctx.state.tick
   changed(ctx, tile)
-  if (rule.grows) scheduleGrowth(ctx, tile, rule.grows.ticks)
+  // Gorgeous Growth shortens what its planter sows while it lasts.
+  const growth = s.effects?.some(e => e.kind === 'growth' && e.until > ctx.state.tick) ? ctx.rules.religion?.interventions?.find(i => i.id === 'gorgeous-growth')?.percent ?? 100 : 100
+  if (rule.grows) scheduleGrowth(ctx, tile, Math.max(1, Math.floor(rule.grows.ticks * growth / 100)))
   if (rule.blocks) ctx.state.navigation++
   return true
 })

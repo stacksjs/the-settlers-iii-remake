@@ -7,6 +7,7 @@ import { changed, createContext, doorOf, emit, footprint, markFootprint, nextId,
 import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
 import { arm, command as militaryCommand, garrisonCount, wage } from './military'
+import { intervene, interventionCost, orderCast } from './interventions'
 import { promote, promotionCost, templeLost, worship } from './religion'
 import { advanceMission, startMission, validateMission } from './mission'
 import type { MissionDefinition } from './mission'
@@ -292,6 +293,10 @@ function execute(ctx: Context, command: Command): CommandResult {
       orders.queue[command.profession as string] = queued + command.count
       return result(true)
     }
+    case 'cast': {
+      const error = orderCast(ctx, player, command)
+      return error ? result(false, error) : result(true)
+    }
     case 'promote': {
       if (typeof command.profession !== 'string') return result(false, 'Malformed promotion.')
       const error = promote(ctx, player, command.profession)
@@ -306,7 +311,7 @@ function execute(ctx: Context, command: Command): CommandResult {
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number
@@ -321,7 +326,7 @@ export interface PlayerView {
   signs: Player['signs'], events: GameEvent[], results: CommandResult[]
   mission: { objectives: { id: string, text: string, status: 'open' | 'complete' | 'failed' }[], outcome: 'playing' | 'won' | 'lost' } | null
   /** The player's own manna, the next promotion's cost and the rank each soldier class now joins at. */
-  religion: { manna: number, produced: number, next: number | null, ranks: Record<string, number> } | null
+  religion: { manna: number, produced: number, next: number | null, ranks: Record<string, number>, interventions: { id: string, name: string, cost: number }[] } | null
 }
 
 export interface Session {
@@ -357,6 +362,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     for (const s of [...state.settlers.values()]) tickSettler(context, s)
     wage(context)
     worship(context)
+    intervene(context)
     work(context)
     advanceMission(context)
     if (state.tick % rules.visibility.interval === 0) updateVisibility(context)
@@ -418,7 +424,7 @@ export function view(ctx: Context, playerId: number): PlayerView {
     signs: player.signs.filter(sign => sign.until > state.tick),
     events: state.events.filter(e => e.player === playerId).slice(-32),
     results: state.results.filter(r => r.player === playerId).slice(-32),
-    religion: ctx.rules.religion ? { manna: player.religion?.manna ?? 0, produced: player.religion?.produced ?? 0, next: promotionCost(ctx, player), ranks: Object.fromEntries(ctx.rules.professions.filter(p => p.soldier).map(p => [p.id, 1 + (player.religion?.levels[p.id] ?? 0)])) } : null,
+    religion: ctx.rules.religion ? { manna: player.religion?.manna ?? 0, produced: player.religion?.produced ?? 0, next: promotionCost(ctx, player), ranks: Object.fromEntries(ctx.rules.professions.filter(p => p.soldier).map(p => [p.id, 1 + (player.religion?.levels[p.id] ?? 0)])), interventions: (ctx.rules.religion.interventions ?? []).map(i => ({ id: i.id, name: i.name, cost: interventionCost(ctx, player, i.id)! })) } : null,
     mission: state.mission ? { objectives: state.mission.definition.objectives.filter(o => o.player === playerId).map(o => ({ id: o.id, text: o.text, status: state.mission!.objectives[o.id]! })), outcome: state.mission.outcome[String(playerId)] ?? 'playing' } : null,
   }
 }

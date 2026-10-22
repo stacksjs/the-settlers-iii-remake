@@ -113,6 +113,8 @@ export function updateVisibility(ctx: Context): void {
     const mark = (center: { x: number, y: number }, radius: number): void => { for (const t of area(map, center, radius)) visible[t] = 1 }
     for (const s of ctx.state.settlers.values()) if (s.owner === player.id) mark(s, ctx.rules.visibility.settler)
     for (const b of ctx.state.buildings.values()) if (b.owner === player.id) mark(b, ruleOf(ctx, b).vision)
+    // A Magic Eye keeps its land in sight until it closes.
+    for (const eye of ctx.state.eyes ?? []) if (eye.player === player.id && eye.until > ctx.state.tick) mark(pointAt(ctx, eye.tile), eye.radius)
     if (player.controller === 'observer') visible.fill(1)
     for (let t = 0; t < visible.length; t++) {
       if (visible[t] === player.visible[t] && (!visible[t] || player.explored[t])) continue

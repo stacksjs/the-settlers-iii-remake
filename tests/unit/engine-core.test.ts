@@ -21,7 +21,7 @@ describe('rules catalog', () => {
   test('any change to the rules changes the profile version', () => {
     // Saves name rules by id, version and digest. Changing a value without a new version would make
     // older saves fail with a message that names the version they already have.
-    const pinned: Record<string, string> = { '0.2.0': 'a9a1cb0bd34fa08f3b498738fdae7fbc1f04173c627e7f6ee3824248678578c7', '0.3.0': '0a78e27ff86cf37e81f103b08120395ae59301bef207bb21b2c209eed1e0af72', '0.4.0': 'd6c3ceadf21aaccfd4bc23f4883bc5474d8e97935a483a4c53cdf23f33fccc52', '0.5.0': '1db4df3c6b1eab90b50195423f465abddd83ba74f48dacebf9a61650b2eaf966' }
+    const pinned: Record<string, string> = { '0.2.0': 'a9a1cb0bd34fa08f3b498738fdae7fbc1f04173c627e7f6ee3824248678578c7', '0.3.0': '0a78e27ff86cf37e81f103b08120395ae59301bef207bb21b2c209eed1e0af72', '0.4.0': 'd6c3ceadf21aaccfd4bc23f4883bc5474d8e97935a483a4c53cdf23f33fccc52', '0.5.0': '1db4df3c6b1eab90b50195423f465abddd83ba74f48dacebf9a61650b2eaf966', '0.6.0': '48a5670c93cc10c0b4b6272ae5a9fb31771776425ab8f79998d22922347ef56d' }
     expect(rulesIdentity(rules).digest).toBe(pinned[rules.version]!)
   })
   test('rejects duplicated, dangling, contradictory and unevidenced definitions', () => {

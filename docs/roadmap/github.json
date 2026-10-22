@@ -1494,8 +1494,8 @@
       "id": 5964131783,
       "number": 58,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/58",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-056] Complete Roman religious and special production",
       "labels": [
         "settlers-gold",
@@ -1517,8 +1517,8 @@
       "id": 5964132113,
       "number": 59,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/59",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-057] Implement temples, offerings, manna, priests, and promotions",
       "labels": [
         "settlers-gold",

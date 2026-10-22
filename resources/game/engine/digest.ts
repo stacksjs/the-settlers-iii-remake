@@ -59,6 +59,7 @@ export function entities(state: State) {
     claims: [...state.claims], growth: state.growth, cooldowns: [...state.cooldowns], ledger: Object.fromEntries(Object.entries(state.ledger)),
     events: state.events, results: state.results, pending: state.pending, mission: state.mission,
     ...(state.projectiles ? { projectiles: state.projectiles } : {}),
+    ...(state.eyes ? { eyes: state.eyes } : {}),
   }
 }
 

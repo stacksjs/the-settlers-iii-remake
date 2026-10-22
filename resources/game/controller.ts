@@ -89,7 +89,7 @@ export function snapshot(session: Session | null, selected: number | null, messa
 /** Soldiers by class and rank, and the barracks orders that make more. */
 function army(session: Session | null) {
   const classes = rules.professions.filter(p => p.soldier).map(p => p.id)
-  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null }
+  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null, interventions: [] as { id: string, name: string, cost: number }[], priests: 0 }
   const player = session.state.players[PLAYER - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
   // Profiles with religion buy ranks with manna; older saved games keep the rank setting they were made with.
   const religion = session.view(PLAYER).religion
@@ -99,6 +99,8 @@ function army(session: Session | null) {
     ranks: session.rules.military?.ranks ?? 1,
     automatic: player.settings.recruit?.automatic ?? false,
     manna: religion?.manna ?? 0, next: religion ? religion.next : null,
+    interventions: religion?.interventions ?? [],
+    priests: [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.profession === session.rules.religion?.priest).length,
   }
 }
 
@@ -258,6 +260,17 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
 
   const act = (): void => {
     if (!cursor || !session) return
+    if (tool?.startsWith('spell:')) {
+      // The nearest free priest answers; a busy priest keeps his current order.
+      const spell = tool.slice(6), at = cursor
+      const priests = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.profession === session!.rules.religion?.priest)
+        .sort((a, b) => Number(!!a.cast) - Number(!!b.cast) || Math.hypot(a.x - at.x, a.y - at.y) - Math.hypot(b.x - at.x, b.y - at.y) || a.id - b.id)
+      if (!priests.length) { report('You have no priests. A large temple brings one every five minutes.'); return }
+      const name = session.view(PLAYER).religion?.interventions.find(i => i.id === spell)?.name ?? spell
+      report(send('cast', { priest: priests[0]!.id, spell, x: at.x, y: at.y }) ?? `A priest goes to call on Jupiter: ${name}.`)
+      tool = null
+      return
+    }
     if (tool === 'march') {
       // Soldiers standing outside obey first; otherwise garrisons send all but their last soldier.
       const own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
@@ -418,6 +431,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
         report(`${describe(kind)} Choose open ground inside your border.`)
       }
       else if (kind === 'march') report('Click open ground to send your soldiers there, or an enemy tower or castle to attack it.')
+      else if (kind?.startsWith('spell:')) report('Click where the intervention should fall. A priest walks within reach first, except for the Magic Eye.')
       else if (kind) report(`Choose where the ${kind} should go.`)
       else report('Select a building to inspect it.')
       canvas.focus()

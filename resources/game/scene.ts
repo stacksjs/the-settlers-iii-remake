@@ -94,7 +94,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const soldier = s.soldier ? rules.professions.find(p => p.id === s.profession)?.soldier : undefined
     // A soldier between blows plays its rank's strike sequence; its direction faces the target.
     const striking = !!soldier && s.action === 'working' && s.soldier!.cooldown > 0
-    const sprite = soldier ? `${striking ? 'strike' : 'soldier'}:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : 'worker'
+    const sprite = soldier ? `${striking ? 'strike' : 'soldier'}:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : s.profession === rules.religion?.priest ? 'priest' : 'worker'
     items.push({ kind: 'settler', sprite, frame: striking ? spriteDirection(s.dir) : frame, view, ...(striking ? { progress: 1 - s.soldier!.cooldown / soldier!.attackTicks } : {}), depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
   }
   for (const p of state.projectiles ?? []) {

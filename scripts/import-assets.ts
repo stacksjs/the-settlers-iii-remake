@@ -133,7 +133,9 @@ for (const [profession, ranks] of Object.entries(soldierSprites)) for (const [ra
 // Strikes and shots: the ACTION1 sequences of the same table, one per rank.
 const strikeSprites: Record<string, [number, number, number]> = { swordsman: [12, 13, 14], pikeman: [18, 19, 20], bowman: [24, 25, 26] }
 for (const [profession, ranks] of Object.entries(strikeSprites)) for (const [rank, seq] of ranks.entries()) await sequence(`strike:${profession}-${rank + 1}`, 12, seq, 'all', materialRefs, true)
-for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:'))) {
+// Roman priests (the reference's MAGE): file 11, walking sequence 195.
+await sequence('priest', 11, 195, 'all', materialRefs, true)
+for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key === 'priest' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:'))) {
   const worker = await dat(entry.source.file)
   if (!worker.has(entry.source.actualSequence, 0x3112)) continue
   const torsoFrames = worker.frames(entry.source.actualSequence, 0x3112)

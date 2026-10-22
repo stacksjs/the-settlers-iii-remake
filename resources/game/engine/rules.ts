@@ -42,6 +42,16 @@ export interface BuildingRule {
   /** A small temple turns delivered offerings into manna; a large temple brings priests. */
   temple?: 'small' | 'large'
 }
+/**
+ * A divine intervention. Its manna cost rises by a tenth of the base for each
+ * earlier use. Radius, limit, seconds and percent mean what the intervention's
+ * effect says; from and to name goods or terrain it converts.
+ */
+export interface InterventionRule {
+  id: 'magic-eye' | 'grassland-galore' | 'gorgeous-growth' | 'festering-fear' | 'heavenly-presents' | 'midas-touch' | 'vanishing-resources' | 'conversion'
+  name: string, manna: number, presence: boolean, radius: number
+  limit?: number, seconds?: number, percent?: number, amount?: number, from?: string, to?: string
+}
 export interface RulesProfile {
   id: string, version: string, fidelity: 'engineering' | 'original', description: string
   tickRate: number, goods: string[], tools: string[], foods: string[]
@@ -71,7 +81,11 @@ export interface RulesProfile {
    * order; a large temple gives completionManna once and a priest every
    * priestTicks up to priestLimit.
    */
-  religion?: { offering: string, offerTicks: number, promotions: number[], completionManna: number, priestTicks: number, priestLimit: number, priest: string }
+  religion?: {
+    offering: string, offerTicks: number, promotions: number[], completionManna: number, priestTicks: number, priestLimit: number, priest: string
+    /** Divine interventions and how near a priest must stand to cast those that need him present. Absent before 0.6.0. */
+    interventions?: InterventionRule[], castDistance?: number
+  }
   evidence: Record<string, Evidence>
 }
 
@@ -150,6 +164,17 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     for (const key of ['offerTicks', 'completionManna', 'priestTicks', 'priestLimit'] as const) positive(r[key], `religion.${key}`)
     r.promotions.forEach(n => positive(n, 'religion promotion'))
     if (rules.military && r.promotions.length !== classes * (rules.military.ranks - 1)) problems.push('religion needs one promotion cost for each class and rank above the first')
+    if (r.interventions) {
+      if (r.castDistance === undefined) problems.push('religion interventions need a cast distance')
+      else positive(r.castDistance, 'religion.castDistance')
+      unique(r.interventions.map(i => i.id), 'intervention')
+      for (const i of r.interventions) {
+        for (const key of ['manna', 'radius'] as const) positive(i[key], `intervention ${i.id} ${key}`)
+        for (const key of ['limit', 'seconds', 'percent', 'amount'] as const) if (i[key] !== undefined) positive(i[key], `intervention ${i.id} ${key}`)
+        if (i.id === 'midas-touch') { good(i.from ?? '', `intervention ${i.id}`); good(i.to ?? '', `intervention ${i.id}`) }
+        if (i.id === 'grassland-galore' && (!terrain.has(i.from ?? '') || !terrain.has(i.to ?? ''))) problems.push(`intervention ${i.id} converts unknown terrain`)
+      }
+    }
   }
   if (wealth) {
     good(wealth.good, 'military wealth')
@@ -224,7 +249,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.5.0',
+  version: '0.6.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -306,7 +331,19 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
     wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
   },
-  religion: { offering: 'wine', offerTicks: 600, promotions: [10, 20, 30, 50, 60, 30], completionManna: 8, priestTicks: 6000, priestLimit: 100, priest: 'priest' },
+  religion: {
+    offering: 'wine', offerTicks: 600, promotions: [10, 20, 30, 50, 60, 30], completionManna: 8, priestTicks: 6000, priestLimit: 100, priest: 'priest', castDistance: 10,
+    interventions: [
+      { id: 'magic-eye', name: 'The Magic Eye', manna: 10, presence: false, radius: 10, seconds: 6 },
+      { id: 'grassland-galore', name: 'Grassland Galore', manna: 10, presence: true, radius: 7, from: 'desert', to: 'grass' },
+      { id: 'gorgeous-growth', name: 'Gorgeous Growth', manna: 15, presence: true, radius: 10, limit: 1, seconds: 300, percent: 50 },
+      { id: 'festering-fear', name: 'Festering Fear', manna: 15, presence: true, radius: 10, limit: 20, seconds: 30, percent: 50 },
+      { id: 'heavenly-presents', name: 'Heavenly Presents', manna: 20, presence: true, radius: 3, limit: 5, amount: 8 },
+      { id: 'midas-touch', name: 'The Midas Touch', manna: 20, presence: true, radius: 10, limit: 40, from: 'iron', to: 'gold' },
+      { id: 'vanishing-resources', name: 'Vanishing Resources', manna: 25, presence: true, radius: 5, percent: 50 },
+      { id: 'conversion', name: 'Conversion of the Barbarians', manna: 40, presence: true, radius: 10, limit: 10 },
+    ],
+  },
   evidence: {
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
@@ -332,6 +369,8 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'military': U('Recruitment time, search radius in this engine and defence reach are placeholders; the search radius and tower bow range follow reference constants.', 'S3-053'),
     'military.wealth': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/player/CombatStrengthInformation.java and SoldierMovable.java#getCombatStrength`, 'Damage scales with ln(gold + start) / (9 ln 2) by number of players, at least full strength on own ground, as the reference computes it; the manual confirms only that gold strengthens soldiers.'),
     'religion': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/buildings/others/TempleBuilding.java, buildings/spawn/BigTemple.java and player/MannaInformation.java`, 'One wine every 30 seconds for one manna, promotion costs 10, 20, 30, 50, 60, 30 in order with no class more than a rank ahead of another, 8 manna once for a completed large temple and at most 100 priests per large temple follow the reference remake.'),
+    'religion.interventions': M(`${sources.military} (Jupiter's Acts of Divine Intervention)`, 'Eight Roman interventions and what each does: the Magic Eye lifts fog and needs no priest nearby, Grassland Galore turns desert to grass, Gorgeous Growth speeds grain and grapes, Festering Fear halves enemy damage in your homeland for a short time, Heavenly Presents rains goods, the Midas Touch turns iron into gold, Vanishing Resources halves enemy mine resources, and Conversion wins enemy soldiers over.', 'S3-058'),
+    'religion.interventions.values': E(`${sources.reference}/jsettlers.common/src/main/java/jsettlers/common/movable/ESpellType.java, EEffectType.java and jsettlers.logic/src/main/java/jsettlers/logic/movable/military/MageMovable.java`, 'Manna costs rising by a tenth per use, radii, limits, a 6 second eye, a 300 second growth effect at double speed, 30 seconds of half damage, up to 5 gift piles of up to 8 goods, up to 40 iron, half resources, up to 10 converted soldiers and a 10 tile casting distance follow the reference remake.'),
     'religion.offerings': M(`${MANUAL}/ec_build/building.htm#Small Temple (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`, 'The small temple transforms wine offerings into manna; promotion needs manna, every promotion costing more than the one before.', 'S3-057'),
     'religion.priestTicks': M(`${MANUAL}/ec_build/building.htm#Large Temple (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`, 'A new priest every five minutes once a large temple stands; the reference remake uses ten minutes.', 'S3-057'),
     'objects.vine': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/objects/growing/Wine.java and map/grid/MainGrid.java#isWinePlantable`, 'Vines ripen after nine minutes and are planted on grass beside a height difference of two, with no vine along that slope. Withering after three unharvested minutes is not modelled yet.'),

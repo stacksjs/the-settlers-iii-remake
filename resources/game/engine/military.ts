@@ -190,7 +190,10 @@ function strike(ctx: Context, attacker: Settler, target: Settler, from: number):
   const rule = soldierRule(ctx, attacker)!
   attacker.dir = facing(pointAt(ctx, from), target)
   // Damage is the rank's strength scaled by the player's fighting strength where the soldier stands, at least one point.
-  const damage = Math.max(1, Math.round(rule.strength[attacker.soldier!.rank - 1]! * strength(ctx, attacker.owner, tileOf(ctx, attacker)) / 1000))
+  // Festering Fear halves the blows of an enemy fighting on the caster's land.
+  const fear = attacker.effects?.find(e => e.kind === 'fear' && e.until > ctx.state.tick && ctx.state.map.owner[from] === e.caster)
+  const percent = fear ? ctx.rules.religion?.interventions?.find(i => i.id === 'festering-fear')?.percent ?? 100 : 100
+  const damage = Math.max(1, Math.round(rule.strength[attacker.soldier!.rank - 1]! * strength(ctx, attacker.owner, tileOf(ctx, attacker)) * percent / 100000))
   attacker.soldier!.cooldown = rule.attackTicks
   if (!rule.ranged) { hurt(ctx, target, damage); return }
   const projectile: Projectile = { id: nextId(ctx), owner: attacker.owner, from, to: tileOf(ctx, target), target: target.id, damage, fired: ctx.state.tick, arrives: ctx.state.tick + 4 + distance(pointAt(ctx, from), target) * 2 }

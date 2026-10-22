@@ -106,7 +106,7 @@ describe('temples, manna and promotion', () => {
     order(s, 'promote', { profession: 'pikeman' })
     order(s, 'promote', { profession: 'bowman' })
     expect(religion(s)!.manna).toBe(200 - 10 - 20 - 30 - 50)
-    expect(s.view(1).religion).toEqual({ manna: 90, produced: 200, next: 60, ranks: { swordsman: 2, pikeman: 2, bowman: 3 } })
+    expect(s.view(1).religion).toMatchObject({ manna: 90, produced: 200, next: 60, ranks: { swordsman: 2, pikeman: 2, bowman: 3 } })
     expect(veteran.soldier!.rank).toBe(1)
     s.enqueue({ tick: s.state.tick, player: 1, seq: 901, type: 'promote', profession: 'bowman' })
     s.advance(1)

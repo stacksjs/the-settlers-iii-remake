@@ -39,7 +39,15 @@ export interface Player {
   /** Manna and promotion progress, once a rules profile has religion. Levels count promotions per soldier class. */
   religion?: Religion
 }
-export interface Religion { manna: number, produced: number, promotions: number, levels: Record<string, number>, templeLost: boolean }
+export interface Religion {
+  manna: number, produced: number, promotions: number, levels: Record<string, number>, templeLost: boolean
+  /** How often each intervention has been cast; each use raises the next cost. */
+  casts?: Record<string, number>
+}
+/** A timed effect an intervention left on a settler, cast by a player. */
+export interface Effect { kind: 'growth' | 'fear', until: number, caster: number }
+/** Land a Magic Eye keeps visible to a player until a tick. */
+export interface Eye { player: number, tile: number, radius: number, until: number }
 
 export type Op =
   | { op: 'go', tile: number, adjacent?: boolean }
@@ -76,6 +84,10 @@ export interface Settler {
   workplace: number, inside: number
   diagnostic: string | null
   soldier?: Soldier
+  /** Interventions acting on this settler. */
+  effects?: Effect[]
+  /** A priest's ordered intervention and its target tile. */
+  cast?: { spell: string, tile: number }
 }
 
 export type StackRole = 'ground' | 'input' | 'output' | 'construction' | 'storage'
@@ -105,6 +117,8 @@ export interface Ledger {
   created: Goods, produced: Goods, recovered: Goods, consumed: Goods, destroyed: Goods, equipped: Goods, births: number, deaths: number, transitions: number
   /** Goods that changed owner through capture, received and lost. Absent until the first capture. */
   gained?: Goods, lost?: Goods
+  /** People won over from other players and lost to them. */
+  joined?: number, left?: number
 }
 export interface GameEvent { tick: number, player: number, type: string, text: string, tile?: number, entity?: number }
 
@@ -137,6 +151,8 @@ export interface State {
   mission: MissionState | null
   /** Arrows in flight. Absent in saves made before soldiers existed. */
   projectiles?: Projectile[]
+  /** Magic Eyes still open. */
+  eyes?: Eye[]
   /** Increments whenever static traversal changes, so cached paths can be revalidated. */
   navigation: number
 }
