@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-22T21:57:59.148595+00:00",
+  "applicationSourceBase": "9d52da3db9859d0e4d59aba21238595fdbce1855",
+  "installedSdk": "craft-native@0.0.296",
+  "bunVersion": "1.4.2",
+  "packageManifestSha256": "c63c2eda433f034bdf4cb63c010d1802f2fe159092433dff656cb751d6378abb",
+  "bunLockSha256": "aad7ea5d2253651186476ed858e75ba6161e896c902ad6929e767ce0973bb07c",
+  "pantryLockSha256": "00198b770df59c140da477f4757a9881fffb29dfab947c62cf5d7a5adddef14c",
+  "consumerReceipt": "craft-0.0.296-receipt.json",
+  "commands": [
+    {
+      "command": "bun add craft-native@0.0.296",
+      "exitCode": 0,
+      "logSha256": "19c3a9a4870bfd78761be119eb7ea794fd400e0c9028073cd07067fbad75a664"
+    },
+    {
+      "command": "pantry install --ignore-scripts --quiet",
+      "exitCode": 0,
+      "logSha256": "892069e8d56a250f5a5d8acaeff0df850357ce5420f9fcb63407b6794bda5fa9"
+    },
+    {
+      "command": "bun install --frozen-lockfile",
+      "exitCode": 0,
+      "logSha256": "b8a23d5b9aebdbe3b96afece77440f6885e2ae95340ad57b544216b86d50ead1"
+    },
+    {
+      "command": "bun test ./tests/unit",
+      "exitCode": 0,
+      "logSha256": "dfc303a0cbfe595ac2b5673afba9468b1bdd032e135fb962de84b61d22435270"
+    }
+  ],
+  "unitTests": {
+    "passed": 183,
+    "failed": 0,
+    "assertions": 20543,
+    "files": 28
+  },
+  "limits": [
+    "The application source is the recorded base plus the reviewed SDK manifest and lock changes.",
+    "This verifies the installed SDK. Native game execution is not established.",
+    "Framework 0.75.257 and STX 0.2.644 remain installed while the complete STX 0.2.668 release gate runs."
+  ]
+}
