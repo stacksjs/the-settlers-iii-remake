@@ -48,4 +48,20 @@ describe('distribution of goods', () => {
     expect(checksum(copy.state)).toBe(checksum(s.state))
     expect(copy.state.players[0]!.settings.distribution).toEqual({ coal: { toolsmith: 2 } })
   })
+
+  test('the transport chain decides which good a lone carrier fetches first', () => {
+    const first = (priority: string[]): string => {
+      const s = createSession({
+        rules, map: landscape(), seed: 2,
+        players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, scenario: { buildings: [{ type: 'castle', x: 40, y: 40 }, { type: 'bakery', x: 31, y: 44 }], settlers: [{ profession: 'carrier', x: 36, y: 48 }] } }],
+        piles: [{ good: 'flour', x: 38, y: 52, amount: 2 }, { good: 'water', x: 39, y: 52, amount: 2 }],
+      })
+      order(s, 'settings', { settings: { transportPriority: [...priority, ...rules.goods.filter(g => !priority.includes(g))] } })
+      run(s, 8)
+      const job = [...s.state.jobs.values()].find(j => j.kind === 'deliver')
+      return job?.kind === 'deliver' ? job.good : ''
+    }
+    expect(first(['water', 'flour'])).toBe('water')
+    expect(first(['flour', 'water'])).toBe('flour')
+  })
 })
