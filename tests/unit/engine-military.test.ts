@@ -1,6 +1,7 @@
 import type { PlayerSetup, Session } from '../../resources/game/engine'
 import { describe, expect, test } from 'bun:test'
-import { audit, checksum, createSession, restore, save } from '../../resources/game/engine'
+import { audit, checksum, createSession, PUBLISHED_RULES, restore, save } from '../../resources/game/engine'
+import { strength } from '../../resources/game/engine/military'
 import { anchors, building, landscape, order, place, rules, run, until } from '../fixtures/engine'
 
 const soldiers = (s: Session, owner: number, profession?: string) => [...s.state.settlers.values()].filter(p => p.owner === owner && p.soldier && (!profession || p.profession === profession))
@@ -160,6 +161,45 @@ describe('combat', () => {
     run(s, 100)
     expect(s.state.projectiles).toEqual([])
     expect(s.state.ledger[2]!.deaths).toBe(1)
+  })
+})
+
+describe('wealth', () => {
+  const duel = (gold: number, rules_ = rules): Session => createSession({
+    rules: rules_, map: landscape(), seed: 1,
+    players: [
+      { name: 'Rome', civilization: 'roman', start: anchors.castle, scenario: scenario([{ profession: 'swordsman', x: 40, y: 72 }], [{ type: 'castle', x: 40, y: 40 }]) },
+      { name: 'Enemy', civilization: 'roman', start: anchors.castle, scenario: scenario([{ profession: 'swordsman', x: 43, y: 72 }]) },
+    ],
+    ...(gold ? { piles: [{ good: 'gold', x: 44, y: 44, amount: gold }] } : {}),
+  })
+
+  test('gold the player can hand out strengthens its soldiers away from home, as the reference computes it', () => {
+    const poor = duel(0), rich = duel(490), richer = duel(1000)
+    const away = 72 * 96 + 40, home = 44 * 96 + 40
+    // log2(22) / 9 for two players without gold; full strength on their own land.
+    expect(strength(poor.context, 1, away)).toBe(495)
+    expect(strength(poor.context, 1, home)).toBe(1000)
+    // 490 gold makes log2(512) / 9 = 1; 1000 gold makes log2(1022) / 9.
+    expect(strength(rich.context, 1, away)).toBe(1000)
+    expect(richer.state.ledger[1]!.created.gold).toBe(1000)
+    expect(strength(richer.context, 1, away)).toBe(Math.floor(Math.log2(1022) / 9 * 1000))
+    // Gold reserved for a delivery or waiting as an input does not count.
+    const pile = [...rich.state.stacks.values()].find(st => st.good === 'gold')!
+    pile.reservedOut = 10
+    expect(strength(rich.context, 1, away)).toBeLessThan(1000)
+    pile.reservedOut = 0
+    // Between equal swordsmen away from home, the one whose player holds gold wins. A hold order keeps ours out of the castle.
+    order(rich, 'move-soldiers', { soldiers: [soldiers(rich, 1)[0]!.id], x: 40, y: 72 })
+    until(rich, () => soldiers(rich, 1).length === 0 || soldiers(rich, 2).length === 0, 3000)
+    expect(soldiers(rich, 1)).toHaveLength(1)
+    expect(rich.state.ledger[2]!.deaths).toBe(1)
+  })
+
+  test('rules published before wealth existed keep full strength', () => {
+    const older = PUBLISHED_RULES.find(r => r.version === '0.3.0')!
+    const s = duel(0, older)
+    expect(strength(s.context, 1, 72 * 96 + 40)).toBe(1000)
   })
 })
 

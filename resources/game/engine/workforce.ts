@@ -3,7 +3,7 @@ import type { Building, Job, Op, Settler, Stack } from './state'
 import { available, doorOf, emit, footprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
 import { cancelJob, dropCargo } from './logistics'
-import { changeProfession, effects, finishers, spawn, start } from './settlers'
+import { changeProfession, effects, finishers, halt, spawn, start } from './settlers'
 
 const SITE_CREW = { digger: 2, builder: 2 }
 
@@ -30,7 +30,7 @@ export function release(ctx: Context, s: Settler, reason: string): void {
     occupy(ctx, s, tileOf(ctx, s))
   }
   if (s.cargo) dropCargo(ctx, s)
-  s.action = 'idle'; s.diagnostic = reason
+  halt(s); s.diagnostic = reason
 }
 
 function nearestFree(ctx: Context, tile: number): number | null {

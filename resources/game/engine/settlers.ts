@@ -52,6 +52,12 @@ export function start(ctx: Context, s: Settler, kind: string, ref: number, steps
   if (s.action === 'working') s.action = 'idle'
 }
 
+/** Stops a settler where it stands: a step in progress is abandoned and it stays on the tile it was leaving. */
+export function halt(s: Settler): void {
+  s.next = -1; s.step = 0; s.stepTicks = 0
+  s.action = s.inside ? 'inside' : 'idle'
+}
+
 /** Ends the active program and hands the outcome to the registered owner. */
 export function finish(ctx: Context, s: Settler, ok: boolean, reason: string | null): void {
   const program = s.program

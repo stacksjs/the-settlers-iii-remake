@@ -46,7 +46,17 @@ export interface RulesProfile {
   visibility: { settler: number, interval: number }
   survey: { radius: number, work: number, signTicks: number }
   /** Absent in profiles published before soldiers existed. */
-  military?: { searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number }
+  military?: {
+    searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number
+    /**
+     * Fighting strength from wealth, absent before 0.4.0: blows and arrows deal
+     * log2(stock + start) / doublings of their strength, where stock counts the
+     * player's available good and start (hundredths, by number of players) is
+     * the stock a player is assumed to begin with. On their own land soldiers
+     * never fall below ownGround thousandths.
+     */
+    wealth?: { good: string, start: number[], doublings: number, ownGround: number }
+  }
   evidence: Record<string, Evidence>
 }
 
@@ -114,7 +124,14 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     for (const id of b.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`)
   }
   positive(rules.tickRate, 'tick rate')
-  for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey, ...(rules.military ? { military: rules.military } : {}) })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
+  const { wealth, ...military } = rules.military ?? {}
+  for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey, ...(rules.military ? { military } : {}) })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
+  if (wealth) {
+    good(wealth.good, 'military wealth')
+    if (!wealth.start.length || wealth.start.length > 32) problems.push('military wealth needs a start amount for each number of players')
+    for (const n of wealth.start) positive(n, 'military wealth start')
+    positive(wealth.doublings, 'military wealth doublings'); positive(wealth.ownGround, 'military wealth own ground')
+  }
   if (rules.logistics.carrierCapacity !== 1) problems.push('Only single-good carrier loads are supported')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
@@ -182,7 +199,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.3.0',
+  version: '0.4.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -253,7 +270,10 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   territory: { pioneerWork: 30, pioneerRadius: 1 },
   visibility: { settler: 5, interval: 10 },
   survey: { radius: 3, work: 30, signTicks: 6000 },
-  military: { searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3 },
+  military: {
+    searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
+    wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
+  },
   evidence: {
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
@@ -277,6 +297,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'survey': U('Geologist survey radius, timing and sign lifetime are unobserved.', 'S3-037'),
     'professions.soldiers': E(`${sources.reference}/jsettlers.common/src/main/java/jsettlers/common/movable/EMovableType.java and jsettlers.logic/src/main/java/jsettlers/logic/constants/Constants.java`, 'Soldier health and strength by rank, melee and pike reach, bow range 7 to 15 and 25 from towers, and one second between blows (1.2 for bows) follow the reference remake; not original observations.'),
     'military': U('Recruitment time, search radius in this engine and defence reach are placeholders; the search radius and tower bow range follow reference constants.', 'S3-053'),
+    'military.wealth': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/player/CombatStrengthInformation.java and SoldierMovable.java#getCombatStrength`, 'Damage scales with ln(gold + start) / (9 ln 2) by number of players, at least full strength on own ground, as the reference computes it; the manual confirms only that gold strengthens soldiers.'),
     'military.promotion': M(sources.military, 'Promotion affects soldiers recruited afterwards; existing soldiers keep their rank.', 'S3-057'),
     'buildings.garrison': E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman (occupyer entries)`, 'A small tower holds one infantry place and two bowman places; the castle holds five and six.'),
     'buildings.barracks.cost-discrepancy': U('The manual table gives 4 planks and 5 stone; the reference definition gives 5 planks and 4 stone. The manual candidate is used until observed.', 'S3-007'),

@@ -152,9 +152,34 @@ function enemiesNear(ctx: Context, s: Settler, from: { x: number, y: number }, r
   return found.sort((a, b) => distance(from, a) - distance(from, b) || a.id - b.id)
 }
 
+/**
+ * log2(n) in 1/65536 units. Squaring and halving are exact or correctly rounded
+ * in IEEE arithmetic, so every host computes the same value, unlike Math.log.
+ */
+export function log2Fixed(n: number): number {
+  let x = n, whole = 0, fraction = 0
+  while (x >= 2) { x /= 2; whole++ }
+  for (let bit = 15; bit >= 0; bit--) { x *= x; if (x >= 2) { x /= 2; fraction |= 1 << bit } }
+  return whole * 65536 + fraction
+}
+
+/** A player's fighting strength in thousandths from the wealth rule, or full strength when the rules have none. */
+export function strength(ctx: Context, owner: number, tile: number): number {
+  const wealth = ctx.rules.military?.wealth
+  if (!wealth) return 1000
+  let stock = 0
+  // Only goods the player can hand out count, as the reference counts offered material.
+  for (const st of ctx.state.stacks.values()) if (st.owner === owner && st.good === wealth.good && st.role !== 'input' && st.role !== 'construction') stock += st.amount - st.reservedOut
+  const start = wealth.start[Math.min(wealth.start.length, ctx.state.players.length) - 1]!
+  const value = Math.floor((log2Fixed(stock * 100 + start) - log2Fixed(100)) * 1000 / (wealth.doublings * 65536))
+  return ctx.state.map.owner[tile] === owner ? Math.max(value, wealth.ownGround) : value
+}
+
 /** A blow or a shot. Arrows fly two ticks per step plus a release time and are resolved when they land. */
 function strike(ctx: Context, attacker: Settler, target: Settler, from: number): void {
-  const rule = soldierRule(ctx, attacker)!, damage = rule.strength[attacker.soldier!.rank - 1]!
+  const rule = soldierRule(ctx, attacker)!
+  // Damage is the rank's strength scaled by the player's fighting strength where the soldier stands, at least one point.
+  const damage = Math.max(1, Math.round(rule.strength[attacker.soldier!.rank - 1]! * strength(ctx, attacker.owner, tileOf(ctx, attacker)) / 1000))
   attacker.soldier!.cooldown = rule.attackTicks
   if (!rule.ranged) { hurt(ctx, target, damage); return }
   const projectile: Projectile = { id: nextId(ctx), owner: attacker.owner, from, to: tileOf(ctx, target), target: target.id, damage, fired: ctx.state.tick, arrives: ctx.state.tick + 4 + distance(pointAt(ctx, from), target) * 2 }

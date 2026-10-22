@@ -2,7 +2,7 @@ import type { Context } from './context'
 import type { Building, Job, Settler, Stack } from './state'
 import { available, createStack, doorOf, emit, nextId, offsetTile, pointAt, prune, record, room, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
-import { effects, finishers, start } from './settlers'
+import { effects, finishers, halt, start } from './settlers'
 
 interface Request { building: Building, good: string, need: number, rank: number, tile: number, storage: boolean }
 
@@ -64,7 +64,7 @@ export function cancelJob(ctx: Context, job: Job, reason: string): void {
     else ctx.state.cooldowns.set(`deliver:${job.source}:${target?.building || job.target}`, ctx.state.tick + COOLDOWN)
     if (target) { target.reservedIn--; prune(ctx, target) }
     const carrier = ctx.state.settlers.get(job.carrier)
-    if (carrier) { if (carrier.program?.kind === 'deliver' && carrier.program.ref === job.id) carrier.program = null; carrier.action = carrier.inside ? 'inside' : 'idle'; dropCargo(ctx, carrier); carrier.diagnostic = reason }
+    if (carrier) { if (carrier.program?.kind === 'deliver' && carrier.program.ref === job.id) carrier.program = null; halt(carrier); dropCargo(ctx, carrier); carrier.diagnostic = reason }
   }
 }
 

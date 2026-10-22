@@ -377,3 +377,20 @@ describe('controls change real work', () => {
     expect(s.state.buildings.get(smith)!.phase).toBe('active')
   }, 60_000)
 })
+
+describe('releasing workers', () => {
+  test('a worker released mid-step stays on its tile and the game still saves', () => {
+    const s = session()
+    const hut = place(s, 'woodcutter', anchors.forest)
+    until(s, () => [...s.state.settlers.values()].some(p => p.workplace === hut && p.action === 'walking' && p.step > 0), 4000)
+    const worker = [...s.state.settlers.values()].find(p => p.workplace === hut)!
+    const at = { x: worker.x, y: worker.y }
+    order(s, 'demolish', { building: hut })
+    expect(worker.workplace).toBe(0)
+    expect(worker.next === -1 || worker.action === 'walking').toBe(true)
+    expect({ x: worker.x, y: worker.y }).toEqual(at)
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    s.advance(50); copy.advance(50)
+    expect(checksum(copy.state)).toBe(checksum(s.state))
+  }, 60_000)
+})
