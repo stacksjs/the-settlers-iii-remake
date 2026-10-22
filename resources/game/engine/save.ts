@@ -245,6 +245,9 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
       check((x.route === undefined || (Array.isArray(x.route) && x.route.length >= 1 && x.route.length < 4 && x.route.every(tile))) && (x.patrol === undefined || (Array.isArray(x.patrol) && x.patrol.length === 2 && x.patrol.every(tile))) && (x.forced === undefined || x.forced === true), `settler ${s.id} soldier orders are invalid`)
     }
     else check(!rules.professions.find(p => p.id === s.profession)?.soldier, `settler ${s.id} is a soldier without soldier state`)
+    const thief = s.thief
+    check(thief === undefined ? s.profession !== rules.thieves?.profession : (s.profession === rules.thieves?.profession && isObject(thief) && int(thief.health, 1, rules.thieves.health) && Array.isArray(thief.uncovered) && thief.uncovered.length <= players.length && thief.uncovered.every(owner) && new Set(thief.uncovered).size === thief.uncovered.length && tile(thief.target) && tile(thief.home) && typeof thief.steal === 'boolean'), `settler ${s.id} thief state is invalid`)
+    check(s.soldier?.treatment === undefined || (int(s.soldier.treatment, 1, e.nextId) && buildings.some(b => b.id === s.soldier!.treatment)), `settler ${s.id} treatment is invalid`)
     check(s.effects === undefined || (Array.isArray(s.effects) && s.effects.length <= 8 && s.effects.every(e => isObject(e) && ['growth', 'fear'].includes(e.kind) && int(e.until, 0, 0xFFFFFFFF) && owner(e.caster))), `settler ${s.id} effects are invalid`)
     check(s.cast === undefined || (isObject(s.cast) && s.profession === rules.religion?.priest && !!rules.religion.interventions?.some(i => i.id === s.cast!.spell) && tile(s.cast.tile)), `settler ${s.id} intervention order is invalid`)
     if (s.holding) { const t = s.y * width + s.x; check(!standing.has(t), `two settlers rest on tile ${t}`); standing.add(t) }

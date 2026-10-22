@@ -8,6 +8,7 @@ import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
 import { arm, command as militaryCommand, garrisonCount, wage } from './military'
 import { intervene, interventionCost, orderCast } from './interventions'
+import { orderThief, recruitThieves, sneak } from './thieves'
 import { promote, promotionCost, templeLost, worship } from './religion'
 import { advanceMission, startMission, validateMission } from './mission'
 import type { MissionDefinition } from './mission'
@@ -293,6 +294,14 @@ function execute(ctx: Context, command: Command): CommandResult {
       orders.queue[command.profession as string] = queued + command.count
       return result(true)
     }
+    case 'thieves': {
+      if (!rules.thieves || !integer(command.count, 1, 5)) return result(false, 'Malformed thief recruitment.')
+      return recruitThieves(ctx, player.id, command.count) ? result(true) : result(false, 'No carriers can be spared.')
+    }
+    case 'thief': {
+      const error = orderThief(ctx, player.id, command)
+      return error ? result(false, error) : result(true)
+    }
     case 'cast': {
       const error = orderCast(ctx, player, command)
       return error ? result(false, error) : result(true)
@@ -311,7 +320,7 @@ function execute(ctx: Context, command: Command): CommandResult {
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast', 'thieves', 'thief'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number
@@ -360,6 +369,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     grow(context)
     if (state.tick % rules.logistics.assignmentInterval === 0) { staff(context); assignDeliveries(context) }
     for (const s of [...state.settlers.values()]) tickSettler(context, s)
+    sneak(context)
     wage(context)
     worship(context)
     intervene(context)
@@ -416,7 +426,8 @@ export function view(ctx: Context, playerId: number): PlayerView {
   for (let t = 0; t < owner.length; t++) if (!player.explored[t]) owner[t] = 0
   return {
     tick: state.tick, player: playerId, width: state.map.width, height: state.map.height, explored: player.explored.slice(), visible: player.visible.slice(), owner,
-    settlers: [...state.settlers.values()].filter(s => own(s.owner) || (!s.inside && seen(tileOf(ctx, s)))).map(s => ({ id: s.id, owner: s.owner, profession: s.profession, x: s.x, y: s.y, next: s.next, step: s.step, stepTicks: s.stepTicks, dir: s.dir, action: s.action, cargo: s.cargo, inside: s.inside, tool: s.tool, diagnostic: own(s.owner) ? s.diagnostic : null, ...(s.soldier ? { rank: s.soldier.rank, health: s.soldier.health } : {}) })),
+    // Other players' thieves pass for carriers until this player's soldiers have seen through them.
+    settlers: [...state.settlers.values()].filter(s => own(s.owner) || (!s.inside && seen(tileOf(ctx, s)))).map(s => ({ id: s.id, owner: s.owner, profession: s.thief && !own(s.owner) && !s.thief.uncovered.includes(playerId) ? 'carrier' : s.profession, x: s.x, y: s.y, next: s.next, step: s.step, stepTicks: s.stepTicks, dir: s.dir, action: s.action, cargo: s.cargo, inside: s.inside, tool: s.tool, diagnostic: own(s.owner) ? s.diagnostic : null, ...(s.soldier ? { rank: s.soldier.rank, health: s.soldier.health } : {}) })),
     buildings: [...state.buildings.values()].filter(b => own(b.owner) || footprint(ruleOf(ctx, b), b).some(p => seen(tileOf(ctx, p)))).map(b => ({ id: b.id, owner: b.owner, type: b.type, x: b.x, y: b.y, phase: b.phase, suspended: own(b.owner) && b.suspended, shortage: own(b.owner) ? b.shortage : null, worker: own(b.owner) ? b.worker : 0, levelRemaining: b.levelRemaining, workRemaining: b.workRemaining, workArea: own(b.owner) ? b.workArea : { x: b.x, y: b.y }, cycle: own(b.owner) ? b.cycle : 0, door: doorOf(ctx, b), ...(own(b.owner) && ruleOf(ctx, b).garrison ? { garrison: garrisonCount(ctx, b) } : {}) })),
     stacks: [...state.stacks.values()].filter(s => s.amount > 0 && (own(s.owner) || seen(s.tile))).map(s => ({ id: s.id, owner: s.owner, tile: s.tile, building: s.building, role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
     projectiles: (state.projectiles ?? []).filter(p => seen(p.from) || seen(p.to)).map(p => ({ from: p.from, to: p.to, fired: p.fired, arrives: p.arrives })),

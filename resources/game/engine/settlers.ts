@@ -154,6 +154,7 @@ function walk(ctx: Context, s: Settler, op: Extract<Op, { op: 'go' }>): void {
   vacate(ctx, s, from)
   s.path.shift()
   s.next = next; s.action = 'walking'; s.step = 0
-  s.stepTicks = stepCost(ctx, from, next)
+  // Thieves carrying loot are slow (manual: Moving and Using Thieves).
+  s.stepTicks = stepCost(ctx, from, next) * (s.thief && s.cargo ? ctx.rules.thieves?.slowdown ?? 1 : 1)
   s.dir = directionBetween(pointOf(ctx.state.map, from), pointOf(ctx.state.map, next)) ?? s.dir
 }

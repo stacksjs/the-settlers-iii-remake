@@ -67,7 +67,15 @@ export interface Soldier {
   patrol?: [number, number]
   /** A forced move ignores enemies until the soldier arrives. */
   forced?: boolean
+  /** The healer's hut that called this wounded soldier for treatment. */
+  treatment?: number
 }
+/**
+ * Present only on thieves: remaining health, the players whose soldiers have seen
+ * through the disguise, and the current order: a target tile, the tile to bring
+ * loot back to, and whether to pilfer there or only go.
+ */
+export interface Thief { health: number, uncovered: number[], target: number, home: number, steal: boolean }
 /** An arrow in flight: it lands on a tile at a tick and hurts whoever it was aimed at if they are still there. */
 export interface Projectile { id: number, owner: number, from: number, to: number, target: number, damage: number, fired: number, arrives: number }
 export interface Settler {
@@ -84,6 +92,7 @@ export interface Settler {
   workplace: number, inside: number
   diagnostic: string | null
   soldier?: Soldier
+  thief?: Thief
   /** Interventions acting on this settler. */
   effects?: Effect[]
   /** A priest's ordered intervention and its target tile. */

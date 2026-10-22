@@ -41,6 +41,16 @@ export function createTroops(session: () => Session | null, player: number) {
     /** Soldiers enclosed by a dragged rectangle. */
     band(ids: number[], mods: Modifiers = {}): void { mark(ids, mods) },
     clear(): void { marked = []; lastRecall = 0 },
+    /** TAB keeps only the wounded marked, to send them to a healer (manual: Healers). */
+    wounded(): void {
+      const s = session()
+      if (!s) return
+      marked = alive(marked).filter(id => {
+        const p = s.state.settlers.get(id)!, full = s.context.profession.get(p.profession)?.soldier?.health[p.soldier!.rank - 1]
+        return full !== undefined && p.soldier!.health < full
+      })
+      lastRecall = 0
+    },
     /**
      * A number key: with ALT it stores the marked soldiers as that group; without,
      * it marks the group, and pressed again it returns where to center the view.

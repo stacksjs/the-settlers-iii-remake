@@ -41,6 +41,8 @@ export interface BuildingRule {
   garrison?: { infantry: number, bowmen: number }
   /** A small temple turns delivered offerings into manna; a large temple brings priests. */
   temple?: 'small' | 'large'
+  /** A healer calls wounded soldiers within radius of the work area to the heal spot and treats one every ticks. */
+  heal?: { radius: number, spot: Offset, ticks: number }
 }
 /**
  * A divine intervention. Its manna cost rises by a tenth of the base for each
@@ -81,6 +83,12 @@ export interface RulesProfile {
    * order; a large temple gives completionManna once and a priest every
    * priestTicks up to priestLimit.
    */
+  /**
+   * Thieves, absent before 0.7.0: their health, how near an enemy soldier must come
+   * to see through the disguise, how far from the target they look for goods, and
+   * how much longer each step takes while they carry loot.
+   */
+  thieves?: { profession: string, health: number, uncover: number, search: number, slowdown: number }
   religion?: {
     offering: string, offerTicks: number, promotions: number[], completionManna: number, priestTicks: number, priestLimit: number, priest: string
     /** Divine interventions and how near a priest must stand to cast those that need him present. Absent before 0.6.0. */
@@ -145,6 +153,7 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     if (w.kind === 'cultivate' && (!objects.has(w.plant) || !objects.has(w.ripe))) problems.push(`${label} uses unknown crop objects`)
     if (w.kind === 'cultivate') { if (w.slope !== undefined) positive(w.slope, `${label} slope`); for (const id of w.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`) }
     if (b.temple === 'small' && !b.inputs[rules.religion?.offering ?? '']) problems.push(`${label} needs a religion and an offering input`)
+    if (b.heal) { positive(b.heal.radius, `${label} heal radius`); positive(b.heal.ticks, `${label} heal time`); if (cells.has(`${b.heal.spot[0]},${b.heal.spot[1]}`)) problems.push(`${label} heal spot lies in the footprint`) }
     if ((w.kind === 'harvest' || w.kind === 'cultivate' || w.kind === 'extract') && !b.outputs[w.output]) problems.push(`${label} cannot store ${w.output}`)
     if (w.kind === 'extract') { if (!goods.has(w.resource) && w.resource !== 'water') problems.push(`${label} extracts unknown ${w.resource}`); if (w.food) { good(w.food.preferred, label); w.food.accepted.forEach(id => good(id, label)); positive(w.food.preferredCycles, `${label} meal`); positive(w.food.otherCycles, `${label} meal`); if (![w.food.preferred, ...w.food.accepted].every(id => b.inputs[id])) problems.push(`${label} has no input capacity for its food`) } }
     if (w.kind !== 'none') positive(w.work, `${label} work`)
@@ -157,6 +166,11 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   positive(rules.tickRate, 'tick rate')
   const { wealth, ...military } = rules.military ?? {}
   for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey, ...(rules.military ? { military } : {}) })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
+  if (rules.thieves) {
+    const t = rules.thieves
+    if (!professions.has(t.profession)) problems.push(`thief profession ${t.profession} is unknown`)
+    for (const key of ['health', 'uncover', 'search', 'slowdown'] as const) positive(t[key], `thieves.${key}`)
+  }
   if (rules.religion) {
     const r = rules.religion, classes = rules.professions.filter(p => p.soldier).length
     good(r.offering, 'religion offering')
@@ -249,7 +263,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.6.0',
+  version: '0.7.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -289,6 +303,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     { id: 'pikeman', tool: null, specialist: true, soldier: { weapon: 'spear', health: [200, 240, 300], strength: [4, 5, 6], range: [0, 2], attackTicks: 20, ranged: false } },
     { id: 'bowman', tool: null, specialist: true, soldier: { weapon: 'bow', health: [100, 120, 150], strength: [5, 6, 7], range: [7, 15], attackTicks: 24, ranged: true } },
     { id: 'winegrower', tool: null, specialist: false }, { id: 'charcoal-burner', tool: null, specialist: false }, { id: 'priest', tool: null, specialist: true },
+    { id: 'thief', tool: null, specialist: true }, { id: 'healer', tool: null, specialist: false },
   ],
   buildings: [
     define({ id: 'castle', name: 'Castle', category: 'Military', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 24, vision: 24, military: true, garrison: { infantry: 5, bowmen: 6 } }),
@@ -319,6 +334,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     define({ id: 'charcoal-maker', name: "Charcoal maker's hut", category: 'Roman', cost: cost(3, 4), worker: 'charcoal-burner', inputs: doorstep('plank'), outputs: doorstep('coal'), workflow: { kind: 'process', inputs: { plank: 5 }, outputs: { coal: 1 }, work: 100 } }),
     define({ id: 'small-temple', name: 'Small temple', category: 'Roman', cost: cost(5, 8), worker: null, inputs: doorstep('wine'), temple: 'small', door: [7, 5] }),
     define({ id: 'large-temple', name: 'Large temple', category: 'Roman', cost: cost(8, 14), worker: null, temple: 'large' }),
+    define({ id: 'healers-hut', name: "Healer's hut", category: 'Military', cost: cost(3, 3), worker: 'healer', heal: { radius: 20, spot: [4, 4], ticks: 80 } }),
   ],
   movement: { ticksPerStep: 8, slopeTicks: 1, maxClimb: 4, searchLimit: 40000, waitTicks: 6, retries: 4 },
   logistics: { carrierCapacity: 1, groundPileCapacity: 8, assignmentInterval: 4, assignmentsPerPass: 16 },
@@ -331,6 +347,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
     wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
   },
+  thieves: { profession: 'thief', health: 100, uncover: 3, search: 30, slowdown: 2 },
   religion: {
     offering: 'wine', offerTicks: 600, promotions: [10, 20, 30, 50, 60, 30], completionManna: 8, priestTicks: 6000, priestLimit: 100, priest: 'priest', castDistance: 10,
     interventions: [
@@ -371,6 +388,9 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'religion': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/buildings/others/TempleBuilding.java, buildings/spawn/BigTemple.java and player/MannaInformation.java`, 'One wine every 30 seconds for one manna, promotion costs 10, 20, 30, 50, 60, 30 in order with no class more than a rank ahead of another, 8 manna once for a completed large temple and at most 100 priests per large temple follow the reference remake.'),
     'religion.interventions': M(`${sources.military} (Jupiter's Acts of Divine Intervention)`, 'Eight Roman interventions and what each does: the Magic Eye lifts fog and needs no priest nearby, Grassland Galore turns desert to grass, Gorgeous Growth speeds grain and grapes, Festering Fear halves enemy damage in your homeland for a short time, Heavenly Presents rains goods, the Midas Touch turns iron into gold, Vanishing Resources halves enemy mine resources, and Conversion wins enemy soldiers over.', 'S3-058'),
     'religion.interventions.values': E(`${sources.reference}/jsettlers.common/src/main/java/jsettlers/common/movable/ESpellType.java, EEffectType.java and jsettlers.logic/src/main/java/jsettlers/logic/movable/military/MageMovable.java`, 'Manna costs rising by a tenth per use, radii, limits, a 6 second eye, a 300 second growth effect at double speed, 30 seconds of half damage, up to 5 gift piles of up to 8 goods, up to 40 iron, half resources, up to 10 converted soldiers and a 10 tile casting distance follow the reference remake.'),
+    'thieves': M(`${MANUAL}/in_menu/menu.htm#Moving and Using Thieves (sha256 6823c1be372ce3c6905d09753d867ecd637e6cd2c5bfa3e26ea5fd161be516bb)`, 'Thieves are converted from carriers, look like carriers to opponents until they come too near an enemy soldier, who then pursues them, pilfer goods when ordered with ALT, and are slow while carrying loot home.', 'S3-055'),
+    'thieves.values': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/movable/specialist/ThiefMovable.java and jsettlers.common/src/main/java/jsettlers/common/movable/EMovableType.java`, 'Health 100 and a 30 tile search for goods on foreign land follow the reference remake. The uncovering distance of 3 and the doubled step time while carrying are placeholders.'),
+    'buildings.healers-hut.heal': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/movable/civilian/HealerMovable.java and buildings/roman/hospital.xml`, 'The healer calls the most wounded soldier of his player within 20 tiles of the work area to the heal spot and restores full health, one treatment per four seconds; the manual confirms healers return wounded soldiers to health. Soldiers carrying out an order are not called, since the manual has the player send wounded soldiers to the healer.'),
     'religion.offerings': M(`${MANUAL}/ec_build/building.htm#Small Temple (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`, 'The small temple transforms wine offerings into manna; promotion needs manna, every promotion costing more than the one before.', 'S3-057'),
     'religion.priestTicks': M(`${MANUAL}/ec_build/building.htm#Large Temple (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`, 'A new priest every five minutes once a large temple stands; the reference remake uses ten minutes.', 'S3-057'),
     'objects.vine': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/objects/growing/Wine.java and map/grid/MainGrid.java#isWinePlantable`, 'Vines ripen after nine minutes and are planted on grass beside a height difference of two, with no vine along that slope. Withering after three unharvested minutes is not modelled yet.'),
@@ -382,7 +402,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'buildings.barracks.cost-discrepancy': U('The manual table gives 4 planks and 5 stone; the reference definition gives 5 planks and 4 stone. The manual candidate is used until observed.', 'S3-007'),
     ...Object.fromEntries([
       'castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse',
-      'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith', 'barracks', 'winery', 'charcoal-maker', 'small-temple', 'large-temple',
+      'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith', 'barracks', 'winery', 'charcoal-maker', 'small-temple', 'large-temple', 'healers-hut',
     ].flatMap(id => [
       [`buildings.${id}.cost`, M(sources.table, 'Roman wood (planks) and stone columns of the building material table.', 'S3-032')],
       [`buildings.${id}.geometry`, E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman (sha256 ${(REFERENCE_GEOMETRY as Record<string, { sha256: string }>)[id]!.sha256})`, 'Blocked and protected tiles, door, pile positions and builder spots from the reference remake definition; not yet compared with original building data.')],

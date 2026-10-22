@@ -305,10 +305,12 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const modifiers = (event: MouseEvent | KeyboardEvent) => ({ shift: event.shiftKey, alt: event.altKey, ctrl: event.ctrlKey || event.metaKey })
   /** Own soldiers on the map with their canvas positions, as the scene draws them. */
   const soldiersOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.rank && i.owner === PLAYER).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
+  const thievesOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.owner === PLAYER && session!.state.settlers.get(i.entity)?.thief).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
+  let thief: number | null = null
   const local = (event: MouseEvent): Point => { const rect = canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
-  const soldierAt = (point: Point): number | null => {
+  const soldierAt = (point: Point, people = soldiersOnScreen()): number | null => {
     const z = renderer.camera.zoom
-    const hits = soldiersOnScreen().filter(({ at }) => Math.abs(point.x - at.x) <= 9 * z && point.y >= at.y - 32 * z && point.y <= at.y + 4 * z)
+    const hits = people.filter(({ at }) => Math.abs(point.x - at.x) <= 9 * z && point.y >= at.y - 32 * z && point.y <= at.y + 4 * z)
     return hits.sort((a, b) => Math.hypot(point.x - a.at.x, point.y - a.at.y + 14 * z) - Math.hypot(point.x - b.at.x, point.y - b.at.y + 14 * z) || a.id - b.id)[0]?.id ?? null
   }
   const command = (target: Point, mods: ReturnType<typeof modifiers>): void => {
@@ -342,12 +344,16 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     }
     else if (pointer && !pointer.moved && ready_ && pointer.button === 2) {
       cursor = renderer.pick(session!, event.clientX, event.clientY)
-      if (cursor) command(cursor, modifiers(event))
+      // A marked thief goes where he is sent; with ALT he pilfers there (manual: Moving and Using Thieves).
+      if (cursor && thief !== null && session!.state.settlers.has(thief)) report(send('thief', { thief, x: cursor.x, y: cursor.y, steal: event.altKey }) ?? (event.altKey ? 'Your thief sets out to pilfer.' : 'Your thief is on his way.'))
+      else if (cursor) command(cursor, modifiers(event))
     }
     else if (pointer && !pointer.moved && ready_ && pointer.button === 0) {
       cursor = renderer.pick(session!, event.clientX, event.clientY)
-      const hit = tool ? null : soldierAt(local(event))
-      if (hit !== null) {
+      const hit = tool ? null : soldierAt(local(event)), sneak = tool || hit !== null ? null : soldierAt(local(event), thievesOnScreen())
+      thief = sneak
+      if (sneak !== null) { troops.clear(); report('Thief marked. Right-click to send him; hold Alt to have him pilfer there.') }
+      else if (hit !== null) {
         troops.click(hit, modifiers(event))
         const count = troops.selected().length
         report(`${count} ${count === 1 ? 'soldier' : 'soldiers'} marked. Right-click where they should go.`)
@@ -380,6 +386,11 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (event.key === 'ArrowLeft') cursor = { x: Math.max(0, cursor.x - 1), y: cursor.y }
     if (event.key === 'ArrowRight') cursor = { x: Math.min(map.width - 1, cursor.x + 1), y: cursor.y }
     if (event.key === 'Enter' && ready && assetsReady) act()
+    if (event.key === 'Tab' && troops.selected().length) {
+      event.preventDefault()
+      troops.wounded()
+      report(troops.selected().length ? `${troops.selected().length} wounded soldiers stay marked. Send them to a healer's hut.` : 'None of the marked soldiers is wounded.')
+    }
     const digit = /^Digit([1-9])$/.exec(event.code)
     if (digit && ready) {
       event.preventDefault()
@@ -482,6 +493,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     promote(profession: string) {
       if (!session) return
       report(send('promote', { profession }) ?? `New ${profession} soldiers will join a rank higher. Soldiers already serving keep their rank.`)
+    },
+    thieves() {
+      if (!session) return
+      report(send('thieves', { count: 1 }) ?? 'A carrier became a thief. Click him, then right-click with Alt where he should pilfer.')
     },
     carrierRatio(delta: number) {
       if (!session) return

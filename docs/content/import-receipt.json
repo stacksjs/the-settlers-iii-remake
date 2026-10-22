@@ -9,8 +9,8 @@
       "id": "converter:scripts/import-assets.ts",
       "kind": "converter",
       "path": "scripts/import-assets.ts",
-      "bytes": 19758,
-      "sha256": "fef1d3940730b4aac46395d43a146e703a948013cc9ce607f238cdbb3fbdec49"
+      "bytes": 19785,
+      "sha256": "88c6ebdc894b613f86a027ac9ee94dea8507681ef52130e0ee8e5184dd88b614"
     },
     {
       "id": "converter:scripts/lib/s3-dat.ts",
@@ -348,6 +348,15 @@
       "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_temple.xml"
     },
     {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
+      "bytes": 3669,
+      "sha256": "85108dab3ec6d14bdac0aa3bc62723c037e6920cda678ec7d04766f7f9350b78",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml"
+    },
+    {
       "id": "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
       "kind": "reference-source",
       "path": "jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
@@ -472,6 +481,7 @@
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/charcoal_burner.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_temple.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
         "demo:Gfx/Siedler3_01.f8007e01f.dat",
         "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
         "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
@@ -545,6 +555,8 @@
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=31,demo-sequence=31,frame=1",
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=32,demo-sequence=32,frame=0",
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=32,demo-sequence=32,frame=1",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=29,demo-sequence=29,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=29,demo-sequence=29,frame=1",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=0",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=1",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=2",
@@ -6948,8 +6960,8 @@
         "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=21,frame=0,color=565",
         "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=31,frame=0,color=565"
       ],
-      "bytes": 6460636,
-      "sha256": "bcf0b85d5d7dbfb4352157327b3052bd787d9ca8c7de9854c4657df44f4e512c"
+      "bytes": 6503630,
+      "sha256": "a5b193397d7439c1feff2ef4c4f7cf3cdc3f4a17a597aa064e2a60bc6c0aabba"
     },
     {
       "path": "manifest.json",
@@ -6994,6 +7006,7 @@
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/charcoal_burner.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_temple.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
         "demo:Gfx/Siedler3_01.f8007e01f.dat",
         "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
         "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
@@ -7006,8 +7019,8 @@
       "selection": [
         "Original atlas selectors, dimensions, displacements and pinned source identities"
       ],
-      "bytes": 3970505,
-      "sha256": "c8286529808ca71ce3d4f76829c656825fb8a2c8fe3ced43202d9be75769d895"
+      "bytes": 3972006,
+      "sha256": "658b9d5c9b93cc6556acbaffb6e92af59cc471e18b3b75d164123a3c0fef5e2b"
     },
     {
       "path": "castle.png",
@@ -7660,6 +7673,29 @@
       ],
       "bytes": 54097,
       "sha256": "b0f35e9da40043a5445328c14f0632c1d2b582f5874124ff24e03759590f0789"
+    },
+    {
+      "path": "healers-hut.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=29,demo-sequence=29,frame=0"
+      ],
+      "bytes": 20846,
+      "sha256": "67ea9ffd065709f66dddb378857028de827c5d8b05c4ad53152dc0d441f0a72d"
     },
     {
       "path": "build.wav",

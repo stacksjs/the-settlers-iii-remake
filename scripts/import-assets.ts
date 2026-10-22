@@ -90,7 +90,7 @@ const buildingFiles = {
   'woodcutter': 'lumberjack', 'forester': 'forester', 'stonecutter': 'stonecutter', 'sawmill': 'sawmill', 'fisher': 'fisher', 'grain-farm': 'farm', 'waterworks': 'waterworks',
   'mill': 'mill', 'bakery': 'baker', 'pig-farm': 'pig_farm', 'slaughterhouse': 'slaughterhouse', 'coal-mine': 'coalmine', 'iron-mine': 'ironmine', 'gold-mine': 'goldmine',
   'iron-smelter': 'ironmelt', 'gold-smelter': 'goldmelt', 'toolsmith': 'toolsmith', 'weaponsmith': 'weaponsmith',
-  'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple',
+  'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple', 'healers-hut': 'hospital',
 }
 const imported: string[] = []
 for (const [key, name] of Object.entries(buildingFiles)) {

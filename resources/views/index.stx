@@ -77,6 +77,7 @@ onDestroy(() => game?.dispose())
           <p>Mark goods for storage in the Goods panel. Send pioneers to push your border and geologists to survey mountains. Miners work longer after their favourite meal.</p>
           <p>Romans offer wine at a small temple. Each offering becomes manna, and manna promotes one class of soldiers recruited from then on. A charcoal maker turns five planks into coal.</p>
           <p>A barracks turns carriers into swordsmen, pikemen and bowmen with the weapons delivered to it. Soldiers fill your towers; send them to hold ground or to attack an enemy tower. A building whose defenders have all fallen is taken with its goods and land.</p>
+          <p>A thief looks like a carrier to your opponents until their soldiers come near. Click him, then right-click with Alt where he should pilfer; he brings the good home slowly. A healer's hut calls idle wounded soldiers and heals them; Tab keeps only the wounded among marked soldiers.</p>
           <p>Click a soldier or drag a rectangle to mark soldiers; Shift adds, Alt marks one type. Right-click to move them: Ctrl ignores enemies, Shift adds up to three waypoints, Alt patrols. Alt and a number stores a group, the number marks it, twice centers on it.</p>
           <p>Drag with the right mouse button to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
           <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
@@ -103,6 +104,7 @@ onDestroy(() => game?.dispose())
           <div class="flex gap-2 mt-3 specialists" aria-label="Specialists">
             <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'pioneer'" @click="choose('pioneer')" title="Send a pioneer to claim land at the border">Pioneer</button>
             <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'geologist'" @click="choose('geologist')" title="Send a geologist to survey a mountain">Geologist</button>
+            <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.thieves()" title="Turn a carrier into a thief">Thief</button>
           </div>
         </section>
         <section class="inspector" :if="view().selected" aria-label="Selected building">

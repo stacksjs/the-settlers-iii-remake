@@ -1,7 +1,7 @@
 import type { Context } from './context'
 import type { SoldierRule } from './rules'
 import type { Building, Job, Projectile, Settler } from './state'
-import { changed, doorOf, emit, ledger, markFootprint, nextId, occupy, passable, pointAt, record, ruleOf, tileOf, vacate } from './context'
+import { changed, doorOf, emit, ledger, markFootprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf, vacate } from './context'
 import type { Direction, Point } from './geometry'
 import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { cancelJob, cancelJobsFor, dropCargo, moveStackGoodsToGround, slot } from './logistics'
@@ -128,7 +128,44 @@ finishers.set('march', (_ctx, s, _program, ok) => {
 /** Ends every movement order: no route, patrol or forced march remains. */
 function stand(soldier: NonNullable<Settler['soldier']>, order: number): void {
   soldier.order = order
-  delete soldier.route; delete soldier.patrol; delete soldier.forced
+  delete soldier.route; delete soldier.patrol; delete soldier.forced; delete soldier.treatment
+}
+
+/**
+ * Healers' huts: a wounded soldier of the hut's player standing on or beside the
+ * heal spot is restored to full health, one treatment per heal time; otherwise
+ * the most wounded soldier within reach of the work area is called there.
+ */
+function treat(ctx: Context): void {
+  const { state } = ctx, map = state.map
+  const full = (s: Settler): number => soldierRule(ctx, s)!.health[s.soldier!.rank - 1]!
+  for (const s of state.settlers.values()) {
+    const b = s.soldier?.treatment ? state.buildings.get(s.soldier.treatment) : undefined
+    if (s.soldier?.treatment && (!b || b.owner !== s.owner || !ruleOf(ctx, b).heal)) delete s.soldier.treatment
+  }
+  for (const b of [...state.buildings.values()].sort((a, c) => a.id - c.id)) {
+    const heal = ruleOf(ctx, b).heal
+    if (!heal || b.phase !== 'active' || b.suspended || !b.worker || state.settlers.get(b.worker)?.inside !== b.id) continue
+    if (b.cycle > 0) { b.cycle--; continue }
+    const spot = offsetTile(ctx, b, heal.spot), around = new Set([spot, ...neighbours(map, spot)])
+    const own = [...state.settlers.values()].filter(s => s.owner === b.owner && s.soldier && !s.inside && s.soldier.health < full(s)).sort((a, c) => a.id - c.id)
+    const patient = own.find(s => s.action !== 'walking' && around.has(tileOf(ctx, s)))
+    if (patient) {
+      patient.soldier!.health = full(patient)
+      if (patient.soldier!.treatment) stand(patient.soldier!, HOLDING)
+      b.cycle = heal.ticks
+      emit(ctx, { player: b.owner, type: 'healed', text: `A ${patient.profession} was healed`, entity: patient.id })
+      continue
+    }
+    if (own.some(s => s.soldier!.treatment === b.id)) continue
+    // Soldiers the player has sent somewhere keep their orders; only those standing idle are called.
+    const called = own.filter(s => !s.soldier!.treatment && s.soldier!.order < 0 && !s.soldier!.attack && distance(s, b.workArea) <= heal.radius).sort((a, c) => a.soldier!.health - c.soldier!.health || a.id - c.id)[0]
+    if (!called) continue
+    leave(ctx, called)
+    called.program = null; called.path = []
+    stand(called.soldier!, spot)
+    called.soldier!.forced = true; called.soldier!.attack = 0; called.soldier!.treatment = b.id
+  }
 }
 finishers.set('chase', () => {})
 
@@ -148,7 +185,9 @@ function enemiesNear(ctx: Context, s: Settler, from: { x: number, y: number }, r
   const player = ctx.state.players.find(p => p.id === s.owner)!
   const found: Settler[] = []
   for (const other of ctx.state.settlers.values()) {
-    if (other.owner === s.owner || !other.soldier || other.inside || distance(from, other) > radius) continue
+    // Soldiers fight soldiers, and pursue thieves whose disguise they have seen through.
+    const foe = !!other.soldier || !!other.thief?.uncovered.includes(s.owner)
+    if (other.owner === s.owner || !foe || other.inside || distance(from, other) > radius) continue
     // Soldiers fight only what their player can see.
     if (player.visible[tileOf(ctx, other)] === 1) found.push(other)
   }
@@ -201,10 +240,13 @@ function strike(ctx: Context, attacker: Settler, target: Settler, from: number):
 }
 
 function hurt(ctx: Context, target: Settler, damage: number): void {
-  if (!target.soldier || !ctx.state.settlers.has(target.id)) return
-  target.soldier.health = Math.max(0, target.soldier.health - damage)
-  if (target.soldier.health > 0) return
+  const life = target.soldier ?? target.thief
+  if (!life || !ctx.state.settlers.has(target.id)) return
+  life.health = Math.max(0, life.health - damage)
+  if (life.health > 0) return
   // A fallen soldier leaves the world with the weapon, which was equipment rather than goods.
+  // A fallen thief drops what he carried; it stays with his player.
+  if (target.cargo) dropCargo(ctx, target)
   if (target.holding) vacate(ctx, target, tileOf(ctx, target))
   ctx.state.settlers.delete(target.id)
   ledger(ctx, target.owner).deaths++
@@ -378,6 +420,7 @@ export function wage(ctx: Context): void {
   if (!ctx.rules.military) return
   fly(ctx)
   if (ctx.state.tick % ctx.rules.logistics.assignmentInterval === 0) { enlist(ctx); station(ctx) }
+  treat(ctx)
   walls(ctx)
   for (const s of [...ctx.state.settlers.values()].sort((a, c) => a.id - c.id)) if (s.soldier && !s.inside && ctx.state.settlers.has(s.id)) act(ctx, s)
   regroup(ctx)
