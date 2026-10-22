@@ -17,6 +17,12 @@ describe('rules catalog', () => {
     expect(a.digest).toMatch(/^[0-9a-f]{64}$/)
     expect(rules.buildings.find(b => b.id === 'sawmill')!.cost).toEqual({ plank: 3, stone: 4 })
   })
+  test('any change to the rules changes the profile version', () => {
+    // Saves name rules by id, version and digest. Changing a value without a new version would make
+    // older saves fail with a message that names the version they already have.
+    const pinned: Record<string, string> = { '0.2.0': 'a9a1cb0bd34fa08f3b498738fdae7fbc1f04173c627e7f6ee3824248678578c7' }
+    expect(rulesIdentity(rules).digest).toBe(pinned[rules.version]!)
+  })
   test('rejects duplicated, dangling, contradictory and unevidenced definitions', () => {
     const broken = structuredClone(rules)
     broken.buildings.push({ ...broken.buildings[0]!, cost: { plank: 1 } })

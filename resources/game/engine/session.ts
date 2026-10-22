@@ -12,11 +12,18 @@ import { spawn, tickSettler } from './settlers'
 import { dispatch, updateVisibility } from './territory'
 import { complete, release, staff } from './workforce'
 
+/** Buildings and settlers a scenario places for one player, instead of the default start. */
+export interface PlayerScenario { buildings: { type: string, x: number, y: number }[], settlers: { profession: string, x: number, y: number }[] }
+export interface ScenarioPile { good: string, x: number, y: number, amount: number }
 export interface PlayerSetup {
   name: string, civilization: string, controller?: Player['controller'], start: Point
-  settlers?: Record<string, number>, goods?: Goods, settings?: Partial<PlayerSettings>
+  settlers?: Record<string, number>, goods?: Goods, settings?: Partial<PlayerSettings>, scenario?: PlayerScenario
 }
-export interface SessionSetup { rules: RulesProfile, map: MapState, seed: number, players: PlayerSetup[], content?: { id: string, digest: string }, startBuilding?: string }
+export interface SessionSetup {
+  rules: RulesProfile, map: MapState, seed: number, players: PlayerSetup[], content?: { id: string, digest: string }, startBuilding?: string
+  /** Goods lying on the map at the start; each pile belongs to the owner of its tile. */
+  piles?: ScenarioPile[]
+}
 
 /** Engineering start conditions; original start resources remain unverified (S3-074). */
 export const DEFAULT_START = {
@@ -41,25 +48,45 @@ export function createState(setup: SessionSetup): State {
   }
 }
 
-/** Places the opening settlement for each player as completed scenario state. */
-export function populate(ctx: Context, setup: SessionSetup): void {
-  const start = setup.startBuilding ?? 'castle'
-  setup.players.forEach((p, i) => {
-    const owner = i + 1, rule = ctx.building.get(start)
-    if (!rule) throw new RangeError(`Unknown start building ${start}`)
-    const map = ctx.state.map
+/** Places the opening settlement for each player as completed scenario state. Returns what could not be placed. */
+export function populate(ctx: Context, setup: SessionSetup): Record<string, number> {
+  const skipped: Record<string, number> = {}, note = (key: string): void => { skipped[key] = (skipped[key] ?? 0) + 1 }
+  const map = ctx.state.map
+  const standing = (owner: number, type: string, x: number, y: number): boolean => {
+    const rule = ctx.building.get(type)
+    if (!rule) throw new RangeError(`Unknown start building ${type}`)
+    const tiles = [...footprint(rule, { x, y }), ...[...rule.protected, rule.door].map(([dx, dy]) => ({ x: x + dx, y: y + dy }))]
     // Scenario starts clear their site; this is setup, not construction work.
-    for (const q of [...footprint(rule, p.start), ...[...rule.protected, rule.door].map(([dx, dy]) => ({ x: p.start.x + dx, y: p.start.y + dy }))]) {
-      if (!inside(map, q.x, q.y)) throw new RangeError(`Player ${owner} start does not fit on the map`)
-      const t = tileOf(ctx, q)
-      if (ctx.index.buildingAt[t] || ctx.index.protectedAt[t] || !terrainAt(ctx, t).walkable) throw new RangeError(`Player ${owner} start is not on open land`)
-      map.object[t] = 0; map.objectAmount[t] = 0
-    }
-    const b = createBuilding(ctx, owner, start, p.start.x, p.start.y)
+    if (tiles.some(q => !inside(map, q.x, q.y) || ctx.index.buildingAt[tileOf(ctx, q)] || !terrainAt(ctx, tileOf(ctx, q)).walkable)) return false
+    if (footprint(rule, { x, y }).some(q => ctx.index.protectedAt[tileOf(ctx, q)])) return false
+    for (const q of tiles) { const t = tileOf(ctx, q); map.object[t] = 0; map.objectAmount[t] = 0 }
+    const b = createBuilding(ctx, owner, type, x, y)
     for (const q of footprint(rule, b)) map.elevation[tileOf(ctx, q)] = b.target
     b.levelRemaining = 0; b.workRemaining = 0; b.used = { ...rule.cost }
     complete(ctx, b)
-    const door = doorOf(ctx, b)
+    return true
+  }
+  setup.players.forEach((p, i) => {
+    const owner = i + 1
+    if (p.scenario) {
+      for (const b of p.scenario.buildings) if (!standing(owner, b.type, b.x, b.y)) note(`building ${b.type} does not fit`)
+      return
+    }
+    const start = setup.startBuilding ?? 'castle'
+    if (!standing(owner, start, p.start.x, p.start.y)) throw new RangeError(`Player ${owner} start does not fit on open land`)
+  })
+  setup.players.forEach((p, i) => {
+    const owner = i + 1
+    if (p.scenario) {
+      for (const s of p.scenario.settlers) {
+        const settler = spawn(ctx, owner, s.profession, indexOf(map, Math.min(map.width - 1, Math.max(0, s.x)), Math.min(map.height - 1, Math.max(0, s.y))), 'scenario')
+        if (settler) settler.tool = ctx.profession.get(s.profession)?.tool ?? null
+        else note(`settler ${s.profession} has no room`)
+      }
+      return
+    }
+    const castle = [...ctx.state.buildings.values()].find(b => b.owner === owner)!
+    const door = doorOf(ctx, castle)
     for (const [profession, n] of Object.entries(p.settlers ?? DEFAULT_START.settlers)) {
       const tool = ctx.profession.get(profession)?.tool ?? null
       for (let k = 0; k < n; k++) { const s = spawn(ctx, owner, profession, door, 'scenario'); if (s) s.tool = tool }
@@ -69,7 +96,15 @@ export function populate(ctx: Context, setup: SessionSetup): void {
       record(ctx, owner, 'created', good, n - left)
     }
   })
+  for (const pile of setup.piles ?? []) {
+    if (!inside(map, pile.x, pile.y) || !Number.isInteger(pile.amount) || pile.amount < 1) { note('pile outside the map'); continue }
+    const t = indexOf(map, pile.x, pile.y), owner = map.owner[t]!
+    if (!owner) { note('pile on unowned land'); continue }
+    const left = dropToGround(ctx, owner, t, pile.good, pile.amount)
+    record(ctx, owner, 'created', pile.good, pile.amount - left)
+  }
   updateVisibility(ctx)
+  return skipped
 }
 
 function createBuilding(ctx: Context, owner: number, type: string, x: number, y: number): Building {
@@ -247,6 +282,8 @@ export interface Session {
   readonly state: State
   readonly context: Context
   readonly identity: { rules: ReturnType<typeof rulesIdentity>, content: { id: string, digest: string } }
+  /** Scenario records that could not be placed when the session was created. */
+  readonly skipped: Record<string, number>
   /** Accepts a command for its tick. Returns a rejection immediately for malformed or late commands. */
   enqueue: (command: Command) => CommandResult | null
   advance: (ticks?: number) => void
@@ -274,7 +311,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     state.tick++
   }
   return {
-    rules, state, context, identity,
+    rules, state, context, identity, skipped: {},
     enqueue(command) {
       guard()
       const reject = (reason: string): CommandResult => ({ tick: state.tick, player: Number(command?.player) || 0, seq: Number(command?.seq) || 0, type: String(command?.type ?? ''), ok: false, reason })
@@ -302,7 +339,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
 export function createSession(setup: SessionSetup): Session {
   const state = createState(setup)
   const session = openSession(setup.rules, state, setup.content ?? { id: 'generated', digest: 'unverified' })
-  populate(session.context, setup)
+  Object.assign(session.skipped, populate(session.context, setup))
   return session
 }
 

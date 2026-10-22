@@ -215,7 +215,7 @@ export function staff(ctx: Context): void {
     }
     if (rule.worker && !b.worker) {
       const shortage = recruit(ctx, b, rule.worker, () => commute(ctx, b), 'commute')
-      if (shortage !== b.shortage && shortage) emit(ctx, { player: b.owner, type: 'shortage', text: `${rule.name} needs a ${rule.worker}: missing ${shortage.replace('tool:', '')}`, entity: b.id })
+      if (shortage !== b.shortage && shortage) emit(ctx, { player: b.owner, type: 'shortage', text: `${rule.name} has no ${rule.worker}: missing ${shortage.replace('tool:', '')}`, entity: b.id })
       b.shortage = shortage
       if (shortage) state.cooldowns.set(`staff:${b.id}`, state.tick + 40)
     }

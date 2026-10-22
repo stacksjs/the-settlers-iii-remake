@@ -4,7 +4,8 @@ import type { Renderer } from './renderer'
 import { useAnimationFrame } from '@stacksjs/stx/composables'
 import { createBrowserPlatform } from 'craft-native/browser'
 import { loadOriginalAssets } from './assets'
-import { createSession, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError } from './engine'
+import { createSession, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError, worldFromOriginal } from './engine'
+import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 
 const rules = ROMAN_ENGINEERING
@@ -40,17 +41,18 @@ const STATUS: Record<string, string> = {
   'leveling': 'Diggers are levelling the site', 'building': 'Builders are at work', 'suspended': 'Work paused', 'inputs': 'Waiting for supplies', 'output-full': 'Doorstep full',
   'no-resources': 'Nothing left in the working area', 'no-space': 'No room to plant', 'exhausted': 'Deposit exhausted', 'food': 'Miners need food', 'carriers': 'Too few carriers to spare', 'settlers': 'No free settlers',
 }
+const article = (word: string): string => `${/^[aeiou]/.test(word) ? 'an' : 'a'} ${word}`
 export function status(phase: string, shortage: string | null, suspended: boolean, worker: boolean, needsWorker: boolean): string {
   if (suspended) return STATUS.suspended!
-  if (phase !== 'active') return shortage?.startsWith('tool:') ? `Needs a ${shortage.slice(5)} for its crew` : STATUS[phase]!
-  if (shortage?.startsWith('tool:')) return `Needs a ${shortage.slice(5)}`
+  if (phase !== 'active') return shortage?.startsWith('tool:') ? `Needs ${article(shortage.slice(5))} for its crew` : STATUS[phase]!
+  if (shortage?.startsWith('tool:')) return `Needs ${article(shortage.slice(5))}`
   if (shortage) return STATUS[shortage] ?? shortage
   if (needsWorker && !worker) return 'Waiting for a worker'
   return needsWorker ? 'Working' : 'Ready'
 }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false) {
-  if (!session) return { ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
+  if (!session) return { map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as string[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -64,6 +66,7 @@ export function snapshot(session: Session | null, selected: number | null, messa
     selected: selected ? inspect(session, selected) : null,
     events: view.events.slice(-6).reverse().map(e => e.text),
     prototypeKept: false,
+    map: mapName(session),
   }
 }
 
@@ -85,10 +88,22 @@ function inspect(session: Session, id: number) {
 export type Snapshot = ReturnType<typeof snapshot>
 export type Game = ReturnType<typeof mountGame>
 
+export type Landscape = 'generated' | 'tutorial'
+export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : 'Generated landscape'
+
+/** A Roman start on the Amazons demo's original T1 tutorial map. Its missions and AI are not yet played. */
+export async function tutorialSession(seed: number): Promise<Session> {
+  const asset = await loadOriginalMap('t1')
+  const world = worldFromOriginal(rules, asset.input)
+  if (!world.players.length) throw new Error('The original tutorial map has no Roman player.')
+  return createSession({ rules, map: world.map, seed, players: world.players.slice(0, 1), piles: world.piles, content: { id: `demo:${asset.source.path}`, digest: asset.source.sha256 } })
+}
+
 /** A fresh development settlement on a generated landscape. Not an original map or campaign. */
 export function newSession(seed: number): Session {
   const map = generateMap(rules, MAP_SIZE, MAP_SIZE, seed)
-  const start = findStart(rules, map, { x: MAP_SIZE / 2, y: MAP_SIZE / 2 })
+  // The castle's reference footprint and protected ring reach nine tiles from its origin.
+  const start = findStart(rules, map, { x: MAP_SIZE / 2, y: MAP_SIZE / 2 }, 10)
   if (!start) throw new Error('This landscape has no room for a settlement. Start another one.')
   return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
 }
@@ -101,7 +116,15 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
   const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady); value.prototypeKept = prototypeKept; update(value) }
   const report = (text: string): void => { message = text; emit() }
-  const castle = (): Point | null => { const b = session && [...session.state.buildings.values()].find(b => b.owner === PLAYER && b.type === 'castle'); return b ? { x: b.x, y: b.y } : null }
+  // The castle on generated starts, otherwise the first building or settler an original map gives the player.
+  const castle = (): Point | null => {
+    if (!session) return null
+    const own = [...session.state.buildings.values()].filter(b => b.owner === PLAYER)
+    const b = own.find(b => b.type === 'castle') ?? own[0]
+    if (b) return { x: b.x, y: b.y }
+    const s = [...session.state.settlers.values()].find(s => s.owner === PLAYER)
+    return s ? { x: s.x, y: s.y } : null
+  }
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
   const adopt = (next: Session): void => {
     session?.dispose(); session = next; selected = null; tool = null; accumulator = 0
@@ -154,13 +177,13 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     }
     catch (error) { if (!disposed) message = error instanceof SaveError ? `${error.message} A new settlement was started.` : 'Could not read the saved settlement. A new settlement was started.' }
     if (disposed) return
-    if (!session) adopt(newSession(1 + Math.floor(Math.random() * 1_000_000)))
+    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true
     host.emit((type, payload) => { if (type === 'APP_STATE' && (payload as { state: string }).state === 'background') void persist() })
     finishBoot()
   }).catch(() => {
     if (disposed) return
-    if (!session) adopt(newSession(1 + Math.floor(Math.random() * 1_000_000)))
+    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true; report('Device storage is unavailable. You can play, but this settlement cannot be saved.')
   })
   const play = (name: string): void => { if (sound && platform) void platform.call('Audio', 'play', [name, `/assets/settlers-original/${name}.wav`, { volume: 0.3 }], lifetime.signal).catch(() => {}) }
@@ -279,7 +302,18 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     speed(value: number) { speed = value; emit() },
     home: center,
     save: persist, load,
-    restart() { if (!ready) return; adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))); speed = 1; report('A new landscape. Your settlers have arrived.'); void persist() },
+    async restart(landscape: Landscape = 'generated') {
+      if (!ready) return
+      const seed = 1 + Math.floor(Math.random() * 1_000_000)
+      try {
+        const next = landscape === 'tutorial' ? await tutorialSession(seed) : newSession(seed)
+        if (disposed) return
+        adopt(next); speed = 1
+        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : 'A new landscape. Your settlers have arrived.')
+        void persist()
+      }
+      catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not open that map.') }
+    },
     toggle() { if (!session || !selected) return; const b = session.state.buildings.get(selected); if (!b) return; report(send('suspend', { building: b.id, suspended: !b.suspended }) ?? (b.suspended ? 'Work paused.' : 'Work resumed.')) },
     demolish() { if (!session || !selected) return; const error = send('demolish', { building: selected }); if (!error) selected = null; report(error ?? 'Building torn down. Half of its materials lie on the ground.'); void persist() },
     store(good: string) {

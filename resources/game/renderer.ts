@@ -8,8 +8,9 @@ import { pick, toView } from './engine'
 export interface Camera { x: number, y: number, zoom: number }
 const CHUNK = 32, CHUNK_SCALE = 2
 const PLAYER_COLORS = ['#000000', '#4a78d6', '#d1513f', '#4f9b4a', '#d6b13c', '#9a5bc4', '#3fb2b6', '#d27c34', '#c7c7c7']
-const TERRAIN_FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', swamp: '#5d7347', water: '#3c7f8a' }
-const TERRAIN_TEXTURE: Record<string, string> = { grass: 'terrain-grass', mountain: 'terrain-rock', sand: 'terrain-sand', desert: 'terrain-sand', swamp: 'terrain-grass', water: 'terrain-water' }
+const TERRAIN_FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', moor: '#6b6447', snow: '#e8ecef', swamp: '#5d7347', water: '#3c7f8a' }
+// Terrain without an imported original texture is drawn as a flat colour until its media is converted.
+const TERRAIN_TEXTURE: Record<string, string> = { grass: 'terrain-grass', mountain: 'terrain-rock', sand: 'terrain-sand', desert: 'terrain-sand', water: 'terrain-water' }
 
 export function createRenderer(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')

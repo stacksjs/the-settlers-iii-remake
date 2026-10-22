@@ -22,7 +22,7 @@ export const contentPolicy: ContentPolicy = {
     { id: 'voices', status: 'not-imported', description: 'Narration, briefings, unit speech and locale-specific recordings.' },
     { id: 'cinematics', status: 'not-imported', description: 'Introductions, faction/campaign films, credits and endings.' },
     { id: 'skirmish-maps', status: 'not-imported', description: 'Original single/multiplayer terrain and random-map resources.' },
-    { id: 'tutorials', status: 'not-imported', description: 'All original tutorial maps, triggers, text and media.' },
+    { id: 'tutorials', status: 'partial', description: 'The Amazons demo T1 tutorial map is decoded into a local map asset. Tutorial triggers, text, media and every other tutorial remain uninventoried.' },
     { id: 'base-campaigns', status: 'not-imported', description: 'Roman, Egyptian and Asian original campaign maps and progression.' },
     { id: 'mission-cd-campaigns', status: 'not-imported', description: 'Mission CD campaigns, maps, progression and related media.' },
     { id: 'amazon-campaigns', status: 'not-imported', description: 'Amazon and Three Gods paths, maps, progression and related media.' },

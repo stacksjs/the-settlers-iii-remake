@@ -4,6 +4,7 @@ import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import { S3Dat } from './lib/s3-dat'
+import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
 import { writeContentManifest } from './lib/content-provenance'
 import type { ContentCategory, ProvenanceInput, ProvenanceFile } from './lib/content-provenance'
@@ -23,7 +24,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -35,7 +36,7 @@ await mkdir(reference, { recursive: true }); await mkdir(output, { recursive: tr
 const archivePath = resolve(reference, 's3a_demo_us.exe')
 console.log('Verifying the original Amazons demo, downloading it if needed...')
 await verifiedDownload(archivePath, download, sha256)
-const extraction = Bun.spawnSync(['unzip', '-q', '-o', archivePath, 'Gfx/*', 'Snd/*', 'Readme.txt', '-d', source], { stdout: 'inherit', stderr: 'inherit' })
+const extraction = Bun.spawnSync(['unzip', '-q', '-o', archivePath, 'Gfx/*', 'Snd/*', 'Map/TUTORIAL/T1.MAP', 'Readme.txt', '-d', source], { stdout: 'inherit', stderr: 'inherit' })
 if (extraction.exitCode !== 0) throw new Error('Could not extract the demo data')
 addInput('demo:Readme.txt', 'original-file', 'Readme.txt', await readFile(resolve(source, 'Readme.txt')))
 const getReference = async (path: string): Promise<string> => {
@@ -194,6 +195,20 @@ for (const [name, id] of Object.entries({ build: 1, wood: 0, click: 62, birds: 6
 }
 await Bun.write(resolve(output, 'sounds.json'), JSON.stringify(soundFiles, null, 2))
 addOutput('sounds.json', ['generated-metadata'], [soundInput], ['Names and source group selectors for six converted PCM WAV files'])
+// The demo's Roman tutorial map, decoded once so the browser can build an engine world from it.
+// Original codes are kept; resources/game/engine/original.ts maps them with reference-remake evidence.
+const tutorialBytes = await readFile(resolve(source, 'Map/TUTORIAL/T1.MAP'))
+const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map/TUTORIAL/T1.MAP', tutorialBytes)
+const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
+const layer = (values: ArrayLike<number>): string => Buffer.from(Uint8Array.from(values)).toString('base64')
+await mkdir(resolve(output, 'maps'), { recursive: true })
+await Bun.write(resolve(output, 'maps/t1.json'), JSON.stringify({
+  version: 1, source: { path: 'Map/TUTORIAL/T1.MAP', sha256: provenanceInputs.get(tutorialInput)!.sha256, version: tutorial.format.version }, size: tutorial.area.size,
+  layers: { elevation: layer(tutorial.area.elevation), landscape: layer(tutorial.area.landscape), objects: layer(tutorial.area.objects), resourceType: layer(tutorial.area.resourceType), resourceAmount: layer(tutorial.area.resourceAmount) },
+  players: tutorial.players, settlers: tutorial.settlers, buildings: tutorial.buildings, stacks: tutorial.stacks,
+}))
+addOutput('maps/t1.json', ['tutorials'], [tutorialInput], [`${tutorialInput}:decoded-parts=${tutorial.parts.filter(part => part.decoded).map(part => part.type).join('+')},diagnostics=${tutorial.diagnostics.length}`])
+console.log(`Converted the original tutorial map: ${tutorial.area.size}x${tutorial.area.size}, ${tutorial.players.length} players, ${tutorial.diagnostics.length} decoder diagnostics.`)
 await writeContentManifest(output, { schemaVersion: 1, originalSource: { id: 'amazons-demo', sha256 }, inputs: [...provenanceInputs.values()], files: provenanceOutputs })
 console.log(`Converted ${Object.keys(soundFiles).length} original sounds to PCM WAV.`)
 console.log(`Recorded exact file hashes, source-file identities and conversion selectors for ${provenanceOutputs.length} files. Redistribution rights remain unverified.`)

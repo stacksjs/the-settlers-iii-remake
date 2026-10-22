@@ -165,7 +165,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.1.0',
+  version: '0.2.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -177,6 +177,8 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     { id: 'mountain', walkable: true, buildable: false, water: false, moveCost: 2 },
     { id: 'sand', walkable: true, buildable: true, water: false, moveCost: 1 },
     { id: 'desert', walkable: true, buildable: false, water: false, moveCost: 1 },
+    { id: 'moor', walkable: true, buildable: false, water: false, moveCost: 2 },
+    { id: 'snow', walkable: true, buildable: false, water: false, moveCost: 2 },
     { id: 'swamp', walkable: false, buildable: false, water: false, moveCost: 3 },
     { id: 'water', walkable: false, buildable: false, water: true, moveCost: 1 },
   ],

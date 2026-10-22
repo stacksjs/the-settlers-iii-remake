@@ -9,8 +9,8 @@
       "id": "converter:scripts/import-assets.ts",
       "kind": "converter",
       "path": "scripts/import-assets.ts",
-      "bytes": 16498,
-      "sha256": "d9b0f457b3e5ee09fe258950b0a5931ebfcdc0eb22cb7bd1c9fdcd041eb3f85f"
+      "bytes": 18215,
+      "sha256": "7050be2b636678f3d229e713ad7c927f45109d231bbd715001f638e634da88e6"
     },
     {
       "id": "converter:scripts/lib/s3-dat.ts",
@@ -18,6 +18,13 @@
       "path": "scripts/lib/s3-dat.ts",
       "bytes": 3937,
       "sha256": "58bdb4ea3bbcdb78ab8b4c32c82ab12177430d267a704a2acaf31d59e49759ae"
+    },
+    {
+      "id": "converter:scripts/lib/s3-map.ts",
+      "kind": "converter",
+      "path": "scripts/lib/s3-map.ts",
+      "bytes": 25815,
+      "sha256": "2f5ffa9b6a765e1fc1b47c0d5bebaf5a50bad0cd8327ff029bc931918a20e697"
     },
     {
       "id": "converter:scripts/lib/content-provenance.ts",
@@ -358,6 +365,13 @@
       "path": "Snd/Siedler3_00.dat",
       "bytes": 5954086,
       "sha256": "65b12f89c6c74395a59e4f39500359ce40c0f30100890e8c32be4cdc77a698cf"
+    },
+    {
+      "id": "demo:Map/TUTORIAL/T1.MAP",
+      "kind": "original-file",
+      "path": "Map/TUTORIAL/T1.MAP",
+      "bytes": 535420,
+      "sha256": "395575b4f5d97e3d521003d18c3c574ad2b97ac22b17c4f7bd7efb63ed42be98"
     }
   ],
   "files": [
@@ -373,6 +387,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4141,6 +4156,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4192,6 +4208,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4215,6 +4232,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4242,6 +4260,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4264,6 +4283,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4286,6 +4306,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4309,6 +4330,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4331,6 +4353,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4353,6 +4376,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4375,6 +4399,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4397,6 +4422,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4419,6 +4445,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4441,6 +4468,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4463,6 +4491,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4485,6 +4514,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4507,6 +4537,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4529,6 +4560,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4551,6 +4583,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4573,6 +4606,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4595,6 +4629,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4617,6 +4652,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4639,6 +4675,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4661,6 +4698,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4683,6 +4721,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4705,6 +4744,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4727,6 +4767,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4747,6 +4788,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4767,6 +4809,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4787,6 +4830,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4807,6 +4851,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4827,6 +4872,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4847,6 +4893,7 @@
       "inputs": [
         "converter:scripts/import-assets.ts",
         "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
         "converter:scripts/lib/content-provenance.ts",
         "converter:scripts/lib/verified-download.ts",
         "converter:package.json",
@@ -4858,6 +4905,27 @@
       ],
       "bytes": 142,
       "sha256": "994c9fb70bc8e1cd27da8f9ef277d130c441301844640d4216e90450471322db"
+    },
+    {
+      "path": "maps/t1.json",
+      "categories": [
+        "tutorials"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Map/TUTORIAL/T1.MAP"
+      ],
+      "selection": [
+        "demo:Map/TUTORIAL/T1.MAP:decoded-parts=1+2+3+4+6+7+8+9+10,diagnostics=12"
+      ],
+      "bytes": 443737,
+      "sha256": "e9b6d0640e90ce5934bdbaba7fa8aa166138a721839496df3064e3a82d00c364"
     }
   ]
 }

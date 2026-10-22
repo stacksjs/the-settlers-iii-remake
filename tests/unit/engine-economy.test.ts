@@ -214,7 +214,7 @@ describe('natural resources', () => {
     for (let t = 0; t < s.state.map.resource.length; t++) {
       if (s.state.map.resource[t] !== fish) continue
       const p = { x: t % 64, y: Math.floor(t / 64) }
-      const shore = neighbours(s.state.map, t).some(n => s.state.map.terrain[n] !== 5 && s.state.map.owner[n] === 1)
+      const shore = neighbours(s.state.map, t).some(n => !rules.terrain[s.state.map.terrain[n]!]!.water && s.state.map.owner[n] === 1)
       expect(distance(p, f.workArea) > 6 || !shore).toBe(true)
     }
     expect(s.state.map.resourceAmount.every(n => n >= 0)).toBe(true)
