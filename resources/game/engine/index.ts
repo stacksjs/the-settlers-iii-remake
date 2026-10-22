@@ -1,6 +1,9 @@
 // Public interface of the deterministic game session shared by browser, native and server hosts.
 export { checksum, MIGRATIONS, restore, save, SAVE_FORMAT, SAVE_VERSION, SaveError } from './save'
 export type { SaveEnvelope } from './save'
+export { audit } from './audit'
+export { statistics } from './statistics'
+export type { Statistics } from './statistics'
 export { record, verify } from './replay'
 export type { Replay, Verification } from './replay'
 export { createSession, DEFAULT_START, openSession, placementError, view } from './session'
