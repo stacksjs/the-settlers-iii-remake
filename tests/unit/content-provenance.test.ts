@@ -154,4 +154,4 @@ test('the public policy command reports inventory and fails closed without a sup
     expect(await child.exited).toBe(1)
     expect(errors).toContain('Missing or unknown publication channel')
   }
-})
+}, 45_000) // Three real CLI boots include the application's normal Bun preloads.
