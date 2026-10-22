@@ -36,6 +36,9 @@ function describe(id: string): string {
   if (b.residents) return `Houses ${b.residents.count} new settlers, who arrive one at a time.`
   if (b.garrison) return `Claims land within ${b.territory} tiles and holds ${b.garrison.infantry} infantry and ${b.garrison.bowmen} bowmen.`
   if (b.id === 'barracks') return 'Turns carriers into soldiers with the swords, spears and bows delivered here.'
+  if (b.temple === 'small') return 'Turns each delivered wine into manna, one offering at a time. Manna buys promotions.'
+  if (b.temple === 'large') return 'Pleases Jupiter once with manna when completed and brings a priest every five minutes.'
+  if (w.kind === 'cultivate' && w.slope) return `A ${b.worker} plants vines on slopes within ${w.radius} tiles and presses ripe grapes into ${w.output}.`
   if (b.territory) return `Claims land within ${b.territory} tiles once completed.`
   if (w.kind === 'harvest') return `A ${b.worker} fetches ${w.object === 'tree' ? 'trees' : 'stone'} within ${w.radius} tiles and returns ${w.output}.`
   if (w.kind === 'plant') return `A ${b.worker} plants saplings within ${w.radius} tiles.`
@@ -86,13 +89,16 @@ export function snapshot(session: Session | null, selected: number | null, messa
 /** Soldiers by class and rank, and the barracks orders that make more. */
 function army(session: Session | null) {
   const classes = rules.professions.filter(p => p.soldier).map(p => p.id)
-  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0 })), outside: 0, rank: 1, ranks: rules.military?.ranks ?? 1, automatic: false }
+  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null }
   const player = session.state.players[PLAYER - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+  // Profiles with religion buy ranks with manna; older saved games keep the rank setting they were made with.
+  const religion = session.view(PLAYER).religion
   return {
-    soldiers: classes.map(name => ({ name, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0 })),
+    soldiers: classes.map(name => ({ name, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0, rank: religion?.ranks[name] ?? player.settings.rank ?? 1 })),
     outside: own.filter(s => !s.inside).length,
-    rank: player.settings.rank ?? 1, ranks: rules.military?.ranks ?? 1,
+    ranks: session.rules.military?.ranks ?? 1,
     automatic: player.settings.recruit?.automatic ?? false,
+    manna: religion?.manna ?? 0, next: religion ? religion.next : null,
   }
 }
 
@@ -459,10 +465,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const next = !session.state.players[PLAYER - 1]!.settings.recruit?.automatic
       report(send('settings', { settings: { recruitAutomatic: next } }) ?? (next ? 'Barracks recruit whenever weapons arrive.' : 'Barracks recruit only the soldiers you order.'))
     },
-    rank(delta: number) {
+    promote(profession: string) {
       if (!session) return
-      const value = Math.max(1, Math.min(rules.military?.ranks ?? 1, (session.state.players[PLAYER - 1]!.settings.rank ?? 1) + delta))
-      report(send('settings', { settings: { rank: value } }) ?? `New soldiers join at rank ${value}. Soldiers already serving keep their rank.`)
+      report(send('promote', { profession }) ?? `New ${profession} soldiers will join a rank higher. Soldiers already serving keep their rank.`)
     },
     carrierRatio(delta: number) {
       if (!session) return

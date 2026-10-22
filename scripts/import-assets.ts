@@ -90,6 +90,7 @@ const buildingFiles = {
   'woodcutter': 'lumberjack', 'forester': 'forester', 'stonecutter': 'stonecutter', 'sawmill': 'sawmill', 'fisher': 'fisher', 'grain-farm': 'farm', 'waterworks': 'waterworks',
   'mill': 'mill', 'bakery': 'baker', 'pig-farm': 'pig_farm', 'slaughterhouse': 'slaughterhouse', 'coal-mine': 'coalmine', 'iron-mine': 'ironmine', 'gold-mine': 'goldmine',
   'iron-smelter': 'ironmelt', 'gold-smelter': 'goldmelt', 'toolsmith': 'toolsmith', 'weaponsmith': 'weaponsmith',
+  'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple',
 }
 const imported: string[] = []
 for (const [key, name] of Object.entries(buildingFiles)) {
@@ -110,7 +111,7 @@ const goodsSprites: Record<string, { stack: number, carry: number }> = {
   bread: { stack: 49, carry: 5 }, pig: { stack: 73, carry: 3 }, meat: { stack: 52, carry: 10 }, fish: { stack: 47, carry: 9 }, coal: { stack: 34, carry: 6 }, ironore: { stack: 39, carry: 8 },
   goldore: { stack: 36, carry: 7 }, iron: { stack: 42, carry: 13 }, gold: { stack: 37, carry: 14 }, hammer: { stack: 51, carry: 16 }, shovel: { stack: 55, carry: 21 }, axe: { stack: 46, carry: 35 },
   saw: { stack: 54, carry: 20 }, pickaxe: { stack: 53, carry: 17 }, scythe: { stack: 56, carry: 19 }, fishingrod: { stack: 66, carry: 18 }, sword: { stack: 59, carry: 24 },
-  spear: { stack: 60, carry: 23 }, bow: { stack: 63, carry: 22 },
+  spear: { stack: 60, carry: 23 }, bow: { stack: 63, carry: 22 }, wine: { stack: 69, carry: 54 },
 }
 const materialTables = ['jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables.txt']
 for (const path of materialTables) await getReference(path)
@@ -121,6 +122,8 @@ for (const [good, { stack, carry }] of Object.entries(goodsSprites)) {
 }
 await sequence('sapling', 1, 22, 'all', [], true)
 await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
+// Vines: three growth steps then ripe grapes (reference MapObjectDrawer, objects file sequence 25).
+await sequence('vine', 1, 25, [0, 1, 2, 3], [], true)
 for (const [i, seq] of [1, 2, 4, 7, 8, 16, 17].entries()) await sequence(`tree-${i}`, 1, seq, [0])
 await sequence('stone-deposit', 1, 31, [0, 4, 8])
 await sequence('worker', 10, 0, 'all')

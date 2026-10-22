@@ -7,6 +7,7 @@ import { changed, createContext, doorOf, emit, footprint, markFootprint, nextId,
 import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
 import { arm, command as militaryCommand, garrisonCount, wage } from './military'
+import { promote, promotionCost, templeLost, worship } from './religion'
 import { advanceMission, startMission, validateMission } from './mission'
 import type { MissionDefinition } from './mission'
 import { grow, work } from './production'
@@ -200,6 +201,7 @@ function settings(player: Player, value: Record<string, unknown>, rules: RulesPr
   if ('recruitAutomatic' in value || 'rank' in value) {
     if (!rules.military) return 'These rules have no soldiers.'
     if ('recruitAutomatic' in value) { if (typeof value.recruitAutomatic !== 'boolean') return 'Automatic recruitment is on or off.'; next.recruit = { automatic: value.recruitAutomatic, queue: next.recruit?.queue ?? {} } }
+    if ('rank' in value && rules.religion) return 'Promote soldiers with manna instead.'
     if ('rank' in value) { if (!Number.isInteger(value.rank) || (value.rank as number) < 1 || (value.rank as number) > rules.military.ranks) return `Rank must be 1 to ${rules.military.ranks}.`; next.rank = value.rank as number }
   }
   player.settings = next
@@ -221,6 +223,7 @@ function demolish(ctx: Context, b: Building): void {
     record(ctx, b.owner, 'recovered', good, refund - left)
   }
   for (const [tile, id] of [...ctx.state.claims]) if (ctx.state.settlers.get(id)?.workplace === b.id) ctx.state.claims.delete(tile)
+  templeLost(ctx, b)
   markFootprint(ctx, b, 0)
   ctx.state.buildings.delete(b.id)
   ctx.state.navigation++
@@ -289,6 +292,11 @@ function execute(ctx: Context, command: Command): CommandResult {
       orders.queue[command.profession as string] = queued + command.count
       return result(true)
     }
+    case 'promote': {
+      if (typeof command.profession !== 'string') return result(false, 'Malformed promotion.')
+      const error = promote(ctx, player, command.profession)
+      return error ? result(false, error) : result(true)
+    }
     case 'move-soldiers':
     case 'attack': {
       const error = militaryCommand(ctx, player.id, command)
@@ -298,7 +306,7 @@ function execute(ctx: Context, command: Command): CommandResult {
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number
@@ -312,6 +320,8 @@ export interface PlayerView {
   goods: Goods, professions: Record<string, number>, population: number
   signs: Player['signs'], events: GameEvent[], results: CommandResult[]
   mission: { objectives: { id: string, text: string, status: 'open' | 'complete' | 'failed' }[], outcome: 'playing' | 'won' | 'lost' } | null
+  /** The player's own manna, the next promotion's cost and the rank each soldier class now joins at. */
+  religion: { manna: number, produced: number, next: number | null, ranks: Record<string, number> } | null
 }
 
 export interface Session {
@@ -346,6 +356,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     if (state.tick % rules.logistics.assignmentInterval === 0) { staff(context); assignDeliveries(context) }
     for (const s of [...state.settlers.values()]) tickSettler(context, s)
     wage(context)
+    worship(context)
     work(context)
     advanceMission(context)
     if (state.tick % rules.visibility.interval === 0) updateVisibility(context)
@@ -407,6 +418,7 @@ export function view(ctx: Context, playerId: number): PlayerView {
     signs: player.signs.filter(sign => sign.until > state.tick),
     events: state.events.filter(e => e.player === playerId).slice(-32),
     results: state.results.filter(r => r.player === playerId).slice(-32),
+    religion: ctx.rules.religion ? { manna: player.religion?.manna ?? 0, produced: player.religion?.produced ?? 0, next: promotionCost(ctx, player), ranks: Object.fromEntries(ctx.rules.professions.filter(p => p.soldier).map(p => [p.id, 1 + (player.religion?.levels[p.id] ?? 0)])) } : null,
     mission: state.mission ? { objectives: state.mission.definition.objectives.filter(o => o.player === playerId).map(o => ({ id: o.id, text: o.text, status: state.mission!.objectives[o.id]! })), outcome: state.mission.outcome[String(playerId)] ?? 'playing' } : null,
   }
 }

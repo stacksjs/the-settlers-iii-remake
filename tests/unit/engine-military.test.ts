@@ -35,12 +35,15 @@ describe('recruitment', () => {
     run(s, 600)
     expect(soldiers(s, 1, 'pikeman')).toEqual([])
     expect(s.state.players[0]!.settings.recruit!.queue.pikeman).toBe(1)
-    // Promotion applies to soldiers recruited afterwards only.
-    order(s, 'settings', { settings: { rank: 3 } })
+    // Promotion costs manna and applies to soldiers recruited afterwards only. The manna is fixture state here;
+    // tests/unit/engine-religion.test.ts earns it from offerings.
+    s.state.players[0]!.religion = { manna: 60, produced: 60, promotions: 0, levels: {}, templeLost: false }
+    order(s, 'promote', { profession: 'swordsman' })
     order(s, 'recruit', { profession: 'swordsman', count: 1 })
     until(s, () => soldiers(s, 1, 'swordsman').length === 2, 3000)
-    expect(soldiers(s, 1, 'swordsman').map(p => p.soldier!.rank).sort()).toEqual([1, 3])
-    expect(soldiers(s, 1, 'swordsman').find(p => p.soldier!.rank === 3)!.soldier!.health).toBe(150)
+    expect(soldiers(s, 1, 'swordsman').map(p => p.soldier!.rank).sort()).toEqual([1, 2])
+    expect(soldiers(s, 1, 'swordsman').find(p => p.soldier!.rank === 2)!.soldier!.health).toBe(120)
+    expect(s.state.players[0]!.religion!.manna).toBe(50)
     // Idle soldiers take their places in the castle garrison.
     const castle = building(s, 'castle')!
     until(s, () => soldiers(s, 1).every(p => p.inside === castle.id), 2000)
@@ -91,7 +94,9 @@ describe('recruitment', () => {
     }
     expect(reject('recruit', { profession: 'carrier', count: 1 })).toBe('Malformed recruitment order.')
     expect(reject('recruit', { profession: 'swordsman', count: 0 })).toBe('Malformed recruitment order.')
-    expect(reject('settings', { settings: { rank: 4 } })).toBe('Rank must be 1 to 3.')
+    expect(reject('settings', { settings: { rank: 2 } })).toBe('Promote soldiers with manna instead.')
+    expect(reject('promote', { profession: 'swordsman' })).toBe('A promotion needs 10 manna; you have 0.')
+    expect(reject('promote', { profession: 'carrier' })).toBe('Only soldiers can be promoted.')
     const enemy = soldiers(s, 2)[0]!.id, own = soldiers(s, 1)[0]!.id
     expect(reject('move-soldiers', { soldiers: [enemy], x: 1, y: 1 })).toBe('Those are not all your soldiers.')
     expect(reject('move-soldiers', { soldiers: [own], x: 500, y: 1 })).toBe('Choose a tile on the map.')

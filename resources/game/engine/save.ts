@@ -202,9 +202,12 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
     check(s.recruit === undefined || (isObject(s.recruit) && typeof s.recruit.automatic === 'boolean' && isObject(s.recruit.queue) && Object.entries(s.recruit.queue).every(([k, n]) => !!weapon(k) && int(n, 1, 1000))), `player ${p.id} recruitment is invalid`)
     check(s.rank === undefined || int(s.rank, 1, rules.military?.ranks ?? 0), `player ${p.id} rank is invalid`)
     check(int(p.craftCursor, 0, 1000), `player ${p.id} craft cursor is invalid`)
+    const r = p.religion
+    check(r === undefined || (!!rules.religion && isObject(r) && int(r.manna, 0, 1e9) && int(r.produced, r.manna, 1e9) && int(r.promotions, 0, rules.religion.promotions.length) && typeof r.templeLost === 'boolean'
+      && isObject(r.levels) && Object.entries(r.levels).every(([k, n]) => !!weapon(k) && int(n, 0, (rules.military?.ranks ?? 1) - 1)) && Object.values(r.levels).reduce((a, n) => a + (n as number), 0) === r.promotions), `player ${p.id} religion is invalid`)
     const signs = list<Player['signs'][number]>(p.signs, 512, 'sign')
     check(signs.every(sign => isObject(sign) && tile(sign.tile) && (sign.good === null || good(sign.good)) && int(sign.amount, 0, 65535) && int(sign.until, 0, 0xFFFFFFFF)), `player ${p.id} signs are invalid`)
-    return { id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored: decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible: decodeLayer(p.visible, size, 1, 'visible') as Uint8Array }
+    return { ...(r ? { religion: structuredClone(r) } : {}), id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored: decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible: decodeLayer(p.visible, size, 1, 'visible') as Uint8Array }
   })
   const buildings = list<Building>(e.buildings, 100_000, 'building')
   const buildingIds = new Set<number>()

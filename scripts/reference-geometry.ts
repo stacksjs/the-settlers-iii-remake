@@ -12,11 +12,12 @@ export const referenceFiles: Record<string, string> = {
   'woodcutter': 'lumberjack', 'forester': 'forester', 'stonecutter': 'stonecutter', 'sawmill': 'sawmill', 'fisher': 'fisher', 'grain-farm': 'farm', 'waterworks': 'waterworks',
   'mill': 'mill', 'bakery': 'baker', 'pig-farm': 'pig_farm', 'slaughterhouse': 'slaughterhouse', 'coal-mine': 'coalmine', 'iron-mine': 'ironmine', 'gold-mine': 'goldmine',
   'iron-smelter': 'ironmelt', 'gold-smelter': 'goldmelt', 'toolsmith': 'toolsmith', 'weaponsmith': 'weaponsmith',
+  'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple',
 }
 // Reference material names mapped to engine goods; NO_MATERIAL marks a storage pile.
 const materials: Record<string, string> = {
   TRUNK: 'log', PLANK: 'plank', STONE: 'stone', CROP: 'grain', FLOUR: 'flour', WATER: 'water', BREAD: 'bread', PIG: 'pig', MEAT: 'meat', FISH: 'fish', COAL: 'coal', IRONORE: 'ironore',
-  GOLDORE: 'goldore', IRON: 'iron', GOLD: 'gold', HAMMER: 'hammer', BLADE: 'shovel', AXE: 'axe', SAW: 'saw', PICK: 'pickaxe', SCYTHE: 'scythe', FISHINGROD: 'fishingrod', SWORD: 'sword', SPEAR: 'spear', BOW: 'bow', NO_MATERIAL: '*',
+  GOLDORE: 'goldore', IRON: 'iron', GOLD: 'gold', HAMMER: 'hammer', BLADE: 'shovel', AXE: 'axe', SAW: 'saw', PICK: 'pickaxe', SCYTHE: 'scythe', FISHINGROD: 'fishingrod', SWORD: 'sword', SPEAR: 'spear', BOW: 'bow', WINE: 'wine', NO_MATERIAL: '*',
 }
 
 type Attrs = Record<string, string>

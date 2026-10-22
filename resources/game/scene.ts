@@ -52,6 +52,8 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       else if (rule.id === 'stone') items.push({ ...base, kind: 'stone', sprite: 'stone-deposit', frame: map.objectAmount[t]! > 8 ? 0 : map.objectAmount[t]! > 4 ? 1 : 2, amount: map.objectAmount[t]! })
       else if (rule.id === 'field') items.push({ ...base, kind: 'crop', sprite: 'crop', frame: Math.floor(growth * 7) })
       else if (rule.id === 'ripe-grain') items.push({ ...base, kind: 'crop', sprite: 'crop', frame: 7 })
+      else if (rule.id === 'vine') items.push({ ...base, kind: 'crop', sprite: 'vine', frame: Math.floor(growth * 3) })
+      else if (rule.id === 'ripe-vine') items.push({ ...base, kind: 'crop', sprite: 'vine', frame: 3 })
     }
   }
   const piles = new Map<number, number>()

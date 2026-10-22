@@ -6,6 +6,7 @@ import type { Direction, Point } from './geometry'
 import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { cancelJob, cancelJobsFor, dropCargo, moveStackGoodsToGround, slot } from './logistics'
 import { changeProfession, effects, finishers, freeTileNear, start } from './settlers'
+import { templeLost } from './religion'
 import { release } from './workforce'
 
 // Soldiers are settlers who took a weapon at a barracks. Swordsmen strike
@@ -66,8 +67,9 @@ effects.set('enlist', (ctx, s, args) => {
   const job = ctx.state.jobs.get(Number(args.job))
   if (!job || job.kind !== 'equip' || !job.picked || s.cargo !== job.tool) return false
   const player = ctx.state.players.find(p => p.id === s.owner)!
-  // The rank is fixed at recruitment and never raised afterwards.
-  const rank = Math.max(1, Math.min(military(ctx).ranks, player.settings.rank ?? 1))
+  // The rank is fixed at recruitment and never raised afterwards. With religion it comes from promotions bought with manna.
+  const level = ctx.rules.religion ? 1 + (player.religion?.levels[job.profession] ?? 0) : player.settings.rank ?? 1
+  const rank = Math.max(1, Math.min(military(ctx).ranks, level))
   s.cargo = null
   record(ctx, s.owner, 'equipped', job.tool!, 1)
   arm(ctx, s, job.profession, rank)
@@ -336,6 +338,7 @@ function redraw(ctx: Context, captured: Building): void {
     for (const s of [...state.settlers.values()]) if (s.workplace === b.id || s.inside === b.id) release(ctx, s, 'land lost')
     moveStackGoodsToGround(ctx, b, null)
     for (const [t, id] of [...state.claims]) if (state.settlers.get(id)?.workplace === b.id) state.claims.delete(t)
+    templeLost(ctx, b)
     markFootprint(ctx, b, 0)
     state.buildings.delete(b.id)
     emit(ctx, { player: b.owner, type: 'destroyed', text: `${rule.name} was lost with its land`, tile: doorOf(ctx, b) })

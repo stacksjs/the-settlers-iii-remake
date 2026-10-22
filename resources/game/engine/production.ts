@@ -2,7 +2,7 @@ import type { Context } from './context'
 import type { Goods, Workflow } from './rules'
 import type { Building, Settler, Stack } from './state'
 import { changed, doorOf, emit, objectAt, passable, pointAt, record, room, ruleOf, terrainAt } from './context'
-import { area, distance } from './geometry'
+import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { dropCargo, groundStackAt, slot } from './logistics'
 import { randomInt } from './random'
 import { route } from './routing'
@@ -50,6 +50,24 @@ function plantable(ctx: Context, tile: number, owner: number): boolean {
   return passable(ctx, tile) && terrainAt(ctx, tile).buildable && !ctx.state.map.object[tile] && ctx.state.map.owner[tile] === owner && !ctx.state.claims.has(tile) && ctx.index.settlerAt[tile] === 0 && ctx.index.protectedAt[tile] === 0 && !groundStackAt(ctx, tile)
 }
 
+/**
+ * Where a crop may be sown: its tile and neighbours on the required ground, and
+ * for sloped crops a neighbour at least the required height away, with no
+ * planting on that neighbour or the one opposite (reference isWinePlantable).
+ */
+function sowable(ctx: Context, tile: number, w: Extract<Workflow, { kind: 'cultivate' }>): boolean {
+  const map = ctx.state.map, x = tile % map.width, y = Math.floor(tile / map.width)
+  if (w.ground && ![tile, ...neighbours(map, tile)].every(t => w.ground!.includes(terrainAt(ctx, t).id))) return false
+  if (!w.slope) return true
+  const at = (d: number): number | null => { const nx = x + DIRECTIONS[d]![0], ny = y + DIRECTIONS[d]![1]; return nx >= 0 && ny >= 0 && nx < map.width && ny < map.height ? ny * map.width + nx : null }
+  const crop = (t: number | null): boolean => t !== null && [w.plant, w.ripe].includes(objectAt(ctx, t)?.id ?? '')
+  for (let d = 0; d < 6; d++) {
+    const n = at(d)
+    if (n !== null && Math.abs(map.elevation[n]! - map.elevation[tile]!) >= w.slope) return !crop(n) && !crop(at((d + 3) % 6))
+  }
+  return false
+}
+
 /** Starts one trip outside the building, claiming the target so two workers never share it. */
 function trip(ctx: Context, b: Building, s: Settler, tile: number, adjacent: boolean, work: number, effect: string, args: Record<string, number | string>): void {
   ctx.state.claims.set(tile, s.id)
@@ -67,7 +85,7 @@ function outdoor(ctx: Context, b: Building, s: Settler, w: Workflow): string | n
   }
   if (w.kind === 'plant' || w.kind === 'cultivate') {
     const object = w.kind === 'plant' ? w.object : w.plant
-    const candidates = within(ctx, b, w.radius).filter(t => plantable(ctx, t, b.owner)).slice(0, 8)
+    const candidates = within(ctx, b, w.radius).filter(t => plantable(ctx, t, b.owner) && (w.kind !== 'cultivate' || sowable(ctx, t, w))).slice(0, 8)
     // Choose among the nearest free tiles so plantings spread out rather than filling one line.
     while (candidates.length) {
       const pick = candidates.splice(randomInt(ctx.state.random, candidates.length), 1)[0]!

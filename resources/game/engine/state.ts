@@ -36,7 +36,10 @@ export interface Player {
   explored: Uint8Array, visible: Uint8Array
   signs: Sign[]
   craftCursor: number
+  /** Manna and promotion progress, once a rules profile has religion. Levels count promotions per soldier class. */
+  religion?: Religion
 }
+export interface Religion { manna: number, produced: number, promotions: number, levels: Record<string, number>, templeLost: boolean }
 
 export type Op =
   | { op: 'go', tile: number, adjacent?: boolean }
