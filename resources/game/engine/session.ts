@@ -16,7 +16,7 @@ import { grow, work } from './production'
 import { seedRandom } from './random'
 import { crafted, rulesIdentity, validateRules } from './rules'
 import { spawn, tickSettler } from './settlers'
-import { dispatch, updateVisibility } from './territory'
+import { dismiss, dispatch, updateVisibility } from './territory'
 import { complete, release, staff } from './workforce'
 
 /** Buildings and settlers a scenario places for one player, instead of the default start. */
@@ -293,6 +293,11 @@ function execute(ctx: Context, command: Command): CommandResult {
       const sent = dispatch(ctx, player.id, command.profession, indexOf(state.map, command.x, command.y), command.count)
       return sent ? result(true) : result(false, `No ${command.profession} could be equipped.`)
     }
+    case 'dismiss': {
+      const specialists = ['geologist', 'pioneer', ...(rules.thieves ? [rules.thieves.profession] : [])]
+      if (typeof command.profession !== 'string' || !specialists.includes(command.profession) || !integer(command.count, 1, 50)) return result(false, 'Malformed order to return specialists.')
+      return dismiss(ctx, player.id, command.profession, command.count) ? result(true) : result(false, `No idle ${command.profession} can return to carrying.`)
+    }
     case 'recruit': {
       const soldier = typeof command.profession === 'string' ? ctx.profession.get(command.profession)?.soldier : undefined
       if (!rules.military || !soldier || !integer(command.count, 1, 100)) return result(false, 'Malformed recruitment order.')
@@ -328,7 +333,7 @@ function execute(ctx: Context, command: Command): CommandResult {
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast', 'thieves', 'thief'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast', 'thieves', 'thief', 'dismiss'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number

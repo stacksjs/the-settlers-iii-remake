@@ -561,6 +561,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!session) return
       report(send('promote', { profession }) ?? `New ${profession} soldiers will join a rank higher. Soldiers already serving keep their rank.`)
     },
+    dismiss(profession: string) {
+      if (!session) return
+      report(send('dismiss', { profession, count: 1 }) ?? `An idle ${profession} went back to carrying.`)
+    },
     thieves() {
       if (!session) return
       report(send('thieves', { count: 1 }) ?? 'A carrier became a thief. Click him, then right-click with Alt where he should pilfer.')

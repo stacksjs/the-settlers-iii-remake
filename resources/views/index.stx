@@ -158,6 +158,11 @@ onDestroy(() => game?.dispose())
               <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'geologist'" @click="choose('geologist')" title="Send a geologist to survey a mountain">Geologist</button>
               <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.thieves()" title="Turn a carrier into a thief">Thief</button>
             </div>
+            <div class="flex gap-2 mt-2 specialists" aria-label="Back to carrying">
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('pioneer')" title="Turn an idle pioneer back into a carrier">Pioneer to carrier</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('geologist')" title="Turn an idle geologist back into a carrier">Geologist to carrier</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('thief')" title="Turn an idle thief back into a carrier">Thief to carrier</button>
+            </div>
           </div>
           <div :if="menu().main === 'settlers' && menu().sub === 'military'" class="army-panel" aria-label="Army">
           <div class="flex items-center justify-between"><h2>Army</h2><span class="ratio">Manna {{ view().army.manna }}{{ view().army.next !== null ? ', next promotion ' + view().army.next : '' }}</span></div>

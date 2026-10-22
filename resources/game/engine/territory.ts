@@ -2,7 +2,7 @@ import type { Context } from './context'
 import type { Building, Job, Op, Settler } from './state'
 import { available, changed, emit, nextId, pointAt, record, ruleOf, terrainAt, tileOf } from './context'
 import { area, distance, neighbours } from './geometry'
-import { cancelJob, dropCargo } from './logistics'
+import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, start } from './settlers'
 import { completions, population } from './workforce'
 
@@ -45,6 +45,32 @@ export function dispatch(ctx: Context, owner: number, profession: 'geologist' | 
     sent++
   }
   return sent
+}
+
+/**
+ * Turns idle specialists back into carriers (manual: Occupations, "changes
+ * pioneers back to carriers"). A specialist on duty, walking or carrying keeps
+ * working; the tool he was given is set down beside him as a good again.
+ * Returns how many were turned back.
+ */
+export function dismiss(ctx: Context, owner: number, profession: string, count: number): number {
+  const idle = population(ctx, owner).filter(s => s.profession === profession && !s.inside && !s.cargo && s.action !== 'walking' && (!s.program || s.diagnostic === 'duty complete')).sort((a, b) => a.id - b.id)
+  let done = 0
+  for (const s of idle.slice(0, count)) {
+    s.program = null
+    if (s.tool) {
+      const tool = s.tool, left = dropToGround(ctx, owner, tileOf(ctx, s), tool, 1)
+      // With no ground nearby the tool stays in his hands, still equipment.
+      if (left) continue
+      record(ctx, owner, 'recovered', tool, 1)
+      s.tool = null
+    }
+    delete s.thief
+    changeProfession(ctx, s, 'carrier')
+    s.diagnostic = null
+    done++
+  }
+  return done
 }
 
 const duty = (ctx: Context, s: Settler, target: number): Op[] =>
