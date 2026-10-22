@@ -186,6 +186,7 @@ describe('garrisons and capture', () => {
     // The enemy stores its planks in its castle.
     until(s, () => [...s.state.stacks.values()].some(st => st.building === theirs.id && st.good === 'plank' && st.amount === 4), 3000)
     const [one, two, three] = soldiers(s, 1).map(p => p.id)
+    if (one === undefined || two === undefined || three === undefined) throw new Error('The capture fixture requires three garrisoned soldiers.')
     order(s, 'move-soldiers', { soldiers: [one, two], x: 74, y: 44 })
     s.enqueue({ tick: s.state.tick, player: 1, seq: 500, type: 'move-soldiers', soldiers: [three], x: 74, y: 44 })
     s.advance(1)
