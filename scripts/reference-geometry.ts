@@ -13,6 +13,7 @@ export const referenceFiles: Record<string, string> = {
   'mill': 'mill', 'bakery': 'baker', 'pig-farm': 'pig_farm', 'slaughterhouse': 'slaughterhouse', 'coal-mine': 'coalmine', 'iron-mine': 'ironmine', 'gold-mine': 'goldmine',
   'iron-smelter': 'ironmelt', 'gold-smelter': 'goldmelt', 'toolsmith': 'toolsmith', 'weaponsmith': 'weaponsmith',
   'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple', 'healers-hut': 'hospital',
+  'large-tower': 'big_tower', 'lookout-tower': 'lookout_tower', 'large-residence': 'big_livinghouse',
 }
 // Reference material names mapped to engine goods; NO_MATERIAL marks a storage pile.
 const materials: Record<string, string> = {

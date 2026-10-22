@@ -9,8 +9,8 @@
       "id": "converter:scripts/import-assets.ts",
       "kind": "converter",
       "path": "scripts/import-assets.ts",
-      "bytes": 19785,
-      "sha256": "88c6ebdc894b613f86a027ac9ee94dea8507681ef52130e0ee8e5184dd88b614"
+      "bytes": 19887,
+      "sha256": "d41c697f3dc7517fe2c097961fedefcce0d4a5cb046626c14ba5960e65603880"
     },
     {
       "id": "converter:scripts/lib/s3-dat.ts",
@@ -357,6 +357,33 @@
       "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml"
     },
     {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml",
+      "bytes": 4563,
+      "sha256": "09974aad6dbed236233599a80c97443ad84fdfca63bb14bdb6b025cb08d6e606",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml",
+      "bytes": 2259,
+      "sha256": "390c862507aaab20557bf5848677fbb9f7ad557b78fb6d1501fe464a5fb04f93",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml"
+    },
+    {
+      "id": "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml",
+      "kind": "reference-source",
+      "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml",
+      "bytes": 5148,
+      "sha256": "75ee36ee14bfd13bea8b00616914f9289c36987ee5ac0771de0807d5408ebf23",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml"
+    },
+    {
       "id": "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
       "kind": "reference-source",
       "path": "jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
@@ -482,6 +509,9 @@
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml",
         "demo:Gfx/Siedler3_01.f8007e01f.dat",
         "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
         "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
@@ -557,6 +587,13 @@
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=32,demo-sequence=32,frame=1",
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=29,demo-sequence=29,frame=0",
         "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=29,demo-sequence=29,frame=1",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=18,demo-sequence=18,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=18,demo-sequence=18,frame=2",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=18,demo-sequence=18,frame=1",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=2,demo-sequence=2,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=2,demo-sequence=2,frame=1",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=26,demo-sequence=26,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=26,demo-sequence=26,frame=1",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=0",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=1",
         "demo:Gfx/Siedler3_01.f8007e01f.dat:section=0x106,gold-sequence=41,demo-sequence=41,frame=2",
@@ -6960,8 +6997,8 @@
         "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=21,frame=0,color=565",
         "demo:Gfx/siedler3_00.f8007e01f.dat:section=0x2412,sequence=31,frame=0,color=565"
       ],
-      "bytes": 6503630,
-      "sha256": "a5b193397d7439c1feff2ef4c4f7cf3cdc3f4a17a597aa064e2a60bc6c0aabba"
+      "bytes": 6669494,
+      "sha256": "9a81519a87d7fa790b8a5a49ef115cd919a73109c574f15dba9dcee88bb06bf4"
     },
     {
       "path": "manifest.json",
@@ -7007,6 +7044,9 @@
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_temple.xml",
         "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/hospital.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml",
         "demo:Gfx/Siedler3_01.f8007e01f.dat",
         "reference:jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java",
         "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
@@ -7019,8 +7059,8 @@
       "selection": [
         "Original atlas selectors, dimensions, displacements and pinned source identities"
       ],
-      "bytes": 3972006,
-      "sha256": "658b9d5c9b93cc6556acbaffb6e92af59cc471e18b3b75d164123a3c0fef5e2b"
+      "bytes": 3977287,
+      "sha256": "f6f0cc8761421999d213699d151bcfa1c10aab4c844a5b73328273d344f350aa"
     },
     {
       "path": "castle.png",
@@ -7696,6 +7736,76 @@
       ],
       "bytes": 20846,
       "sha256": "67ea9ffd065709f66dddb378857028de827c5d8b05c4ad53152dc0d441f0a72d"
+    },
+    {
+      "path": "large-tower.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_tower.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=18,demo-sequence=18,frame=0",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=18,demo-sequence=18,frame=2"
+      ],
+      "bytes": 31112,
+      "sha256": "a366af5ece4d598f4fa9ba218f06a9a8e538795ce8f68fde821bcbe6d94fa33c"
+    },
+    {
+      "path": "lookout-tower.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/lookout_tower.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=2,demo-sequence=2,frame=0"
+      ],
+      "bytes": 17461,
+      "sha256": "6fbc1e5954729823169976014a8e48bb11159aae5d96340fe3a3d085d631fc91"
+    },
+    {
+      "path": "large-residence.png",
+      "categories": [
+        "buildings"
+      ],
+      "inputs": [
+        "converter:scripts/import-assets.ts",
+        "converter:scripts/lib/s3-dat.ts",
+        "converter:scripts/lib/s3-map.ts",
+        "converter:scripts/lib/content-provenance.ts",
+        "converter:scripts/lib/verified-download.ts",
+        "converter:package.json",
+        "converter:bun.lock",
+        "demo:Gfx/Siedler3_13.f8007e01f.dat",
+        "reference:jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "reference:jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/big_livinghouse.xml"
+      ],
+      "selection": [
+        "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=26,demo-sequence=26,frame=0"
+      ],
+      "bytes": 36366,
+      "sha256": "6f0ceb77c1ba539ddd8ac413bec2bfd19f5e987817b565d974f56a0e2e4bd4e6"
     },
     {
       "path": "build.wav",

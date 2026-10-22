@@ -4,6 +4,7 @@ import roman030 from './profiles/roman-engineering-0.3.0.json'
 import roman040 from './profiles/roman-engineering-0.4.0.json'
 import roman050 from './profiles/roman-engineering-0.5.0.json'
 import roman060 from './profiles/roman-engineering-0.6.0.json'
+import roman070 from './profiles/roman-engineering-0.7.0.json'
 import { ROMAN_ENGINEERING, rulesIdentity, validateRules } from './rules'
 
 /**
@@ -11,7 +12,7 @@ import { ROMAN_ENGINEERING, rulesIdentity, validateRules } from './rules'
  * they were made with; earlier published profiles stay here, frozen as data, so
  * those games keep their rules instead of being refused or reinterpreted.
  */
-export const PUBLISHED_RULES: readonly RulesProfile[] = [validateRules(roman020 as unknown as RulesProfile), validateRules(roman030 as unknown as RulesProfile), validateRules(roman040 as unknown as RulesProfile), validateRules(roman050 as unknown as RulesProfile), validateRules(roman060 as unknown as RulesProfile), ROMAN_ENGINEERING]
+export const PUBLISHED_RULES: readonly RulesProfile[] = [validateRules(roman020 as unknown as RulesProfile), validateRules(roman030 as unknown as RulesProfile), validateRules(roman040 as unknown as RulesProfile), validateRules(roman050 as unknown as RulesProfile), validateRules(roman060 as unknown as RulesProfile), validateRules(roman070 as unknown as RulesProfile), ROMAN_ENGINEERING]
 
 export function rulesFor(identity: { id: string, version: string, digest: string }): RulesProfile | null {
   return PUBLISHED_RULES.find(rules => { const own = rulesIdentity(rules); return own.id === identity.id && own.version === identity.version && own.digest === identity.digest }) ?? null

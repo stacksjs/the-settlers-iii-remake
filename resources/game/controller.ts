@@ -35,6 +35,7 @@ function describe(id: string): string {
   if (b.storage) return `Stores up to ${b.storage.piles} piles of ${b.storage.capacity} goods marked for storage.`
   if (b.residents) return `Houses ${b.residents.count} new settlers, who arrive one at a time.`
   if (b.garrison) return `Claims land within ${b.territory} tiles and holds ${b.garrison.infantry} infantry and ${b.garrison.bowmen} bowmen.`
+  if (!b.military && !b.territory && b.vision > 24) return `Watches over the land within ${b.vision} tiles; it claims none.`
   if (b.id === 'barracks') return 'Turns carriers into soldiers with the swords, spears and bows delivered here.'
   if (b.temple === 'small') return 'Turns each delivered wine into manna, one offering at a time. Manna buys promotions.'
   if (b.temple === 'large') return 'Pleases Jupiter once with manna when completed and brings a priest every five minutes.'

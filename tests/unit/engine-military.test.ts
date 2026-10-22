@@ -343,6 +343,22 @@ describe('garrisons and capture', () => {
     expect(checksum(copy.state)).toBe(checksum(s.state))
   }, 60_000)
 
+  test('a large tower holds three infantry and three bowmen; a lookout tower sees far and claims nothing', () => {
+    const soldiersOf = (profession: string, n: number, x: number) => Array.from({ length: n }, (_, i) => ({ profession, x: x + i, y: 70 }))
+    const s = createSession({
+      rules, map: landscape(), seed: 3,
+      players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, scenario: { buildings: [{ type: 'large-tower', x: 40, y: 40 }, { type: 'lookout-tower', x: 70, y: 70 }], settlers: [...soldiersOf('swordsman', 4, 40), ...soldiersOf('bowman', 4, 46)] } }],
+    })
+    const tower = building(s, 'large-tower')!
+    until(s, () => [...s.state.settlers.values()].filter(p => p.inside === tower.id).length === 6, 2000)
+    const inside = [...s.state.settlers.values()].filter(p => p.inside === tower.id)
+    expect(inside.filter(p => p.profession === 'swordsman')).toHaveLength(3)
+    expect(inside.filter(p => p.profession === 'bowman')).toHaveLength(3)
+    // The lookout tower sees far beyond any soldier or the large tower, but claims no land.
+    expect(s.state.players[0]!.visible[70 * 96 + 95]).toBe(1)
+    expect(s.state.map.owner[70 * 96 + 70]).toBe(0)
+  })
+
   test('saved soldiers are validated like any other untrusted input', () => {
     const s = war()
     run(s, 40)
