@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-22T17:20:00.990427+00:00",
+  "repository": "craft-native/craft",
+  "releaseCandidate": {
+    "version": "0.0.296",
+    "commit": "5ae0851aa5f5275ebb838bea0fafe163f150811d",
+    "runId": 39804169474,
+    "fullyQualified": false,
+    "remainingAtObservation": [
+      "pantry (linux-x86-64)",
+      "pantry (darwin-arm64)"
+    ]
+  },
+  "profile": {
+    "image": "system-images;android-35;google_apis_playstore;x86_64",
+    "fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.036/12592187:user/release-keys",
+    "acceleration": "software",
+    "emulator": "37.2.12.0 (16428233)",
+    "hostCpu": "AMD EPYC 7763 64-Core Processor",
+    "hostThreads": 4,
+    "memoryMb": 4096,
+    "bootTimeoutMs": 1200000
+  },
+  "observations": [
+    {
+      "purpose": "release acceptance",
+      "runAttempt": 1,
+      "guestCpus": 4,
+      "result": "failed",
+      "artifact": 12439435631,
+      "artifactSha256": "23889343b4f963ebb825370f756bc36864a648cff4e0727bfc09995a87150fa4",
+      "bootElapsedMs": 1200002
+    },
+    {
+      "purpose": "non-acceptance one-CPU diagnostic",
+      "source": "a301dfd89103eb68b73c253dcb3914113ed26f7a",
+      "runId": 39813718736,
+      "guestCpus": 1,
+      "result": "failed",
+      "artifact": 12443380212,
+      "artifactSha256": "57706849da6a92325beb7f5126409d0767c3bfc612c7769095864af5b1571944",
+      "bootElapsedMs": 1200007,
+      "observedFailures": [
+        "SystemUI startup ANR",
+        "phone startup ANR",
+        "launcher notification listener ANR",
+        "system_server restarted"
+      ]
+    },
+    {
+      "purpose": "release acceptance",
+      "runAttempt": 2,
+      "jobId": 119958843751,
+      "guestCpus": 4,
+      "result": "passed",
+      "artifact": 12443723087,
+      "artifactSha256": "23cd25894c4ec2056bfc5e80c850b84eb2cdd2468b5f8bf36fb3182f49446464",
+      "bootElapsedMs": 1019169,
+      "guestMemTotalKb": 4014404,
+      "playStore": "/product/priv-app/Phonesky/Phonesky.apk",
+      "disposed": true
+    }
+  ],
+  "interpretation": [
+    "One guest CPU did not remedy the retained cold-boot failure.",
+    "The unchanged four-CPU release profile passed on retry with the same stock image fingerprint and readiness gates.",
+    "This establishes successful acceptance for that attempt, not elimination of cold-provisioning variability.",
+    "No boot deadline, image, readiness gate, guest global or release check was changed to obtain the successful retry.",
+    "Publication, public archive identity and downstream installed-consumer acceptance remain separate gates."
+  ]
+}

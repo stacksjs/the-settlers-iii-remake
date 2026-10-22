@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-22T17:19:19.547174+00:00",
+  "gameSource": "ed1dc8f7e6ff92eb22e8652ed32ac83419a047c6",
+  "hostedCi": {
+    "runId": 39818050556,
+    "url": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/39818050556",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "installedPackages": {
+    "@stacksjs/buddy": "0.75.257",
+    "@stacksjs/stx": "0.2.644",
+    "craft-native": "0.0.272"
+  },
+  "localChecks": {
+    "unit": {
+      "passed": 109,
+      "failed": 0,
+      "assertions": 5382,
+      "files": 17
+    },
+    "types": {
+      "errors": 0,
+      "templateExpressions": 113
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "pages": 1
+    },
+    "browser": {
+      "profile": "Stacks source driver, not installed package adoption",
+      "sourceCommit": "6e44045d0ba0cc455727b2b529e466c0af8c5ab9",
+      "driverSha256": "7393dc541cbee3b0a1fe86c1d8f9f5870ab729966242cf853618a2d36efb52a2",
+      "assertionTimeoutMs": 2000,
+      "steps": 30,
+      "failed": 0,
+      "consoleErrors": 0,
+      "failedRequests": 0,
+      "bun": "1.4.2",
+      "screenshot": {
+        "sha256": "f7e5c23ed49a45b5e769a48612b908528519cb409d0ff68509576019ecf2456f",
+        "bytes": 681210,
+        "width": 1440,
+        "height": 960,
+        "publication": "withheld-pending-redistribution-evidence"
+      }
+    }
+  },
+  "content": {
+    "spriteFrames": 1990,
+    "pcmSounds": 6,
+    "convertedFiles": 34,
+    "provenanceReceiptSha256": "f4d553534351bed0b0b9b13e9caa7e952a6384e74a3c9310dce31c21dd6b9edb",
+    "redistributionGrants": 0
+  },
+  "initialFailure": {
+    "check": "full local unit suite",
+    "result": "108 passed and one roadmap publisher subprocess assertion failed with empty child output. The unchanged focused test and full suite subsequently passed. The initial failure is retained; no budget or skip was changed."
+  },
+  "evidence": [
+    {
+      "path": "mutator-stop-fix/game-qualified-build.log",
+      "bytes": 1350,
+      "sha256": "ec22f27c173ae6ecfeec21483f882cbda7167f98c5089dba513edd53722ee7a3"
+    },
+    {
+      "path": "mutator-stop-fix/game-qualified-unit.log",
+      "bytes": 14315,
+      "sha256": "f6d206520273ac1da0fbacda1df1b9c166926ef326a9ad81d053cb3249571ecb"
+    },
+    {
+      "path": "mutator-stop-fix/game-qualified-publisher-focused.log",
+      "bytes": 261,
+      "sha256": "de89b7a65510721f1cb9de3842170549a89e33e0601994e39421b8f6d497b8b7"
+    },
+    {
+      "path": "mutator-stop-fix/game-qualified-unit-final.log",
+      "bytes": 13046,
+      "sha256": "ac51d48a968455d1bdd329bd4c3052364664b9fb60e683b01e579bf247d32c04"
+    },
+    {
+      "path": "mutator-stop-fix/game-qualified-types.log",
+      "bytes": 543,
+      "sha256": "6f0ebb20f23e3fa4526434b46561d16be3dd3273bdcd735ef93bf96e1b7c390b"
+    },
+    {
+      "path": "mutator-stop-fix/game-qualified-lint.log",
+      "bytes": 301,
+      "sha256": "d48569519cdcc75ad563ae409147eafdef7c998e8920c279b2a022c7a87a25a9"
+    },
+    {
+      "path": "mutator-stop-fix/game-source-profile-1792689064945.json",
+      "bytes": 4831,
+      "sha256": "bc8325ac8c277d783db52fddfe264057d11f3c40d16e877a9b070fe5320327ea"
+    }
+  ],
+  "limits": [
+    "The available reference is paulwedeck/settlers-remake, not an executed original Gold installation.",
+    "Browser acceptance does not establish original balance, timing, campaign or native game parity.",
+    "The new Stacks source driver requires verified package publication and normal installed-consumer adoption."
+  ]
+}
