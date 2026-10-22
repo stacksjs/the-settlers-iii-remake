@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-22T19:03:58.903073+00:00",
+  "repository": "craft-native/craft",
+  "source": "13b412c9569892aa778106f873abed3c3c5b8153",
+  "surfaceSource": "29bff7366964f2d61ec9eaec74f4ac011ef50fde",
+  "macOS": {
+    "sourceReceipt": "https://github.com/craft-native/craft/blob/13b412c9569892aa778106f873abed3c3c5b8153/docs/receipts/metal-surface-macos.json",
+    "framesCompared": 61,
+    "backingScale": 2,
+    "pixelEvidence": "Every pixel read back through Metal from the drawable texture",
+    "arm64Debug": "passed",
+    "arm64ReleaseSafe": "passed",
+    "x86_64UnderRosetta": "passed",
+    "onscreenCapture": "not established"
+  },
+  "iOS": {
+    "unitCase": "testNativeDrawablePixelsScaleResizeSuspendAndOwnership",
+    "unitCaseResult": "passed",
+    "unitCaseElapsedSeconds": 0.83,
+    "runtime": "iOS 27 beta",
+    "uiCaseResult": "not completed",
+    "focusedHostedRun": 39834702399,
+    "focusedHostedHead": "13b412c9569892aa778106f873abed3c3c5b8153",
+    "focusedHostedStatusAtObservation": "queued",
+    "hostedToolchain": "Xcode 26.2 and iOS 26.2",
+    "ownedSimulatorDisposal": "confirmed for all five local attempts",
+    "completeAcceptance": false
+  },
+  "evidence": [
+    {
+      "path": "mutator-stop-fix/metal-ios/run-Ee0Zzp/native-uikit-tests.log",
+      "bytes": 186122,
+      "sha256": "815bb97692aa48dfcb4c786e4e3880c8355b86d76529282db92b10f1ef9d7128"
+    },
+    {
+      "path": "mutator-stop-fix/metal-ios/run-Ee0Zzp/verification.json",
+      "bytes": 28424,
+      "sha256": "c563e761448cbc6d885d4524c8a279f09d6da3e3d7d65f3d300b8d97d2b7c3cf"
+    },
+    {
+      "path": "mutator-stop-fix/metal-ios/run-MxlvDY/verification.json",
+      "bytes": 29472,
+      "sha256": "5674ab60e56d5e3f015dbc71356e2142968d7b6d7874e06b49333eb06b0ba0a2"
+    }
+  ],
+  "limits": [
+    "No package containing the Metal surface has been qualified or installed into this game.",
+    "GPU readback is distinct from screen capture. The required iOS UI test remains pending.",
+    "The local unit pass preceded later fixture and cleanup changes; it does not qualify the complete current fixture.",
+    "Rosetta execution does not establish Intel or AMD GPU hardware execution.",
+    "Native game presentation, shared stx HUD, input clocks and original-game parity remain unverified.",
+    "S3-011 and S3-013 remain open."
+  ]
+}
