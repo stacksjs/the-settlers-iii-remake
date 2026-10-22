@@ -1,6 +1,8 @@
 import type { Atlas, AtlasFrame } from './assets'
 import type { Point, Session } from './engine'
+import type { SceneItem } from './scene'
 import { pick, toView } from './engine'
+import { scene } from './scene'
 
 // Presentation reads the session and the viewing player's sight. It never
 // changes simulation state, and foreign entities are drawn only where the
@@ -131,85 +133,16 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     }
     // Visible tile range for entity culling.
     const yMin = Math.max(0, Math.floor((-camera.y / z) / 9) - 2), yMax = Math.min(map.height - 1, Math.ceil(((height - camera.y) / z + 520) / 9) + 2)
-    const drawables: { depth: number, paint: () => void }[] = []
-    const seen = (t: number): boolean => viewer.visible[t] === 1
-    for (let y = yMin; y <= yMax; y++) {
-      const xMin = Math.max(0, Math.floor(((-camera.x) / z + y * 8) / 16) - 2), xMax = Math.min(map.width - 1, Math.ceil(((width - camera.x) / z + y * 8) / 16) + 2)
-      for (let x = xMin; x <= xMax; x++) {
-        const t = y * map.width + x, object = map.object[t]!
-        if (!object || !viewer.explored[t]) continue
-        const rule = rules.objects[object - 1]!, view = toView(x, y, map.elevation[t]!)
-        const age = state.tick - map.objectSince[t]!, growth = rule.grows ? Math.min(0.999, age / rule.grows.ticks) : 1
-        const hash = (x * 73856093 ^ y * 19349663) >>> 0
-        drawables.push({ depth: view.y, paint: () => {
-          if (rule.id === 'tree') sprite(`tree-${hash % 7}`, view, 0)
-          else if (rule.id === 'sapling') sprite('sapling', view, Math.floor(growth * (atlas!.frames.get('sapling')?.length ?? 1)))
-          else if (rule.id === 'stone') sprite('stone-deposit', view, map.objectAmount[t]! > 8 ? 0 : map.objectAmount[t]! > 4 ? 1 : 2)
-          else if (rule.id === 'field') sprite('crop', view, Math.floor(growth * 7))
-          else if (rule.id === 'ripe-grain') sprite('crop', view, 7)
-        } })
-      }
-    }
-    for (const st of state.stacks.values()) {
-      if (st.amount < 1 || (st.owner !== options.player && !seen(st.tile))) continue
-      const x = st.tile % map.width, y = Math.floor(st.tile / map.width)
-      if (y < yMin || y > yMax) continue
-      // Piles lie on their own tiles; several piles waiting at one door fan out beside it.
-      const slot = [...state.stacks.values()].filter(o => o.tile === st.tile && o.amount > 0).indexOf(st)
-      const base = toView(x, y, map.elevation[st.tile]!), view = { x: base.x + (slot ? 10 + ((slot - 1) % 3) * 9 : 0), y: base.y + (slot ? Math.floor((slot - 1) / 3) * 6 - 2 : 0) }
-      drawables.push({ depth: view.y, paint: () => sprite(`stack:${st.good}`, view, Math.min(8, st.amount) - 1) })
-    }
+    const columns = (y: number): [number, number] => [Math.floor(((-camera.x) / z + y * 8) / 16) - 2, Math.ceil(((width - camera.x) / z + y * 8) / 16) + 2]
+    const items = scene(session, { player: options.player, rows: [yMin, yMax], columns, reduceMotion: options.reduceMotion })
     for (const b of state.buildings.values()) {
-      const rule = rules.buildings.find(r => r.id === b.type)!
-      const covered = rule.footprint.some(([dx, dy]) => { const t = (b.y + dy) * map.width + b.x + dx; return b.owner === options.player || seen(t) })
-      if (!covered) continue
-      const view = toView(b.x, b.y, map.elevation[b.y * map.width + b.x]!)
-      const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
-      const selected = options.selected === b.id
-      drawables.push({ depth: view.y + 4, paint: () => {
-        if (selected || b.phase === 'leveling') outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
-        if (b.phase === 'active') { for (let i = 0; i < (atlas!.frames.get(`building:${b.type}`)?.length ?? 0); i++) sprite(`building:${b.type}`, view, i) }
-        else if (b.phase === 'building') {
-          const progress = (total - b.workRemaining) / total
-          for (let i = 0; i < (atlas!.frames.get(`site:${b.type}`)?.length ?? 0); i++) sprite(`site:${b.type}`, view, i, 1, Math.max(0.08, progress))
-        }
-        if (b.owner !== options.player) { const p = toScreen(view); ctx!.fillStyle = PLAYER_COLORS[b.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }
-        if (b.suspended && b.owner === options.player) { const p = toScreen(view); ctx!.fillStyle = '#f0d58ccc'; ctx!.font = `${Math.round(9 * z)}px ui-sans-serif, system-ui`; ctx!.textAlign = 'center'; ctx!.fillText('II', p.x, p.y - 30 * z) }
-      } })
-      if (selected && 'radius' in rule.workflow) { const radius = rule.workflow.radius, area = b.workArea; drawables.push({ depth: -1e9, paint: () => ring(session, area, radius) }) }
+      if (options.selected !== b.id && b.phase !== 'leveling') continue
+      const rule = rules.buildings.find(r => r.id === b.type)!, selected = options.selected === b.id
+      if (b.owner === options.player || rule.footprint.some(([dx, dy]) => viewer.visible[(b.y + dy) * map.width + b.x + dx])) outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
+      if (selected && 'radius' in rule.workflow) ring(session, b.workArea, rule.workflow.radius)
     }
-    for (const s of state.settlers.values()) {
-      if (s.inside) continue
-      const t = s.y * map.width + s.x
-      if (s.owner !== options.player && !seen(t)) continue
-      if (s.y < yMin - 1 || s.y > yMax + 1) continue
-      const from = toView(s.x, s.y, map.elevation[t]!)
-      let view = from
-      if (s.action === 'walking' && s.next >= 0) {
-        const nx = s.next % map.width, ny = Math.floor(s.next / map.width), to = toView(nx, ny, map.elevation[s.next]!)
-        // Interpolation only affects drawing; the simulation keeps whole tiles.
-        const f = s.stepTicks ? s.step / s.stepTicks : 0
-        view = { x: from.x + (to.x - from.x) * f, y: from.y + (to.y - from.y) * f }
-      }
-      const walking = s.action === 'walking', step = walking && s.stepTicks ? s.step / s.stepTicks : 0
-      const index = s.dir * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
-      const key = s.cargo ? `carry:${s.cargo}` : 'worker'
-      drawables.push({ depth: view.y + 1, paint: () => {
-        const p = toScreen(view)
-        ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
-        sprite(key, view, index)
-        if (s.owner !== options.player) { ctx!.fillStyle = PLAYER_COLORS[s.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
-        else if (s.action === 'working') { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
-      } })
-    }
-    for (const sign of viewer.signs) {
-      if (sign.until <= state.tick) continue
-      const x = sign.tile % map.width, y = Math.floor(sign.tile / map.width), view = toView(x, y, map.elevation[sign.tile]!)
-      const color = sign.good === 'coal' ? '#2b2b2b' : sign.good === 'ironore' ? '#b5643c' : sign.good === 'goldore' ? '#e3c04d' : '#eeeeee'
-      drawables.push({ depth: view.y, paint: () => { const p = toScreen(view); ctx!.fillStyle = '#5b4632'; ctx!.fillRect(p.x - 0.6 * z, p.y - 8 * z, 1.2 * z, 8 * z); ctx!.fillStyle = color; ctx!.fillRect(p.x - 2.5 * z, p.y - 10 * z, 5 * z, 3 * z) } })
-    }
-    drawables.sort((a, b) => a.depth - b.depth)
-    for (const d of drawables) d.paint()
+    for (const item of items) paint(item, options.player)
+
     if (options.cursor) {
       const c = options.cursor
       if (options.tool && session.context.building.has(options.tool)) {
@@ -221,6 +154,28 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     }
   }
 
+  function paint(item: SceneItem, player: number): void {
+    const z = camera.zoom, p = toScreen(item.view)
+    switch (item.kind) {
+      case 'sapling': sprite(item.sprite, item.view, Math.floor((item.growth ?? 0) * (atlas!.frames.get('sapling')?.length ?? 1))); break
+      case 'building': for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i); break
+      case 'site': if (item.phase === 'building') for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i, 1, Math.max(0.08, item.reveal ?? 0)); break
+      case 'settler':
+        ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
+        sprite(item.sprite, item.view, item.frame)
+        if (item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
+        else if (item.action === 'working') { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
+        return
+      case 'sign': {
+        const color = item.good === 'coal' ? '#2b2b2b' : item.good === 'ironore' ? '#b5643c' : item.good === 'goldore' ? '#e3c04d' : '#eeeeee'
+        ctx!.fillStyle = '#5b4632'; ctx!.fillRect(p.x - 0.6 * z, p.y - 8 * z, 1.2 * z, 8 * z); ctx!.fillStyle = color; ctx!.fillRect(p.x - 2.5 * z, p.y - 10 * z, 5 * z, 3 * z)
+        return
+      }
+      default: sprite(item.sprite, item.view, item.frame)
+    }
+    if ((item.kind === 'building' || item.kind === 'site') && item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }
+    if (item.suspended) { ctx!.fillStyle = '#f0d58ccc'; ctx!.font = `${Math.round(9 * z)}px ui-sans-serif, system-ui`; ctx!.textAlign = 'center'; ctx!.fillText('II', p.x, p.y - 30 * z) }
+  }
   function outline(session: Session, tiles: Point[], color: string, alpha: number): void {
     const { map } = session.state, z = camera.zoom
     ctx!.fillStyle = color; ctx!.strokeStyle = color; ctx!.lineWidth = Math.max(1, z * 0.8)

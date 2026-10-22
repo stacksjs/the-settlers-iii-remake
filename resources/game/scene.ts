@@ -1,0 +1,86 @@
+import type { Point, Session } from './engine'
+import { toView } from './engine'
+
+// The scene is everything a player's screen shows, derived only from the
+// session and that player's sight. The canvas painter draws it; tests compare it
+// with the simulation. Nothing here is decorative: every item is an entity.
+export interface SceneItem {
+  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'sign'
+  /** Sprite key and frame in the original atlas. Signs have no sprite. */
+  sprite: string, frame: number
+  view: Point, depth: number
+  /** Simulation entity: tile for objects and signs, id for piles, buildings and settlers. */
+  entity: number, owner: number
+  /** Construction share built in, for sites. */
+  reveal?: number
+  /** Growth share for saplings and crops. */
+  growth?: number
+  good?: string, amount?: number, action?: string, phase?: string, suspended?: boolean
+}
+export interface SceneOptions { player: number, rows?: [number, number], columns?: (y: number) => [number, number], reduceMotion?: boolean }
+
+export function scene(session: Session, options: SceneOptions): SceneItem[] {
+  const { state, rules } = session, { map } = state, viewer = state.players.find(p => p.id === options.player)!
+  const [yMin, yMax] = options.rows ?? [0, map.height - 1]
+  const seen = (t: number): boolean => viewer.visible[t] === 1
+  const items: SceneItem[] = []
+  for (let y = Math.max(0, yMin); y <= Math.min(map.height - 1, yMax); y++) {
+    const [xMin, xMax] = options.columns?.(y) ?? [0, map.width - 1]
+    for (let x = Math.max(0, xMin); x <= Math.min(map.width - 1, xMax); x++) {
+      const t = y * map.width + x, object = map.object[t]!
+      if (!object || !viewer.explored[t]) continue
+      const rule = rules.objects[object - 1]!, view = toView(x, y, map.elevation[t]!)
+      const age = state.tick - map.objectSince[t]!, growth = rule.grows ? Math.min(0.999, age / rule.grows.ticks) : 1
+      const base = { view, depth: view.y, entity: t, owner: 0 }
+      const variety = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7
+      if (rule.id === 'tree') items.push({ ...base, kind: 'tree', sprite: `tree-${variety}`, frame: 0 })
+      // The painter maps growth onto however many sapling frames the atlas holds.
+      else if (rule.id === 'sapling') items.push({ ...base, kind: 'sapling', sprite: 'sapling', frame: 0, growth })
+      else if (rule.id === 'stone') items.push({ ...base, kind: 'stone', sprite: 'stone-deposit', frame: map.objectAmount[t]! > 8 ? 0 : map.objectAmount[t]! > 4 ? 1 : 2, amount: map.objectAmount[t]! })
+      else if (rule.id === 'field') items.push({ ...base, kind: 'crop', sprite: 'crop', frame: Math.floor(growth * 7) })
+      else if (rule.id === 'ripe-grain') items.push({ ...base, kind: 'crop', sprite: 'crop', frame: 7 })
+    }
+  }
+  const piles = new Map<number, number>()
+  for (const st of state.stacks.values()) {
+    if (st.amount < 1 || (st.owner !== options.player && !seen(st.tile))) continue
+    const x = st.tile % map.width, y = Math.floor(st.tile / map.width)
+    if (y < yMin || y > yMax) continue
+    // Piles lie on their own tiles; several piles waiting at one door fan out beside it.
+    const slot = piles.get(st.tile) ?? 0
+    piles.set(st.tile, slot + 1)
+    const base = toView(x, y, map.elevation[st.tile]!), view = { x: base.x + (slot ? 10 + ((slot - 1) % 3) * 9 : 0), y: base.y + (slot ? Math.floor((slot - 1) / 3) * 6 - 2 : 0) }
+    items.push({ kind: 'pile', sprite: `stack:${st.good}`, frame: Math.min(8, st.amount) - 1, view, depth: view.y, entity: st.id, owner: st.owner, good: st.good, amount: st.amount })
+  }
+  for (const b of state.buildings.values()) {
+    const rule = rules.buildings.find(r => r.id === b.type)!
+    if (b.owner !== options.player && !rule.footprint.some(([dx, dy]) => seen((b.y + dy) * map.width + b.x + dx))) continue
+    if (b.y < yMin - 10 || b.y > yMax + 10) continue
+    const view = toView(b.x, b.y, map.elevation[b.y * map.width + b.x]!)
+    const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
+    const own = b.owner === options.player
+    if (b.phase === 'active') items.push({ kind: 'building', sprite: `building:${b.type}`, frame: 0, view, depth: view.y + 4, entity: b.id, owner: b.owner, phase: b.phase, suspended: own && b.suspended })
+    else items.push({ kind: 'site', sprite: `site:${b.type}`, frame: 0, view, depth: view.y + 4, entity: b.id, owner: b.owner, phase: b.phase, reveal: b.phase === 'building' ? (total - b.workRemaining) / total : 0, suspended: own && b.suspended })
+  }
+  for (const s of state.settlers.values()) {
+    if (s.inside) continue
+    const t = s.y * map.width + s.x
+    if (s.owner !== options.player && !seen(t)) continue
+    if (s.y < yMin - 1 || s.y > yMax + 1) continue
+    let view = toView(s.x, s.y, map.elevation[t]!)
+    const walking = s.action === 'walking' && s.next >= 0, step = walking && s.stepTicks ? s.step / s.stepTicks : 0
+    if (walking) {
+      // Interpolation only affects drawing; the simulation keeps whole tiles.
+      const to = toView(s.next % map.width, Math.floor(s.next / map.width), map.elevation[s.next]!)
+      view = { x: view.x + (to.x - view.x) * step, y: view.y + (to.y - view.y) * step }
+    }
+    const frame = s.dir * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
+    items.push({ kind: 'settler', sprite: s.cargo ? `carry:${s.cargo}` : 'worker', frame, view, depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}) })
+  }
+  for (const sign of viewer.signs) {
+    if (sign.until <= state.tick) continue
+    const x = sign.tile % map.width, y = Math.floor(sign.tile / map.width), view = toView(x, y, map.elevation[sign.tile]!)
+    items.push({ kind: 'sign', sprite: '', frame: 0, view, depth: view.y, entity: sign.tile, owner: options.player, ...(sign.good ? { good: sign.good } : {}), amount: sign.amount })
+  }
+  return items.sort((a, b) => a.depth - b.depth || a.entity - b.entity)
+}
