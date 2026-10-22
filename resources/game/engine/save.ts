@@ -269,7 +269,8 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
 }
 
 function validateProgram(p: unknown, size: number, nextId: number, label: string): void {
-  check(isObject(p) && str(p.kind, 40) && int(p.ref, 0, nextId) && Array.isArray(p.steps) && p.steps.length <= 32 && int(p.pc, -1, p.steps.length), `${label} program is invalid`)
+  // A program refers to an entity id, or to a target tile for specialists on duty.
+  check(isObject(p) && str(p.kind, 40) && int(p.ref, 0, Math.max(nextId, size)) && Array.isArray(p.steps) && p.steps.length <= 32 && int(p.pc, -1, p.steps.length), `${label} program is invalid`)
   for (const op of p.steps as Op[]) {
     check(isObject(op), `${label} program step is invalid`)
     if (op.op === 'go') check(int(op.tile, 0, size - 1) && (op.adjacent === undefined || typeof op.adjacent === 'boolean'), `${label} walk step is invalid`)

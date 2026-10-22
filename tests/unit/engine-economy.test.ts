@@ -336,6 +336,11 @@ describe('controls change real work', () => {
       expect(sign.amount).toBe(s.state.map.resource[t] ? s.state.map.resourceAmount[t]! : 0)
     }
     expect(s.state.ledger[1]!.equipped.hammer).toBe(1)
+    // A geologist's duty program refers to its target tile; saves must accept it.
+    expect([...s.state.settlers.values()].some(p => p.program?.kind === 'duty' && p.program.ref >= s.state.nextId)).toBe(true)
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    copy.advance(200); s.advance(200)
+    expect(checksum(copy.state)).toBe(checksum(s.state))
   }, 30_000)
 
   test('moving a working area during a trip finishes that trip and sends the next one to the new area', () => {
