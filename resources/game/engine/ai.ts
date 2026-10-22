@@ -75,7 +75,83 @@ const POLICY: Want[] = [
   { building: 'small-residence', count: 3, near: holdings, when: (o, have) => have('bakery') > 0 && (o.view.professions.carrier ?? 0) < 25 },
 ]
 
-export interface EconomicAI { player: number, interval: number, decide: (o: Observation) => Order[], results: CommandResult[] }
+export interface EconomicAI {
+  player: number, interval: number, decide: (o: Observation) => Order[], results: CommandResult[]
+  /** What held the economy back at the last decision, and whether a legal action can still free it. For display and tests only. */
+  diagnosis: Diagnosis[]
+}
+
+/**
+ * One reason the computer's economy is held back, read from its own view. Kinds
+ * follow the issue's shortages: tools, food, population, delivery, exhausted
+ * working areas, and building materials. A recovery is the ordinary command the
+ * computer gives for it; an unrecoverable state is one no legal action can free.
+ */
+export interface Diagnosis {
+  kind: 'tool' | 'food' | 'population' | 'delivery' | 'exhausted' | 'materials'
+  building: number, detail: string
+  recovery: Order | null
+  recoverable: boolean
+}
+
+const HARVESTERS = new Set(['woodcutter', 'stonecutter', 'fisher', 'coal-mine', 'iron-mine', 'gold-mine'])
+/** Goods any player can hand out: loose piles, doorsteps and storage, not what sites and inputs already hold. */
+const free = (o: Observation, good: string): number => o.view.stacks.filter(st => st.owner === o.player && st.good === good && (st.role === 'ground' || st.role === 'output' || st.role === 'storage')).reduce((n, st) => n + st.amount, 0)
+
+/**
+ * Reads the computer's view for deadlocks and chooses one legal recovery for each:
+ * an urgent order for a missing tool, a fisher for hungry mines, residences for
+ * missing workers, storage for full doorsteps, demolition of a building whose
+ * working area is used up, and demolition of idle buildings when their refund is
+ * the only way left to pay for a sawmill or woodcutter. With no planks, logs or
+ * refunds left to build those, the economy is recognised as unrecoverable.
+ */
+export function diagnose(o: Observation): Diagnosis[] {
+  const found: Diagnosis[] = [], mine = o.view.buildings.filter(b => b.owner === o.player)
+  const rules = new Map(o.rules.buildings.map(b => [b.id, b])), active = (type: string): boolean => mine.some(b => b.type === type && b.phase === 'active')
+  const urgent = new Set(o.settings.urgentTools)
+  for (const b of mine) {
+    const shortage = b.shortage
+    if (!shortage) continue
+    if (shortage.startsWith('tool:')) {
+      // A tool lying free will be fetched; otherwise only a working smith can make one. A smith that lacks
+      // its own tool cannot, so with no other smith and none lying free that building can never be staffed.
+      const tool = shortage.slice(5), spare = free(o, tool) > 0
+      const makers = mine.filter(m => m.phase === 'active' && m.id !== b.id && rules.get(m.type)?.workflow.kind === 'craft' && (rules.get(m.type)!.workflow as { choices: string[] }).choices.includes(tool))
+      // Other buildings can wait for a smith to be built or staffed, unless the smith itself lacks a hammer for good.
+      const later = b.type !== 'toolsmith' && (free(o, 'hammer') > 0 || !mine.some(m => m.type === 'toolsmith' && m.shortage === 'tool:hammer'))
+      found.push({ kind: 'tool', building: b.id, detail: `needs ${tool}`, recovery: !spare && makers.length && !urgent.has(tool) ? { type: 'urgent-tool', tool } : null, recoverable: spare || makers.length > 0 || later })
+      urgent.add(tool)
+    }
+    else if (shortage === 'food') found.push({ kind: 'food', building: b.id, detail: 'miners have no food', recovery: null, recoverable: true })
+    else if (shortage === 'carriers' || shortage === 'settlers') found.push({ kind: 'population', building: b.id, detail: shortage === 'carriers' ? 'too few carriers to spare' : 'no free settlers', recovery: null, recoverable: true })
+    else if (shortage === 'output-full') found.push({ kind: 'delivery', building: b.id, detail: 'doorstep full', recovery: null, recoverable: true })
+    else if ((shortage === 'no-resources' || shortage === 'exhausted') && HARVESTERS.has(b.type)) {
+      // Foresters replant around woodcutters, so a woodcutter waits while one stands.
+      const waits = b.type === 'woodcutter' && active('forester')
+      found.push({ kind: 'exhausted', building: b.id, detail: `${rules.get(b.type)?.name ?? b.type} has nothing left to work`, recovery: waits ? null : { type: 'demolish', building: b.id }, recoverable: true })
+    }
+  }
+  // Building materials: planks come only from a sawmill fed by woodcutters, and both cost planks to build.
+  const planks = free(o, 'plank'), logs = free(o, 'log'), [num, den] = o.rules.demolition.refundFraction
+  const wood = active('sawmill') && (logs > 0 || active('woodcutter'))
+  if (!wood) {
+    const missing = ['sawmill', ...(logs > 0 ? [] : ['woodcutter'])].filter(t => !active(t))
+    const need = missing.reduce((n, t) => n + Math.max(0, (rules.get(t)?.cost.plank ?? 0) - stocked(o, t)), 0)
+    // Refunds: half the cost of active buildings, everything already delivered to unfinished sites.
+    // The wood chain itself, the castle and military buildings are never torn down for planks.
+    const spare = mine.filter(b => !['castle', 'woodcutter', 'forester', 'sawmill'].includes(b.type) && !rules.get(b.type)?.military)
+      .map(b => ({ id: b.id, planks: b.phase === 'active' ? Math.floor((rules.get(b.type)?.cost.plank ?? 0) * num / den) : constructionPlanks(o, b.id) }))
+      .filter(b => b.planks > 0).sort((a, b) => b.planks - a.planks || a.id - b.id)
+    if (planks >= need) { /* Enough planks: the build policy places the missing producer. */ }
+    else if (planks + spare.reduce((n, b) => n + b.planks, 0) >= need) found.push({ kind: 'materials', building: spare[0]!.id, detail: `${need} planks needed for ${missing.join(' and ')}; tearing down for its refund`, recovery: { type: 'demolish', building: spare[0]!.id }, recoverable: true })
+    else found.push({ kind: 'materials', building: 0, detail: `${need} planks needed for ${missing.join(' and ')} and no planks, logs or refunds remain`, recovery: null, recoverable: false })
+  }
+  return found
+}
+/** Planks already delivered to the computer's own unfinished sites of a type. */
+const stocked = (o: Observation, type: string): number => o.view.buildings.filter(b => b.owner === o.player && b.type === type && b.phase !== 'active').reduce((n, b) => n + constructionPlanks(o, b.id), 0)
+const constructionPlanks = (o: Observation, building: number): number => o.view.stacks.filter(st => st.building === building && st.role === 'construction' && st.good === 'plank').reduce((n, st) => n + st.amount, 0)
 
 /**
  * Declared military difficulty: how many soldiers the computer gathers before it
@@ -138,9 +214,14 @@ export function economicAI(player: number, options: { interval?: number, maxSite
   const policy = options.military ? [...POLICY, ...ARMS] : POLICY, stored = options.military ? [...STORED, ...MILITARY_STORED] : STORED
   // Decisions derive only from the observation, never from memory, so a restored game decides the same way.
   const ai: EconomicAI = {
-    player, interval, results: [],
+    player, interval, results: [], diagnosis: [],
     decide(o) {
       const orders: Order[] = []
+      // Deadlock recovery comes first: each diagnosis gives at most one ordinary command.
+      const diagnosis = diagnose(o)
+      ai.diagnosis = diagnosis
+      for (const d of diagnosis) if (d.recovery) orders.push(d.recovery)
+      const hungry = diagnosis.some(d => d.kind === 'food'), shortHanded = diagnosis.some(d => d.kind === 'population'), blockedDelivery = diagnosis.some(d => d.kind === 'delivery')
       const sites = o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').length
       // Survey owned mountains until coal and iron are known: the first geologist is equipped with a hammer,
       // later surveys reuse a geologist whose duty is done.
@@ -148,16 +229,23 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       const idle = geologists.some(s => s.diagnostic === 'duty complete')
       const surveyedTiles = new Set(o.view.signs.map(sign => sign.tile))
       const missing = ['coal', 'ironore'].some(good => !o.view.signs.some(sign => sign.good === good && sign.amount > 0))
-      if (missing && (geologists.length === 0 ? (o.view.goods.hammer ?? 0) > 0 : idle)) {
+      // A hammer a building is waiting for is not taken for a geologist: count unstaffed buildings whose worker uses one.
+      const tools = new Map(o.rules.professions.map(p => [p.id, p.tool])), workers = new Map(o.rules.buildings.map(b => [b.id, b.worker]))
+      const awaited = o.view.buildings.filter(b => b.owner === o.player && !b.worker && (b.phase !== 'active' || tools.get(workers.get(b.type) ?? '') === 'hammer')).length
+      if (missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? (o.view.goods.hammer ?? 0) > awaited : idle)) {
         const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t), 1)[0]
         if (mountain) orders.push({ type: 'specialists', profession: 'geologist', ...mountain, count: 1 })
       }
       // Recovery: once goods can be stored, store materials and tools so full doorsteps do not stop production.
       if (own(o, 'storage') > 0 && stored.some(g => !o.settings.stored.includes(g))) orders.push({ type: 'settings', settings: { stored: [...new Set([...o.settings.stored, ...stored])] } })
       if (options.military) orders.push(...militaryOrders({ ...o, interval }, options.military))
-      if (sites >= maxSites) return orders
+      // Nothing can be built once materials are unrecoverable, so the computer orders no sites it cannot pay for.
+      if (sites >= maxSites || diagnosis.some(d => d.kind === 'materials' && !d.recoverable)) return orders
       const have = (type: string): number => own(o, type)
-      for (const want of policy) {
+      // Hungry mines put the fisher first, and buildings without workers put a residence first, whatever the usual order.
+      const timber: Want[] = !o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill') && (have('woodcutter') > 0 || free(o, 'log') > 0) ? [{ building: 'sawmill', count: 1, near: home }] : []
+      const ordered = [...timber, ...(blockedDelivery ? [{ building: 'storage', count: 1, near: holdings }] : []), ...(hungry ? [{ building: 'fisher', count: 1, near: (o: Observation) => find(o, t => o.terrain(t) === 'water') }] : []), ...(shortHanded ? [{ building: 'small-residence', count: 4, near: holdings }] : []), ...policy]
+      for (const want of ordered as Want[]) {
         if (have(want.building) >= want.count || (want.when && !want.when(o, have))) continue
         const anchors = want.near(o)
         const site = placeNear(o, want.building, anchors)
