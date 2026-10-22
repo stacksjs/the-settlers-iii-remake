@@ -7,7 +7,7 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, economicAI, findStart, generateMap, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
+import { createSession, DEFAULT_START, economicAI, findStart, generateMap, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 import { scene } from './scene'
@@ -127,13 +127,18 @@ export type Game = ReturnType<typeof mountGame>
 export type Landscape = 'generated' | 'tutorial' | 'rival'
 export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : 'Generated landscape'
 const RIVAL_SIZE = 128
+const RIVAL_GUARD: Record<string, number> = { swordsman: 4, bowman: 2 }
+/** The rival's declared military difficulty. */
+export const RIVAL_MILITARY = { attackAt: 8, scoutEvery: 1600 }
 
 /** Two Roman settlements on a wider generated landscape; the second is the economic computer player. */
 export function rivalSession(seed: number): Session {
   const map = generateMap(rules, RIVAL_SIZE, RIVAL_SIZE, seed)
   const west = findStart(rules, map, { x: 34, y: 64 }, 10), east = findStart(rules, map, { x: 94, y: 64 }, 10)
   if (!west || !east || Math.abs(west.x - east.x) < 40) throw new Error('This landscape has no room for two settlements. Start another one.')
-  return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start: west }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: east }], content: { id: `rival-${RIVAL_SIZE}`, digest: `seed:${seed}` } })
+  // Both sides start with a small guard so the rival can scout and fight from the outset (unverified start, S3-074).
+  const settlers = { ...DEFAULT_START.settlers, ...RIVAL_GUARD }
+  return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start: west, settlers }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: east, settlers }], content: { id: `rival-${RIVAL_SIZE}`, digest: `seed:${seed}` } })
 }
 
 /** A Roman start on the Amazons demo's original T1 tutorial map. Its missions and AI are not yet played. */
@@ -180,7 +185,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     troops = createTroops(() => session, PLAYER)
     const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
     seq = nextSeq(PLAYER)
-    computers = next.state.players.filter(p => p.controller === 'computer').map(p => ({ ai: economicAI(p.id), sequence: { next: nextSeq(p.id) } }))
+    computers = next.state.players.filter(p => p.controller === 'computer').map(p => ({ ai: economicAI(p.id, { military: RIVAL_MILITARY }), sequence: { next: nextSeq(p.id) } }))
     renderer.invalidate(); center(); cursor = castle()
   }
   const finishBoot = (): void => {
@@ -432,7 +437,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
         const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed)
         if (disposed) return
         adopt(next); speed = 1
-        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : landscape === 'rival' ? 'A computer settlement grows to the east, building by the same rules. You only see it where your settlers can.' : 'A new landscape. Your settlers have arrived.')
+        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : landscape === 'rival' ? 'A computer settlement grows to the east, building and fighting by the same rules. It scouts, raises an army and attacks the towers it finds. You only see it where your settlers can.' : 'A new landscape. Your settlers have arrived.')
         void persist()
       }
       catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not open that map.') }

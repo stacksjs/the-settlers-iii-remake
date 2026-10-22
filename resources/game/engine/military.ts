@@ -254,7 +254,8 @@ function act(ctx: Context, s: Settler): void {
   }
   if (s.program?.kind === 'chase') s.program = null
   if (soldier.attack) { assault(ctx, s); return }
-  if (soldier.order >= 0 && !s.program) start(ctx, s, 'march', soldier.order, [{ op: 'go', tile: soldier.order }])
+  // A target covered by a building, site or tree is reached beside it.
+  if (soldier.order >= 0 && !s.program) start(ctx, s, 'march', soldier.order, [{ op: 'go', tile: soldier.order, adjacent: !passable(ctx, soldier.order) }])
 }
 
 const attackable = (ctx: Context, b: Building | undefined, owner: number): b is Building => !!b && b.owner !== owner && b.phase === 'active' && !!ruleOf(ctx, b).garrison

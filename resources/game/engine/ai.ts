@@ -2,7 +2,7 @@ import type { Point } from './geometry'
 import type { PlayerView, Session } from './session'
 import type { RulesProfile } from './rules'
 import type { Command, CommandResult, PlayerSettings } from './state'
-import { area, distance, indexOf, neighbours } from './geometry'
+import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
 
 // A computer player is a client like any other: it reads what its player may
 // know and submits ordinary commands. It never touches simulation state, so it
@@ -11,6 +11,8 @@ import { area, distance, indexOf, neighbours } from './geometry'
 /** What a computer player may know: its view plus explored terrain and objects. Deposits come only from its own survey signs. */
 export interface Observation {
   view: PlayerView, player: number, width: number, height: number
+  /** Ticks between this player's decisions, when a computer player observes. */
+  interval?: number
   /** The player's own settings, which any player can read in their menus. */
   settings: PlayerSettings
   /** The rules every player plays by. */
@@ -76,12 +78,64 @@ const POLICY: Want[] = [
 export interface EconomicAI { player: number, interval: number, decide: (o: Observation) => Order[], results: CommandResult[] }
 
 /**
+ * Declared military difficulty: how many soldiers the computer gathers before it
+ * attacks a military building it can see, and how often it sends a scout toward
+ * land it has not explored. Engineering choices, not the original AI (S3-072).
+ */
+export interface MilitaryPolicy { attackAt: number, scoutEvery: number }
+
+/** Weapons, a barracks and storage for the new goods, after the economy that feeds them. */
+const ARMS: Want[] = [
+  { building: 'weaponsmith', count: 1, near: holdings, when: (_o, have) => have('iron-smelter') > 0 && have('toolsmith') > 0 },
+  { building: 'barracks', count: 1, near: holdings, when: (_o, have) => have('weaponsmith') > 0 },
+]
+const MILITARY_STORED = ['spear', 'bow']
+
+/**
+ * Military decisions from the observation alone: recruit automatically once a
+ * barracks stands, meet visible enemy soldiers on its own land, scout toward
+ * unexplored land, and attack the nearest enemy military building it can see
+ * once its army is large enough. Every decision is an ordinary command.
+ */
+export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] {
+  const orders: Order[] = [], { view } = o
+  const at = (p: Point): number => indexOf(o, p.x, p.y)
+  if (own(o, 'barracks') > 0 && !o.settings.recruit?.automatic) orders.push({ type: 'settings', settings: { recruitAutomatic: true } })
+  const mine = view.settlers.filter(s => s.owner === o.player && s.rank !== undefined)
+  if (!mine.length) return orders
+  const outside = mine.filter(s => !s.inside), ready = outside.filter(s => s.action !== 'walking')
+  const center = home(o)[0] ?? { x: mine[0]!.x, y: mine[0]!.y }
+  // Defence: enemy soldiers seen on its own land are met where they stand.
+  const intruders = view.settlers.filter(s => s.owner !== o.player && s.rank !== undefined && !s.inside && view.owner[at(s)] === o.player)
+    .sort((a, b) => distance(a, center) - distance(b, center) || a.id - b.id)
+  // Soldiers standing ready go first; otherwise garrisons send all but their last soldier.
+  if (intruders.length) { orders.push({ type: 'move-soldiers', soldiers: (ready.length ? ready : mine).map(s => s.id), x: intruders[0]!.x, y: intruders[0]!.y }); return orders }
+  // Attack: only buildings the player currently sees are in its view at all.
+  const rules = new Map(o.rules.buildings.map(b => [b.id, b]))
+  const targets = view.buildings.filter(b => b.owner !== o.player && b.phase === 'active' && rules.get(b.type)?.garrison)
+    .sort((a, b) => distance(a, center) - distance(b, center) || a.id - b.id)
+  if (targets.length && mine.length >= policy.attackAt) { orders.push({ type: 'attack', soldiers: mine.map(s => s.id), building: targets[0]!.id }); return orders }
+  // Scouting: one soldier walks toward the nearest unexplored land in a direction that turns with time.
+  if (!targets.length && view.tick % policy.scoutEvery < (o.interval ?? 1)) {
+    const scout = (ready.length ? ready : mine).sort((a, b) => a.id - b.id)[0]!
+    const [dx, dy] = DIRECTIONS[Math.floor(view.tick / policy.scoutEvery) % 6]!
+    for (let step = 1; step < Math.max(o.width, o.height); step++) {
+      const x = center.x + dx * step, y = center.y + dy * step
+      if (x < 0 || y < 0 || x >= o.width || y >= o.height) break
+      if (!o.explored(indexOf(o, x, y))) { orders.push({ type: 'move-soldiers', soldiers: [scout.id], x, y }); break }
+    }
+  }
+  return orders
+}
+
+/**
  * An economic computer player: at most two construction sites at a time, built
  * in policy order near the resources it has seen, plus one geologist sent to
  * the nearest owned mountain. Difficulty is this declared policy and cadence.
  */
-export function economicAI(player: number, options: { interval?: number, maxSites?: number } = {}): EconomicAI {
+export function economicAI(player: number, options: { interval?: number, maxSites?: number, military?: MilitaryPolicy } = {}): EconomicAI {
   const interval = options.interval ?? 80, maxSites = options.maxSites ?? 2
+  const policy = options.military ? [...POLICY, ...ARMS] : POLICY, stored = options.military ? [...STORED, ...MILITARY_STORED] : STORED
   // Decisions derive only from the observation, never from memory, so a restored game decides the same way.
   const ai: EconomicAI = {
     player, interval, results: [],
@@ -99,10 +153,11 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         if (mountain) orders.push({ type: 'specialists', profession: 'geologist', ...mountain, count: 1 })
       }
       // Recovery: once goods can be stored, store materials and tools so full doorsteps do not stop production.
-      if (own(o, 'storage') > 0 && STORED.some(g => !o.settings.stored.includes(g))) orders.push({ type: 'settings', settings: { stored: [...new Set([...o.settings.stored, ...STORED])] } })
+      if (own(o, 'storage') > 0 && stored.some(g => !o.settings.stored.includes(g))) orders.push({ type: 'settings', settings: { stored: [...new Set([...o.settings.stored, ...stored])] } })
+      if (options.military) orders.push(...militaryOrders({ ...o, interval }, options.military))
       if (sites >= maxSites) return orders
       const have = (type: string): number => own(o, type)
-      for (const want of POLICY) {
+      for (const want of policy) {
         if (have(want.building) >= want.count || (want.when && !want.when(o, have))) continue
         const anchors = want.near(o)
         const site = placeNear(o, want.building, anchors)

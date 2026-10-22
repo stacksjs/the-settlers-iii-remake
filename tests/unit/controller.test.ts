@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test'
-import { mapName, newSession, PLAYER, rivalSession, snapshot, status } from '../../resources/game/controller'
+import { mapName, newSession, PLAYER, RIVAL_MILITARY, rivalSession, snapshot, status } from '../../resources/game/controller'
+import { audit, economicAI, stepAI } from '../../resources/game/engine'
 import { save } from '../../resources/game/engine'
 
 test('every generated landscape has room for the castle and its settlers', () => {
@@ -37,3 +38,13 @@ test('rival landscapes start a computer player on the far side', () => {
     expect(mapName(session)).toBe('Computer rival')
   }
 })
+
+test('the computer rival guards its castle and scouts with ordinary, accepted commands', () => {
+  const session = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
+  const guard = [...session.state.settlers.values()].filter(p => p.owner === 2 && p.soldier)
+  expect(guard.map(p => p.profession).sort()).toEqual(['bowman', 'bowman', 'swordsman', 'swordsman', 'swordsman', 'swordsman'])
+  for (let tick = 0; tick < 4000; tick++) { stepAI(session, ai, sequence); session.advance(1) }
+  expect(ai.results).toEqual([])
+  expect(session.state.results.some(r => r.player === 2 && r.type === 'move-soldiers' && r.ok)).toBe(true)
+  expect(audit(session.context)).toEqual([])
+}, 120_000)
