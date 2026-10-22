@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "source": "8e488300ae223c01d82f54915b03d19755d88e74",
+  "recordedAt": "2026-10-22T15:03:41.808437+00:00",
+  "negativeControl": {
+    "runnableBudget": 3,
+    "result": "The original public relocation test stalled. A native stack sample captured the owner and stopped peers; only the verified owned test process was terminated.",
+    "oldHostedRun": 39721199555,
+    "oldHostedJobs": [
+      119634786154,
+      119634786261
+    ]
+  },
+  "matrix": {
+    "policies": [
+      "automatic",
+      1,
+      2,
+      3
+    ],
+    "growthOwners": [
+      "host",
+      "script worker"
+    ],
+    "readersPerCase": 4,
+    "growthOperationsPerCase": 12,
+    "debugMs": 13472,
+    "releaseSafeMs": 733,
+    "threadSanitizerMs": 93460,
+    "failed": 0,
+    "leaked": 0,
+    "tsanSuppressions": false
+  },
+  "unit": {
+    "passed": 2807,
+    "skipped": 1,
+    "failed": 0,
+    "leaked": 0,
+    "total": 2808,
+    "exitCode": 0,
+    "shards": 4,
+    "wallSeconds": 1674.0
+  },
+  "hostedCi": {
+    "run": 39730608338,
+    "url": "https://github.com/zig-utils/zig-js/actions/runs/39730608338",
+    "source": "8e488300ae223c01d82f54915b03d19755d88e74",
+    "status": "completed",
+    "conclusion": "success",
+    "passed": 56,
+    "skipped": [
+      "nightly-threadfuzz-tsan (${{ matrix.name }})",
+      "nightly-wasm-spec-full"
+    ],
+    "failed": []
+  },
+  "logs": [
+    {
+      "path": "mutator-stop-fix/full-unit.log",
+      "sha256": "c1b7e72fb657fe41cdf41da3d78336daaf53663b6f7b3846ec80cc3fb994e15f",
+      "bytes": 2149
+    },
+    {
+      "path": "mutator-stop-fix/unit-shards/shard-0.log",
+      "sha256": "9c001c287781cdd808d165b0100d06e496f1f0bb36daf6e854a11f211856dab2",
+      "bytes": 74630
+    },
+    {
+      "path": "mutator-stop-fix/unit-shards/shard-1.log",
+      "sha256": "78752a2da5666a086acbd749343c590ac5200b68104677b61661e08fb76c934a",
+      "bytes": 74753
+    },
+    {
+      "path": "mutator-stop-fix/unit-shards/shard-2.log",
+      "sha256": "f89497684d7d516822e05b2b243f8463b7c6eb43f9bca1dccea20bbf7e6079e2",
+      "bytes": 74714
+    },
+    {
+      "path": "mutator-stop-fix/unit-shards/shard-3.log",
+      "sha256": "f0d5ebaba3954c099f928824a637bff7261efb928d3883a46c7c5800e1e5ed4a",
+      "bytes": 74929
+    },
+    {
+      "path": "runtime-scope-d602/wasm-three-slot-red.log",
+      "sha256": "6092939c6ae66107d2da51acb421b8722370e9b05bcaca2db62896ca482ef4b9",
+      "bytes": 1290
+    },
+    {
+      "path": "runtime-scope-d602/wasm-three-slot-sample.txt",
+      "sha256": "2556fc70c6da4245e1edb955990213d08c5e8e0a2af46e3eed27ee39d739adaf",
+      "bytes": 28099
+    },
+    {
+      "path": "runtime-scope-d602/wasm-three-slot-green.log",
+      "sha256": "5619d9a7013657d1da10c45e85e55f0a871b23de3cbfe9e2e284039a6418c15f",
+      "bytes": 1192
+    },
+    {
+      "path": "runtime-scope-d602/wasm-bounded-matrix.log",
+      "sha256": "1e4fae0be2422feee5defe91bd8725f5e572053ab73969e33d1122c47ab819ff",
+      "bytes": 1153
+    },
+    {
+      "path": "runtime-scope-d602/wasm-bounded-matrix-release-safe.log",
+      "sha256": "35bb23f7902b0072ee697172c5474f8c79be9d04eeb8eabb4716d79362bf885d",
+      "bytes": 1010
+    },
+    {
+      "path": "runtime-scope-d602/wasm-bounded-matrix-tsan.log",
+      "sha256": "62d03ce87a96dcaac1539f4c9662470c84321080848f7f5b5a1e4105c9994737",
+      "bytes": 1153
+    },
+    {
+      "path": "runtime-scope-d602/wasm-tsan-symbols.log",
+      "sha256": "04058536b24a68fd500d0124196d21d7bf1cdfe1949fd4f8d5c955ea123337fc",
+      "bytes": 70
+    },
+    {
+      "path": "runtime-scope-d602/wasm-mutator-stop-debug.log",
+      "sha256": "764f05d24fde8016806829a6f3fc31df50eb033c58e161dd1f14f85966a389b6",
+      "bytes": 1056
+    },
+    {
+      "path": "runtime-scope-d602/wasm-stop-docs-build.log",
+      "sha256": "1cc9201a9e44e44603b915e40d2ef0d6b299e4dee89cb4ffcc7a0cc123efa905",
+      "bytes": 909
+    }
+  ],
+  "publication": {
+    "engineSourcePushed": true,
+    "standaloneEnginePackageVerified": false,
+    "craftHostingPublished": false,
+    "gameAdopted": false,
+    "nativeGamePresentationVerified": false
+  },
+  "scope": "Engine hosting and scheduler ownership evidence. This does not establish a published standalone engine package, native game presentation, or original-game parity.",
+  "retainedLogs": [
+    {
+      "file": "/Users/chris/Code/settlers-js-hosting/evidence/mutator-stop-fix/full-unit.log",
+      "sha256": "c1b7e72fb657fe41cdf41da3d78336daaf53663b6f7b3846ec80cc3fb994e15f"
+    },
+    {
+      "file": "/Users/chris/Code/settlers-js-hosting/evidence/mutator-stop-fix/history-seed.json",
+      "sha256": "10fb239da3ab712b98d40fe62b95de13477f97100499f564bcae5c3ebc6d46a1"
+    }
+  ]
+}
