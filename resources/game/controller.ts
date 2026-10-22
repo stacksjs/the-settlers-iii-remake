@@ -204,12 +204,24 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       target.closePath(); target.stroke()
     }
   }
-  overview?.addEventListener('click', event => {
-    if (!session) return
+  const overviewTile = (event: MouseEvent): Point | null => {
+    if (!session || !overview) return null
     const rect = overview.getBoundingClientRect(), { map } = session.state, size = minimapSize(map.width, map.height)
     const tile = fromMinimap({ x: Math.floor((event.clientX - rect.left) / rect.width * size.width), y: Math.floor((event.clientY - rect.top) / rect.height * size.height) }, map.height)
-    if (tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height) return
-    renderer.home(tile, map.elevation[tile.y * map.width + tile.x]); cursor = tile; drawOverview()
+    return tile.x < 0 || tile.y < 0 || tile.x >= map.width || tile.y >= map.height ? null : tile
+  }
+  overview?.addEventListener('click', event => {
+    const tile = overviewTile(event)
+    if (!tile || !session) return
+    renderer.home(tile, session.state.map.elevation[tile.y * session.state.map.width + tile.x]); cursor = tile; drawOverview()
+  }, { signal: lifetime.signal })
+  // A right click on the overview gives the marked soldiers or thief the same order as on the map.
+  overview?.addEventListener('contextmenu', event => {
+    event.preventDefault()
+    const tile = overviewTile(event)
+    if (!tile || !session || !ready || !assetsReady) return
+    if (thief !== null && session.state.settlers.has(thief)) report(send('thief', { thief, x: tile.x, y: tile.y, steal: event.altKey }) ?? 'Your thief is on his way.')
+    else command(tile, modifiers(event))
   }, { signal: lifetime.signal })
   const report = (text: string): void => { message = text; emit() }
   // The castle on generated starts, otherwise the first building or settler an original map gives the player.
