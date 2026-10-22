@@ -380,8 +380,8 @@
       "id": 5964115182,
       "number": 390,
       "url": "https://github.com/craft-native/craft/issues/390",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-009] Establish an executable graphics core and truthful capabilities",
       "labels": [
         "settlers-gold",
@@ -391,8 +391,7 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -405,8 +404,8 @@
       "id": 5964115608,
       "number": 391,
       "url": "https://github.com/craft-native/craft/issues/391",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-010] Implement textured sprites, terrain triangles, and text",
       "labels": [
         "settlers-gold",
@@ -440,7 +439,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -464,7 +464,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -477,8 +478,8 @@
       "id": 5964116544,
       "number": 394,
       "url": "https://github.com/craft-native/craft/issues/394",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-013] Expose typed persistent JavaScript hosting",
       "labels": [
         "settlers-gold",
@@ -586,7 +587,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -610,7 +612,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -681,12 +684,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 4,
       "nativeParent": true,
@@ -757,7 +760,8 @@
         "type:feature",
         "priority:p2",
         "subsystem:02",
-        "platform:homeos"
+        "platform:homeos",
+        "ready-for-agent"
       ],
       "milestone": 11,
       "nativeParent": true,
@@ -958,10 +962,10 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:03",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1004,10 +1008,10 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:03",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1073,10 +1077,10 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:03",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1147,10 +1151,10 @@
         "settlers-gold",
         "type:feature",
         "priority:p1",
+        "ready-for-agent",
         "subsystem:04",
         "platform:browser",
-        "platform:native",
-        "ready-for-agent"
+        "platform:native"
       ],
       "milestone": 2,
       "nativeParent": true,
@@ -1373,8 +1377,8 @@
       "id": 5964130053,
       "number": 53,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/53",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-051] Implement barracks and individual recruitment",
       "labels": [
         "settlers-gold",
@@ -1405,7 +1409,8 @@
         "priority:p1",
         "subsystem:05",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 3,
       "nativeParent": true,
@@ -1443,8 +1448,8 @@
       "id": 5964131140,
       "number": 56,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/56",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-054] Implement garrisons, capture, and territory consequences",
       "labels": [
         "settlers-gold",
@@ -1825,8 +1830,8 @@
       "id": 5964137190,
       "number": 72,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/72",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-070] Build an economic AI using player commands",
       "labels": [
         "settlers-gold",
@@ -2357,7 +2362,8 @@
         "priority:p1",
         "subsystem:10",
         "platform:browser",
-        "platform:native"
+        "platform:native",
+        "ready-for-agent"
       ],
       "milestone": 6,
       "nativeParent": true,
