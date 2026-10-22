@@ -77,7 +77,7 @@
     "@stacksjs/env": "^0.75.257",
     "@stacksjs/path": "^0.75.257",
     "@stacksjs/stx": "0.2.644",
-    "craft-native": "0.0.272",
+    "craft-native": "0.0.296",
     "stacks": "^0.75.257"
   },
   "workspaces": [

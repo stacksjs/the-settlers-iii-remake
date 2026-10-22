@@ -9,7 +9,7 @@
         "@stacksjs/env": "^0.75.257",
         "@stacksjs/path": "^0.75.257",
         "@stacksjs/stx": "0.2.644",
-        "craft-native": "0.0.272",
+        "craft-native": "0.0.296",
         "stacks": "^0.75.257",
       },
       "devDependencies": {
@@ -363,7 +363,7 @@
 
     "clone": ["clone@2.1.2", "", {}, "sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w=="],
 
-    "craft-native": ["craft-native@0.0.272", "", { "bin": { "craft-sdk": "dist/cli.js" } }, "sha512-GPieKGMyYfKGNnV2A8u5CE5NYKoaD6JU7CluTRM1MYt0EfLye9gnNFb/TYMSjiV3MGyK1Rse1CqpL0aFqs+jIw=="],
+    "craft-native": ["craft-native@0.0.296", "", { "bin": { "craft-sdk": "dist/cli.js" } }, "sha512-wZJ1RoTqs4cGuguj5yobojCmZSguTJr0dr16l2066Sn1Vbn2lPr281WkoLltoldwzkpzWc/0pi9J8TFnHzdJ8Q=="],
 
     "cz-git": ["cz-git@1.14.0", "", {}, "sha512-QjwlXZrGWsXQkyregBHhA2qNNGB2TCuf0ovkW1Q5OLgdJDs9Tq1yahfKpSMLyqOBjVRuv1iHBTDP83zJDBlJdg=="],
 
