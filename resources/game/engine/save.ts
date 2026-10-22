@@ -10,7 +10,7 @@ import { rulesIdentity } from './rules'
 import { openSession } from './session'
 
 export const SAVE_FORMAT = 'settlers-iii-remake/session'
-export const SAVE_VERSION = 1
+export const SAVE_VERSION = 2
 export const MAX_SAVE_BYTES = 64 * 1024 * 1024
 
 type LayerName = 'terrain' | 'elevation' | 'resource' | 'resourceAmount' | 'object' | 'objectAmount' | 'objectSince' | 'owner'
@@ -74,13 +74,26 @@ function fromBase64(text: string, label: string): Uint8Array {
 
 /** FNV-1a over the complete simulation state. Equal checksums mean equal saves for replay and network comparison. */
 export function checksum(state: State): string {
+  // Canonical text sorts keys, so equal state checksums equally however its objects were built.
+  return fnv(state, canonical(encodeEntities(state)))
+}
+
+/**
+ * The format 1 checksum: entity text in the order format 1 wrote it, without mission
+ * progress. Used only to verify a format 1 save before it is migrated.
+ */
+function checksumV1(state: State): string {
+  const { mission: _mission, ...entities } = encodeEntities(state)
+  return fnv(state, JSON.stringify({ ...entities, map: undefined }))
+}
+
+function fnv(state: State, entities: string): string {
   let h = 0x811C9DC5
   const byte = (b: number): void => { h ^= b & 255; h = Math.imul(h, 0x01000193) >>> 0 }
   const text = (s: string): void => { for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); byte(c); byte(c >> 8) } }
   const map = state.map
   for (const name of Object.keys(LAYERS) as LayerName[]) { const layer = map[name]; for (let i = 0; i < layer.length; i++) { const v = layer[i]!; byte(v); if (v > 255) { byte(v >> 8); byte(v >> 16); byte(v >> 24) } } }
-  // Canonical text sorts keys, so equal state checksums equally however its objects were built.
-  text(canonical(encodeEntities(state)))
+  text(entities)
   for (const p of state.players) { for (let i = 0; i < p.explored.length; i++) byte(p.explored[i]! | (p.visible[i]! << 1)) }
   return h.toString(16).padStart(8, '0')
 }
@@ -121,7 +134,10 @@ const goodsMap = (v: unknown, rules: RulesProfile, label: string, min = 0): void
  * migrated forward step by step through this table; newer versions and the
  * browser prototype's World saves are refused without being reinterpreted.
  */
-export const MIGRATIONS: Record<number, (envelope: Record<string, unknown>) => Record<string, unknown>> = {}
+export const MIGRATIONS: Record<number, (envelope: Record<string, unknown>) => Record<string, unknown>> = {
+  // Format 2 saves mission progress. Format 1 sessions had no mission.
+  1: envelope => isObject(envelope.state) ? { ...envelope, version: 2, state: { ...envelope.state, mission: null } } : envelope,
+}
 
 export function migrate(raw: unknown): SaveEnvelope {
   if (isObject(raw) && raw.version === 1 && Array.isArray(raw.buildings) && isObject(raw.stock) && 'enemyHealth' in raw) throw new SaveError('prototype-save', 'This is a Riverlands prototype campaign save. It is kept unchanged and cannot be opened as a Gold Edition session.')
@@ -267,11 +283,13 @@ function validateProgram(p: unknown, size: number, nextId: number, label: string
 /** Restores a saved game for the given rules. Mismatched rules are refused rather than reinterpreted. */
 export function restore(raw: unknown, rules: RulesProfile): Session {
   if (typeof raw === 'string') { if (raw.length > MAX_SAVE_BYTES) throw new SaveError('too-large', 'Saved game is too large.'); try { raw = JSON.parse(raw) } catch { throw new SaveError('not-a-save', 'Saved game is not readable.') } }
+  // Integrity is checked under the format the save was written in, after migrating its shape.
+  const written = isObject(raw) && Number.isInteger(raw.version) ? raw.version as number : SAVE_VERSION
   const envelope = migrate(raw)
   const identity = rulesIdentity(rules)
   if (!isObject(envelope.rules) || envelope.rules.id !== identity.id || envelope.rules.version !== identity.version || envelope.rules.digest !== identity.digest) throw new SaveError('incompatible-rules', `This save uses rules ${String(envelope.rules?.id)} ${String(envelope.rules?.version)}, which this build does not provide.`)
   check(isObject(envelope.content) && str(envelope.content.id) && str(envelope.content.digest, 128), 'content identity is missing')
   const state = decodeState(envelope, rules)
-  if (checksum(state) !== envelope.checksum) throw damaged('checksum does not match')
+  if ((written === 1 ? checksumV1(state) : checksum(state)) !== envelope.checksum) throw damaged('checksum does not match')
   return openSession(rules, state, { id: envelope.content.id, digest: envelope.content.digest })
 }

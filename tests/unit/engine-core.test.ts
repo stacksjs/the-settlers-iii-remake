@@ -7,6 +7,7 @@ import { nextRandom, randomInt, seedRandom } from '../../resources/game/engine/r
 import { route } from '../../resources/game/engine/routing'
 import { start } from '../../resources/game/engine/settlers'
 import prototypeSave from '../fixtures/prototype-save.json'
+import formatOneSave from '../fixtures/save-format-1.json'
 import { anchors, building, landscape, order, place, rules, run, session, site, until } from '../fixtures/engine'
 
 describe('rules catalog', () => {
@@ -250,6 +251,8 @@ describe('player views', () => {
   })
 })
 
+const formatOne = formatOneSave as unknown as ReturnType<typeof save>
+
 describe('saves and replays', () => {
   test('a mid-delivery save restores the exact state and continues identically', () => {
     const a = session()
@@ -282,6 +285,20 @@ describe('saves and replays', () => {
     expect(mutate(e => { e.state.players[0]!.settings.transportPriority = ['plank'] })).toBe('damaged')
     expect(mutate(e => { (e.state as { random: number[] }).random = [0, 0, 0, 0] })).toBe('damaged')
     expect(code(JSON.stringify(envelope))).toBe('restored')
+  })
+  test('format 1 saves are verified under their own checksum, then migrated to the current format', () => {
+    // Written by the engine at 7b1cc36, before saves carried mission progress.
+    const restored = restore(structuredClone(formatOne), rules)
+    expect(restored.state.mission).toBeNull()
+    expect(restored.state.tick).toBe(formatOne.tick)
+    expect(restored.state.buildings.size).toBe(2)
+    restored.advance(100)
+    const current = save(restored)
+    expect(current.version).toBe(2)
+    expect(checksum(restore(JSON.parse(JSON.stringify(current)), rules).state)).toBe(checksum(restored.state))
+    const tampered = structuredClone(formatOne)
+    tampered.state.settlers[0]!.x += 1
+    expect(() => restore(tampered, rules)).toThrow('checksum does not match')
   })
   test('replays verify across a restored runtime and report the first divergent tick', () => {
     const s = session(), recorder = record(s)
