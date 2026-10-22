@@ -26,7 +26,7 @@ does not establish that cold-provisioning variability is fixed. The complete
 
 The source/reference evidence does not establish original timing, balance, physical logistics, combat or campaign parity. The rendered game remains a custom browser prototype. Original media, a successful build and byte-identical conversion do not supply redistribution permission.
 
-The new native Metal surface presents real opaque frames through native views. Its [source execution receipt](receipts/native-metal-source-2026-10-22.json) records 61 macOS frames with full GPU pixel comparisons, resize, scale, suspension and ownership checks. The local iOS unit case passed, but the screen comparison case did not complete. The required Xcode 26.2 hosted acceptance is queued. This surface is newer than Craft 0.0.296 and does not yet establish released native game presentation. S3-011 remains open.
+The new native Metal surface presents real opaque frames through native views. Its [source execution receipt](receipts/native-metal-source-2026-10-22.json) records 61 macOS frames with full GPU pixel comparisons, resize, scale, suspension and ownership checks. The focused Xcode 26.2 run has since passed both iOS tests, including actual screen pixels after resize and background resume. Its [hosted iOS receipt](receipts/native-metal-ios-2026-10-22.json) retains the original artifact digest and three inspected screen captures. That run tests source `13b412c9569892aa778106f873abed3c3c5b8153`, before the newer command ownership correction. Candidate 0.0.297 subsequently failed managed Git provisioning before the Metal fixture compiled. Complete release and installed game acceptance remain open. S3-011 remains open.
 
 ## Roadmap
 
