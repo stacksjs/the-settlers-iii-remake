@@ -304,3 +304,71 @@ test('an unreachable construction pile backs off instead of looping goods betwee
   expect(b.used.stone ?? 0).toBe(0)
   expect(conserved(s)).toBe(true)
 }, 30_000)
+
+describe('controls change real work', () => {
+  test('changing storage eligibility mid-delivery lets carried goods arrive and stops new storage trips', () => {
+    // The castle keeps storage piles too; it is the nearest storage to the starting goods.
+    const s = session({ settlers: { carrier: 20, digger: 2, builder: 3 } })
+    const storage = building(s, 'castle')!.id
+    order(s, 'settings', { settings: { stored: ['log'] } })
+    until(s, () => [...s.state.jobs.values()].some(j => j.kind === 'deliver' && j.picked && s.state.stacks.get(j.target)?.building === storage), 2000)
+    const carried = [...s.state.jobs.values()].filter(j => j.kind === 'deliver' && j.picked && s.state.stacks.get(j.target)?.building === storage).length
+    const before = [...s.state.stacks.values()].filter(st => st.building === storage).reduce((n, st) => n + st.amount, 0)
+    order(s, 'settings', { settings: { stored: [] } })
+    run(s, 600)
+    const after = [...s.state.stacks.values()].filter(st => st.building === storage).reduce((n, st) => n + st.amount, 0)
+    // Goods already in hand finish their trip; unpicked storage jobs may also complete, but no new ones start.
+    expect(after).toBeGreaterThanOrEqual(before + carried)
+    run(s, 600)
+    expect([...s.state.stacks.values()].filter(st => st.building === storage).reduce((n, st) => n + st.amount, 0)).toBe(after)
+    expect(conserved(s)).toBe(true)
+  }, 30_000)
+
+  test('geologists survey mountains and leave signs only the owner can see', () => {
+    const s = session({ goods: { plank: 10, stone: 10, hammer: 3, shovel: 2 } })
+    order(s, 'specialists', { profession: 'geologist', ...anchors.mountain, count: 1 })
+    until(s, () => s.view(1).signs.length >= 5, 4000)
+    const coal = s.context.goodIndex.get('coal')!
+    for (const sign of s.view(1).signs) {
+      const t = sign.tile
+      expect(s.state.map.terrain[t]).toBe(rules.terrain.findIndex(r => r.id === 'mountain'))
+      expect(sign.good).toBe(s.state.map.resource[t] === coal ? 'coal' : null)
+      expect(sign.amount).toBe(s.state.map.resource[t] ? s.state.map.resourceAmount[t]! : 0)
+    }
+    expect(s.state.ledger[1]!.equipped.hammer).toBe(1)
+  }, 30_000)
+
+  test('moving a working area during a trip finishes that trip and sends the next one to the new area', () => {
+    const s = session()
+    const id = place(s, 'woodcutter', anchors.forest)
+    const b = s.state.buildings.get(id)!
+    until(s, () => { const w = s.state.settlers.get(b.worker); return !!w && w.program?.kind === 'work' && !w.inside }, 6000)
+    const worker = s.state.settlers.get(b.worker)!
+    const trip = worker.program!, target = trip.steps.find(op => op.op === 'go')!
+    // Plant a grove elsewhere inside the border and point the woodcutter at it.
+    const grove = anchors.east
+    for (const t of [grove.y * 96 + grove.x, grove.y * 96 + grove.x + 1]) { s.state.map.object[t] = s.context.objectIndex.get('tree')!; s.state.map.objectAmount[t] = 1 }
+    order(s, 'work-area', { building: id, ...grove })
+    expect(worker.program).toBe(trip)
+    expect(worker.program?.steps.find(op => op.op === 'go')).toEqual(target)
+    until(s, () => worker.program !== trip && worker.program?.kind === 'work', 3000)
+    const next = worker.program!.steps.find(op => op.op === 'go')!
+    expect(next.op === 'go' && Math.abs(next.tile % 96 - grove.x) + Math.abs(Math.floor(next.tile / 96) - grove.y)).toBeLessThanOrEqual(1)
+  }, 30_000)
+
+  test('the tool smith serves urgent orders first, then rotates by weight', () => {
+    const s = session({ goods: { plank: 20, stone: 20, iron: 8, coal: 8, hammer: 4, shovel: 2 } })
+    order(s, 'settings', { settings: { stored: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], toolWeights: { hammer: 0, shovel: 0, axe: 3, saw: 0, pickaxe: 1, scythe: 0, fishingrod: 0 } } })
+    order(s, 'urgent-tool', { tool: 'scythe' })
+    const smith = place(s, 'toolsmith', anchors.west)
+    until(s, () => (s.state.ledger[1]!.produced.scythe ?? 0) + (s.state.ledger[1]!.produced.axe ?? 0) + (s.state.ledger[1]!.produced.pickaxe ?? 0) >= 5, 20_000)
+    const made = s.state.ledger[1]!.produced
+    expect(made.scythe).toBe(1)
+    expect(made.axe).toBe(3)
+    expect(made.pickaxe).toBe(1)
+    expect(made.hammer ?? 0).toBe(0)
+    // Every tool consumed one iron and one coal.
+    expect(s.state.ledger[1]!.consumed.iron).toBe(s.state.ledger[1]!.consumed.coal)
+    expect(s.state.buildings.get(smith)!.phase).toBe('active')
+  }, 60_000)
+})

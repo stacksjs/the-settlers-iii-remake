@@ -21,15 +21,18 @@ function produce(ctx: Context, b: Building, goods: Goods): void {
   for (const [g, n] of Object.entries(goods)) { output(ctx, b, g).amount += n; record(ctx, b.owner, 'produced', g, n) }
 }
 
-/** Chooses the next crafted good: urgent orders first, then a weighted rotation, skipping full doorsteps. */
-function craftChoice(ctx: Context, b: Building, choices: string[]): string | null {
+/**
+ * Chooses the next crafted good: urgent orders first, then a weighted rotation, skipping full doorsteps.
+ * Nothing is consumed until commit() runs, so waiting for inputs never loses an order or a turn.
+ */
+function craftChoice(ctx: Context, b: Building, choices: string[]): { good: string, commit: () => void } | null {
   const player = ctx.state.players.find(p => p.id === b.owner)!
   const urgent = player.settings.urgentTools.findIndex(t => choices.includes(t) && room(output(ctx, b, t)) > 0)
-  if (urgent >= 0) return player.settings.urgentTools.splice(urgent, 1)[0]!
+  if (urgent >= 0) return { good: player.settings.urgentTools[urgent]!, commit: () => { player.settings.urgentTools.splice(urgent, 1) } }
   const rotation = choices.flatMap(c => Array.from({ length: Math.max(0, Math.min(10, player.settings.toolWeights[c] ?? 1)) }, () => c))
   for (let i = 0; i < rotation.length; i++) {
     const choice = rotation[(player.craftCursor + i) % rotation.length]!
-    if (room(output(ctx, b, choice)) > 0) { player.craftCursor = (player.craftCursor + i + 1) % rotation.length; return choice }
+    if (room(output(ctx, b, choice)) > 0) return { good: choice, commit: () => { player.craftCursor = (player.craftCursor + i + 1) % rotation.length } }
   }
   return null
 }
@@ -88,10 +91,12 @@ function outdoor(ctx: Context, b: Building, s: Settler, w: Workflow): string | n
 function indoor(ctx: Context, b: Building, w: Workflow): string | null {
   if (w.kind === 'process' || w.kind === 'craft') {
     if (b.cycle === 0) {
-      const goods = w.kind === 'process' ? w.outputs : (() => { const choice = craftChoice(ctx, b, w.choices); return choice ? { [choice]: 1 } : null })()
+      const choice = w.kind === 'craft' ? craftChoice(ctx, b, w.choices) : null
+      const goods = w.kind === 'process' ? w.outputs : choice ? { [choice.good]: 1 } : null
       if (!goods) return 'output-full'
       if (!fits(ctx, b, goods)) return 'output-full'
       if (!has(ctx, b, w.inputs)) return 'inputs'
+      choice?.commit()
       consume(ctx, b, w.inputs)
       b.cycleGoods = goods
       for (const [g, n] of Object.entries(goods)) output(ctx, b, g).reservedIn += n
