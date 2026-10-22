@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "source": "42d99afb2437e98fdeea35e2b59c577c5d0ce04f",
+  "runId": 39863862661,
+  "url": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/39863862661",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "game",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy lint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run typecheck",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy test --unit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:import",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy build views",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the production campaign in Chrome",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain non-media browser diagnostics",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Hosted browser campaign acceptance does not establish native game presentation or original Gold parity."
+  ]
+}
