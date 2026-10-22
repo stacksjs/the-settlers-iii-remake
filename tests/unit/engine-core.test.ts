@@ -334,3 +334,14 @@ describe('saves and replays', () => {
     expect(s.state.ledger[1]!.produced.stone ?? 0).toBeGreaterThan(0)
   }, 60_000)
 })
+
+test('saves keep the rules they were made with after the profile moves on', async () => {
+  const { PUBLISHED_RULES, rulesFor } = await import('../../resources/game/engine')
+  // Format 1 saves were written with the published 0.2.0 profile, which the catalog keeps frozen.
+  const fixture = (await import('../fixtures/save-format-1.json')).default as unknown as { rules: { id: string, version: string, digest: string } }
+  const frozen = rulesFor(fixture.rules)
+  expect(frozen?.version).toBe('0.2.0')
+  const restored = restore(structuredClone(fixture), PUBLISHED_RULES)
+  expect(restored.rules).toBe(frozen!)
+  expect(() => restore(structuredClone(fixture), [rules].filter(r => r.version !== '0.2.0'))).toThrow()
+})

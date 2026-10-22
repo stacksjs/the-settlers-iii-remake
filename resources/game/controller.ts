@@ -7,7 +7,7 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, economicAI, findStart, generateMap, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
+import { createSession, economicAI, findStart, generateMap, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 
@@ -191,7 +191,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     try {
       const saved = await checkpoints.load()
       if (!saved) { report('There is no saved settlement on this device yet.'); return }
-      const next = restore(saved, rules)
+      const next = restore(saved, PUBLISHED_RULES)
       if (disposed) return
       adopt(next); report('Saved settlement restored.')
     }
@@ -208,7 +208,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const saved = await checkpoints.load()
       // The Riverlands prototype save stays untouched under its own key; it is never reinterpreted.
       prototypeKept = !!(await host.call('Storage', 'get', [PROTOTYPE_KEY], lifetime.signal))
-      if (saved && !disposed) { adopt(restore(saved, rules)); message = 'Welcome back. Your settlement has been restored.' }
+      if (saved && !disposed) { adopt(restore(saved, PUBLISHED_RULES)); message = 'Welcome back. Your settlement has been restored.' }
     }
     catch (error) { if (!disposed) message = error instanceof SaveError ? `${error.message} A new settlement was started.` : 'Could not read the saved settlement. A new settlement was started.' }
     if (disposed) return

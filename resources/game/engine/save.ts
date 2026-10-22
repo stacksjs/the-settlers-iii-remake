@@ -281,14 +281,20 @@ function validateProgram(p: unknown, size: number, nextId: number, label: string
   }
 }
 
-/** Restores a saved game for the given rules. Mismatched rules are refused rather than reinterpreted. */
-export function restore(raw: unknown, rules: RulesProfile): Session {
+/**
+ * Restores a saved game with the rules it was made with, chosen from the given
+ * profiles. A save whose rules are not among them is refused, never reinterpreted.
+ */
+export function restore(raw: unknown, available: RulesProfile | readonly RulesProfile[]): Session {
   if (typeof raw === 'string') { if (raw.length > MAX_SAVE_BYTES) throw new SaveError('too-large', 'Saved game is too large.'); try { raw = JSON.parse(raw) } catch { throw new SaveError('not-a-save', 'Saved game is not readable.') } }
   // Integrity is checked under the format the save was written in, after migrating its shape.
   const written = isObject(raw) && Number.isInteger(raw.version) ? raw.version as number : SAVE_VERSION
   const envelope = migrate(raw)
-  const identity = rulesIdentity(rules)
-  if (!isObject(envelope.rules) || envelope.rules.id !== identity.id || envelope.rules.version !== identity.version || envelope.rules.digest !== identity.digest) throw new SaveError('incompatible-rules', `This save uses rules ${String(envelope.rules?.id)} ${String(envelope.rules?.version)}, which this build does not provide.`)
+  const rules = (Array.isArray(available) ? available : [available] as RulesProfile[]).find(profile => {
+    const identity = rulesIdentity(profile)
+    return isObject(envelope.rules) && envelope.rules.id === identity.id && envelope.rules.version === identity.version && envelope.rules.digest === identity.digest
+  })
+  if (!rules) throw new SaveError('incompatible-rules', `This save uses rules ${String(envelope.rules?.id)} ${String(envelope.rules?.version)}, which this build does not provide.`)
   check(isObject(envelope.content) && str(envelope.content.id) && str(envelope.content.digest, 128), 'content identity is missing')
   const state = decodeState(envelope, rules)
   if ((written === 1 ? checksumV1(state) : checksum(state)) !== envelope.checksum) throw damaged('checksum does not match')
