@@ -1,6 +1,6 @@
 import type { Context } from './context'
 import type { Building, Job, Op, Settler, Stack } from './state'
-import { available, doorOf, emit, footprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf } from './context'
+import { available, changed, doorOf, emit, footprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
 import { cancelJob, dropCargo } from './logistics'
 import { changeProfession, effects, finishers, halt, spawn, start } from './settlers'
@@ -159,7 +159,7 @@ effects.set('level', (ctx, _s, args) => {
   const map = ctx.state.map
   let worst = -1, gap = 0
   for (const p of footprint(ruleOf(ctx, b), b)) { const t = tileOf(ctx, p), d = Math.abs(map.elevation[t]! - b.target); if (d > gap) { gap = d; worst = t } }
-  if (worst >= 0) { map.elevation[worst] = map.elevation[worst]! + (map.elevation[worst]! > b.target ? -1 : 1); ctx.state.navigation++ }
+  if (worst >= 0) { map.elevation[worst] = map.elevation[worst]! + (map.elevation[worst]! > b.target ? -1 : 1); changed(ctx, worst); ctx.state.navigation++ }
   b.levelRemaining = Math.max(0, b.levelRemaining - 1)
   if (b.levelRemaining === 0) { b.phase = 'building'; emit(ctx, { player: b.owner, type: 'site-levelled', text: `${ruleOf(ctx, b).name} site levelled`, entity: b.id }) }
   return true

@@ -2,7 +2,7 @@ import type { RulesProfile } from './rules'
 import type { SaveEnvelope } from './save'
 import type { Session } from './session'
 import type { Command, CommandResult } from './state'
-import { checksum, restore, save } from './save'
+import { restore, save } from './save'
 
 export const REPLAY_FORMAT = 'settlers-iii-remake/replay'
 export interface Replay {
@@ -23,7 +23,7 @@ export function record(session: Session): Recorder {
   return {
     session,
     enqueue(command) { const rejected = session.enqueue(command); if (!rejected) commands.push(structuredClone(command)); return rejected },
-    advance(ticks = 1) { for (let i = 0; i < ticks; i++) { session.advance(1); checksums.push(checksum(session.state)) } },
+    advance(ticks = 1) { for (let i = 0; i < ticks; i++) { session.advance(1); checksums.push(session.checksum()) } },
     replay: () => ({ format: REPLAY_FORMAT, version: 1, start: structuredClone(start), commands: structuredClone(commands), checksums: [...checksums], end: session.state.tick }),
   }
 }
@@ -43,13 +43,13 @@ export function verify(replay: Replay, rules: RulesProfile): Verification {
     for (let i = 0; i < replay.checksums.length; i++) {
       for (const c of byTick.get(session.state.tick) ?? []) {
         const rejected = session.enqueue(structuredClone(c))
-        if (rejected) return { ok: false, tick: session.state.tick, expected: replay.checksums[i]!, actual: checksum(session.state), reason: 'rejected-command', detail: rejected.reason }
+        if (rejected) return { ok: false, tick: session.state.tick, expected: replay.checksums[i]!, actual: session.checksum(), reason: 'rejected-command', detail: rejected.reason }
       }
       session.advance(1)
-      const actual = checksum(session.state)
+      const actual = session.checksum()
       if (actual !== replay.checksums[i]) return { ok: false, tick: first + i, expected: replay.checksums[i]!, actual, reason: 'divergence' }
     }
-    return { ok: true, ticks: replay.checksums.length, checksum: checksum(session.state) }
+    return { ok: true, ticks: replay.checksums.length, checksum: session.checksum() }
   }
   finally { session.dispose() }
 }

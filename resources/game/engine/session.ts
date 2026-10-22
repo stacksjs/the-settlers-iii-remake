@@ -2,7 +2,8 @@ import type { Context } from './context'
 import type { Point } from './geometry'
 import type { Goods, RulesProfile } from './rules'
 import type { Building, Command, CommandResult, GameEvent, MapState, Player, PlayerSettings, Settler, Stack, State } from './state'
-import { createContext, doorOf, emit, footprint, markFootprint, nextId, objectAt, record, ruleOf, terrainAt, tileOf } from './context'
+import { incrementalChecksum } from './digest'
+import { changed, createContext, doorOf, emit, footprint, markFootprint, nextId, objectAt, record, ruleOf, terrainAt, tileOf } from './context'
 import { distance, indexOf, inside } from './geometry'
 import { cancelJob, cancelJobsFor, dropToGround, groundStackAt, moveStackGoodsToGround, assignDeliveries } from './logistics'
 import { arm, command as militaryCommand, garrisonCount, wage } from './military'
@@ -66,9 +67,9 @@ export function populate(ctx: Context, setup: SessionSetup): Record<string, numb
     // Scenario starts clear their site; this is setup, not construction work.
     if (tiles.some(q => !inside(map, q.x, q.y) || ctx.index.buildingAt[tileOf(ctx, q)] || !terrainAt(ctx, tileOf(ctx, q)).walkable)) return false
     if (footprint(rule, { x, y }).some(q => ctx.index.protectedAt[tileOf(ctx, q)])) return false
-    for (const q of tiles) { const t = tileOf(ctx, q); map.object[t] = 0; map.objectAmount[t] = 0 }
+    for (const q of tiles) { const t = tileOf(ctx, q); map.object[t] = 0; map.objectAmount[t] = 0; changed(ctx, t) }
     const b = createBuilding(ctx, owner, type, x, y)
-    for (const q of footprint(rule, b)) map.elevation[tileOf(ctx, q)] = b.target
+    for (const q of footprint(rule, b)) { map.elevation[tileOf(ctx, q)] = b.target; changed(ctx, tileOf(ctx, q)) }
     b.levelRemaining = 0; b.workRemaining = 0; b.used = { ...rule.cost }
     complete(ctx, b)
     return true
@@ -325,6 +326,8 @@ export interface Session {
   advance: (ticks?: number) => void
   view: (player: number) => PlayerView
   placement: (player: number, type: string, x: number, y: number) => string | null
+  /** The state checksum, rehashing only map and fog chunks written since the last call. Equals checksum(state). */
+  checksum: () => string
   dispose: () => void
 }
 
@@ -370,6 +373,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
     },
     view: player => { guard(); return view(context, player) },
     placement: (player, type, x, y) => placementError(context, player, type, x, y),
+    checksum: () => { guard(); return incrementalChecksum(state, context.digest) },
     dispose() { disposed = true },
   }
 }

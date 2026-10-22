@@ -1,7 +1,7 @@
 import type { Context } from './context'
 import type { SoldierRule } from './rules'
 import type { Building, Job, Projectile, Settler } from './state'
-import { doorOf, emit, ledger, markFootprint, nextId, occupy, passable, pointAt, record, ruleOf, tileOf, vacate } from './context'
+import { changed, doorOf, emit, ledger, markFootprint, nextId, occupy, passable, pointAt, record, ruleOf, tileOf, vacate } from './context'
 import type { Direction, Point } from './geometry'
 import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { cancelJob, cancelJobsFor, dropCargo, moveStackGoodsToGround, slot } from './logistics'
@@ -324,6 +324,7 @@ function redraw(ctx: Context, captured: Building): void {
     const p = pointAt(ctx, t)
     const nearest = holders.filter(b => distance(b, p) <= ruleOf(ctx, b).territory!).sort((a, c) => distance(a, p) - distance(c, p) || a.id - c.id)[0]
     map.owner[t] = nearest?.owner ?? 0
+    changed(ctx, t)
   }
   state.navigation++
   for (const b of [...state.buildings.values()]) {

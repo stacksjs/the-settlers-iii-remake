@@ -1,6 +1,7 @@
 import type { Context } from './context'
 import type { State } from './state'
 import { area } from './geometry'
+import { changed } from './context'
 
 // Missions are data, never code. A definition names objectives and triggers built
 // from a fixed vocabulary of conditions and actions; anything else is rejected
@@ -157,7 +158,7 @@ function perform(ctx: Context, mission: MissionState, a: Action): void {
       event(o.player, 'objective', `${a.kind === 'complete-objective' ? 'Objective complete' : 'Objective failed'}: ${o.text}`)
       break
     }
-    case 'reveal': { const p = state.players[a.player - 1]!; for (const t of area(state.map, a, a.radius)) p.explored[t] = 1; break }
+    case 'reveal': { const p = state.players[a.player - 1]!; for (const t of area(state.map, a, a.radius)) { p.explored[t] = 1; changed(ctx, t) } break }
     case 'victory': case 'defeat':
       if (mission.outcome[a.player] === 'playing') { mission.outcome[a.player] = a.kind === 'victory' ? 'won' : 'lost'; event(a.player, 'outcome', a.kind === 'victory' ? 'Victory. The mission is won.' : 'Defeat. The mission is lost.') }
       break

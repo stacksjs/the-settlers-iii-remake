@@ -1,6 +1,6 @@
 import type { Context } from './context'
 import type { Building, Job, Op, Settler } from './state'
-import { available, emit, nextId, pointAt, record, ruleOf, terrainAt, tileOf } from './context'
+import { available, changed, emit, nextId, pointAt, record, ruleOf, terrainAt, tileOf } from './context'
 import { area, distance, neighbours } from './geometry'
 import { cancelJob, dropCargo } from './logistics'
 import { changeProfession, effects, finishers, start } from './settlers'
@@ -12,7 +12,7 @@ export function claim(ctx: Context, b: Building): void {
   if (!radius) return
   const map = ctx.state.map
   let claimed = 0
-  for (const t of area(map, b, radius)) if (map.owner[t] === 0) { map.owner[t] = b.owner; claimed++ }
+  for (const t of area(map, b, radius)) if (map.owner[t] === 0) { map.owner[t] = b.owner; changed(ctx, t); claimed++ }
   if (claimed) emit(ctx, { player: b.owner, type: 'territory', text: `${ruleOf(ctx, b).name} claimed ${claimed} tiles`, entity: b.id })
 }
 completions.push(claim)
@@ -85,6 +85,7 @@ effects.set('pioneer', (ctx, s) => {
   const tile = tileOf(ctx, s)
   if (borders(ctx, s.owner, tile)) {
     ctx.state.map.owner[tile] = s.owner
+    changed(ctx, tile)
     emit(ctx, { player: s.owner, type: 'territory', text: 'A pioneer claimed new land', tile })
   }
   return true
@@ -107,11 +108,18 @@ finishers.set('duty', (ctx, s, program, ok) => {
 export function updateVisibility(ctx: Context): void {
   const map = ctx.state.map
   for (const player of ctx.state.players) {
-    player.visible.fill(0)
-    const mark = (center: { x: number, y: number }, radius: number): void => { for (const t of area(map, center, radius)) { player.visible[t] = 1; player.explored[t] = 1 } }
+    // Sight is rebuilt from scratch, then only tiles whose fog actually changed mark their chunk.
+    const visible = new Uint8Array(player.visible.length)
+    const mark = (center: { x: number, y: number }, radius: number): void => { for (const t of area(map, center, radius)) visible[t] = 1 }
     for (const s of ctx.state.settlers.values()) if (s.owner === player.id) mark(s, ctx.rules.visibility.settler)
     for (const b of ctx.state.buildings.values()) if (b.owner === player.id) mark(b, ruleOf(ctx, b).vision)
-    if (player.controller === 'observer') { player.visible.fill(1); player.explored.fill(1) }
+    if (player.controller === 'observer') visible.fill(1)
+    for (let t = 0; t < visible.length; t++) {
+      if (visible[t] === player.visible[t] && (!visible[t] || player.explored[t])) continue
+      player.visible[t] = visible[t]!
+      if (visible[t]) player.explored[t] = 1
+      changed(ctx, t)
+    }
   }
 }
 

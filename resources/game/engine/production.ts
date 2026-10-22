@@ -1,7 +1,7 @@
 import type { Context } from './context'
 import type { Goods, Workflow } from './rules'
 import type { Building, Settler, Stack } from './state'
-import { doorOf, emit, objectAt, passable, pointAt, record, room, ruleOf, terrainAt } from './context'
+import { changed, doorOf, emit, objectAt, passable, pointAt, record, room, ruleOf, terrainAt } from './context'
 import { area, distance } from './geometry'
 import { dropCargo, groundStackAt, slot } from './logistics'
 import { randomInt } from './random'
@@ -122,6 +122,7 @@ function indoor(ctx: Context, b: Building, w: Workflow): string | null {
       b.meals--
       map.resourceAmount[deposit] = map.resourceAmount[deposit]! - 1
       if (map.resourceAmount[deposit] === 0) map.resource[deposit] = 0
+      changed(ctx, deposit)
       // The ore is now in the worker's hands inside the mine until the cycle ends.
       b.cycleGoods = { [w.output]: 1 }
       output(ctx, b, w.output).reservedIn++
@@ -168,6 +169,7 @@ export function grow(ctx: Context): void {
     const blocking = ctx.objects[into - 1]!.blocks
     if (blocking && ctx.index.settlerAt[tile]) { scheduleGrowth(ctx, tile, 20); continue }
     map.object[tile] = into; map.objectAmount[tile] = ctx.objects[into - 1]!.amount; map.objectSince[tile] = ctx.state.tick
+    changed(ctx, tile)
     if (ctx.objects[into - 1]!.grows) scheduleGrowth(ctx, tile, ctx.objects[into - 1]!.grows!.ticks)
     if (blocking !== rule.blocks) ctx.state.navigation++
   }
@@ -179,6 +181,7 @@ effects.set('harvest', (ctx, s, args) => {
   if (!rule || map.objectAmount[tile]! < 1) return false
   map.objectAmount[tile] = map.objectAmount[tile]! - 1
   if (map.objectAmount[tile] === 0) { map.object[tile] = 0; map.objectSince[tile] = ctx.state.tick; if (rule.blocks) ctx.state.navigation++ }
+  changed(ctx, tile)
   s.cargo = String(args.output)
   record(ctx, s.owner, 'produced', s.cargo, 1)
   return true
@@ -192,6 +195,7 @@ effects.set('extract', (ctx, s, args) => {
     if (map.resource[tile] !== resource || map.resourceAmount[tile]! < 1) return false
     map.resourceAmount[tile] = map.resourceAmount[tile]! - 1
     if (map.resourceAmount[tile] === 0) map.resource[tile] = 0
+    changed(ctx, tile)
   }
   s.cargo = String(args.output)
   record(ctx, s.owner, 'produced', s.cargo, 1)
@@ -205,6 +209,7 @@ effects.set('plant', (ctx, s, args) => {
   if (map.object[tile] || ctx.index.buildingAt[tile]) return false
   const id = ctx.objectIndex.get(String(args.object))!, rule = ctx.objects[id - 1]!
   map.object[tile] = id; map.objectAmount[tile] = rule.amount; map.objectSince[tile] = ctx.state.tick
+  changed(ctx, tile)
   if (rule.grows) scheduleGrowth(ctx, tile, rule.grows.ticks)
   if (rule.blocks) ctx.state.navigation++
   return true

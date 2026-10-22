@@ -2,6 +2,7 @@ import type { RulesProfile } from './rules'
 import type { Session } from './session'
 import type { Building, Command, Job, Ledger, MapState, Op, Player, Projectile, Settler, Stack, State } from './state'
 import { canonical } from './hash'
+import { fullChecksum } from './digest'
 import { MAX_MAP_SIZE } from './map'
 import type { MissionDefinition, MissionState } from './mission'
 import { MissionError, validateMission } from './mission'
@@ -10,7 +11,7 @@ import { rulesIdentity } from './rules'
 import { openSession } from './session'
 
 export const SAVE_FORMAT = 'settlers-iii-remake/session'
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 export const MAX_SAVE_BYTES = 64 * 1024 * 1024
 
 type LayerName = 'terrain' | 'elevation' | 'resource' | 'resourceAmount' | 'object' | 'objectAmount' | 'objectSince' | 'owner'
@@ -74,9 +75,17 @@ function fromBase64(text: string, label: string): Uint8Array {
   return out
 }
 
-/** FNV-1a over the complete simulation state. Equal checksums mean equal saves for replay and network comparison. */
+/**
+ * FNV-1a over the complete simulation state, from map and fog chunk hashes and
+ * the canonical entity text. Equal checksums mean equal saves for replay and
+ * network comparison; a session computes the same value incrementally.
+ */
 export function checksum(state: State): string {
-  // Canonical text sorts keys, so equal state checksums equally however its objects were built.
+  return fullChecksum(state)
+}
+
+/** The format 2 checksum: one pass over every layer, then the canonical entity text. Used only to verify format 2 saves. */
+function checksumV2(state: State): string {
   return fnv(state, canonical(encodeEntities(state)))
 }
 
@@ -140,6 +149,8 @@ const goodsMap = (v: unknown, rules: RulesProfile, label: string, min = 0): void
 export const MIGRATIONS: Record<number, (envelope: Record<string, unknown>) => Record<string, unknown>> = {
   // Format 2 saves mission progress. Format 1 sessions had no mission.
   1: envelope => isObject(envelope.state) ? { ...envelope, version: 2, state: { ...envelope.state, mission: null } } : envelope,
+  // Format 3 changes only how the checksum is computed; the state is written the same way.
+  2: envelope => ({ ...envelope, version: 3 }),
 }
 
 export function migrate(raw: unknown): SaveEnvelope {
@@ -322,6 +333,6 @@ export function restore(raw: unknown, available: RulesProfile | readonly RulesPr
   if (!rules) throw new SaveError('incompatible-rules', `This save uses rules ${String(envelope.rules?.id)} ${String(envelope.rules?.version)}, which this build does not provide.`)
   check(isObject(envelope.content) && str(envelope.content.id) && str(envelope.content.digest, 128), 'content identity is missing')
   const state = decodeState(envelope, rules)
-  if ((written === 1 ? checksumV1(state) : checksum(state)) !== envelope.checksum) throw damaged('checksum does not match')
+  if ((written === 1 ? checksumV1(state) : written === 2 ? checksumV2(state) : checksum(state)) !== envelope.checksum) throw damaged('checksum does not match')
   return openSession(rules, state, { id: envelope.content.id, digest: envelope.content.digest })
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { checksum, createSession, PUBLISHED_RULES, describeMap, generateMap, pick, qualificationGaps, record, restore, rulesIdentity, save, SaveError, toView, validateRules, verify } from '../../resources/game/engine'
+import { checksum, createSession, PUBLISHED_RULES, SAVE_VERSION, describeMap, generateMap, pick, qualificationGaps, record, restore, rulesIdentity, save, SaveError, toView, validateRules, verify } from '../../resources/game/engine'
 import { area, distance, DIRECTIONS, fromView, indexOf, neighbours } from '../../resources/game/engine/geometry'
 import { passable } from '../../resources/game/engine/context'
 import { sha256 } from '../../resources/game/engine/hash'
@@ -294,7 +294,7 @@ describe('saves and replays', () => {
     expect(restored.state.buildings.size).toBe(2)
     restored.advance(100)
     const current = save(restored)
-    expect(current.version).toBe(2)
+    expect(current.version).toBe(SAVE_VERSION)
     expect(checksum(restore(JSON.parse(JSON.stringify(current)), PUBLISHED_RULES).state)).toBe(checksum(restored.state))
     const tampered = structuredClone(formatOne)
     tampered.state.settlers[0]!.x += 1

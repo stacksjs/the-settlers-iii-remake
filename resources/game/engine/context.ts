@@ -1,6 +1,8 @@
 import type { Point } from './geometry'
 import type { BuildingRule, Goods, ObjectRule, ProfessionRule, RulesProfile, TerrainRule } from './rules'
+import type { ChunkDigest } from './digest'
 import type { Building, GameEvent, Ledger, Settler, Stack, State } from './state'
+import { createDigest, touch } from './digest'
 import { indexOf, pointOf } from './geometry'
 import { add, emptyLedger } from './state'
 
@@ -8,13 +10,15 @@ import { add, emptyLedger } from './state'
 export interface Index { buildingAt: Int32Array, protectedAt: Int32Array, settlerAt: Int32Array }
 export interface Context {
   rules: RulesProfile, state: State, index: Index
+  /** Map and fog chunks written since the session last took its checksum. */
+  digest: ChunkDigest
   building: Map<string, BuildingRule>, profession: Map<string, ProfessionRule>
   terrain: TerrainRule[], objects: ObjectRule[], objectIndex: Map<string, number>, goodIndex: Map<string, number>
 }
 
 export function createContext(rules: RulesProfile, state: State): Context {
   const ctx: Context = {
-    rules, state, index: { buildingAt: new Int32Array(state.map.width * state.map.height), protectedAt: new Int32Array(state.map.width * state.map.height), settlerAt: new Int32Array(state.map.width * state.map.height) },
+    rules, state, digest: createDigest(state.map.width, state.map.height), index: { buildingAt: new Int32Array(state.map.width * state.map.height), protectedAt: new Int32Array(state.map.width * state.map.height), settlerAt: new Int32Array(state.map.width * state.map.height) },
     building: new Map(rules.buildings.map(b => [b.id, b])), profession: new Map(rules.professions.map(p => [p.id, p])),
     terrain: rules.terrain, objects: rules.objects, objectIndex: new Map(rules.objects.map((o, i) => [o.id, i + 1])), goodIndex: new Map(rules.goods.map((g, i) => [g, i + 1])),
   }
@@ -54,6 +58,8 @@ export function passable(ctx: Context, tile: number): boolean {
 }
 
 export function nextId(ctx: Context): number { return ctx.state.nextId++ }
+/** Records that a map or fog tile changed, so the incremental checksum rehashes its chunk. */
+export function changed(ctx: Context, tile: number): void { touch(ctx.digest, ctx.state.map.width, tile) }
 export function ledger(ctx: Context, player: number): Ledger { return ctx.state.ledger[player] ??= emptyLedger() }
 export function record(ctx: Context, player: number, kind: 'created' | 'produced' | 'recovered' | 'consumed' | 'destroyed' | 'equipped', good: string, amount: number): void { add(ledger(ctx, player)[kind], good, amount) }
 
