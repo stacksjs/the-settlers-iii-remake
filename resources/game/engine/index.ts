@@ -1,0 +1,12 @@
+// Public interface of the deterministic game session shared by browser, native and server hosts.
+export { checksum, MIGRATIONS, restore, save, SAVE_FORMAT, SAVE_VERSION, SaveError } from './save'
+export type { SaveEnvelope } from './save'
+export { record, verify } from './replay'
+export type { Replay, Verification } from './replay'
+export { createSession, DEFAULT_START, openSession, placementError, view } from './session'
+export type { PlayerSetup, PlayerView, Session, SessionSetup } from './session'
+export { describeMap, generateMap, pick } from './map'
+export { qualificationGaps, ROMAN_ENGINEERING, rulesIdentity, validateRules, RulesError } from './rules'
+export type { BuildingRule, Evidence, RulesProfile } from './rules'
+export { DIRECTIONS, distance, fromView, toView } from './geometry'
+export type { Command, CommandResult, MapState, State } from './state'

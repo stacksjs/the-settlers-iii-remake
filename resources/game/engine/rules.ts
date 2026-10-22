@@ -1,0 +1,254 @@
+import { DIRECTIONS } from './geometry'
+import { digest } from './hash'
+
+/** Evidence classes defined by docs/fidelity/gold-edition-specification.md. */
+export type EvidenceClass = 'M' | 'O' | 'E' | 'U'
+export interface Evidence { class: EvidenceClass, source: string, note: string, owner?: string }
+export type Goods = Record<string, number>
+export type Offset = readonly [number, number]
+
+export interface TerrainRule { id: string, walkable: boolean, buildable: boolean, water: boolean, moveCost: number }
+export interface ObjectRule { id: string, blocks: boolean, amount: number, grows?: { into: string, ticks: number } }
+export interface ProfessionRule { id: string, tool: string | null, specialist: boolean }
+export interface MineFood { preferred: string, accepted: string[], preferredCycles: number, otherCycles: number }
+export type Workflow =
+  | { kind: 'none' }
+  | { kind: 'process', inputs: Goods, outputs: Goods, work: number }
+  | { kind: 'harvest', object: string, output: string, work: number, radius: number }
+  | { kind: 'plant', object: string, work: number, radius: number }
+  | { kind: 'cultivate', plant: string, ripe: string, output: string, work: number, radius: number }
+  | { kind: 'extract', resource: string, output: string, work: number, radius: number, food?: MineFood }
+  | { kind: 'craft', inputs: Goods, choices: string[], work: number }
+export interface BuildingRule {
+  id: string, name: string, category: string, footprint: Offset[], door: Offset, cost: Goods
+  levelWork: number, buildWork: number, worker: string | null, inputs: Goods, outputs: Goods, workflow: Workflow
+  storage?: { piles: number, capacity: number }, residents?: { count: number, interval: number }, territory?: number, vision: number, military?: boolean
+  /** Terrain the footprint must stand on; defaults to every buildable terrain. */
+  ground?: string[]
+}
+export interface RulesProfile {
+  id: string, version: string, fidelity: 'engineering' | 'original', description: string
+  tickRate: number, goods: string[], tools: string[], foods: string[]
+  terrain: TerrainRule[], objects: ObjectRule[], professions: ProfessionRule[], buildings: BuildingRule[]
+  movement: { ticksPerStep: number, slopeTicks: number, maxClimb: number, searchLimit: number, waitTicks: number, retries: number }
+  logistics: { carrierCapacity: number, groundPileCapacity: number, assignmentInterval: number, assignmentsPerPass: number }
+  population: { carrierRatio: number, builderLimit: number, diggerLimit: number }
+  demolition: { refundFraction: [number, number] }
+  territory: { pioneerWork: number, pioneerRadius: number }
+  visibility: { settler: number, interval: number }
+  survey: { radius: number, work: number, signTicks: number }
+  evidence: Record<string, Evidence>
+}
+
+export class RulesError extends Error {
+  constructor(readonly problems: string[]) { super(`Invalid rules profile: ${problems.slice(0, 5).join('; ')}${problems.length > 5 ? ` (+${problems.length - 5} more)` : ''}`) }
+}
+
+const required = ['tickRate', 'goods', 'terrain', 'objects', 'professions', 'movement', 'logistics', 'population', 'demolition', 'territory', 'visibility', 'survey'] as const
+
+/** Rejects missing, dangling or contradictory definitions before a session can use them. */
+export function validateRules(rules: RulesProfile): RulesProfile {
+  const problems: string[] = []
+  const positive = (value: unknown, label: string, zero = false): void => {
+    const minimum = zero ? 0 : 1
+    if (!Number.isInteger(value) || (value as number) < minimum) problems.push(`${label} must be a ${zero ? 'non-negative' : 'positive'} integer`)
+  }
+  const unique = (ids: string[], label: string): Set<string> => {
+    const seen = new Set<string>()
+    for (const id of ids) { if (!/^[a-z][a-z0-9-]*$/.test(id)) problems.push(`${label} id ${JSON.stringify(id)} is malformed`); if (seen.has(id)) problems.push(`${label} ${id} is defined more than once`); seen.add(id) }
+    return seen
+  }
+  if (!rules.id || !/^\d+\.\d+\.\d+$/.test(rules.version)) problems.push('Profile needs an id and semantic version')
+  const goods = unique(rules.goods, 'good'), terrain = unique(rules.terrain.map(t => t.id), 'terrain'), objects = unique(rules.objects.map(o => o.id), 'object')
+  const professions = unique(rules.professions.map(p => p.id), 'profession'); unique(rules.buildings.map(b => b.id), 'building')
+  const good = (id: string, label: string): void => { if (!goods.has(id)) problems.push(`${label} references unknown good ${id}`) }
+  const amounts = (map: Goods, label: string): void => { for (const [id, n] of Object.entries(map)) { good(id, label); positive(n, `${label} ${id}`) } }
+  for (const id of [...rules.tools, ...rules.foods]) good(id, 'tool/food list')
+  if (!terrain.size || !rules.terrain.some(t => t.walkable) || !rules.terrain.some(t => t.buildable)) problems.push('Terrain needs walkable and buildable kinds')
+  for (const t of rules.terrain) { positive(t.moveCost, `terrain ${t.id} move cost`); if (t.buildable && !t.walkable) problems.push(`terrain ${t.id} is buildable but not walkable`) }
+  for (const o of rules.objects) { positive(o.amount, `object ${o.id} amount`); if (o.grows) { positive(o.grows.ticks, `object ${o.id} growth`); if (!objects.has(o.grows.into) || o.grows.into === o.id) problems.push(`object ${o.id} grows into invalid ${o.grows.into}`) } }
+  for (const p of rules.professions) if (p.tool !== null && !rules.tools.includes(p.tool)) problems.push(`profession ${p.id} needs unknown tool ${p.tool}`)
+  for (const id of ['carrier', 'builder', 'digger']) if (!professions.has(id)) problems.push(`profession ${id} is required`)
+  for (const b of rules.buildings) {
+    const label = `building ${b.id}`, cells = new Set(b.footprint.map(([x, y]) => `${x},${y}`))
+    if (!cells.has('0,0') || cells.size !== b.footprint.length) problems.push(`${label} footprint must contain its origin once per tile`)
+    if (cells.has(`${b.door[0]},${b.door[1]}`) || !b.footprint.some(([x, y]) => DIRECTIONS.some(([dx, dy]) => x + dx === b.door[0] && y + dy === b.door[1]))) problems.push(`${label} door must border its footprint`)
+    amounts(b.cost, `${label} cost`); amounts(b.inputs, `${label} input capacity`); amounts(b.outputs, `${label} output capacity`)
+    positive(b.levelWork, `${label} level work`); positive(b.buildWork, `${label} build work`); positive(b.vision, `${label} vision`, true)
+    if (b.worker !== null && !professions.has(b.worker)) problems.push(`${label} needs unknown profession ${b.worker}`)
+    const w = b.workflow
+    if (w.kind !== 'none' && b.worker === null) problems.push(`${label} has a workflow without a worker`)
+    if (w.kind === 'process' || w.kind === 'craft') { amounts(w.inputs, `${label} recipe`); for (const id of Object.keys(w.inputs)) if (!b.inputs[id]) problems.push(`${label} has no input capacity for ${id}`) }
+    if (w.kind === 'process') { amounts(w.outputs, `${label} recipe`); for (const id of Object.keys(w.outputs)) if (!b.outputs[id]) problems.push(`${label} has no output capacity for ${id}`) }
+    if (w.kind === 'craft') for (const id of w.choices) if (!b.outputs[id]) problems.push(`${label} cannot store crafted ${id}`)
+    if ((w.kind === 'harvest' || w.kind === 'plant') && !objects.has(w.object)) problems.push(`${label} uses unknown object ${w.object}`)
+    if (w.kind === 'cultivate' && (!objects.has(w.plant) || !objects.has(w.ripe))) problems.push(`${label} uses unknown crop objects`)
+    if ((w.kind === 'harvest' || w.kind === 'cultivate' || w.kind === 'extract') && !b.outputs[w.output]) problems.push(`${label} cannot store ${w.output}`)
+    if (w.kind === 'extract') { if (!goods.has(w.resource) && w.resource !== 'water') problems.push(`${label} extracts unknown ${w.resource}`); if (w.food) { good(w.food.preferred, label); w.food.accepted.forEach(id => good(id, label)); positive(w.food.preferredCycles, `${label} meal`); positive(w.food.otherCycles, `${label} meal`); if (![w.food.preferred, ...w.food.accepted].every(id => b.inputs[id])) problems.push(`${label} has no input capacity for its food`) } }
+    if (w.kind !== 'none') positive(w.work, `${label} work`)
+    if (b.storage) { positive(b.storage.piles, `${label} storage piles`); positive(b.storage.capacity, `${label} storage capacity`) }
+    if (b.residents) { positive(b.residents.count, `${label} residents`); positive(b.residents.interval, `${label} resident interval`) }
+    if (b.territory !== undefined) positive(b.territory, `${label} territory`)
+    for (const id of b.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`)
+  }
+  positive(rules.tickRate, 'tick rate')
+  for (const [section, values] of Object.entries({ movement: rules.movement, logistics: rules.logistics, territory: rules.territory, visibility: rules.visibility, survey: rules.survey })) for (const [key, value] of Object.entries(values)) positive(value, `${section}.${key}`, key === 'slopeTicks' || key === 'retries')
+  if (rules.logistics.carrierCapacity !== 1) problems.push('Only single-good carrier loads are supported')
+  if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
+  const [refund, of] = rules.demolition.refundFraction
+  if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
+  const paths = Object.keys(rules.evidence)
+  for (const key of [...required, ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const [path, item] of Object.entries(rules.evidence)) {
+    if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
+    if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
+  }
+  if (rules.fidelity === 'original') for (const [path, item] of Object.entries(rules.evidence)) if (item.class === 'U' || item.class === 'E') problems.push(`original profile cannot rely on ${item.class} evidence at ${path}`)
+  if (problems.length) throw new RulesError(problems)
+  return rules
+}
+
+export const rulesDigest = (rules: RulesProfile): string => digest(rules)
+export const rulesIdentity = (rules: RulesProfile): { id: string, version: string, digest: string } => ({ id: rules.id, version: rules.version, digest: rulesDigest(rules) })
+export const building = (rules: RulesProfile, id: string): BuildingRule => { const found = rules.buildings.find(b => b.id === id); if (!found) throw new RangeError(`Unknown building ${id}`); return found }
+export const profession = (rules: RulesProfile, id: string): ProfessionRule => { const found = rules.professions.find(p => p.id === id); if (!found) throw new RangeError(`Unknown profession ${id}`); return found }
+
+/** Release qualification refuses profiles that still contain unverified or engineering-only values. */
+export function qualificationGaps(rules: RulesProfile): string[] {
+  return Object.entries(rules.evidence).filter(([, item]) => item.class === 'U' || item.class === 'E' || item.class === 'M').map(([path, item]) => `${path}: ${item.class} (${item.owner ?? item.source})`)
+}
+
+const MANUAL = 'https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en'
+const sources = {
+  table: `${MANUAL}/ec_build/building.htm#Table of Building Materials (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`,
+  demolish: `${MANUAL}/ec_build/building.htm#General Comments on the Buildings (sha256 10dcbad8d7c02a7873b263f1db81e7561368467f429c4b6b6113758122d65a9e)`,
+  economy: `${MANUAL}/ec_basic/basics.htm (sha256 a6a10487a4818f87e7d622d730190cb2077b12dcab99852d428f149c6d53c899)`,
+  jobs: `${MANUAL}/ec_jobs/jops.htm (sha256 ae9aa52d18a480546cc36be74f10c61efd2e89dd24a78b6db98bb2d6b5b988f0)`,
+  reference: 'https://github.com/paulwedeck/settlers-remake/tree/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0',
+  spec: 'docs/roadmap/specification.md',
+}
+const U = (note: string, owner: string): Evidence => ({ class: 'U', source: 'engineering placeholder; not an original value', note, owner })
+const M = (source: string, note: string, owner: string): Evidence => ({ class: 'M', source, note, owner })
+const E = (source: string, note: string): Evidence => ({ class: 'E', source, note })
+
+const small: Offset[] = [[0, 0], [-1, 0], [0, -1], [-1, -1]]
+const medium: Offset[] = [[0, 0], [-1, 0], [0, -1], [-1, -1], [1, 0], [0, 1], [-2, -1], [-1, -2], [-2, -2]]
+const large: Offset[] = [...medium, [1, 1], [-2, 0], [0, -2], [1, -1], [-1, 1], [-3, -2], [-2, -3], [-3, -3]]
+type Spec = Omit<BuildingRule, 'levelWork' | 'buildWork' | 'vision' | 'inputs' | 'outputs' | 'workflow' | 'footprint' | 'door'> & Partial<Pick<BuildingRule, 'inputs' | 'outputs' | 'workflow' | 'vision'>> & { size: 'small' | 'medium' | 'large' }
+const shape = { small: { footprint: small, door: [1, 1] as Offset }, medium: { footprint: medium, door: [1, 2] as Offset }, large: { footprint: large, door: [2, 2] as Offset } }
+const define = ({ size, ...spec }: Spec): BuildingRule => ({ ...shape[size], levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec })
+const cost = (plank: number, stone: number): Goods => Object.fromEntries(Object.entries({ plank, stone }).filter(([, n]) => n > 0))
+const doorstep = (good: string): Goods => ({ [good]: 8 })
+const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 'meat', 'fish'].filter(id => id !== preferred), preferredCycles: 10, otherCycles: 2 })
+
+/**
+ * Roman engineering profile. Construction costs, doorstep and storage capacities,
+ * tool requirements, construction-first delivery, preferred meals and the half
+ * demolition refund are manual candidates (M) transcribed from the pinned
+ * manual. Every timing, radius, footprint, population and movement value is an
+ * explicit engineering placeholder (U) owned by the issue that must observe it.
+ * This profile never qualifies a release; see qualificationGaps().
+ */
+export const ROMAN_ENGINEERING: RulesProfile = validateRules({
+  id: 'roman-engineering',
+  version: '0.1.0',
+  fidelity: 'engineering',
+  description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
+  tickRate: 20,
+  goods: ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword'],
+  tools: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'],
+  foods: ['bread', 'meat', 'fish'],
+  terrain: [
+    { id: 'grass', walkable: true, buildable: true, water: false, moveCost: 1 },
+    { id: 'mountain', walkable: true, buildable: false, water: false, moveCost: 2 },
+    { id: 'sand', walkable: true, buildable: true, water: false, moveCost: 1 },
+    { id: 'desert', walkable: true, buildable: false, water: false, moveCost: 1 },
+    { id: 'swamp', walkable: false, buildable: false, water: false, moveCost: 3 },
+    { id: 'water', walkable: false, buildable: false, water: true, moveCost: 1 },
+  ],
+  objects: [
+    { id: 'tree', blocks: true, amount: 1 },
+    { id: 'sapling', blocks: true, amount: 1, grows: { into: 'tree', ticks: 2400 } },
+    { id: 'stone', blocks: true, amount: 12 },
+    { id: 'field', blocks: false, amount: 1, grows: { into: 'ripe-grain', ticks: 1600 } },
+    { id: 'ripe-grain', blocks: false, amount: 1 },
+    { id: 'sign', blocks: false, amount: 1 },
+  ],
+  professions: [
+    { id: 'carrier', tool: null, specialist: false }, { id: 'digger', tool: 'shovel', specialist: false }, { id: 'builder', tool: 'hammer', specialist: false },
+    { id: 'woodcutter', tool: 'axe', specialist: false }, { id: 'forester', tool: null, specialist: false }, { id: 'stonecutter', tool: 'pickaxe', specialist: false },
+    { id: 'sawyer', tool: 'saw', specialist: false }, { id: 'fisher', tool: 'fishingrod', specialist: false }, { id: 'farmer', tool: 'scythe', specialist: false },
+    { id: 'waterworker', tool: null, specialist: false }, { id: 'miller', tool: null, specialist: false }, { id: 'baker', tool: null, specialist: false },
+    { id: 'pigfarmer', tool: null, specialist: false }, { id: 'butcher', tool: null, specialist: false }, { id: 'miner', tool: 'pickaxe', specialist: false },
+    { id: 'smelter', tool: null, specialist: false }, { id: 'toolsmith', tool: 'hammer', specialist: false }, { id: 'weaponsmith', tool: 'hammer', specialist: false },
+    { id: 'geologist', tool: 'hammer', specialist: true }, { id: 'pioneer', tool: 'shovel', specialist: true },
+  ],
+  buildings: [
+    define({ id: 'castle', name: 'Castle', category: 'Military', size: 'large', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 9, vision: 12, military: true }),
+    define({ id: 'storage', name: 'Storage area', category: 'Misc', size: 'medium', cost: cost(2, 2), worker: null, storage: { piles: 6, capacity: 8 } }),
+    define({ id: 'small-residence', name: 'Small residence', category: 'Misc', size: 'small', cost: cost(2, 3), worker: null, residents: { count: 6, interval: 200 } }),
+    define({ id: 'medium-residence', name: 'Medium residence', category: 'Misc', size: 'medium', cost: cost(5, 8), worker: null, residents: { count: 15, interval: 120 } }),
+    define({ id: 'small-tower', name: 'Small guard tower', category: 'Military', size: 'small', cost: cost(2, 3), worker: null, territory: 7, vision: 9, military: true }),
+    define({ id: 'woodcutter', name: "Woodcutter's hut", category: 'Building', size: 'small', cost: cost(2, 2), worker: 'woodcutter', outputs: doorstep('log'), workflow: { kind: 'harvest', object: 'tree', output: 'log', work: 60, radius: 7 } }),
+    define({ id: 'forester', name: "Forester's hut", category: 'Building', size: 'small', cost: cost(3, 1), worker: 'forester', workflow: { kind: 'plant', object: 'sapling', work: 40, radius: 6 } }),
+    define({ id: 'stonecutter', name: "Stonecutter's hut", category: 'Building', size: 'small', cost: cost(2, 3), worker: 'stonecutter', outputs: doorstep('stone'), workflow: { kind: 'harvest', object: 'stone', output: 'stone', work: 80, radius: 7 } }),
+    define({ id: 'sawmill', name: 'Sawmill', category: 'Building', size: 'medium', cost: cost(3, 4), worker: 'sawyer', inputs: doorstep('log'), outputs: doorstep('plank'), workflow: { kind: 'process', inputs: { log: 1 }, outputs: { plank: 1 }, work: 50 } }),
+    define({ id: 'fisher', name: "Fisherman's hut", category: 'Food', size: 'small', cost: cost(3, 2), worker: 'fisher', outputs: doorstep('fish'), workflow: { kind: 'extract', resource: 'fish', output: 'fish', work: 80, radius: 6 } }),
+    define({ id: 'grain-farm', name: 'Grain farm', category: 'Food', size: 'large', cost: cost(6, 6), worker: 'farmer', outputs: doorstep('grain'), workflow: { kind: 'cultivate', plant: 'field', ripe: 'ripe-grain', output: 'grain', work: 40, radius: 5 } }),
+    define({ id: 'waterworks', name: 'Waterworks', category: 'Food', size: 'small', cost: cost(3, 4), worker: 'waterworker', outputs: doorstep('water'), workflow: { kind: 'extract', resource: 'water', output: 'water', work: 50, radius: 5 } }),
+    define({ id: 'mill', name: 'Grain mill', category: 'Food', size: 'medium', cost: cost(3, 3), worker: 'miller', inputs: doorstep('grain'), outputs: doorstep('flour'), workflow: { kind: 'process', inputs: { grain: 1 }, outputs: { flour: 1 }, work: 50 } }),
+    define({ id: 'bakery', name: 'Bakery', category: 'Food', size: 'medium', cost: cost(4, 5), worker: 'baker', inputs: { flour: 8, water: 8 }, outputs: doorstep('bread'), workflow: { kind: 'process', inputs: { flour: 1, water: 1 }, outputs: { bread: 1 }, work: 60 } }),
+    define({ id: 'pig-farm', name: 'Pig farm', category: 'Food', size: 'large', cost: cost(6, 6), worker: 'pigfarmer', inputs: { grain: 8, water: 8 }, outputs: doorstep('pig'), workflow: { kind: 'process', inputs: { grain: 1, water: 1 }, outputs: { pig: 1 }, work: 120 } }),
+    define({ id: 'slaughterhouse', name: 'Slaughterhouse', category: 'Food', size: 'medium', cost: cost(4, 4), worker: 'butcher', inputs: doorstep('pig'), outputs: doorstep('meat'), workflow: { kind: 'process', inputs: { pig: 1 }, outputs: { meat: 1 }, work: 60 } }),
+    define({ id: 'coal-mine', name: 'Coal mine', category: 'Metal', size: 'medium', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('coal'), workflow: { kind: 'extract', resource: 'coal', output: 'coal', work: 70, radius: 2, food: meal('bread') }, ground: ['mountain'] }),
+    define({ id: 'iron-mine', name: 'Iron mine', category: 'Metal', size: 'medium', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('ironore'), workflow: { kind: 'extract', resource: 'ironore', output: 'ironore', work: 70, radius: 2, food: meal('meat') }, ground: ['mountain'] }),
+    define({ id: 'gold-mine', name: 'Gold mine', category: 'Metal', size: 'medium', cost: cost(5, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('goldore'), workflow: { kind: 'extract', resource: 'goldore', output: 'goldore', work: 70, radius: 2, food: meal('fish') }, ground: ['mountain'] }),
+    define({ id: 'iron-smelter', name: 'Iron smelting works', category: 'Metal', size: 'medium', cost: cost(4, 6), worker: 'smelter', inputs: { ironore: 8, coal: 8 }, outputs: doorstep('iron'), workflow: { kind: 'process', inputs: { ironore: 1, coal: 1 }, outputs: { iron: 1 }, work: 80 } }),
+    define({ id: 'gold-smelter', name: 'Gold smelting works', category: 'Metal', size: 'medium', cost: cost(4, 6), worker: 'smelter', inputs: { goldore: 8, coal: 8 }, outputs: doorstep('gold'), workflow: { kind: 'process', inputs: { goldore: 1, coal: 1 }, outputs: { gold: 1 }, work: 80 } }),
+    define({ id: 'toolsmith', name: "Tool smith's works", category: 'Metal', size: 'medium', cost: cost(3, 5), worker: 'toolsmith', inputs: { iron: 8, coal: 8 }, outputs: { hammer: 8, shovel: 8, axe: 8, saw: 8, pickaxe: 8, scythe: 8, fishingrod: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], work: 90 } }),
+    define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', size: 'medium', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: doorstep('sword'), workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword'], work: 90 } }),
+  ],
+  movement: { ticksPerStep: 8, slopeTicks: 1, maxClimb: 4, searchLimit: 40000, waitTicks: 6, retries: 4 },
+  logistics: { carrierCapacity: 1, groundPileCapacity: 8, assignmentInterval: 4, assignmentsPerPass: 16 },
+  population: { carrierRatio: 30, builderLimit: 12, diggerLimit: 8 },
+  demolition: { refundFraction: [1, 2] },
+  territory: { pioneerWork: 30, pioneerRadius: 1 },
+  visibility: { settler: 5, interval: 10 },
+  survey: { radius: 3, work: 30, signTicks: 6000 },
+  evidence: {
+    'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
+    'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
+    'tools': M(sources.jobs, 'Tool requirements: builders hammer, diggers shovel, woodcutter axe, stonecutter and miner pick, farmer scythe, fisherman rod, smiths hammer.', 'S3-031'),
+    'terrain': U('Terrain classes and traversal costs are placeholders until decoded landscape types are reconciled.', 'S3-026'),
+    'objects': U('Tree regrowth, stone quantity and crop timing are unobserved.', 'S3-041'),
+    'professions': M(sources.jobs, 'Occupation and tool pairing; specialist status follows the manual occupation descriptions.', 'S3-031'),
+    'professions.geologist.tool': U('Geologist tool is not explicit in the manual text.', 'S3-048'),
+    'professions.pioneer.tool': U('Pioneer tool requirement is not stated in the manual text.', 'S3-048'),
+    'movement': U('Movement, slope and occupancy timings are placeholders; the reference remake documents changed movement speed.', 'S3-027'),
+    'movement.searchLimit': E(sources.spec, 'Bounded routing search is an engineering safety limit.'),
+    'logistics.groundPileCapacity': M(sources.economy, 'Craftsmen stop when eight goods lie before the door; storage areas hold six piles of eight.', 'S3-029'),
+    'logistics.carrierCapacity': U('Single-good carrier loads match observed sprites but are not yet an admitted observation.', 'S3-030'),
+    'logistics.assignmentInterval': E(sources.spec, 'Scheduling cadence is an engineering decision and is not original behavior.'),
+    'logistics.constructionFirst': M(sources.economy, 'Delivery of goods to building sites has priority over delivery to storage areas.', 'S3-034'),
+    'population': M(sources.economy, 'Minimum carrier ratio applies to newly added settlers; builder and digger ratios are player controls.', 'S3-035'),
+    'population.values': U('Default ratios and limits are placeholders.', 'S3-035'),
+    'demolition': M(sources.demolish, 'Half of the materials needed for construction become available after demolition.', 'S3-033'),
+    'territory': U('Territory radii and pioneer work rate are unobserved.', 'S3-038'),
+    'visibility': U('Vision radii and refresh cadence are placeholders.', 'S3-036'),
+    'survey': U('Geologist survey radius, timing and sign lifetime are unobserved.', 'S3-037'),
+    ...Object.fromEntries([
+      'castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse',
+      'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith',
+    ].flatMap(id => [
+      [`buildings.${id}.cost`, M(sources.table, 'Roman wood (planks) and stone columns of the building material table.', 'S3-032')],
+      [`buildings.${id}.geometry`, U('Footprint, door and size class are placeholders until original building data is decoded.', 'S3-026')],
+      [`buildings.${id}.timing`, U('Levelling, construction and work-cycle durations are unobserved.', 'S3-032')],
+    ])),
+    'buildings.storage.storage': M(sources.economy, 'A storage area has six piles of eight pieces each.', 'S3-034'),
+    'buildings.castle.storage': U('Castle storage behavior is unobserved; it reuses storage-area piles as a placeholder.', 'S3-034'),
+    'buildings.small-residence.residents': U('Resident counts and arrival intervals are unobserved.', 'S3-035'),
+    'buildings.medium-residence.residents': U('Resident counts and arrival intervals are unobserved.', 'S3-035'),
+    'buildings.mines.food': M(sources.jobs, 'Preferred meals: iron miners meat, coal miners bread, gold miners fish; the economy page cites ten versus two descents for a gold miner.', 'S3-043'),
+    'buildings.recipes': M(sources.economy, 'Production chains: farm, mill, waterworks, bakery; farm, pig farm, slaughterhouse; iron and coal mines, smelting, tool and weapon smiths. Quantities per cycle are unobserved.', 'S3-042'),
+  },
+})
