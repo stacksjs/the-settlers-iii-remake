@@ -1,4 +1,5 @@
 import { DIRECTIONS } from './geometry'
+import { REFERENCE_GEOMETRY } from './reference-geometry'
 import { digest } from './hash'
 
 /** Evidence classes defined by docs/fidelity/gold-edition-specification.md. */
@@ -19,8 +20,11 @@ export type Workflow =
   | { kind: 'cultivate', plant: string, ripe: string, output: string, work: number, radius: number }
   | { kind: 'extract', resource: string, output: string, work: number, radius: number, food?: MineFood }
   | { kind: 'craft', inputs: Goods, choices: string[], work: number }
+export interface Pile { role: 'construction' | 'input' | 'output' | 'storage', good: string | null, at: Offset }
 export interface BuildingRule {
-  id: string, name: string, category: string, footprint: Offset[], door: Offset, cost: Goods
+  id: string, name: string, category: string, cost: Goods
+  /** Tiles the building blocks, tiles kept free around it, its entrance, pile positions and builder spots. */
+  footprint: Offset[], protected: Offset[], door: Offset, piles: Pile[], builders: Offset[]
   levelWork: number, buildWork: number, worker: string | null, inputs: Goods, outputs: Goods, workflow: Workflow
   storage?: { piles: number, capacity: number }, residents?: { count: number, interval: number }, territory?: number, vision: number, military?: boolean
   /** Terrain the footprint must stand on; defaults to every buildable terrain. */
@@ -71,7 +75,9 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   for (const id of ['carrier', 'builder', 'digger']) if (!professions.has(id)) problems.push(`profession ${id} is required`)
   for (const b of rules.buildings) {
     const label = `building ${b.id}`, cells = new Set(b.footprint.map(([x, y]) => `${x},${y}`))
-    if (!cells.has('0,0') || cells.size !== b.footprint.length) problems.push(`${label} footprint must contain its origin once per tile`)
+    if (!cells.size || cells.size !== b.footprint.length) problems.push(`${label} footprint must list each tile once`)
+    if (b.protected.some(([x, y]) => cells.has(`${x},${y}`)) || b.piles.some(p => cells.has(`${p.at[0]},${p.at[1]}`)) || b.builders.some(([x, y]) => cells.has(`${x},${y}`))) problems.push(`${label} protected tiles, piles and builder spots must lie outside the footprint`)
+    for (const pile of b.piles) if (pile.good !== null && !goods.has(pile.good) && !pile.good.startsWith('reference:')) problems.push(`${label} pile uses unknown good ${pile.good}`)
     if (cells.has(`${b.door[0]},${b.door[1]}`) || !b.footprint.some(([x, y]) => DIRECTIONS.some(([dx, dy]) => x + dx === b.door[0] && y + dy === b.door[1]))) problems.push(`${label} door must border its footprint`)
     amounts(b.cost, `${label} cost`); amounts(b.inputs, `${label} input capacity`); amounts(b.outputs, `${label} output capacity`)
     positive(b.levelWork, `${label} level work`); positive(b.buildWork, `${label} build work`); positive(b.vision, `${label} vision`, true)
@@ -131,12 +137,20 @@ const U = (note: string, owner: string): Evidence => ({ class: 'U', source: 'eng
 const M = (source: string, note: string, owner: string): Evidence => ({ class: 'M', source, note, owner })
 const E = (source: string, note: string): Evidence => ({ class: 'E', source, note })
 
-const small: Offset[] = [[0, 0], [-1, 0], [0, -1], [-1, -1]]
-const medium: Offset[] = [[0, 0], [-1, 0], [0, -1], [-1, -1], [1, 0], [0, 1], [-2, -1], [-1, -2], [-2, -2]]
-const large: Offset[] = [...medium, [1, 1], [-2, 0], [0, -2], [1, -1], [-1, 1], [-3, -2], [-2, -3], [-3, -3]]
-type Spec = Omit<BuildingRule, 'levelWork' | 'buildWork' | 'vision' | 'inputs' | 'outputs' | 'workflow' | 'footprint' | 'door'> & Partial<Pick<BuildingRule, 'inputs' | 'outputs' | 'workflow' | 'vision'>> & { size: 'small' | 'medium' | 'large' }
-const shape = { small: { footprint: small, door: [1, 1] as Offset }, medium: { footprint: medium, door: [1, 2] as Offset }, large: { footprint: large, door: [2, 2] as Offset } }
-const define = ({ size, ...spec }: Spec): BuildingRule => ({ ...shape[size], levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec })
+type Spec = Omit<BuildingRule, 'levelWork' | 'buildWork' | 'vision' | 'inputs' | 'outputs' | 'workflow' | 'footprint' | 'protected' | 'door' | 'piles' | 'builders'> & Partial<Pick<BuildingRule, 'inputs' | 'outputs' | 'workflow' | 'vision'>>
+// Footprints, doors, pile positions and builder spots come from the pinned reference remake definitions.
+const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders'> => {
+  const g = (REFERENCE_GEOMETRY as Record<string, (typeof REFERENCE_GEOMETRY)[keyof typeof REFERENCE_GEOMETRY]>)[id]
+  if (!g) throw new RangeError(`No reference geometry for ${id}`)
+  const piles: Pile[] = [
+    ...g.construction.map(c => ({ role: 'construction' as const, good: c.good, at: c.at as Offset })),
+    ...g.piles.map(p => ({ role: p.good === '*' ? 'storage' as const : p.role === 'offer' ? 'output' as const : 'input' as const, good: p.good === '*' ? null : p.good, at: p.at as Offset })),
+  ]
+  // The reference coal mine lists builder spots on its own blocked tiles; those cannot be reached and are dropped.
+  const blocked = new Set(g.blocked.map(([x, y]) => `${x},${y}`))
+  return { footprint: g.blocked.map(o => o as Offset), protected: g.protected.map(o => o as Offset), door: g.door as Offset, piles, builders: g.builders.filter(([x, y]) => !blocked.has(`${x},${y}`)).map(o => o as Offset) }
+}
+const define = (spec: Spec): BuildingRule => ({ ...geometry(spec.id), levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec })
 const cost = (plank: number, stone: number): Goods => Object.fromEntries(Object.entries({ plank, stone }).filter(([, n]) => n > 0))
 const doorstep = (good: string): Goods => ({ [good]: 8 })
 const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 'meat', 'fish'].filter(id => id !== preferred), preferredCycles: 10, otherCycles: 2 })
@@ -184,29 +198,29 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     { id: 'geologist', tool: 'hammer', specialist: true }, { id: 'pioneer', tool: 'shovel', specialist: true },
   ],
   buildings: [
-    define({ id: 'castle', name: 'Castle', category: 'Military', size: 'large', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 9, vision: 12, military: true }),
-    define({ id: 'storage', name: 'Storage area', category: 'Misc', size: 'medium', cost: cost(2, 2), worker: null, storage: { piles: 6, capacity: 8 } }),
-    define({ id: 'small-residence', name: 'Small residence', category: 'Misc', size: 'small', cost: cost(2, 3), worker: null, residents: { count: 6, interval: 200 } }),
-    define({ id: 'medium-residence', name: 'Medium residence', category: 'Misc', size: 'medium', cost: cost(5, 8), worker: null, residents: { count: 15, interval: 120 } }),
-    define({ id: 'small-tower', name: 'Small guard tower', category: 'Military', size: 'small', cost: cost(2, 3), worker: null, territory: 7, vision: 9, military: true }),
-    define({ id: 'woodcutter', name: "Woodcutter's hut", category: 'Building', size: 'small', cost: cost(2, 2), worker: 'woodcutter', outputs: doorstep('log'), workflow: { kind: 'harvest', object: 'tree', output: 'log', work: 60, radius: 7 } }),
-    define({ id: 'forester', name: "Forester's hut", category: 'Building', size: 'small', cost: cost(3, 1), worker: 'forester', workflow: { kind: 'plant', object: 'sapling', work: 40, radius: 6 } }),
-    define({ id: 'stonecutter', name: "Stonecutter's hut", category: 'Building', size: 'small', cost: cost(2, 3), worker: 'stonecutter', outputs: doorstep('stone'), workflow: { kind: 'harvest', object: 'stone', output: 'stone', work: 80, radius: 7 } }),
-    define({ id: 'sawmill', name: 'Sawmill', category: 'Building', size: 'medium', cost: cost(3, 4), worker: 'sawyer', inputs: doorstep('log'), outputs: doorstep('plank'), workflow: { kind: 'process', inputs: { log: 1 }, outputs: { plank: 1 }, work: 50 } }),
-    define({ id: 'fisher', name: "Fisherman's hut", category: 'Food', size: 'small', cost: cost(3, 2), worker: 'fisher', outputs: doorstep('fish'), workflow: { kind: 'extract', resource: 'fish', output: 'fish', work: 80, radius: 6 } }),
-    define({ id: 'grain-farm', name: 'Grain farm', category: 'Food', size: 'large', cost: cost(6, 6), worker: 'farmer', outputs: doorstep('grain'), workflow: { kind: 'cultivate', plant: 'field', ripe: 'ripe-grain', output: 'grain', work: 40, radius: 5 } }),
-    define({ id: 'waterworks', name: 'Waterworks', category: 'Food', size: 'small', cost: cost(3, 4), worker: 'waterworker', outputs: doorstep('water'), workflow: { kind: 'extract', resource: 'water', output: 'water', work: 50, radius: 5 } }),
-    define({ id: 'mill', name: 'Grain mill', category: 'Food', size: 'medium', cost: cost(3, 3), worker: 'miller', inputs: doorstep('grain'), outputs: doorstep('flour'), workflow: { kind: 'process', inputs: { grain: 1 }, outputs: { flour: 1 }, work: 50 } }),
-    define({ id: 'bakery', name: 'Bakery', category: 'Food', size: 'medium', cost: cost(4, 5), worker: 'baker', inputs: { flour: 8, water: 8 }, outputs: doorstep('bread'), workflow: { kind: 'process', inputs: { flour: 1, water: 1 }, outputs: { bread: 1 }, work: 60 } }),
-    define({ id: 'pig-farm', name: 'Pig farm', category: 'Food', size: 'large', cost: cost(6, 6), worker: 'pigfarmer', inputs: { grain: 8, water: 8 }, outputs: doorstep('pig'), workflow: { kind: 'process', inputs: { grain: 1, water: 1 }, outputs: { pig: 1 }, work: 120 } }),
-    define({ id: 'slaughterhouse', name: 'Slaughterhouse', category: 'Food', size: 'medium', cost: cost(4, 4), worker: 'butcher', inputs: doorstep('pig'), outputs: doorstep('meat'), workflow: { kind: 'process', inputs: { pig: 1 }, outputs: { meat: 1 }, work: 60 } }),
-    define({ id: 'coal-mine', name: 'Coal mine', category: 'Metal', size: 'medium', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('coal'), workflow: { kind: 'extract', resource: 'coal', output: 'coal', work: 70, radius: 2, food: meal('bread') }, ground: ['mountain'] }),
-    define({ id: 'iron-mine', name: 'Iron mine', category: 'Metal', size: 'medium', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('ironore'), workflow: { kind: 'extract', resource: 'ironore', output: 'ironore', work: 70, radius: 2, food: meal('meat') }, ground: ['mountain'] }),
-    define({ id: 'gold-mine', name: 'Gold mine', category: 'Metal', size: 'medium', cost: cost(5, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('goldore'), workflow: { kind: 'extract', resource: 'goldore', output: 'goldore', work: 70, radius: 2, food: meal('fish') }, ground: ['mountain'] }),
-    define({ id: 'iron-smelter', name: 'Iron smelting works', category: 'Metal', size: 'medium', cost: cost(4, 6), worker: 'smelter', inputs: { ironore: 8, coal: 8 }, outputs: doorstep('iron'), workflow: { kind: 'process', inputs: { ironore: 1, coal: 1 }, outputs: { iron: 1 }, work: 80 } }),
-    define({ id: 'gold-smelter', name: 'Gold smelting works', category: 'Metal', size: 'medium', cost: cost(4, 6), worker: 'smelter', inputs: { goldore: 8, coal: 8 }, outputs: doorstep('gold'), workflow: { kind: 'process', inputs: { goldore: 1, coal: 1 }, outputs: { gold: 1 }, work: 80 } }),
-    define({ id: 'toolsmith', name: "Tool smith's works", category: 'Metal', size: 'medium', cost: cost(3, 5), worker: 'toolsmith', inputs: { iron: 8, coal: 8 }, outputs: { hammer: 8, shovel: 8, axe: 8, saw: 8, pickaxe: 8, scythe: 8, fishingrod: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], work: 90 } }),
-    define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', size: 'medium', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: doorstep('sword'), workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword'], work: 90 } }),
+    define({ id: 'castle', name: 'Castle', category: 'Military', cost: cost(8, 12), worker: null, storage: { piles: 6, capacity: 8 }, territory: 24, vision: 24, military: true }),
+    define({ id: 'storage', name: 'Storage area', category: 'Misc', cost: cost(2, 2), worker: null, storage: { piles: 6, capacity: 8 } }),
+    define({ id: 'small-residence', name: 'Small residence', category: 'Misc', cost: cost(2, 3), worker: null, residents: { count: 6, interval: 200 } }),
+    define({ id: 'medium-residence', name: 'Medium residence', category: 'Misc', cost: cost(5, 8), worker: null, residents: { count: 15, interval: 120 } }),
+    define({ id: 'small-tower', name: 'Small guard tower', category: 'Military', cost: cost(2, 3), worker: null, territory: 16, vision: 16, military: true }),
+    define({ id: 'woodcutter', name: "Woodcutter's hut", category: 'Building', cost: cost(2, 2), worker: 'woodcutter', outputs: doorstep('log'), workflow: { kind: 'harvest', object: 'tree', output: 'log', work: 60, radius: 7 } }),
+    define({ id: 'forester', name: "Forester's hut", category: 'Building', cost: cost(3, 1), worker: 'forester', workflow: { kind: 'plant', object: 'sapling', work: 40, radius: 6 } }),
+    define({ id: 'stonecutter', name: "Stonecutter's hut", category: 'Building', cost: cost(2, 3), worker: 'stonecutter', outputs: doorstep('stone'), workflow: { kind: 'harvest', object: 'stone', output: 'stone', work: 80, radius: 7 } }),
+    define({ id: 'sawmill', name: 'Sawmill', category: 'Building', cost: cost(3, 4), worker: 'sawyer', inputs: doorstep('log'), outputs: doorstep('plank'), workflow: { kind: 'process', inputs: { log: 1 }, outputs: { plank: 1 }, work: 50 } }),
+    define({ id: 'fisher', name: "Fisherman's hut", category: 'Food', cost: cost(3, 2), worker: 'fisher', outputs: doorstep('fish'), workflow: { kind: 'extract', resource: 'fish', output: 'fish', work: 80, radius: 6 } }),
+    define({ id: 'grain-farm', name: 'Grain farm', category: 'Food', cost: cost(6, 6), worker: 'farmer', outputs: doorstep('grain'), workflow: { kind: 'cultivate', plant: 'field', ripe: 'ripe-grain', output: 'grain', work: 40, radius: 5 } }),
+    define({ id: 'waterworks', name: 'Waterworks', category: 'Food', cost: cost(3, 4), worker: 'waterworker', outputs: doorstep('water'), workflow: { kind: 'extract', resource: 'water', output: 'water', work: 50, radius: 5 } }),
+    define({ id: 'mill', name: 'Grain mill', category: 'Food', cost: cost(3, 3), worker: 'miller', inputs: doorstep('grain'), outputs: doorstep('flour'), workflow: { kind: 'process', inputs: { grain: 1 }, outputs: { flour: 1 }, work: 50 } }),
+    define({ id: 'bakery', name: 'Bakery', category: 'Food', cost: cost(4, 5), worker: 'baker', inputs: { flour: 8, water: 8 }, outputs: doorstep('bread'), workflow: { kind: 'process', inputs: { flour: 1, water: 1 }, outputs: { bread: 1 }, work: 60 } }),
+    define({ id: 'pig-farm', name: 'Pig farm', category: 'Food', cost: cost(6, 6), worker: 'pigfarmer', inputs: { grain: 8, water: 8 }, outputs: doorstep('pig'), workflow: { kind: 'process', inputs: { grain: 1, water: 1 }, outputs: { pig: 1 }, work: 120 } }),
+    define({ id: 'slaughterhouse', name: 'Slaughterhouse', category: 'Food', cost: cost(4, 4), worker: 'butcher', inputs: doorstep('pig'), outputs: doorstep('meat'), workflow: { kind: 'process', inputs: { pig: 1 }, outputs: { meat: 1 }, work: 60 } }),
+    define({ id: 'coal-mine', name: 'Coal mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('coal'), workflow: { kind: 'extract', resource: 'coal', output: 'coal', work: 70, radius: 2, food: meal('bread') }, ground: ['mountain'] }),
+    define({ id: 'iron-mine', name: 'Iron mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('ironore'), workflow: { kind: 'extract', resource: 'ironore', output: 'ironore', work: 70, radius: 2, food: meal('meat') }, ground: ['mountain'] }),
+    define({ id: 'gold-mine', name: 'Gold mine', category: 'Metal', cost: cost(5, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('goldore'), workflow: { kind: 'extract', resource: 'goldore', output: 'goldore', work: 70, radius: 2, food: meal('fish') }, ground: ['mountain'] }),
+    define({ id: 'iron-smelter', name: 'Iron smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { ironore: 8, coal: 8 }, outputs: doorstep('iron'), workflow: { kind: 'process', inputs: { ironore: 1, coal: 1 }, outputs: { iron: 1 }, work: 80 } }),
+    define({ id: 'gold-smelter', name: 'Gold smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { goldore: 8, coal: 8 }, outputs: doorstep('gold'), workflow: { kind: 'process', inputs: { goldore: 1, coal: 1 }, outputs: { gold: 1 }, work: 80 } }),
+    define({ id: 'toolsmith', name: "Tool smith's works", category: 'Metal', cost: cost(3, 5), worker: 'toolsmith', inputs: { iron: 8, coal: 8 }, outputs: { hammer: 8, shovel: 8, axe: 8, saw: 8, pickaxe: 8, scythe: 8, fishingrod: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], work: 90 } }),
+    define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: doorstep('sword'), workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword'], work: 90 } }),
   ],
   movement: { ticksPerStep: 8, slopeTicks: 1, maxClimb: 4, searchLimit: 40000, waitTicks: 6, retries: 4 },
   logistics: { carrierCapacity: 1, groundPileCapacity: 8, assignmentInterval: 4, assignmentsPerPass: 16 },
@@ -241,7 +255,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
       'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith',
     ].flatMap(id => [
       [`buildings.${id}.cost`, M(sources.table, 'Roman wood (planks) and stone columns of the building material table.', 'S3-032')],
-      [`buildings.${id}.geometry`, U('Footprint, door and size class are placeholders until original building data is decoded.', 'S3-026')],
+      [`buildings.${id}.geometry`, E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman (sha256 ${(REFERENCE_GEOMETRY as Record<string, { sha256: string }>)[id]!.sha256})`, 'Blocked and protected tiles, door, pile positions and builder spots from the reference remake definition; not yet compared with original building data.')],
       [`buildings.${id}.timing`, U('Levelling, construction and work-cycle durations are unobserved.', 'S3-032')],
     ])),
     'buildings.storage.storage': M(sources.economy, 'A storage area has six piles of eight pieces each.', 'S3-034'),

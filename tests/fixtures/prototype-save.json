@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "seed": 7,
+  "tick": 10.000000000000007,
+  "stock": {
+    "logs": 12,
+    "planks": 29,
+    "stone": 23,
+    "fish": 14,
+    "grain": 0,
+    "flour": 0,
+    "bread": 12,
+    "ore": 0,
+    "coal": 0,
+    "iron": 0,
+    "swords": 0
+  },
+  "buildings": [
+    {
+      "id": 1,
+      "kind": "headquarters",
+      "x": 9,
+      "y": 13,
+      "built": 0,
+      "progress": 0,
+      "enabled": true,
+      "cycles": 0
+    },
+    {
+      "id": 2,
+      "kind": "sawmill",
+      "x": 9,
+      "y": 14,
+      "built": 0,
+      "progress": 4.94999999999999,
+      "enabled": true,
+      "cycles": 0
+    }
+  ],
+  "soldiers": 3,
+  "enemy": 3,
+  "enemyHealth": 18,
+  "health": 20,
+  "nextRaid": 180,
+  "raid": 0,
+  "result": "playing",
+  "log": [
+    "Sawmill completed.",
+    "Sawmill construction started.",
+    "A new shore. Establish a woodcutter, sawmill and stonecutter."
+  ],
+  "nextId": 3
+}

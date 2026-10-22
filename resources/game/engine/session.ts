@@ -49,10 +49,10 @@ export function populate(ctx: Context, setup: SessionSetup): void {
     if (!rule) throw new RangeError(`Unknown start building ${start}`)
     const map = ctx.state.map
     // Scenario starts clear their site; this is setup, not construction work.
-    for (const q of [...footprint(rule, p.start), { x: p.start.x + rule.door[0], y: p.start.y + rule.door[1] }]) {
+    for (const q of [...footprint(rule, p.start), ...[...rule.protected, rule.door].map(([dx, dy]) => ({ x: p.start.x + dx, y: p.start.y + dy }))]) {
       if (!inside(map, q.x, q.y)) throw new RangeError(`Player ${owner} start does not fit on the map`)
       const t = tileOf(ctx, q)
-      if (ctx.index.buildingAt[t] || !terrainAt(ctx, t).walkable) throw new RangeError(`Player ${owner} start is not on open land`)
+      if (ctx.index.buildingAt[t] || ctx.index.protectedAt[t] || !terrainAt(ctx, t).walkable) throw new RangeError(`Player ${owner} start is not on open land`)
       map.object[t] = 0; map.objectAmount[t] = 0
     }
     const b = createBuilding(ctx, owner, start, p.start.x, p.start.y)
@@ -94,23 +94,34 @@ export function placementError(ctx: Context, owner: number, type: string, x: num
   const rule = ctx.building.get(type), map = ctx.state.map
   if (!rule) return 'Unknown building.'
   if (!inside(map, x, y)) return 'Choose a tile on the map.'
-  const tiles = footprint(rule, { x, y }), door = { x: x + rule.door[0], y: y + rule.door[1] }
-  if (![...tiles, door].every(p => inside(map, p.x, p.y))) return 'The building does not fit here.'
-  if (![...tiles, door].every(p => map.owner[tileOf(ctx, p)] === owner)) return 'Build inside your territory.'
-  const ground = rule.ground ?? ctx.terrain.filter(t => t.buildable).map(t => t.id)
+  const tiles = footprint(rule, { x, y }), kept = [...rule.protected, rule.door].map(([dx, dy]) => ({ x: x + dx, y: y + dy }))
+  if (![...tiles, ...kept].every(p => inside(map, p.x, p.y))) return 'The building does not fit here.'
+  if (![...tiles, ...kept].every(p => map.owner[tileOf(ctx, p)] === owner)) return 'Build inside your territory.'
+  const buildable = ctx.terrain.filter(t => t.buildable).map(t => t.id)
+  // Mines stand with their origin on the mountain; the rest of the site may reach onto open land.
+  if (rule.ground && !rule.ground.includes(terrainAt(ctx, tileOf(ctx, { x, y })).id)) return `This building needs ${rule.ground.join(' or ')} ground.`
   const elevations: number[] = []
   for (const p of tiles) {
-    const t = tileOf(ctx, p)
-    if (ctx.index.buildingAt[t]) return 'Another building is in the way.'
-    if (!ground.includes(terrainAt(ctx, t).id)) return rule.ground ? `This building needs ${rule.ground.join(' or ')} ground.` : 'Choose clear, buildable ground.'
+    const t = tileOf(ctx, p), kind = terrainAt(ctx, t).id
+    if (ctx.index.buildingAt[t] || ctx.index.protectedAt[t]) return 'Another building is in the way.'
+    if (!buildable.includes(kind) && !rule.ground?.includes(kind)) return 'Choose clear, buildable ground.'
     if (objectAt(ctx, t)) return 'Trees, stones or crops are in the way.'
     if (ctx.index.settlerAt[t]) return 'Settlers are standing on this site.'
     if (groundStackAt(ctx, t)) return 'Goods are lying on this site.'
-    if ([...ctx.state.buildings.values()].some(b => doorOf(ctx, b) === t)) return 'This would block a doorway.'
     elevations.push(map.elevation[t]!)
   }
-  const doorTile = tileOf(ctx, door)
-  if (ctx.index.buildingAt[doorTile] || !terrainAt(ctx, doorTile).walkable || objectAt(ctx, doorTile)?.blocks) return 'The entrance is blocked.'
+  for (const p of kept) {
+    const t = tileOf(ctx, p)
+    if (ctx.index.buildingAt[t]) return 'Another building is too close.'
+    if (!terrainAt(ctx, t).walkable) return 'The building needs open ground around it.'
+  }
+  const doorTile = tileOf(ctx, { x: x + rule.door[0], y: y + rule.door[1] })
+  if (objectAt(ctx, doorTile)?.blocks) return 'The entrance is blocked.'
+  // Carriers and builders must be able to stand at every pile and work spot.
+  for (const [dx, dy] of [...rule.piles.map(p => p.at), ...rule.builders]) {
+    const px = x + dx, py = y + dy
+    if (inside(map, px, py) && objectAt(ctx, tileOf(ctx, { x: px, y: py }))?.blocks) return 'Trees or stones block the building\'s piles.'
+  }
   if (Math.max(...elevations) - Math.min(...elevations) > ctx.rules.movement.maxClimb * 4) return 'The ground is too steep.'
   return null
 }

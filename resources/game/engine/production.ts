@@ -43,7 +43,8 @@ function reachable(ctx: Context, s: Settler, from: number, tile: number, adjacen
 }
 
 function plantable(ctx: Context, tile: number, owner: number): boolean {
-  return passable(ctx, tile) && terrainAt(ctx, tile).buildable && !ctx.state.map.object[tile] && ctx.state.map.owner[tile] === owner && !ctx.state.claims.has(tile) && ctx.index.settlerAt[tile] === 0 && !groundStackAt(ctx, tile) && ![...ctx.state.buildings.values()].some(b => doorOf(ctx, b) === tile)
+  // Buildings keep their protected ring, door and pile tiles free of new growth.
+  return passable(ctx, tile) && terrainAt(ctx, tile).buildable && !ctx.state.map.object[tile] && ctx.state.map.owner[tile] === owner && !ctx.state.claims.has(tile) && ctx.index.settlerAt[tile] === 0 && ctx.index.protectedAt[tile] === 0 && !groundStackAt(ctx, tile)
 }
 
 /** Starts one trip outside the building, claiming the target so two workers never share it. */

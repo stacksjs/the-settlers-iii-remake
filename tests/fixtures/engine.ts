@@ -5,17 +5,23 @@ import { createSession, describeMap, ROMAN_ENGINEERING } from '../../resources/g
 
 export const rules = ROMAN_ENGINEERING
 
-/** A 64x64 grass map with forest, granite, water and a coal mountain inside the start territory around (20,20). */
+/** Named places in the fixture landscape, all inside the start territory around the castle at (40,40). */
+export const anchors = {
+  castle: { x: 40, y: 40 }, forest: { x: 53, y: 51 }, granite: { x: 30, y: 31 }, water: { x: 55, y: 42 }, mountain: { x: 28, y: 28 },
+  west: { x: 30, y: 42 }, north: { x: 40, y: 29 }, south: { x: 42, y: 53 }, east: { x: 52, y: 38 },
+}
+
+/** A 96x96 grass map with forest, granite, water and a coal mountain inside the start territory. */
 export function landscape(extra: MapFeature[] = []): MapState {
   return describeMap(rules, {
-    width: 64, height: 64, base: 'grass', seed: 5,
+    width: 96, height: 96, base: 'grass', seed: 5,
     features: [
-      { kind: 'object', id: 'tree', x: 26, y: 27, radius: 2, density: 0.8 },
-      { kind: 'object', id: 'stone', x: 17, y: 25, radius: 1 },
-      { kind: 'terrain', id: 'water', x: 27, y: 21, radius: 2 },
-      { kind: 'resource', id: 'fish', x: 27, y: 21, radius: 2, amount: 3 },
-      { kind: 'terrain', id: 'mountain', x: 13, y: 13, radius: 2 },
-      { kind: 'resource', id: 'coal', x: 13, y: 13, radius: 2, amount: 2 },
+      { kind: 'object', id: 'tree', ...anchors.forest, radius: 2, density: 0.8 },
+      { kind: 'object', id: 'stone', ...anchors.granite, radius: 1 },
+      { kind: 'terrain', id: 'water', ...anchors.water, radius: 2 },
+      { kind: 'resource', id: 'fish', ...anchors.water, radius: 2, amount: 3 },
+      { kind: 'terrain', id: 'mountain', ...anchors.mountain, radius: 3 },
+      { kind: 'resource', id: 'coal', ...anchors.mountain, radius: 3, amount: 2 },
       ...extra,
     ],
   })
@@ -24,7 +30,7 @@ export function landscape(extra: MapFeature[] = []): MapState {
 export function session(options: Partial<SessionSetup> & { goods?: Goods, settlers?: Record<string, number> } = {}): Session {
   return createSession({
     rules, seed: options.seed ?? 1, map: options.map ?? landscape(),
-    players: options.players ?? [{ name: 'Rome', civilization: 'roman', start: { x: 20, y: 20 }, goods: options.goods, settlers: options.settlers }],
+    players: options.players ?? [{ name: 'Rome', civilization: 'roman', start: anchors.castle, goods: options.goods, settlers: options.settlers }],
   })
 }
 
@@ -80,7 +86,7 @@ export const building = (s: Session, type: string) => [...s.state.buildings.valu
 
 /** Nearest valid placement to a preferred point, searched in rings so tests do not depend on crowd positions. */
 export function site(s: Session, type: string, near: { x: number, y: number }, player = 1): { x: number, y: number } {
-  for (let r = 0; r < 12; r++) {
+  for (let r = 0; r < 16; r++) {
     for (let dy = -r; dy <= r; dy++) {
       for (let dx = -r; dx <= r; dx++) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue

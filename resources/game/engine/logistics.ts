@@ -1,6 +1,6 @@
 import type { Context } from './context'
 import type { Building, Job, Settler, Stack } from './state'
-import { available, createStack, doorOf, emit, nextId, pointAt, prune, record, room, ruleOf, tileOf } from './context'
+import { available, createStack, doorOf, emit, nextId, offsetTile, pointAt, prune, record, room, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
 import { effects, finishers, start } from './settlers'
 
@@ -11,7 +11,9 @@ const COOLDOWN = 200
 /** Goods are always in a stack or a carrier's hands; this finds or creates the slot for a building good. */
 export function slot(ctx: Context, b: Building, role: Stack['role'], good: string, capacity: number): Stack {
   for (const s of ctx.state.stacks.values()) if (s.building === b.id && s.role === role && s.good === good) { s.capacity = Math.max(capacity, s.amount + s.reservedIn); return s }
-  return createStack(ctx, { owner: b.owner, tile: doorOf(ctx, b), building: b.id, role, good, amount: 0, capacity })
+  // Piles lie where the building definition puts them; goods without a defined pile wait at the door.
+  const pile = ruleOf(ctx, b).piles.find(p => p.role === role && p.good === good)
+  return createStack(ctx, { owner: b.owner, tile: pile ? offsetTile(ctx, b, pile.at) : doorOf(ctx, b), building: b.id, role, good, amount: 0, capacity })
 }
 
 export function groundStackAt(ctx: Context, tile: number): Stack | null {
@@ -56,7 +58,10 @@ export function cancelJob(ctx: Context, job: Job, reason: string): void {
   if (source && !job.picked) { source.reservedOut--; prune(ctx, source) }
   if (job.kind === 'deliver') {
     const target = ctx.state.stacks.get(job.target)
-    ctx.state.cooldowns.set(`deliver:${job.source}:${target?.building || job.target}`, ctx.state.tick + COOLDOWN)
+    // A carrier that already holds the good failed on the way to the destination: back off from that
+    // destination for this good, whichever pile supplies it next, so a dropped good cannot loop.
+    if (job.picked) ctx.state.cooldowns.set(`deliver-to:${target?.building || job.target}:${job.good}`, ctx.state.tick + COOLDOWN)
+    else ctx.state.cooldowns.set(`deliver:${job.source}:${target?.building || job.target}`, ctx.state.tick + COOLDOWN)
     if (target) { target.reservedIn--; prune(ctx, target) }
     const carrier = ctx.state.settlers.get(job.carrier)
     if (carrier) { if (carrier.program?.kind === 'deliver' && carrier.program.ref === job.id) carrier.program = null; carrier.action = carrier.inside ? 'inside' : 'idle'; dropCargo(ctx, carrier); carrier.diagnostic = reason }
@@ -132,7 +137,9 @@ function target(ctx: Context, request: Request): Stack {
   const rule = ruleOf(ctx, request.building)
   if (request.storage) {
     for (const s of ctx.state.stacks.values()) if (s.building === request.building.id && s.role === 'storage' && s.good === request.good && room(s) > 0) return s
-    return createStack(ctx, { owner: request.building.owner, tile: request.tile, building: request.building.id, role: 'storage', good: request.good, amount: 0, capacity: rule.storage!.capacity })
+    const used = new Set([...ctx.state.stacks.values()].filter(s => s.building === request.building.id && s.role === 'storage').map(s => s.tile))
+    const pile = rule.piles.filter(p => p.role === 'storage').map(p => offsetTile(ctx, request.building, p.at)).find(t => !used.has(t))
+    return createStack(ctx, { owner: request.building.owner, tile: pile ?? request.tile, building: request.building.id, role: 'storage', good: request.good, amount: 0, capacity: rule.storage!.capacity })
   }
   if (request.building.phase !== 'active') return slot(ctx, request.building, 'construction', request.good, rule.cost[request.good]! - (request.building.used[request.good] ?? 0))
   return slot(ctx, request.building, 'input', request.good, rule.inputs[request.good]!)
@@ -150,6 +157,7 @@ export function assignDeliveries(ctx: Context): void {
     const offers = [...state.stacks.values()].filter(s => s.owner === player.id && (s.role === 'output' || s.role === 'ground' || s.role === 'storage') && available(s) > 0)
     for (const request of requests(ctx, player.id)) {
       let need = request.need
+      if (state.cooldowns.has(`deliver-to:${request.building.id}:${request.good}`)) continue
       while (need > 0 && budget > 0 && carriers.length) {
         let best: Stack | null = null, bestDistance = Infinity
         for (const offer of offers) {

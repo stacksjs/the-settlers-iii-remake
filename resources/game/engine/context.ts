@@ -5,7 +5,7 @@ import { indexOf, pointOf } from './geometry'
 import { add, emptyLedger } from './state'
 
 /** Derived lookups rebuilt from State; never saved. */
-export interface Index { buildingAt: Int32Array, settlerAt: Int32Array }
+export interface Index { buildingAt: Int32Array, protectedAt: Int32Array, settlerAt: Int32Array }
 export interface Context {
   rules: RulesProfile, state: State, index: Index
   building: Map<string, BuildingRule>, profession: Map<string, ProfessionRule>
@@ -14,7 +14,7 @@ export interface Context {
 
 export function createContext(rules: RulesProfile, state: State): Context {
   const ctx: Context = {
-    rules, state, index: { buildingAt: new Int32Array(state.map.width * state.map.height), settlerAt: new Int32Array(state.map.width * state.map.height) },
+    rules, state, index: { buildingAt: new Int32Array(state.map.width * state.map.height), protectedAt: new Int32Array(state.map.width * state.map.height), settlerAt: new Int32Array(state.map.width * state.map.height) },
     building: new Map(rules.buildings.map(b => [b.id, b])), profession: new Map(rules.professions.map(p => [p.id, p])),
     terrain: rules.terrain, objects: rules.objects, objectIndex: new Map(rules.objects.map((o, i) => [o.id, i + 1])), goodIndex: new Map(rules.goods.map((g, i) => [g, i + 1])),
   }
@@ -32,7 +32,17 @@ export const footprint = (rule: BuildingRule, at: Point): Point[] => rule.footpr
 export const doorOf = (ctx: Context, b: Building): number => { const rule = ruleOf(ctx, b); return indexOf(ctx.state.map, b.x + rule.door[0], b.y + rule.door[1]) }
 
 export function markFootprint(ctx: Context, b: Building, value: number): void {
-  for (const p of footprint(ruleOf(ctx, b), b)) ctx.index.buildingAt[tileOf(ctx, p)] = value
+  const rule = ruleOf(ctx, b), map = ctx.state.map
+  for (const p of footprint(rule, b)) ctx.index.buildingAt[tileOf(ctx, p)] = value
+  for (const [dx, dy] of [...rule.protected, rule.door]) {
+    const x = b.x + dx, y = b.y + dy
+    if (x >= 0 && y >= 0 && x < map.width && y < map.height && (value === 0 ? ctx.index.protectedAt[y * map.width + x] === b.id : true)) ctx.index.protectedAt[y * map.width + x] = value
+  }
+}
+/** Tile of a building-relative offset, or the door when the offset lies outside the map. */
+export function offsetTile(ctx: Context, b: Building, at: readonly [number, number]): number {
+  const x = b.x + at[0], y = b.y + at[1], map = ctx.state.map
+  return x >= 0 && y >= 0 && x < map.width && y < map.height ? y * map.width + x : doorOf(ctx, b)
 }
 export function occupy(ctx: Context, s: Settler, tile: number): void { if (ctx.index.settlerAt[tile] === 0) { ctx.index.settlerAt[tile] = s.id; s.holding = true } }
 export function vacate(ctx: Context, s: Settler, tile: number): void { if (ctx.index.settlerAt[tile] === s.id) { ctx.index.settlerAt[tile] = 0; s.holding = false } }

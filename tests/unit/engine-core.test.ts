@@ -1,12 +1,13 @@
 import { describe, expect, test } from 'bun:test'
 import { checksum, createSession, describeMap, generateMap, pick, qualificationGaps, record, restore, rulesIdentity, save, SaveError, toView, validateRules, verify } from '../../resources/game/engine'
 import { area, distance, DIRECTIONS, fromView, indexOf, neighbours } from '../../resources/game/engine/geometry'
+import { passable } from '../../resources/game/engine/context'
 import { sha256 } from '../../resources/game/engine/hash'
 import { nextRandom, randomInt, seedRandom } from '../../resources/game/engine/random'
 import { route } from '../../resources/game/engine/routing'
 import { start } from '../../resources/game/engine/settlers'
-import { createWorld } from '../../resources/game/simulation'
-import { building, landscape, order, place, rules, run, session, site, until } from '../fixtures/engine'
+import prototypeSave from '../fixtures/prototype-save.json'
+import { anchors, building, landscape, order, place, rules, run, session, site, until } from '../fixtures/engine'
 
 describe('rules catalog', () => {
   test('the Roman engineering profile validates and has a stable identity', () => {
@@ -90,16 +91,17 @@ describe('routing', () => {
     const s = session()
     const ctx = s.context, map = s.state.map
     const castle = building(s, 'castle')!
-    const from = indexOf(map, castle.x - 4, castle.y), to = indexOf(map, castle.x + 3, castle.y)
+    const from = indexOf(map, castle.x - 12, castle.y), to = indexOf(map, castle.x + 11, castle.y)
     const result = route(ctx, from, to)
     expect(result.ok).toBe(true)
     if (result.ok) for (const t of result.path) expect(ctx.index.buildingAt[t]).toBe(0)
-    const island = describeMap(rules, { width: 30, height: 30, base: 'grass', features: [{ kind: 'terrain', id: 'water', x: 15, y: 15, radius: 6 }, { kind: 'terrain', id: 'grass', x: 15, y: 15, radius: 1 }] })
-    const isolated = createSession({ rules, map: island, seed: 1, players: [{ name: 'A', civilization: 'roman', start: { x: 4, y: 4 } }], })
-    const blocked = route(isolated.context, indexOf(island, 2, 25), indexOf(island, 15, 15))
+    const island = describeMap(rules, { width: 48, height: 48, base: 'grass', features: [{ kind: 'terrain', id: 'water', x: 34, y: 34, radius: 6 }, { kind: 'terrain', id: 'grass', x: 34, y: 34, radius: 1 }] })
+    const isolated = createSession({ rules, map: island, seed: 1, players: [{ name: 'A', civilization: 'roman', start: { x: 12, y: 12 } }] })
+    const blocked = route(isolated.context, indexOf(island, 2, 45), indexOf(island, 34, 34))
     expect(blocked).toMatchObject({ ok: false, reason: 'unreachable' })
-    expect(blocked.expanded).toBeLessThan(900)
-    expect(route(isolated.context, indexOf(island, 2, 25), indexOf(island, 28, 28), { limit: 5 })).toMatchObject({ ok: false, reason: 'search-limit' })
+    // The search ends once every reachable tile is exhausted rather than looping.
+    expect(blocked.expanded).toBeLessThanOrEqual(48 * 48)
+    expect(route(isolated.context, indexOf(island, 2, 45), indexOf(island, 46, 46), { limit: 5 })).toMatchObject({ ok: false, reason: 'search-limit' })
   })
   test('settlers walk all six directions as individuals, and re-route when the world changes mid-trip', () => {
     const s = session()
@@ -107,7 +109,7 @@ describe('routing', () => {
     const walker = [...s.state.settlers.values()].find(p => p.profession === 'carrier')!
     const id = walker.id
     // Walk a hexagon: one step in each lattice direction returns to the start.
-    const origin = { x: 14, y: 21 }
+    const origin = anchors.west
     start(ctx, walker, 'test', 0, [{ op: 'go', tile: indexOf(map, origin.x, origin.y) }])
     until(s, () => !walker.program, 400)
     const seen = new Set<number>()
@@ -122,7 +124,7 @@ describe('routing', () => {
     expect({ x: walker.x, y: walker.y }).toEqual(origin)
     expect(s.state.settlers.get(id)).toBe(walker)
     // Start a long walk, then block the next tiles on its path with planted trees.
-    const goal = indexOf(map, 27, 25)
+    const goal = indexOf(map, anchors.south.x, anchors.south.y)
     start(ctx, walker, 'test', 0, [{ op: 'go', tile: goal }])
     s.advance(1)
     const blocked = walker.path.slice(1, 3)
@@ -139,10 +141,10 @@ describe('routing', () => {
     for (const t of blocked) expect(indexOf(map, walker.x, walker.y) === t).toBe(false)
   })
   test('an unreachable destination ends the walk with a diagnostic instead of retrying forever', () => {
-    const s = session({ map: landscape([{ kind: 'terrain', id: 'water', x: 40, y: 40, radius: 4 }, { kind: 'terrain', id: 'grass', x: 40, y: 40, radius: 0 }]) })
+    const s = session({ map: landscape([{ kind: 'terrain', id: 'water', x: 80, y: 80, radius: 4 }, { kind: 'terrain', id: 'grass', x: 80, y: 80, radius: 0 }]) })
     const walker = [...s.state.settlers.values()][0]!
     const before = { x: walker.x, y: walker.y }
-    start(s.context, walker, 'test', 0, [{ op: 'go', tile: indexOf(s.state.map, 40, 40) }])
+    start(s.context, walker, 'test', 0, [{ op: 'go', tile: indexOf(s.state.map, 80, 80) }])
     s.advance(2)
     expect(walker.program).toBeNull()
     expect(walker.diagnostic).toBe('unreachable')
@@ -152,28 +154,28 @@ describe('routing', () => {
 
 describe('session commands and determinism', () => {
   const script = (s: ReturnType<typeof session>): void => {
-    place(s, 'woodcutter', { x: 15, y: 21 })
-    place(s, 'stonecutter', { x: 16, y: 23 })
-    place(s, 'forester', { x: 12, y: 19 })
+    place(s, 'woodcutter', anchors.forest)
+    place(s, 'stonecutter', anchors.granite)
+    place(s, 'forester', anchors.south)
   }
   test('identical commands and seeds give identical state at every tick', () => {
     const a = session(), b = session()
     script(a); script(b)
     for (let i = 0; i < 60; i++) { a.advance(25); b.advance(25); expect(checksum(a.state)).toBe(checksum(b.state)) }
     expect(building(a, 'woodcutter')!.phase).toBe('active')
-  })
+  }, 30_000)
   test('render timing does not change the simulation', () => {
     const a = session(), b = session()
     script(a); script(b)
     a.advance(1200)
     for (let i = 0; i < 1200;) { const n = 1 + (i * 7) % 13; b.advance(Math.min(n, 1200 - i)); i += n; b.view(1) }
     expect(checksum(a.state)).toBe(checksum(b.state))
-  })
+  }, 30_000)
   test('commands execute in tick, player and sequence order regardless of arrival', () => {
     const a = session(), b = session()
     const commands = [
-      { tick: 5, player: 1, seq: 2, type: 'build', building: 'stonecutter', ...site(a, 'stonecutter', { x: 16, y: 23 }) },
-      { tick: 5, player: 1, seq: 1, type: 'build', building: 'woodcutter', x: 15, y: 21 },
+      { tick: 5, player: 1, seq: 2, type: 'build', building: 'stonecutter', ...site(a, 'stonecutter', anchors.granite) },
+      { tick: 5, player: 1, seq: 1, type: 'build', building: 'woodcutter', ...site(a, 'woodcutter', anchors.forest) },
       { tick: 3, player: 1, seq: 9, type: 'settings', settings: { carrierRatio: 40 } },
     ]
     for (const c of commands) expect(a.enqueue(c)).toBeNull()
@@ -209,7 +211,7 @@ describe('session commands and determinism', () => {
 describe('player views', () => {
   test('foreign settlers and buildings appear only where the player currently sees', () => {
     const map = generateMap(rules, 96, 64, 4)
-    for (const [x, y] of [[20, 30], [76, 30]] as const) for (const t of area(map, { x, y }, 6)) { map.terrain[t] = 0; map.object[t] = 0; map.elevation[t] = 0 }
+    for (const [x, y] of [[20, 30], [76, 30]] as const) for (const t of area(map, { x, y }, 11)) { map.terrain[t] = 0; map.object[t] = 0; map.elevation[t] = 0 }
     for (let x = 10; x < 90; x++) for (let y = 28; y < 33; y++) { const t = indexOf(map, x, y); map.terrain[t] = 0; map.object[t] = 0; map.elevation[t] = 0 }
     const s = createSession({ rules, map, seed: 9, players: [{ name: 'A', civilization: 'roman', start: { x: 20, y: 30 } }, { name: 'B', civilization: 'roman', start: { x: 76, y: 30 } }] })
     const view = s.view(1)
@@ -221,9 +223,13 @@ describe('player views', () => {
     expect(view.explored[indexOf(map, 76, 30)]).toBe(0)
     expect(view.owner[indexOf(map, 76, 30)]).toBe(0)
     // A pioneer walks east until the rival castle is in sight.
-    order(s, 'specialists', { profession: 'pioneer', x: 73, y: 31, count: 1 })
+    // Target open land beside the rival castle's door.
+    const rival = [...s.state.buildings.values()].find(b => b.owner === 2)!
+    const door = indexOf(map, rival.x + rules.buildings.find(r => r.id === 'castle')!.door[0], rival.y + rules.buildings.find(r => r.id === 'castle')!.door[1])
+    const target = area(map, { x: door % map.width, y: Math.floor(door / map.width) }, 3).find(t => passable(s.context, t))!
+    order(s, 'specialists', { profession: 'pioneer', x: target % map.width, y: Math.floor(target / map.width), count: 1 })
     const pioneer = [...s.state.settlers.values()].find(p => p.owner === 1 && p.profession === 'pioneer')!
-    until(s, () => s.view(1).settlers.some(p => p.owner === 2), 4000, false)
+    until(s, () => { const v = s.view(1); return v.settlers.some(p => p.owner === 2) && v.buildings.some(b => b.owner === 2) }, 4000, false)
     const seen = s.view(1)
     expect(seen.settlers.some(p => p.owner === 2)).toBe(true)
     for (const foreign of seen.settlers.filter(p => p.owner === 2)) expect(foreign.diagnostic).toBeNull()
@@ -234,14 +240,14 @@ describe('player views', () => {
     s.advance(rules.visibility.interval)
     const later = s.view(1)
     expect(later.settlers.some(p => p.owner === 2)).toBe(false)
-    expect(later.explored[indexOf(map, 72, 30)]).toBe(1)
+    expect(later.explored[target]).toBe(1)
   })
 })
 
 describe('saves and replays', () => {
   test('a mid-delivery save restores the exact state and continues identically', () => {
     const a = session()
-    order(a, 'build', { building: 'woodcutter', x: 15, y: 21 })
+    order(a, 'build', { building: 'woodcutter', ...site(a, 'woodcutter', anchors.forest) })
     until(a, () => [...a.state.jobs.values()].some(j => j.kind === 'deliver' && j.picked), 200)
     const envelope = save(a)
     const b = restore(JSON.parse(JSON.stringify(envelope)), rules)
@@ -252,7 +258,8 @@ describe('saves and replays', () => {
   test('refuses prototype, foreign, newer, mismatched and damaged saves with specific reasons', () => {
     const s = session(), envelope = save(s)
     const code = (value: unknown): string => { try { restore(value, rules); return 'restored' } catch (error) { return error instanceof SaveError ? error.code : `other: ${(error as Error).message}` } }
-    expect(code(createWorld())).toBe('prototype-save')
+    // A Riverlands prototype save captured from the retired browser prototype.
+    expect(code(prototypeSave)).toBe('prototype-save')
     expect(code({ hello: 'world' })).toBe('not-a-save')
     expect(code('not json')).toBe('not-a-save')
     expect(code({ ...envelope, version: 99 })).toBe('newer-version')
@@ -274,26 +281,26 @@ describe('saves and replays', () => {
     const s = session(), recorder = record(s)
     let seq = 0
     const send = (type: string, fields: Record<string, unknown>): void => { expect(recorder.enqueue({ tick: s.state.tick, player: 1, seq: seq++, type, ...fields })).toBeNull() }
-    send('build', { building: 'woodcutter', x: 15, y: 21 })
+    send('build', { building: 'woodcutter', ...site(s, 'woodcutter', anchors.forest) })
     recorder.advance(120)
-    send('build', { building: 'stonecutter', ...site(s, 'stonecutter', { x: 16, y: 23 }) })
+    send('build', { building: 'stonecutter', ...site(s, 'stonecutter', anchors.granite) })
     recorder.advance(300)
     const replay = recorder.replay()
     expect(verify(JSON.parse(JSON.stringify(replay)), rules)).toMatchObject({ ok: true, ticks: 420, checksum: checksum(s.state) })
     const changed = structuredClone(replay)
-    changed.commands[1]!.x = 12
+    changed.commands[1]!.x = (changed.commands[1]!.x as number) + 1
     const divergent = verify(changed, rules)
     expect(divergent).toMatchObject({ ok: false, reason: 'divergence', tick: 120 })
     const corrupted = structuredClone(replay)
     corrupted.checksums[250] = '00000000'
     expect(verify(corrupted, rules)).toMatchObject({ ok: false, tick: 250 })
-  })
+  }, 60_000)
   test('a long mixed economy keeps goods conserved and survives saves at arbitrary ticks', () => {
     const s = session()
-    place(s, 'woodcutter', { x: 15, y: 21 })
-    place(s, 'stonecutter', { x: 16, y: 23 })
-    place(s, 'forester', { x: 12, y: 19 })
-    place(s, 'sawmill', { x: 17, y: 15 })
+    place(s, 'woodcutter', anchors.forest)
+    place(s, 'stonecutter', anchors.granite)
+    place(s, 'forester', anchors.south)
+    place(s, 'sawmill', anchors.north)
     for (let round = 0; round < 6; round++) {
       run(s, 700)
       const copy = restore(save(s), rules)

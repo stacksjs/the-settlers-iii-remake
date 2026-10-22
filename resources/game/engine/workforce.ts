@@ -1,6 +1,6 @@
 import type { Context } from './context'
 import type { Building, Job, Op, Settler, Stack } from './state'
-import { available, doorOf, emit, footprint, nextId, occupy, passable, pointAt, record, ruleOf, tileOf } from './context'
+import { available, doorOf, emit, footprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
 import { cancelJob, dropCargo } from './logistics'
 import { changeProfession, effects, finishers, spawn, start } from './settlers'
@@ -120,7 +120,10 @@ finishers.set('commute', (ctx, s, _program, ok, reason) => {
 
 /** Work spots around a site: free passable tiles bordering the footprint, in stable order. */
 export function workSpots(ctx: Context, b: Building): number[] {
-  const tiles = new Set(footprint(ruleOf(ctx, b), b).map(p => tileOf(ctx, p))), spots = new Set<number>()
+  const rule = ruleOf(ctx, b)
+  const defined = rule.builders.map(at => offsetTile(ctx, b, at)).filter(t => passable(ctx, t) && ctx.state.map.owner[t] === b.owner)
+  if (defined.length) return defined
+  const tiles = new Set(footprint(rule, b).map(p => tileOf(ctx, p))), spots = new Set<number>()
   for (const t of tiles) for (const n of neighbours(ctx.state.map, t)) if (!tiles.has(n) && passable(ctx, n) && ctx.state.map.owner[n] === b.owner) spots.add(n)
   return [...spots].sort((a, c) => a - c)
 }

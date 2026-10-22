@@ -2,15 +2,15 @@ import { describe, expect, test } from 'bun:test'
 import { checksum, restore, save } from '../../resources/game/engine'
 import { footprint, ruleOf, tileOf } from '../../resources/game/engine/context'
 import { area, distance, indexOf, neighbours } from '../../resources/game/engine/geometry'
-import { building, conserved, landscape, order, place, present, rules, run, session, site, until } from '../fixtures/engine'
+import { anchors, building, conserved, landscape, order, place, present, rules, run, session, site, until } from '../fixtures/engine'
 
 const jobsReferToLiveStacks = (s: ReturnType<typeof session>): boolean => [...s.state.jobs.values()].every(j => (j.picked || s.state.stacks.has(j.source)) && (j.kind !== 'deliver' || s.state.stacks.has(j.target)))
 
 describe('physical construction', () => {
   test('diggers level uneven ground before builders consume delivered materials, and work starts only after completion', () => {
-    const map = landscape([{ kind: 'elevation', x: 14, y: 19, radius: 2, amount: 6 }])
+    const map = landscape([{ kind: 'elevation', ...anchors.west, radius: 3, amount: 6 }])
     const s = session({ map })
-    const id = place(s, 'sawmill', { x: 15, y: 19 })
+    const id = place(s, 'sawmill', anchors.west)
     const b = s.state.buildings.get(id)!
     const tiles = footprint(ruleOf(s.context, b), b).map(p => tileOf(s.context, p))
     const before = tiles.map(t => s.state.map.elevation[t]!)
@@ -31,14 +31,14 @@ describe('physical construction', () => {
   })
   test('a site waits for missing material and resumes when goods become available', () => {
     const s = session({ goods: { plank: 6, stone: 0, axe: 1, saw: 1, pickaxe: 1, hammer: 2, shovel: 1 } })
-    const quarry = place(s, 'stonecutter', { x: 16, y: 23 })
+    const quarry = place(s, 'stonecutter', anchors.granite)
     run(s, 1500)
     const q = s.state.buildings.get(quarry)!
     expect(q.phase).toBe('building')
     expect(q.used).toEqual({ plank: 2 })
     expect(q.workRemaining).toBe(3)
     // Demolishing a finished hut returns half its materials as physical ground piles.
-    const hut = place(s, 'forester', { x: 12, y: 19 })
+    const hut = place(s, 'forester', anchors.south)
     run(s, 2500)
     expect(s.state.buildings.get(hut)!.workRemaining).toBe(1)
     order(s, 'demolish', { building: hut })
@@ -50,7 +50,7 @@ describe('physical construction', () => {
 describe('suspension and demolition', () => {
   test('suspended sites receive no deliveries and do no work until resumed', () => {
     const s = session()
-    const id = place(s, 'woodcutter', { x: 15, y: 21 })
+    const id = place(s, 'woodcutter', anchors.forest)
     order(s, 'suspend', { building: id, suspended: true })
     const b = s.state.buildings.get(id)!
     // Carriers already holding goods finish their trip; nothing new is sent.
@@ -66,9 +66,9 @@ describe('suspension and demolition', () => {
   })
   test('demolition in every phase releases people, jobs and reservations without duplicating goods', () => {
     for (const phase of ['leveling', 'delivering', 'building', 'active'] as const) {
-      const map = landscape([{ kind: 'elevation', x: 14, y: 19, radius: 2, amount: 6 }])
+      const map = landscape([{ kind: 'elevation', ...anchors.west, radius: 3, amount: 6 }])
       const s = session({ map })
-      const id = place(s, 'sawmill', { x: 15, y: 19 })
+      const id = place(s, 'sawmill', anchors.west)
       const b = s.state.buildings.get(id)!
       if (phase === 'leveling') until(s, () => b.workers.length > 0 && b.levelRemaining < 10, 2000)
       if (phase === 'delivering') until(s, () => [...s.state.jobs.values()].some(j => j.kind === 'deliver' && j.picked && s.state.stacks.get(j.target)?.building === id), 3000)
@@ -95,7 +95,7 @@ describe('suspension and demolition', () => {
 describe('workers and tools', () => {
   test('a workplace without the required tool reports the shortage and never gets a phantom worker', () => {
     const s = session({ goods: { plank: 12, stone: 12, hammer: 2, shovel: 1 } })
-    const id = place(s, 'woodcutter', { x: 15, y: 21 })
+    const id = place(s, 'woodcutter', anchors.forest)
     const b = s.state.buildings.get(id)!
     until(s, () => b.phase === 'active', 3000)
     run(s, 200)
@@ -107,7 +107,7 @@ describe('workers and tools', () => {
   test('equipping moves one physical tool into a worker and records the profession change', () => {
     const s = session()
     const axes = present(s, 1).axe!
-    const id = place(s, 'woodcutter', { x: 15, y: 21 })
+    const id = place(s, 'woodcutter', anchors.forest)
     const b = s.state.buildings.get(id)!
     until(s, () => b.worker !== 0 && s.state.settlers.get(b.worker)!.inside === id, 4000)
     const worker = s.state.settlers.get(b.worker)!
@@ -130,7 +130,7 @@ describe('workers and tools', () => {
 describe('logistics', () => {
   test('competing sites never receive more goods than exist, and destinations change only on arrival', () => {
     const s = session({ goods: { plank: 40, stone: 2, hammer: 4, shovel: 2 } })
-    const a = place(s, 'stonecutter', { x: 16, y: 23 }), b = place(s, 'woodcutter', { x: 13, y: 20 })
+    const a = place(s, 'stonecutter', anchors.granite), b = place(s, 'woodcutter', anchors.west)
     let watched: { target: number, amount: number } | null = null
     until(s, () => {
       const job = [...s.state.jobs.values()].find(j => j.kind === 'deliver' && j.picked)
@@ -148,9 +148,9 @@ describe('logistics', () => {
   test('full doorsteps stop production until carriers take goods into storage', () => {
     const s = session({ settlers: { carrier: 12, digger: 2, builder: 3 } })
     order(s, 'settings', { settings: { carrierRatio: 0 } })
-    const storage = place(s, 'storage', { x: 13, y: 18 })
+    const storage = place(s, 'storage', anchors.north)
     until(s, () => s.state.buildings.get(storage)!.phase === 'active', 6000)
-    const id = place(s, 'stonecutter', { x: 16, y: 23 })
+    const id = place(s, 'stonecutter', anchors.granite)
     const b = s.state.buildings.get(id)!
     until(s, () => b.shortage === 'output-full', 30_000)
     const doorstep = [...s.state.stacks.values()].find(st => st.building === id && st.role === 'output')!
@@ -171,13 +171,13 @@ describe('population', () => {
   test('residences add settlers one at a time and the carrier ratio holds back conversions', () => {
     const s = session()
     const people = s.state.settlers.size
-    const id = place(s, 'small-residence', { x: 13, y: 20 })
+    const id = place(s, 'small-residence', anchors.west)
     until(s, () => s.state.buildings.get(id)!.phase === 'active', 4000)
     until(s, () => s.state.buildings.get(id)!.residents === 6, 3000)
     expect(s.state.settlers.size).toBe(people + 6)
     expect(s.state.ledger[1]!.births).toBe(6)
     order(s, 'settings', { settings: { carrierRatio: 100 } })
-    const woodcutter = place(s, 'woodcutter', { x: 15, y: 22 })
+    const woodcutter = place(s, 'woodcutter', anchors.forest)
     until(s, () => s.state.buildings.get(woodcutter)!.phase === 'active', 4000)
     run(s, 100)
     expect(s.state.buildings.get(woodcutter)!.shortage).toBe('carriers')
@@ -187,7 +187,7 @@ describe('population', () => {
 describe('natural resources', () => {
   test('foresters plant saplings that grow into trees, and woodcutters fell them physically', () => {
     const s = session({ map: landscape(), seed: 3 })
-    const forester = place(s, 'forester', { x: 12, y: 19 })
+    const forester = place(s, 'forester', anchors.south)
     until(s, () => s.state.buildings.get(forester)!.phase === 'active', 4000)
     const sapling = s.context.objectIndex.get('sapling')!, tree = s.context.objectIndex.get('tree')!
     until(s, () => s.state.map.object.some(o => o === sapling), 3000)
@@ -195,14 +195,14 @@ describe('natural resources', () => {
     until(s, () => s.state.map.object[planted] === tree, rules.objects.find(o => o.id === 'sapling')!.grows!.ticks + 50)
   }, 30_000)
   test('stone runs out, fishing depletes the water, and nothing goes negative', () => {
-    const s = session({ map: landscape([{ kind: 'object', id: 'stone', x: 17, y: 25, radius: 1, amount: 1 }, { kind: 'resource', id: 'fish', x: 27, y: 21, radius: 2, amount: 1 }]) })
+    const s = session({ map: landscape([{ kind: 'object', id: 'stone', ...anchors.granite, radius: 1, amount: 1 }, { kind: 'resource', id: 'fish', ...anchors.water, radius: 2, amount: 1 }]) })
     // Fish and stone go into the castle's storage so full doorsteps do not mask exhaustion.
     order(s, 'settings', { settings: { stored: ['fish', 'stone'] } })
     const fish = s.context.goodIndex.get('fish')!
     const water = (): number => [...s.state.map.resourceAmount].reduce((n, a, t) => n + (s.state.map.resource[t] === fish ? a : 0), 0)
     const shoal = water()
-    const quarry = place(s, 'stonecutter', { x: 16, y: 23 })
-    const fisher = place(s, 'fisher', { x: 24, y: 19 })
+    const quarry = place(s, 'stonecutter', anchors.granite)
+    const fisher = place(s, 'fisher', anchors.water)
     const stones = s.state.map.object.filter(o => o === s.context.objectIndex.get('stone')).length
     until(s, () => s.state.buildings.get(quarry)!.shortage === 'no-resources' && s.state.buildings.get(fisher)!.shortage === 'no-resources', 40_000)
     expect(s.state.ledger[1]!.produced.stone).toBe(stones)
@@ -222,7 +222,7 @@ describe('natural resources', () => {
   test('mines eat physical food, preferred meals last longer, and deposits are finite', () => {
     const s = session({ goods: { plank: 30, stone: 30, bread: 1, fish: 1, pickaxe: 2, hammer: 3, shovel: 2 } })
     order(s, 'settings', { settings: { stored: ['coal'], transportPriority: ['bread', ...rules.goods.filter(g => g !== 'bread')] } })
-    const mine = place(s, 'coal-mine', { x: 13, y: 13 })
+    const mine = place(s, 'coal-mine', anchors.mountain)
     const b = s.state.buildings.get(mine)!
     until(s, () => b.phase === 'active', 6000)
     until(s, () => (s.state.ledger[1]!.consumed.bread ?? 0) === 1 && (s.state.ledger[1]!.consumed.fish ?? 0) === 1, 6000, true)
@@ -235,7 +235,7 @@ describe('natural resources', () => {
   test('a coal mine stops when its deposit is exhausted', () => {
     const s = session({ goods: { plank: 30, stone: 30, bread: 8, pickaxe: 2, hammer: 3, shovel: 2 } })
     order(s, 'settings', { settings: { stored: ['coal'] } })
-    const mine = place(s, 'coal-mine', { x: 13, y: 13 })
+    const mine = place(s, 'coal-mine', anchors.mountain)
     const b = s.state.buildings.get(mine)!
     const coal = s.context.goodIndex.get('coal')!
     until(s, () => b.phase === 'active', 6000)
@@ -247,7 +247,7 @@ describe('natural resources', () => {
   }, 60_000)
   test('a grain farm sows fields that ripen before harvest', () => {
     const s = session({ goods: { plank: 30, stone: 30, scythe: 1, hammer: 3, shovel: 2 } })
-    const farm = place(s, 'grain-farm', { x: 12, y: 21 })
+    const farm = place(s, 'grain-farm', anchors.south)
     until(s, () => s.state.buildings.get(farm)!.phase === 'active', 8000)
     const field = s.context.objectIndex.get('field')!
     until(s, () => s.state.map.object.some(o => o === field), 2000)
@@ -258,7 +258,7 @@ describe('natural resources', () => {
 
 test('a complete wood, stone and plank economy runs from start resources and stays conserved across restores', () => {
   const s = session()
-  for (const [type, near] of [['woodcutter', { x: 24, y: 25 }], ['woodcutter', { x: 27, y: 24 }], ['forester', { x: 25, y: 29 }], ['stonecutter', { x: 16, y: 23 }], ['sawmill', { x: 15, y: 18 }]] as const) place(s, type, near)
+  for (const [type, near] of [['woodcutter', anchors.forest], ['woodcutter', anchors.east], ['forester', anchors.south], ['stonecutter', anchors.granite], ['sawmill', anchors.north]] as const) place(s, type, near)
   for (let round = 0; round < 8; round++) {
     run(s, 1000)
     const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
@@ -278,10 +278,29 @@ test('sites are never placed over people, goods, doors or outside the border', (
   const castle = building(s, 'castle')!
   const door = { x: castle.x + 2, y: castle.y + 2 }
   expect(s.placement(1, 'woodcutter', door.x, door.y)).not.toBeNull()
-  expect(s.placement(1, 'woodcutter', 60, 60)).toBe('Build inside your territory.')
-  expect(s.placement(1, 'coal-mine', 15, 21)).toContain('mountain')
-  expect(s.placement(1, 'woodcutter', 26, 27)).toContain('Trees')
-  const free = site(s, 'woodcutter', { x: 15, y: 21 })
+  expect(s.placement(1, 'woodcutter', 90, 90)).toBe('Build inside your territory.')
+  expect(s.placement(1, 'coal-mine', anchors.west.x, anchors.west.y)).toContain('mountain')
+  const tree = s.state.map.object.findIndex(o => o === s.context.objectIndex.get('tree'))
+  expect(s.placement(1, 'woodcutter', tree % 96, Math.floor(tree / 96))).toContain('Trees')
+  const free = site(s, 'woodcutter', anchors.west)
   expect(s.placement(1, 'woodcutter', free.x, free.y)).toBeNull()
   expect(indexOf(s.state.map, free.x, free.y)).toBeGreaterThan(0)
 })
+
+test('an unreachable construction pile backs off instead of looping goods between piles', () => {
+  const s = session()
+  const id = place(s, 'stonecutter', anchors.granite)
+  const b = s.state.buildings.get(id)!
+  // Wall off the stone pile after placement, as a grown tree or a new building could.
+  const rule = rules.buildings.find(r => r.id === 'stonecutter')!
+  const pile = rule.piles.find(p => p.role === 'construction' && p.good === 'stone')!
+  const tile = (b.y + pile.at[1]) * 96 + b.x + pile.at[0]
+  for (const t of [tile, ...neighbours(s.state.map, tile)]) { s.state.map.object[t] = s.context.objectIndex.get('tree')!; s.state.map.objectAmount[t] = 1 }
+  s.state.navigation++
+  const before = s.state.nextId
+  run(s, 3000)
+  // Each retry creates a job and possibly a dropped pile; backing off keeps that bounded.
+  expect(s.state.nextId - before).toBeLessThan(400)
+  expect(b.used.stone ?? 0).toBe(0)
+  expect(conserved(s)).toBe(true)
+}, 30_000)
