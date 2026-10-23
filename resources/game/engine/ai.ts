@@ -98,6 +98,45 @@ const HARVESTERS = new Set(['woodcutter', 'stonecutter', 'fisher', 'coal-mine', 
 /** Goods any player can hand out: loose piles, doorsteps and storage, not what sites and inputs already hold. */
 const free = (o: Observation, good: string): number => o.view.stacks.filter(st => st.owner === o.player && st.good === good && (st.role === 'ground' || st.role === 'output' || st.role === 'storage')).reduce((n, st) => n + st.amount, 0)
 
+/** Own unreserved tools can be offered to a new job; committed tools cannot be taken by a survey. */
+const offered = (o: Observation, good: string): number => o.view.stacks.filter(st => st.owner === o.player && st.good === good && ['ground', 'output', 'storage'].includes(st.role)).reduce((n, st) => n + (st.available ?? st.amount), 0)
+
+/** Bootstrap checks use only owned people, available goods and known residence capacity. */
+function recoveryCapacity(o: Observation) {
+  const mine = o.view.buildings.filter(b => b.owner === o.player)
+  const people = o.view.settlers.filter(s => s.owner === o.player)
+  const births = mine.some(b => b.phase === 'active' && (b.residentsRemaining ?? 0) > 0)
+  const staffedSmith = mine.some(b => b.phase === 'active' && b.worker && o.rules.buildings.find(r => r.id === b.type)?.workflow.kind === 'craft'
+    && (o.rules.buildings.find(r => r.id === b.type)!.workflow as { choices: string[] }).choices.includes('hammer'))
+  const smithProfessions = o.rules.buildings.filter(b => b.workflow.kind === 'craft' && b.workflow.choices.includes('hammer') && mine.some(m => m.type === b.id && m.phase === 'active')).map(b => b.worker)
+  const equippedSmith = people.some(s => smithProfessions.includes(s.profession) && s.tool === 'hammer')
+  const specialists = people.filter(s => ['geologist', 'pioneer'].includes(s.profession))
+  const idle = specialists.filter(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
+  const reclaim = idle.find(s => s.tool === 'hammer')
+  const carriers = people.filter(s => s.profession === 'carrier').length
+  const carry = carriers > 0 || births || specialists.length > 0
+  const hammer = free(o, 'hammer') > 0 || people.some(s => s.profession === 'geologist' && s.tool === 'hammer')
+  const forge = staffedSmith || equippedSmith || hammer
+  const workforce = people.length > 0 || births
+  const builder = people.some(s => s.profession === 'builder')
+  const build = workforce && carry && (builder || forge)
+  const food = o.rules.foods.some(g => free(o, g) > 0) || o.rules.buildings.some(rule => Object.keys(rule.outputs).some(g => o.rules.foods.includes(g))
+    && (mine.some(b => b.type === rule.id && b.phase === 'active' && b.worker && !b.suspended && !['exhausted', 'no-resources'].includes(b.shortage ?? ''))
+      || (build && (rule.worker === null || people.some(s => s.profession === rule.worker) || forge || free(o, o.rules.professions.find(p => p.id === rule.worker)?.tool ?? '') > 0))))
+  // Preserve the surveyor while the metal chain still needs deposits. Once a
+  // smith has its inputs, its hammer can create replacements for the surveyor.
+  const smithReady = mine.some(b => {
+    const work = o.rules.buildings.find(r => r.id === b.type)?.workflow
+    return b.phase === 'active' && work?.kind === 'craft' && work.choices.includes('hammer')
+      && Object.entries(work.inputs).every(([good, amount]) => o.view.stacks.some(st => st.building === b.id && st.role === 'input' && st.good === good && st.amount >= amount))
+  })
+  const releaseHammer = !free(o, 'hammer') && !staffedSmith && !equippedSmith && (!builder || smithReady)
+  // Do not recruit another construction crew with the smith's only bootstrap
+  // hammer while it is being returned and carried to the existing workshop.
+  const awaitingSmith = builder && !staffedSmith && !equippedSmith && smithProfessions.length > 0 && hammer
+  return { people, workforce, carry, build, forge, food, awaitingSmith, reclaim: !carriers ? idle[0] : releaseHammer ? reclaim : undefined }
+}
+
 /**
  * Reads the computer's view for deadlocks and chooses one legal recovery for each:
  * an urgent order for a missing tool, a fisher for hungry mines, residences for
@@ -109,6 +148,10 @@ const free = (o: Observation, good: string): number => o.view.stacks.filter(st =
 export function diagnose(o: Observation): Diagnosis[] {
   const found: Diagnosis[] = [], mine = o.view.buildings.filter(b => b.owner === o.player)
   const rules = new Map(o.rules.buildings.map(b => [b.id, b])), active = (type: string): boolean => mine.some(b => b.type === type && b.phase === 'active')
+  const capacity = recoveryCapacity(o), hasPeople = capacity.workforce && capacity.carry
+  if (!hasPeople) found.push({ kind: 'population', building: 0, detail: 'no carriers, returning specialists or future residents can deliver construction materials', recovery: null, recoverable: false })
+  if (hasPeople && !capacity.build) found.push({ kind: 'tool', building: 0, detail: 'no builder, available hammer or equipped tool smith can bootstrap construction', recovery: null, recoverable: false })
+  if (capacity.reclaim) found.push({ kind: 'tool', building: 0, detail: 'return an idle specialist and its equipment to bootstrap construction', recovery: { type: 'dismiss', profession: capacity.reclaim.profession, count: 1 }, recoverable: true })
   const urgent = new Set(o.settings.urgentTools)
   for (const b of mine) {
     const shortage = b.shortage
@@ -118,14 +161,14 @@ export function diagnose(o: Observation): Diagnosis[] {
       // its own tool cannot, so with no other smith and none lying free that building can never be staffed.
       const tool = shortage.slice(5), spare = free(o, tool) > 0
       const makers = mine.filter(m => m.phase === 'active' && m.id !== b.id && rules.get(m.type)?.workflow.kind === 'craft' && (rules.get(m.type)!.workflow as { choices: string[] }).choices.includes(tool))
-      // Other buildings can wait for a smith to be built or staffed, unless the smith itself lacks a hammer for good.
-      const later = b.type !== 'toolsmith' && (free(o, 'hammer') > 0 || !mine.some(m => m.type === 'toolsmith' && m.shortage === 'tool:hammer'))
-      found.push({ kind: 'tool', building: b.id, detail: `needs ${tool}`, recovery: !spare && makers.length && !urgent.has(tool) ? { type: 'urgent-tool', tool } : null, recoverable: spare || makers.length > 0 || later })
+      // A known smith, a loose hammer, or a reusable worker is a bootstrap route; an absent smith alone is not.
+      const later = capacity.forge || capacity.people.some(s => s.profession === (b.phase === 'active' ? rules.get(b.type)?.worker : b.phase === 'leveling' ? 'digger' : 'builder'))
+      found.push({ kind: 'tool', building: b.id, detail: `needs ${tool}`, recovery: !spare && capacity.forge && makers.length && !urgent.has(tool) ? { type: 'urgent-tool', tool } : null, recoverable: hasPeople && (spare || makers.some(m => m.worker) || later) })
       urgent.add(tool)
     }
-    else if (shortage === 'food') found.push({ kind: 'food', building: b.id, detail: 'miners have no food', recovery: null, recoverable: true })
-    else if (shortage === 'carriers' || shortage === 'settlers') found.push({ kind: 'population', building: b.id, detail: shortage === 'carriers' ? 'too few carriers to spare' : 'no free settlers', recovery: null, recoverable: true })
-    else if (shortage === 'output-full') found.push({ kind: 'delivery', building: b.id, detail: 'doorstep full', recovery: null, recoverable: true })
+    else if (shortage === 'food') found.push({ kind: 'food', building: b.id, detail: capacity.food ? 'miners have no food' : 'no food or staffed producer can bootstrap food production', recovery: null, recoverable: capacity.food && hasPeople })
+    else if (shortage === 'carriers' || shortage === 'settlers') found.push({ kind: 'population', building: b.id, detail: shortage === 'carriers' ? 'too few carriers to spare' : 'no free settlers', recovery: null, recoverable: hasPeople })
+    else if (shortage === 'output-full') found.push({ kind: 'delivery', building: b.id, detail: 'doorstep full', recovery: null, recoverable: capacity.carry })
     else if ((shortage === 'no-resources' || shortage === 'exhausted') && HARVESTERS.has(b.type)) {
       // Foresters replant around woodcutters, so a woodcutter waits while one stands.
       const waits = b.type === 'woodcutter' && active('forester')
@@ -232,7 +275,7 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       // A hammer a building is waiting for is not taken for a geologist: count unstaffed buildings whose worker uses one.
       const tools = new Map(o.rules.professions.map(p => [p.id, p.tool])), workers = new Map(o.rules.buildings.map(b => [b.id, b.worker]))
       const awaited = o.view.buildings.filter(b => b.owner === o.player && !b.worker && (b.phase !== 'active' || tools.get(workers.get(b.type) ?? '') === 'hammer')).length
-      if (missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? (o.view.goods.hammer ?? 0) > awaited : idle)) {
+      if (!diagnosis.some(d => d.recovery?.type === 'dismiss') && missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? offered(o, 'hammer') > awaited : idle)) {
         const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t), 1)[0]
         if (mountain) orders.push({ type: 'specialists', profession: 'geologist', ...mountain, count: 1 })
       }
@@ -240,7 +283,8 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       if (own(o, 'storage') > 0 && stored.some(g => !o.settings.stored.includes(g))) orders.push({ type: 'settings', settings: { stored: [...new Set([...o.settings.stored, ...stored])] } })
       if (options.military) orders.push(...militaryOrders({ ...o, interval }, options.military))
       // Nothing can be built once materials are unrecoverable, so the computer orders no sites it cannot pay for.
-      if (sites >= maxSites || diagnosis.some(d => d.kind === 'materials' && !d.recoverable)) return orders
+      const capacity = recoveryCapacity(o)
+      if (sites >= maxSites || !capacity.build || capacity.awaitingSmith || diagnosis.some(d => (d.kind === 'materials' || d.kind === 'population') && !d.recoverable)) return orders
       const have = (type: string): number => own(o, type)
       // Hungry mines put the fisher first, and buildings without workers put a residence first, whatever the usual order.
       const timber: Want[] = !o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill') && (have('woodcutter') > 0 || free(o, 'log') > 0) ? [{ building: 'sawmill', count: 1, near: home }] : []

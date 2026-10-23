@@ -50,20 +50,73 @@ describe('AI deadlock recovery', () => {
     expect(audit(s.context)).toEqual([])
   }, 60_000)
 
-  test('hungry mines put a fisher at the front of the build order', () => {
+  test('a hungry mine cannot recover when there is no hammer, builder or equipped tool smith', () => {
     const s = computer([{ type: 'coal-mine', x: 28, y: 28 }, { type: 'sawmill', x: 31, y: 44 }], [{ good: 'plank', amount: 8 }, { good: 'stone', amount: 8 }, { good: 'pickaxe', amount: 1 }])
-    // The miners eat what they have, then the mine reports hunger; the computer then decides once.
     for (let t = 0; t < 3000 && !diagnose(observe(s, 1)).some(d => d.kind === 'food'); t++) s.advance(1)
-    expect(diagnose(observe(s, 1)).find(d => d.kind === 'food')).toMatchObject({ recoverable: true })
-    expect(economicAI(1).decide(observe(s, 1)).find(o => o.type === 'build')).toMatchObject({ building: 'fisher' })
-  }, 60_000)
+    const ai = play(s, 1200)
+    expect(ai.diagnosis).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: 'food', recoverable: false }),
+      expect.objectContaining({ kind: 'tool', recoverable: false }),
+    ]))
+    expect(mine(s).filter(r => r.type === 'build')).toEqual([])
+    expect(s.state.ledger[1]!.produced).toEqual({})
+    expect(audit(s.context)).toEqual([])
+  })
 
-  test('buildings without workers put a residence at the front of the build order', () => {
-    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [{ good: 'plank', amount: 8 }, { good: 'stone', amount: 8 }, { good: 'saw', amount: 1 }], [])
+  test('hungry miners receive actual fish and resume extraction after the AI completes a fisher', () => {
+    const s = computer([{ type: 'coal-mine', x: 28, y: 28 }, { type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'plank', amount: 16 }, { good: 'stone', amount: 20 }, { good: 'pickaxe', amount: 1 },
+      { good: 'hammer', amount: 2 }, { good: 'shovel', amount: 2 }, { good: 'saw', amount: 1 }, { good: 'fishingrod', amount: 1 }, { good: 'axe', amount: 2 },
+    ])
+    for (let t = 0; t < 3000 && !diagnose(observe(s, 1)).some(d => d.kind === 'food'); t++) s.advance(1)
+    expect(diagnose(observe(s, 1)).some(d => d.kind === 'food' && d.recoverable)).toBe(true)
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 0 }
+    for (let t = 0; t < 8000 && !(s.state.ledger[1]!.produced.coal ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(s.view(1).buildings.some(b => b.type === 'fisher' && b.phase === 'active' && b.worker)).toBe(true)
+    expect(s.state.ledger[1]!.produced.fish ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.consumed.fish ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.produced.coal ?? 0).toBeGreaterThan(0)
+    expect(ai.results).toEqual([])
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('a carrier shortage is relieved by actual births and worker assignment from a completed residence', () => {
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }, { type: 'woodcutter', x: 49, y: 51 }], [
+      { good: 'plank', amount: 16 }, { good: 'stone', amount: 20 }, { good: 'saw', amount: 1 }, { good: 'axe', amount: 2 },
+    ], [...carriers(2), { profession: 'builder', x: 39, y: 50 }])
+    s.enqueue({ tick: 0, player: 1, seq: 0, type: 'settings', settings: { carrierRatio: 70 } })
     for (let t = 0; t < 600 && !diagnose(observe(s, 1)).some(d => d.kind === 'population'); t++) s.advance(1)
-    expect(diagnose(observe(s, 1)).some(d => d.kind === 'population')).toBe(true)
-    expect(economicAI(1).decide(observe(s, 1)).find(o => o.type === 'build')).toMatchObject({ building: 'small-residence' })
-  }, 60_000)
+    expect(diagnose(observe(s, 1)).some(d => d.kind === 'population' && d.recoverable)).toBe(true)
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 1 }
+    for (let t = 0; t < 8000 && !(s.state.ledger[1]!.produced.log ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(s.view(1).buildings.some(b => b.type === 'small-residence' && b.phase === 'active')).toBe(true)
+    expect(s.state.ledger[1]!.births).toBeGreaterThan(0)
+    expect(s.view(1).population).toBe(3 + s.state.ledger[1]!.births)
+    expect(s.view(1).buildings.find(b => b.type === 'woodcutter' && b.x === 49)!.worker).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.produced.log ?? 0).toBeGreaterThan(0)
+    expect(ai.results).toEqual([])
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('zero settlers and no residence cannot bootstrap construction by ordering another residence', () => {
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [{ good: 'plank', amount: 8 }, { good: 'stone', amount: 8 }, { good: 'saw', amount: 1 }], [])
+    s.advance(1)
+    const ai = play(s, 1200)
+    expect(ai.diagnosis).toEqual(expect.arrayContaining([expect.objectContaining({ kind: 'population', recoverable: false, recovery: null })]))
+    expect(mine(s).filter(r => r.type === 'build')).toEqual([])
+    expect(s.view(1).population).toBe(0)
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('builders without carriers or future residents cannot deliver a residence into existence', () => {
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [{ good: 'plank', amount: 8 }, { good: 'stone', amount: 8 }, { good: 'log', amount: 8 }], [{ profession: 'builder', x: 39, y: 50 }])
+    const ai = play(s, 1200)
+    expect(ai.diagnosis).toEqual(expect.arrayContaining([expect.objectContaining({ kind: 'population', recoverable: false })]))
+    expect(mine(s).filter(r => r.type === 'build')).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
 
   test('with no planks or logs left, idle buildings are torn down to pay for a sawmill', () => {
     const s = computer([{ type: 'woodcutter', x: 49, y: 51 }, { type: 'medium-residence', x: 31, y: 44 }, { type: 'small-residence', x: 36, y: 54 }], [{ good: 'stone', amount: 8 }, { good: 'axe', amount: 1 }, { good: 'saw', amount: 1 }, { good: 'hammer', amount: 2 }, { good: 'shovel', amount: 2 }])
@@ -80,20 +133,137 @@ describe('AI deadlock recovery', () => {
   test('with no planks, logs or refunds left the economy is recognised as unrecoverable and no sites are ordered', () => {
     const s = computer([], [{ good: 'stone', amount: 8 }])
     const ai = play(s, 400)
-    expect(ai.diagnosis).toEqual([expect.objectContaining({ kind: 'materials', recoverable: false, recovery: null })])
+    expect(ai.diagnosis).toEqual(expect.arrayContaining([expect.objectContaining({ kind: 'materials', recoverable: false, recovery: null })]))
     expect(mine(s).filter(r => r.type === 'build')).toEqual([])
   })
 
-  test('a full output doorstep puts storage first, with the same choices after a save', () => {
-    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [{ good: 'log', amount: 40 }, { good: 'saw', amount: 1 }, { good: 'plank', amount: 8 }, { good: 'stone', amount: 8 }])
+  test('delivery recovers after its storage site is cancelled, with identical mid-recovery save replay', () => {
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'log', amount: 40 }, { good: 'saw', amount: 1 }, { good: 'plank', amount: 16 }, { good: 'stone', amount: 20 },
+      { good: 'hammer', amount: 2 }, { good: 'shovel', amount: 2 },
+    ])
     for (let t = 0; t < 12000 && !diagnose(observe(s, 1)).some(d => d.kind === 'delivery'); t++) s.advance(1)
     expect(diagnose(observe(s, 1)).some(d => d.kind === 'delivery')).toBe(true)
-    const before = checksum(s.state), restored = restore(save(s), rules)
-    const first = economicAI(1).decide(observe(s, 1))
-    expect(first.find(o => o.type === 'build')).toMatchObject({ building: 'storage' })
-    expect(economicAI(1).decide(observe(restored, 1))).toEqual(first)
-    expect(checksum(s.state)).toBe(before)
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 0 }
+    for (let t = 0; t < 40 && !s.view(1).buildings.some(b => b.type === 'storage'); t++) { stepAI(s, ai, seq); s.advance(1) }
+    const site = s.view(1).buildings.find(b => b.type === 'storage')!
+    expect(site.phase).not.toBe('active')
+    s.enqueue({ tick: s.state.tick, player: 1, seq: seq.next++, type: 'demolish', building: site.id })
+    s.advance(1)
+    expect(s.view(1).buildings.some(b => b.id === site.id)).toBe(false)
+    play(s, 100, ai, seq)
+    const produced = s.state.ledger[1]!.produced.plank ?? 0
+    const restored = restore(save(s), rules), fresh = economicAI(1, { interval: 20 }), seqB = { next: seq.next }
+    for (let t = 0; t < 6000; t++) {
+      stepAI(s, ai, seq); s.advance(1)
+      stepAI(restored, fresh, seqB); restored.advance(1)
+      if (t % 100 === 0) { expect(audit(s.context)).toEqual([]); expect(audit(restored.context)).toEqual([]) }
+    }
+    expect(checksum(restored.state)).toBe(checksum(s.state))
+    expect(s.view(1).buildings.some(b => b.type === 'storage' && b.phase === 'active')).toBe(true)
+    expect(s.view(1).stacks.some(st => st.role === 'storage' && st.good === 'plank' && st.amount > 0)).toBe(true)
+    expect(s.state.ledger[1]!.produced.plank ?? 0).toBeGreaterThan(produced)
+    expect(diagnose(observe(s, 1)).some(d => d.kind === 'delivery')).toBe(false)
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(ai.results).toEqual([])
+    expect(fresh.results).toEqual([])
+  })
+
+  test('an idle geologist returns its actual hammer so construction and plank production can resume', () => {
+    const s = computer([{ type: 'woodcutter', x: 49, y: 51 }], [
+      { good: 'plank', amount: 8 }, { good: 'stone', amount: 12 }, { good: 'axe', amount: 2 }, { good: 'saw', amount: 1 }, { good: 'shovel', amount: 2 },
+    ], [...carriers(16), { profession: 'geologist', x: 39, y: 50 }])
+    const created = s.state.ledger[1]!.created.hammer
+    s.enqueue({ tick: 0, player: 1, seq: 0, type: 'dismiss', profession: 'builder', count: 1 })
+    s.advance(1)
+    expect(mine(s).at(-1)).toMatchObject({ ok: false, reason: 'Malformed order to return specialists.' })
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 1 }
+    for (let t = 0; t < 6000 && !(s.state.ledger[1]!.produced.plank ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(mine(s).some(r => r.type === 'dismiss' && r.ok)).toBe(true)
+    expect(s.state.ledger[1]!.recovered.hammer ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.created.hammer).toBe(created)
+    expect(s.view(1).buildings.some(b => b.type === 'sawmill' && b.phase === 'active' && b.worker)).toBe(true)
+    expect(s.state.ledger[1]!.produced.plank ?? 0).toBeGreaterThan(0)
+    expect(ai.results).toEqual([])
+    expect(mine(s).filter(r => r.seq > 0 && !r.ok)).toEqual([])
     expect(audit(s.context)).toEqual([])
+  })
+
+  test('returning an idle pioneer supplies a real carrier for a residence and its new workers', () => {
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'plank', amount: 12 }, { good: 'stone', amount: 12 }, { good: 'log', amount: 12 }, { good: 'saw', amount: 1 },
+    ], [{ profession: 'builder', x: 39, y: 50 }, { profession: 'pioneer', x: 38, y: 50 }])
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 0 }
+    for (let t = 0; t < 8000 && !(s.state.ledger[1]!.produced.plank ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(mine(s).some(r => r.type === 'dismiss' && r.ok)).toBe(true)
+    expect(s.state.ledger[1]!.births).toBeGreaterThan(0)
+    expect(s.view(1).population).toBe(2 + s.state.ledger[1]!.births)
+    expect(s.state.ledger[1]!.produced.plank ?? 0).toBeGreaterThan(0)
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('a surveyor keeps its hammer until the supplied tool smith can make a replacement', () => {
+    const s = computer([{ type: 'woodcutter', x: 49, y: 51 }, { type: 'sawmill', x: 23, y: 50 }, { type: 'toolsmith', x: 31, y: 44 }], [
+      { good: 'iron', amount: 4 }, { good: 'coal', amount: 4 }, { good: 'plank', amount: 8 }, { good: 'stone', amount: 12 },
+      { good: 'axe', amount: 2 }, { good: 'saw', amount: 1 }, { good: 'shovel', amount: 2 },
+    ], [...carriers(16), { profession: 'builder', x: 39, y: 50 }, { profession: 'geologist', x: 38, y: 50 }])
+    s.advance(1)
+    expect(diagnose(observe(s, 1)).some(d => d.recovery?.type === 'dismiss')).toBe(false)
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 0 }
+    for (let t = 0; t < 6000 && !(s.state.ledger[1]!.produced.hammer ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(mine(s).some(r => r.type === 'dismiss' && r.ok)).toBe(true)
+    expect(s.state.ledger[1]!.produced.hammer ?? 0).toBeGreaterThan(0)
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('a hammer on a surveying geologist is awaited and reclaimed after duty, not declared lost', () => {
+    const s = computer([{ type: 'woodcutter', x: 49, y: 51 }], [
+      { good: 'plank', amount: 8 }, { good: 'stone', amount: 12 }, { good: 'axe', amount: 2 }, { good: 'saw', amount: 1 }, { good: 'shovel', amount: 2 },
+    ], [...carriers(16), { profession: 'geologist', x: 39, y: 50 }])
+    s.enqueue({ tick: 0, player: 1, seq: 0, type: 'specialists', profession: 'geologist', x: 28, y: 28, count: 1 })
+    s.advance(1)
+    expect(s.view(1).settlers.find(s => s.profession === 'geologist')!.action).toBe('walking')
+    expect(diagnose(observe(s, 1)).some(d => d.kind === 'tool' && !d.recoverable)).toBe(false)
+    const ai = economicAI(1, { interval: 20 }), seq = { next: 1 }
+    for (let t = 0; t < 8000 && !(s.state.ledger[1]!.produced.plank ?? 0); t++) { stepAI(s, ai, seq); s.advance(1) }
+    expect(mine(s).some(r => r.type === 'dismiss' && r.ok)).toBe(true)
+    expect(s.state.ledger[1]!.produced.plank ?? 0).toBeGreaterThan(0)
+    expect(mine(s).filter(r => !r.ok)).toEqual([])
+    expect(ai.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('remaining residence arrivals are an owned observation and repeated reads do not change the simulation', () => {
+    const s = computer([{ type: 'small-residence', x: 36, y: 54 }], [], [])
+    const before = checksum(s.state), count = rules.buildings.find(b => b.id === 'small-residence')!.residents!.count
+    expect(s.view(1).buildings.find(b => b.type === 'small-residence')!.residentsRemaining).toBe(count)
+    expect(diagnose(observe(s, 1)).some(d => d.kind === 'population' && !d.recoverable)).toBe(false)
+    expect(checksum(s.state)).toBe(before)
+    s.advance(2000)
+    expect(s.view(1).buildings.find(b => b.type === 'small-residence')!.residentsRemaining).toBe(0)
+    expect(s.view(1).population).toBe(count)
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('bootstrap observations expose own availability and arrivals without concealed enemy work state', () => {
+    const s = createSession({ rules, map: landscape(), seed: 3, players: [
+      { name: 'Computer', civilization: 'roman', controller: 'computer', start: anchors.castle, scenario: { buildings: [{ type: 'castle', x: 40, y: 40 }, { type: 'small-residence', x: 36, y: 54 }], settlers: [{ profession: 'carrier', x: 64, y: 43 }] } },
+      { name: 'Other', civilization: 'roman', start: { x: 75, y: 40 }, scenario: { buildings: [{ type: 'castle', x: 75, y: 40 }, { type: 'small-residence', x: 67, y: 44 }], settlers: [{ profession: 'carrier', x: 68, y: 44 }] } },
+    ], piles: [{ good: 'hammer', amount: 1, x: 38, y: 51 }, { good: 'hammer', amount: 1, x: 66, y: 41 }] })
+    expect(s.skipped).toEqual({})
+    const before = checksum(s.state), view = s.view(1)
+    expect(view.buildings.find(b => b.owner === 1 && b.type === 'small-residence')!.residentsRemaining).toBeGreaterThan(0)
+    expect(view.buildings.find(b => b.owner === 2 && b.type === 'small-residence')).toBeDefined()
+    expect(view.buildings.filter(b => b.owner === 2).every(b => !('residentsRemaining' in b))).toBe(true)
+    expect(view.stacks.find(st => st.owner === 1)!.available).toBe(1)
+    expect(view.stacks.find(st => st.owner === 2)).toBeDefined()
+    expect(view.stacks.filter(st => st.owner === 2).every(st => !('available' in st))).toBe(true)
+    expect(view.settlers.find(p => p.owner === 1)!.busy).toBe(false)
+    expect(view.settlers.find(p => p.owner === 2)).toBeDefined()
+    expect(view.settlers.filter(p => p.owner === 2).every(p => !('busy' in p))).toBe(true)
+    expect(checksum(s.state)).toBe(before)
   })
 
   test('a removed sawmill is rebuilt, so the supply of planks recovers', () => {
