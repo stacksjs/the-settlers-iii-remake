@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T02:01:54.426956+00:00",
+  "sourceMap": {
+    "path": "Map/TUTORIAL/T1.MAP",
+    "sha256": "395575b4f5d97e3d521003d18c3c574ad2b97ac22b17c4f7bd7efb63ed42be98",
+    "version": 11
+  },
+  "convertedMap": {
+    "path": "public/assets/settlers-original/maps/t1.json",
+    "sha256": "e9b6d0640e90ce5934bdbaba7fa8aa166138a721839496df3064e3a82d00c364",
+    "size": 256
+  },
+  "browser": {
+    "steps": 41,
+    "failures": 0,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "coverage": [
+      "generated map titles",
+      "original T1 selection",
+      "original map titles",
+      "51 initial settlers",
+      "save",
+      "reload restores original content identity"
+    ],
+    "raster": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "fc008109686ff0555d68af6db8a7381aa14aa433b6b369d5fbd29b5b0fe955ba",
+        "bytes": 999006,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    },
+    "visualInspection": "Inspected the fresh original T1 screenshot. Map titles agree, and the Roman tower, settlers, goods and terrain render. The HUD remains custom."
+  },
+  "limits": [
+    "The original tutorial mission and AI are not played.",
+    "Gold Edition behavior and timings remain unverified.",
+    "Original media rasters remain private pending redistribution evidence."
+  ],
+  "logs": [
+    {
+      "name": "game-original-map-caption-red.log",
+      "sha256": "a28192cec22d8807e0a811715f7c6432955cf2a86226f0239c1f3b7b89e6ddb0",
+      "bytes": 888
+    },
+    {
+      "name": "game-original-map-caption-green.log",
+      "sha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735",
+      "bytes": 134
+    },
+    {
+      "name": "game-original-map-caption-build.log",
+      "sha256": "630f150f34fe759d194b22b33b1860893c349eaddc73f0562828082d3cc79869",
+      "bytes": 1889
+    },
+    {
+      "name": "game-original-map-caption-types.log",
+      "sha256": "15cd2602e969bdad89517f3b1b3b6ad28ddac1ffcddcb5d6f314217bb285df13",
+      "bytes": 156
+    },
+    {
+      "name": "game-original-map-caption-unit.log",
+      "sha256": "37de701e349bc0e6ca34869843e217c662e78306cf7823ddb4b13bb9fd76a89e",
+      "bytes": 591
+    },
+    {
+      "name": "game-original-map-caption-lint.log",
+      "sha256": "b26e54f9ae198d318f35eb1a9b704c541037238751478b1bf26fd86bc6241c1c",
+      "bytes": 325
+    }
+  ]
+}

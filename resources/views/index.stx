@@ -49,7 +49,7 @@ onDestroy(() => game?.dispose())
         <span class="brand-mark i-hugeicons-castle-01" aria-hidden="true"></span>
         <span><strong>The Settlers <span class="roman">III</span></strong><small>ROMAN SETTLEMENT</small></span>
       </a>
-      <div class="flex gap-5 items-center campaign"><span class="campaign-name">Free settlement</span><span class="day">{{ view().time }}</span></div>
+      <div class="flex gap-5 items-center campaign"><span class="campaign-name">{{ view().map }}</span><span class="day">{{ view().time }}</span></div>
       <nav class="flex gap-2 items-center" aria-label="Settlement controls">
         <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.save()" title="Save settlement on this device"><span class="i-hugeicons-floppy-disk" aria-hidden="true"></span><span>Save</span></button>
         <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.load()" title="Restore the last saved settlement">Load</button>
@@ -70,7 +70,7 @@ onDestroy(() => game?.dispose())
       <section class="map-region" aria-label="Settlement map">
         <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag with the right button to pan and with the left to mark soldiers, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
-        <div class="map-caption"><span class="map-location">Free settlement</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy and army grow to the east by the same rules' : 'A generated landscape, not an original map' }}</span></div>
+        <div class="map-caption"><span class="map-location">{{ view().map }}</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy and army grow to the east by the same rules' : 'A generated landscape, not an original map' }}</span></div>
         <div class="flex gap-1 map-controls" aria-label="Simulation speed">
           <button type="button" class="map-button" @click="game?.home()" title="Center on the castle (H)" aria-label="Center on the castle"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 0" @click="game?.speed(view().speed === 0 ? 1 : 0)" aria-label="Pause or resume simulation">{{ view().speed === 0 ? 'Play' : 'Pause' }}</button>

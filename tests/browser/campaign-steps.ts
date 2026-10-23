@@ -1,5 +1,7 @@
 export const campaignSteps = [
   { action: 'wait', ms: 1500 },
+  { action: 'assert', selector: '.campaign-name', text: 'Generated landscape' },
+  { action: 'assert', selector: '.map-location', text: 'Generated landscape' },
   // Choosing a building moves the keyboard cursor to the nearest valid site.
   { action: 'click', selector: '.building-choice', text: 'Sawmill' },
   { action: 'press', key: 'Enter' },
@@ -29,4 +31,16 @@ export const campaignSteps = [
   { action: 'wait', ms: 200 },
   { action: 'assert', selector: '[role=status]', text: 'Settlement saved on this device.' },
   { action: 'evaluate', expression: "dispatchEvent(new PageTransitionEvent('pageshow')); true" },
+  { action: 'click', selector: 'header button', text: 'New settlement' },
+  { action: 'click', selector: '.restart-panel button', text: 'Original tutorial map' },
+  { action: 'assert', selector: '.campaign-name', text: 'Original tutorial map', timeoutMs: 10000 },
+  { action: 'assert', selector: '.map-location', text: 'Original tutorial map' },
+  { action: 'assert', selector: '.population strong', text: '51' },
+  { action: 'click', selector: 'header button', text: 'Save' },
+  { action: 'assert', selector: '[role=status]', text: 'Settlement saved on this device.' },
+  { action: 'evaluate', expression: 'location.reload(); true' },
+  { action: 'assert', selector: '.campaign-name', text: 'Original tutorial map', timeoutMs: 10000 },
+  { action: 'assert', selector: '.map-location', text: 'Original tutorial map' },
+  { action: 'assert', selector: '[role=status]', text: 'Your settlement has been restored.' },
+
 ]
