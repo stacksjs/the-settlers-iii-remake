@@ -8,7 +8,7 @@ The game installs Stacks **0.75.274**, STX **0.2.669** and Craft SDK **0.0.296**
 
 The [STX publication record](receipts/stx-0.2.669-publication.json) verifies all ten original npm archives and successful package release gates. Its separate VS Code marketplace publication failed because `VSCE_PAT` is missing. [Dependency-context checks](receipts/framework-0.75.274-bumpx-contexts.json) prove that both Actions and Buddy resolve Bumpx 0.2.26 and match all 19 original package files. The shared better-dx root tool may retain another compatible version.
 
-The previous [0.75.273 adoption](receipts/framework-0.75.273-receipt.json) and [hosted CI receipt](receipts/framework-0.75.273-hosted-ci.json) remain historical evidence. Hosted acceptance for the new commit is pending. The public `UiConfig` type and observable audio completion checks remain in place. This upgrade does not establish original Gold parity or complete native game presentation.
+The previous [0.75.273 adoption](receipts/framework-0.75.273-receipt.json) and [hosted CI receipt](receipts/framework-0.75.273-hosted-ci.json) remain historical evidence. The [full hosted CI](receipts/framework-0.75.274-hosted-ci.json) passed on upgrade commit `bf3f5c4e1d8751735cbfc662c801fc88f79764a5`, including frozen installation, production build and real browser acceptance. The public `UiConfig` type and observable audio completion checks remain in place. This upgrade does not establish original Gold parity or complete native game presentation.
 
 This checkpoint supersedes the initial release statuses retained below. The supplied remake repository remains the available reference; no installed original Gold executable or original execution captures have been supplied.
 

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T01:52:03.319124+00:00",
+  "repository": "stacksjs/the-settlers-iii-remake",
+  "commit": "bf3f5c4e1d8751735cbfc662c801fc88f79764a5",
+  "runId": 39885911466,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "game",
+      "jobId": 120193910833,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy lint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run typecheck",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy test --unit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:import",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy build views",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the production campaign in Chrome",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain non-media browser diagnostics",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "limit": "Hosted browser acceptance is not original Gold behavioral parity or native game presentation."
+}
