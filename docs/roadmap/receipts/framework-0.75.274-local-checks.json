@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T01:46:05.448128+00:00",
+  "consumer": {
+    "lockfile": "bun.lock",
+    "sha256": "9953de3dd78ae3ba771ec3aef6151c9cb71835258cf469ab241bda65212e91c2",
+    "bunVersion": "1.4.2",
+    "checks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "8f5e695fd7be20411baa7515404669cc301a94c5500cbf860f5db4bb9dadaf64"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "64ce016e77f0f1d4aa56121917c58ba5b375533fa9650b6f1489e48b6e54f650"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "75388e58b912fd68ededfa9fac605afce8f9880d21282d7fdd0389e25b7bed98"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ]
+  },
+  "normalInstallCommand": "bun add --exact stacks@0.75.274 @stacksjs/actions@0.75.274 @stacksjs/env@0.75.274 @stacksjs/path@0.75.274",
+  "selectionReason": "The normal stable upgrade selected 0.75.275, which failed Windows source CI. Its uncommitted upgrade was discarded before installing the independently qualified 0.75.274.",
+  "pantryVersion": "0.11.119",
+  "productionBuildExitCode": 0,
+  "productionBrowser": {
+    "url": "http://127.0.0.1:3450/",
+    "viewport": {
+      "width": 1440,
+      "height": 960
+    },
+    "freshRaster": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "483894a93d77235b5f86e7880d36bc065445cd83bcdecadffd5f81d261ee39e1",
+        "bytes": 823759,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    },
+    "visualInspection": "Inspected the fresh local screenshot. Converted original terrain, buildings and settlers render with the custom HUD and generated map. This does not establish original interface or original-map parity.",
+    "coverage": [
+      "keyboard construction",
+      "speed",
+      "pause",
+      "audio",
+      "background checkpoint",
+      "reload"
+    ]
+  },
+  "logs": [
+    {
+      "name": "game-framework-274-pinned-install.log",
+      "sha256": "5f7d1364cb8c24f949c167d67525d9dc580d93365c807887655b3b3c2e018fb5",
+      "bytes": 284
+    },
+    {
+      "name": "game-framework-274-pantry-install.log",
+      "sha256": "b91d15591f43b252376e5effaaade039bbda8290f54be35487ca403131985007",
+      "bytes": 112
+    },
+    {
+      "name": "game-framework-274-frozen.log",
+      "sha256": "2983a7b12a33aa938c2c825a2cef343597d9f16a78f22822185fe3dd39844732",
+      "bytes": 112
+    },
+    {
+      "name": "game-framework-274-build.log",
+      "sha256": "b16248d905bc391ceefa84381f045a945f8d944b706390150ef6f7d3492a057b",
+      "bytes": 1907
+    },
+    {
+      "name": "game-framework-274-installed-verification.log",
+      "sha256": "531ea9fe0bba76721d7d0da06bd0f7450d118cbb07985f04f443f267869477d0",
+      "bytes": 89
+    },
+    {
+      "name": "game-framework-274-bumpx-contexts.log",
+      "sha256": "e32b91ab96151f92cc4df1b1859ba6c925be3453da1b1c72ec096853da2cbdce",
+      "bytes": 608
+    }
+  ]
+}

@@ -73,12 +73,12 @@
     "publication:check": "bun scripts/content.ts --publication"
   },
   "dependencies": {
-    "@stacksjs/actions": "^0.75.273",
-    "@stacksjs/env": "^0.75.273",
-    "@stacksjs/path": "^0.75.273",
+    "@stacksjs/actions": "0.75.274",
+    "@stacksjs/env": "0.75.274",
+    "@stacksjs/path": "0.75.274",
     "@stacksjs/stx": "0.2.669",
     "craft-native": "0.0.296",
-    "stacks": "^0.75.273"
+    "stacks": "0.75.274"
   },
   "workspaces": [
     "storage/framework",
