@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "repository": "stacksjs/the-settlers-iii-remake",
+  "source": "d18ecc65f6bb5c7c04ab6da085b1260997571d08",
+  "runId": 39875559516,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "jobId": 120160181873,
+      "name": "game",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy lint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run typecheck",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy test --unit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:import",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy build views",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the production campaign in Chrome",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain non-media browser diagnostics",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "This is browser application acceptance. Native game presentation and original Gold parity remain unverified."
+  ]
+}
