@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T05:03:06.305684+00:00",
+  "repository": "stacksjs/stx",
+  "tag": "v0.2.670",
+  "commit": "85dc9535c5ddf8f465fde3b4c195e80411f1a766",
+  "releaseRunId": 39880293592,
+  "sourceCiRunId": 39880293133,
+  "releaseJobs": [
+    {
+      "name": "Verify the exact release source",
+      "jobId": 120175789941,
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify native signing on macOS 15",
+      "jobId": 120175790158,
+      "conclusion": "success"
+    },
+    {
+      "name": "npm",
+      "jobId": 120180210506,
+      "conclusion": "success"
+    },
+    {
+      "name": "icons",
+      "jobId": 120182210364,
+      "conclusion": "success"
+    }
+  ],
+  "npmArchives": [
+    {
+      "name": "bun-plugin-stx",
+      "version": "0.2.670",
+      "shasum": "e534ba7375ee4c6d80b177bc4dfaae26c241b5c4",
+      "integrity": "sha512-s2/0WBu6gJQF9gaZ31P+Qkg1XM/BUg96MI2tWvOpFpu3S2pssCVB09R0P8xPuSJnNWG9zIR11er656hALCzIzA==",
+      "file": "bun-plugin-stx-0.2.670.tgz",
+      "bytes": 124136,
+      "sha256": "1d9eb7bd7bb60c825ff00152c6dd5609567b78df249b9638a4f1263e1059106e",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/components",
+      "version": "0.2.670",
+      "shasum": "0a4fb8cc75cafa99d5b5952ae3466b106e7444eb",
+      "integrity": "sha512-6n4y1qRG/amNpfkrqq7Sfn9ofuJGPeTVKEzdgb3PGZxWNPlY1hnjta1qho+WzgH+j7nBCZLuCvAEuq5D5e361g==",
+      "file": "_stacksjs_components-0.2.670.tgz",
+      "bytes": 560131,
+      "sha256": "5cb0c0ac63f5a582aed67b2d5a531e4fa0a76764231e2d03ceebe25b094b53b6",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/stx",
+      "version": "0.2.670",
+      "shasum": "63cc0154f51adcfa35df44b3c4a551d06680aabe",
+      "integrity": "sha512-q+002TEudwpuRpFhTAOl8J9LEfIbgaEICuqbSeyFqMUPi3w5RTHhyClRZKEpO0qPH4GD5tb9mF03y3hdQcdtSg==",
+      "file": "_stacksjs_stx-0.2.670.tgz",
+      "bytes": 2284190,
+      "sha256": "ac148bbcf47d2f9d550f9f21ade0946bea18083d36c65838be1021aebeef0ce7",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    }
+  ],
+  "unchangedPackages": {
+    "version": "0.2.669",
+    "packages": [
+      "@stacksjs/desktop",
+      "@stacksjs/sanitizer",
+      "stx-router"
+    ],
+    "originalPublicationReceipt": "stx-0.2.669-publication.json"
+  },
+  "separateExtensionPublication": {
+    "runId": 39880293589,
+    "conclusion": "failure",
+    "limit": "This is not a completed Marketplace publication."
+  },
+  "limit": "Only the three changed 0.2.670 packages are new publications. Other consumed STX packages retain their original 0.2.669 provenance."
+}

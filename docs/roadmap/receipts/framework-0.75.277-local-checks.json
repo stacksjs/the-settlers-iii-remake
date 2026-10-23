@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T05:54:05.679026+00:00",
+  "consumer": {
+    "lockfile": "bun.lock",
+    "sha256": "f61f6a2d290fc4f9546bad28f0900ca928abd18b0a53e14f306208600e4449dd",
+    "bunVersion": "1.4.2",
+    "checks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "ebd8da86de6bd11a3410f3acc7f193bb1f36be67ef87f13ef9808224078ae8b8"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "bff60778ce0ce5dd240c3fa4f1a5a290662eb2c238a28464218109fbfd0fee49"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ]
+  },
+  "normalUpgradeCommand": "./buddy upgrade --stable",
+  "pantryVersion": "0.11.119",
+  "productionBuildExitCode": 0,
+  "productionBrowser": {
+    "url": "http://127.0.0.1:3450/",
+    "steps": 41,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "media": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "cf2df0e56e60e07ec9385ff80da112214666afccc2f623da148bc827cce68336",
+        "bytes": 998920,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    },
+    "visualInspection": "Fresh 1440x960 capture inspected locally. The original T1 tutorial map, original Roman tower and sprites, 51 settlers, matching map captions and custom HUD render. Original UI parity, Gold campaign rules and native game presentation remain unverified.",
+    "coverage": [
+      "generated-map keyboard construction",
+      "speed",
+      "pause",
+      "audio completion",
+      "background checkpoint",
+      "generated save and reload",
+      "original T1 map selection",
+      "original map captions",
+      "original-map population",
+      "original save and reload"
+    ]
+  },
+  "logs": [
+    {
+      "name": "game-framework-277-upgrade.log",
+      "sha256": "4d065e39aa0bec76856a28544835b1aaf275b2208dd92358e34d22558f7bf173",
+      "bytes": 4070
+    },
+    {
+      "name": "game-framework-277-pantry-install.log",
+      "sha256": "1ed60d4f37062d0eb2b8d4b8b3e3fc98ea8c2ba06b73af8012e5d4d1b7b61e85",
+      "bytes": 3531
+    },
+    {
+      "name": "game-framework-277-frozen.log",
+      "sha256": "f7ff15b237283639936f8deaa341e1663b653871e49c4e523626e6cb1b6681ed",
+      "bytes": 96
+    },
+    {
+      "name": "game-framework-277-assets-import.log",
+      "sha256": "f11ee114bb1ef873359fd93da754f65cc2b295f784380f73152501d7bd6b4c4b",
+      "bytes": 493
+    },
+    {
+      "name": "game-framework-277-production-build.log",
+      "sha256": "569349d655a927260e8b1a3a3a02a0146a13641b4fbfb48855bc14b8bc6a580f",
+      "bytes": 1528
+    },
+    {
+      "name": "game-framework-277-installed-verification.log",
+      "sha256": "e547e28401d267a381b5e6f0ca4e9ad92ce7b33cb2490257dbb804607a87853a",
+      "bytes": 89
+    },
+    {
+      "name": "game-craft-391-roadmap-reconcile.log",
+      "sha256": "cbc7138f63db06036b319278a1739b2ffd851848222cd58c310002d36ce3e5d1",
+      "bytes": 8969
+    }
+  ],
+  "limits": [
+    "No installed original Gold Edition executable or original captures are available.",
+    "Craft 0.0.301 npm/native distributions passed publication checks, but its public Zig package fails isolated consumption. S3-010 is open.",
+    "Subsequent Stacks Windows source CI reproduced an unconfirmed timeout cleanup. Source diagnostics are being retained; no blanket process-cleanup completion is claimed."
+  ]
+}

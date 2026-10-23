@@ -1,0 +1,958 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T05:51:36.883Z",
+  "sources": [
+    {
+      "repository": "stacksjs/stacks",
+      "commit": "384e99a27a7666e0598092b4da222477f8c4d11b",
+      "tag": "v0.75.277",
+      "gates": [
+        {
+          "runId": 39903663994,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "wait for earlier releases",
+            "accept exact release source CI",
+            "release gate",
+            "npm",
+            "homebrew"
+          ]
+        },
+        {
+          "runId": 39903663732,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "typecheck",
+            "compile",
+            "scaffold-smoke",
+            "test (core-2)",
+            "lint",
+            "artifact-freshness",
+            "Release evidence (ubuntu-latest)",
+            "deployment-target",
+            "test (auth-1)",
+            "Release evidence (macos-latest)",
+            "test (auth-2)",
+            "test (auth-3)",
+            "test (buddy)",
+            "Release evidence (windows-latest)",
+            "test (auth-4)",
+            "test (core-1)",
+            "deploy"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "@stacksjs/ai",
+          "version": "0.75.277",
+          "integrity": "sha512-O9EaiZ5ClPAsBBfss9Q1afKlBImLqvJwEQCARHkjr/Ar83xsA0hFd5JH1FCd7GIjVjPAqn2Ke75vZIM0Vk+5/w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/ai/-/ai-0.75.277.tgz",
+          "bytes": 57014,
+          "filesSha256": "e89781b4da3520f61a559e10a7d0fa521d8e992a66956372f87b9028ab254177"
+        },
+        {
+          "name": "@stacksjs/action-runner",
+          "version": "0.75.277",
+          "integrity": "sha512-hRrRnYe9egTv/UHq9NcwnQY10DvDSHtfbKUpH5/OtRT8yDEltAou4J5p1v5c/S5P2Gwnj3lRX4HD1+PJDAkkrw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/action-runner/-/action-runner-0.75.277.tgz",
+          "bytes": 2689,
+          "filesSha256": "5a77e80cb079a11dcbd7fcc4bddd321b9b78f7bb6852c9ec59d3dd142f5a0fb1"
+        },
+        {
+          "name": "@stacksjs/actions",
+          "version": "0.75.277",
+          "integrity": "sha512-TljNKMp2HWmRYyTaR9nKkhCWJEuoK3KfkX/MoudNTssDogqd/7AdA1u8YCtW6HaMf8pM7D4Q+EPvTgkkmLZcJA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/actions/-/actions-0.75.277.tgz",
+          "bytes": 216253,
+          "filesSha256": "7e457d8de5a28865cf0260183707fdf865ace40e1fac1a6f612324c8a4666238"
+        },
+        {
+          "name": "@stacksjs/alias",
+          "version": "0.75.277",
+          "integrity": "sha512-626uBt6cqYhYugQ2Lhc29PuqSR90kPheYOD+MQP/tlOC8FY9LBs183x/CQPkZF4qIiV8ZjUK9d5ut187xjPyGQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/alias/-/alias-0.75.277.tgz",
+          "bytes": 4298,
+          "filesSha256": "41f2c40de121ddf5a05ddd14868e957d8df2f9002d0b839254f2e584791631f1"
+        },
+        {
+          "name": "@stacksjs/analytics",
+          "version": "0.75.277",
+          "integrity": "sha512-AIJI976QPDDkKpSkZAQKoqbaxp2zZ4+sc9Z7kVH2gLlta50MtZ4paYdBRPOHX7enym3HXZ6l/l5t+v1LpvH1kQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/analytics/-/analytics-0.75.277.tgz",
+          "bytes": 8002,
+          "filesSha256": "1977499ea2f0fd7d8e2ca9cb5f803b64baa11e001cb3bbc2ca8ef36973ef3b18"
+        },
+        {
+          "name": "@stacksjs/api",
+          "version": "0.75.277",
+          "integrity": "sha512-EBJ6jkRyz+DXz2iHuSUjpLdYoHWEkQylQid1RXflyWUYgphvdu/WqhC8LuBXPvy/G4R4FguNhSjWtDp9hmcJ3g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/api/-/api-0.75.277.tgz",
+          "bytes": 16642,
+          "filesSha256": "95c67c985578d6b6afb41eef0062378b823e23deb545be3d075a0aa9949ad4c5"
+        },
+        {
+          "name": "@stacksjs/arrays",
+          "version": "0.75.277",
+          "integrity": "sha512-1nADJhFNsV3s01vjXUWbQ1Wngm8aRkUGLeT1FpvzUVvD5vcAOV8IN5VAUB4yuk9z7t8VHqOMYdMffZNfr+PkjA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/arrays/-/arrays-0.75.277.tgz",
+          "bytes": 12573,
+          "filesSha256": "41a0be7dab188d663f9ebaf6927ebd438cdde6cedd4c1f13849a0f23b7b01fea"
+        },
+        {
+          "name": "@stacksjs/audio",
+          "version": "0.75.277",
+          "integrity": "sha512-Fxzsof6kvUinyIHFkxVF6Yx1QyZt9keydKxer+XI24YyUPcBbSlrfmxxjfCI2lVadk8bQS+YYgYDBi1GtwzJnQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/audio/-/audio-0.75.277.tgz",
+          "bytes": 6407,
+          "filesSha256": "22ba25878a971341061a2905fc2e17b44b65705ea0a7e4308624c1c015a602b4"
+        },
+        {
+          "name": "@stacksjs/auth",
+          "version": "0.75.277",
+          "integrity": "sha512-mGckhlmhnegPFKWFAT2Lv3SEv/2x3BYKvOH0UQ99b0jLZlPr2uIvctrpAQ3x3xSweLg0Z1ykUfZlvPcT/VkfBQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/auth/-/auth-0.75.277.tgz",
+          "bytes": 122443,
+          "filesSha256": "e410005a14e162d8cf45e41d413d8c914d89519d4a7cd51e00d7518e1e24a089"
+        },
+        {
+          "name": "@stacksjs/browser",
+          "version": "0.75.277",
+          "integrity": "sha512-pFOWUkTUy2BIWl/T9ttbbM+oMk4/w6owoq0qI98r5ZZiNHgS3O9B8Etmq2LGgyXPRTuYypGGk2FTtxYwrLOPMg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/browser/-/browser-0.75.277.tgz",
+          "bytes": 26072,
+          "filesSha256": "14036f1fd2b3e4d74c489881b827e12eed7ed4bdcc74651853b66eb5aa736c7f"
+        },
+        {
+          "name": "@stacksjs/browser-extension",
+          "version": "0.75.277",
+          "integrity": "sha512-3wHqXUxBUDYFGXBTyFONVXJqe6cCZhFqeW/sIXWPjVyKwcDKy5ygh++6fScEcg9ky4LHX89/YhNlFpyh3ipTCA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/browser-extension/-/browser-extension-0.75.277.tgz",
+          "bytes": 43309,
+          "filesSha256": "8fe0eba4aa5922634bd18022384aab23d563d5bdae73c8093ef79cd3c9c00557"
+        },
+        {
+          "name": "@stacksjs/buddy",
+          "version": "0.75.277",
+          "integrity": "sha512-+9w2Eq+rDIQVu1Gwzxvlt/DzCop+6K3sIXQsvvS2MTehmB742CdJc+RENykEaJizQJE6+f7W9t/bI7sMKRnKCA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/buddy/-/buddy-0.75.277.tgz",
+          "bytes": 377281,
+          "filesSha256": "2f6d7fe4395136f22e0e2896ec7a8afe9a5877061fdbaebbda66eb8b70b4b23a"
+        },
+        {
+          "name": "@stacksjs/cache",
+          "version": "0.75.277",
+          "integrity": "sha512-nDOCsVSj2odba75dwQgJ/ftPsWlTAk3USOXSGOC/Hbvuetx9UNS/ljvvWseMnpSZd68DHQ+OfSo6MozscMfZ5Q==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/cache/-/cache-0.75.277.tgz",
+          "bytes": 9668,
+          "filesSha256": "4e25a5592d97168ac108d4d5a4a88a8fb53f1dfa278709553acf256b679b83aa"
+        },
+        {
+          "name": "@stacksjs/build",
+          "version": "0.75.277",
+          "integrity": "sha512-bRk6APVKiIR/dVDNC9ki66rGqi+QGQcV2sSSueastfgxK1ZBvWjeWGJKrJfJLB4Zs2o6YNWNcdSKg6KdV1ihzw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/build/-/build-0.75.277.tgz",
+          "bytes": 108604,
+          "filesSha256": "2af5a7b184456785fefccf0e24f9ac38ed69d79855524af4efc0cb1bd590bd0e"
+        },
+        {
+          "name": "@stacksjs/calendar-api",
+          "version": "0.75.277",
+          "integrity": "sha512-KBEPTuE4/lhSv3ehdgwFL6UCU4vnOkblsAQ0AnGP2R5tWl87yo9yNIqWqX5LG1dmj2wZdhs77YzpF0ieqPxozA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/calendar-api/-/calendar-api-0.75.277.tgz",
+          "bytes": 7132,
+          "filesSha256": "d121859460276dd4bdb8aed9c5e3632291e877a39de8fa68c8018f70e56affa5"
+        },
+        {
+          "name": "@stacksjs/charts",
+          "version": "0.75.277",
+          "integrity": "sha512-J7G2qBsLBGKrgP3mqBaZRNCb/ANhlqxKsyi/JoVnZZScYFQapF+V9TT9KNko8D/8xmYGBxQYJtDQlL9EXjZEFw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/charts/-/charts-0.75.277.tgz",
+          "bytes": 9443,
+          "filesSha256": "aa5f31338419e5efa4b6fd90a1a08ec4d2fd612314d146d1d138d84d1a1c383f"
+        },
+        {
+          "name": "@stacksjs/chat",
+          "version": "0.75.277",
+          "integrity": "sha512-qphDUGFuHhe3V1HSCAtdXHmjaZW1a+osz//odK5fzuupW/mZ+vj4tl0khA2W9cllNl+9rBkK/27hjR63A/opSw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/chat/-/chat-0.75.277.tgz",
+          "bytes": 37694,
+          "filesSha256": "bd9810c2f10f9ff6ff0fd412731534c90300ee8ba379c2ee2e6b5acde5bccc7e"
+        },
+        {
+          "name": "@stacksjs/cli",
+          "version": "0.75.277",
+          "integrity": "sha512-trfetM8bR0HeDJ+hCJWGf78etT4xBtfvS9+SUNcH1Qc2vVhflKjQQD0BYpdSSQoucldVI3vwyFwHaMFloTSUOQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/cli/-/cli-0.75.277.tgz",
+          "bytes": 23137,
+          "filesSha256": "d459909b1bf9c51f4e6f4c064ec7537bf12afef804d5450436b9eda31ce673a0"
+        },
+        {
+          "name": "@stacksjs/cloud",
+          "version": "0.75.277",
+          "integrity": "sha512-5C6efJW7uuXL/hTjcSAu2+HFzhcWDuc0tqf5Oc/OUmCA+iA88dKFnm+w7E5IOZrpGk3d15T2iknNidHeV+QKaw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/cloud/-/cloud-0.75.277.tgz",
+          "bytes": 29860,
+          "filesSha256": "ca8d97b8b040e2d49069bf912859d21ca1ca53114decee580ab46d4fa1e81b50"
+        },
+        {
+          "name": "@stacksjs/cms",
+          "version": "0.75.277",
+          "integrity": "sha512-yv+/osr7px/xTeSAiOfgDauqhtOWfd1e3wo+3phUh3WtYYeYARAe1/RiUwBEl2J67a0TcgrKDt/AYTfZTvxy1g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/cms/-/cms-0.75.277.tgz",
+          "bytes": 42730,
+          "filesSha256": "6c7037871e26eaaf1266c98fc19f3367b1a73cde10716e9caa9eb301b98b9a75"
+        },
+        {
+          "name": "@stacksjs/collections",
+          "version": "0.75.277",
+          "integrity": "sha512-j6kX8lBTp+zbBxqpFeBa/GpW7H+U34z6SUcJGvbwz2xFIc1ShGV/WZOB3Ehtc5bXcViYDlxbsGvQyuypSYQB4w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/collections/-/collections-0.75.277.tgz",
+          "bytes": 2804,
+          "filesSha256": "b1f78725936784ca2a52d6dec040a53ce5c8972ec2531870e086d6c236099270"
+        },
+        {
+          "name": "@stacksjs/commerce",
+          "version": "0.75.277",
+          "integrity": "sha512-FW52bpAyErFM4y61vs8qHseziqvqgsrlb273tKJzlp5l9Jod3h9rI3DsiGzi983fvYu1eeeqy+AtNDrywM+l5w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/commerce/-/commerce-0.75.277.tgz",
+          "bytes": 187289,
+          "filesSha256": "e0e179c4dc86f706a9fa78dc8bac00fe318a640b93be572010e6f88e8bc96bcb"
+        },
+        {
+          "name": "@stacksjs/composables",
+          "version": "0.75.277",
+          "integrity": "sha512-Bg8/eF3z3uA5sPWWQhnK9Qenv1GLr+tPrCGgjYR/HfvrVzRv4FfbbxJ9EWK2LRQVka+ZpPI5k5ucFyWR8BrHUw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/composables/-/composables-0.75.277.tgz",
+          "bytes": 83372,
+          "filesSha256": "4032c4918ae595ca00b42ede653c7b701cb600fb99e2b71db335e3ae2f275219"
+        },
+        {
+          "name": "@stacksjs/config",
+          "version": "0.75.277",
+          "integrity": "sha512-oHM1kPlbaGCHsg3ieLX0/8ECIRd5H++p5B16FbFLTFo0kqJSZq16giASUS3DYs94CK8t3zktfXg9RtUJy/EHyA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/config/-/config-0.75.277.tgz",
+          "bytes": 29787,
+          "filesSha256": "0eb940ab77984e082a03957b529cd19d7bfe8a7e3c3511b2a385ac2efc63b358"
+        },
+        {
+          "name": "@stacksjs/cron",
+          "version": "0.75.277",
+          "integrity": "sha512-xWyL0kQ5fP8iqHPkxM6Ryag5rUzxM3VPiQYH8v8cCCJwtzV7wcTgpy7ErSYfD5b33IMLOVSUvcJPQaa0nqTi4w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/cron/-/cron-0.75.277.tgz",
+          "bytes": 5371,
+          "filesSha256": "913998aea64edaa34cd730579d84d9f3be30c576c55e9d06a2d270eaa1c431c3"
+        },
+        {
+          "name": "@stacksjs/datetime",
+          "version": "0.75.277",
+          "integrity": "sha512-VeW+Wh1rDWSCZUd0i+zx76RJejBKU+wDXIO/n0kNtOKOYwGB5sQgdipjLAq2DKrtp3976fixIKMpHMQrZFVMEw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/datetime/-/datetime-0.75.277.tgz",
+          "bytes": 13419,
+          "filesSha256": "3f9c5c57e15fd6234911d5cea67e9499edca9105ba25e4c9a8234d7be9565658"
+        },
+        {
+          "name": "@stacksjs/database",
+          "version": "0.75.277",
+          "integrity": "sha512-FzWVwCIFFefRYhCHtezhtHrcTfYbQ2ZHvhaYHdnJQptwCKHQFBNAly711ESBvctDSgrkcJN1Anx+F9RzXYHciA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/database/-/database-0.75.277.tgz",
+          "bytes": 227651,
+          "filesSha256": "46e493cb0109eb32ee62d2a828e02a649ee927486ca1f62e32ccfd091f67c67e"
+        },
+        {
+          "name": "@stacksjs/desktop-build",
+          "version": "0.75.277",
+          "integrity": "sha512-dKxRmeEhYQKqsqt3yQoidZEfO76cg/r5eN8JHDDHzf6vnu4a7ERAYRdnzSaT2edfrdnP6TiqLZfLVT3L2FNFOQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/desktop-build/-/desktop-build-0.75.277.tgz",
+          "bytes": 36611,
+          "filesSha256": "45811e1672e5f80638eeafef181eb6fdc5aa79411506c067fe67970174671528"
+        },
+        {
+          "name": "@stacksjs/dns",
+          "version": "0.75.277",
+          "integrity": "sha512-JYqBqAlS2ejE1fbt2O3iwxe5xVFnk/+SQrK/YdzZC7AWJsHPhetv64MkpdNx8XnDY7nQnJexIt6sHKP+4Lvg7Q==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/dns/-/dns-0.75.277.tgz",
+          "bytes": 7254,
+          "filesSha256": "28fc1d778bba8c64ac455c56ca1e24bb7d6afd9b4e2ea31e58d6dd34578fd34d"
+        },
+        {
+          "name": "@stacksjs/docs",
+          "version": "0.75.277",
+          "integrity": "sha512-jrAqhx1xnNdHO89esmt2quRP7GjL4kinBn0wq5g//TBFJnibAPjyRzwCub2NhqExS/7uY9uPnZHopaawKkkE0w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/docs/-/docs-0.75.277.tgz",
+          "bytes": 2856,
+          "filesSha256": "a6c32003d5de4ee9fb7145898668f5b0f6c3ad91acb92d7fb5c07230fb95d943"
+        },
+        {
+          "name": "@stacksjs/email",
+          "version": "0.75.277",
+          "integrity": "sha512-wMe6m2MUj5cz7+S4lUX1adSbezAiMi7oKxrDxnLgBhbvfvTWZjBKRiSc12s+wHb+R8nVzEKAmni2l8XcFM8efw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/email/-/email-0.75.277.tgz",
+          "bytes": 51199,
+          "filesSha256": "b7a72259c38356ecda8b95df984ced923a0e5d1aab4842259ecc821ca1807466"
+        },
+        {
+          "name": "@stacksjs/defaults",
+          "version": "0.75.277",
+          "integrity": "sha512-b6eWEehNvpKFrshJNotqfaMSfOiBq06kjYHkbESwL9HCB0+kO9oSKiLd19m7i4dTEkw/QoqOp2ap3U+H31unAw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/defaults/-/defaults-0.75.277.tgz",
+          "bytes": 4899123,
+          "filesSha256": "3166b7cb7db1dba47fb8f4f3633689327c85f13fef16e217520037e11d1fae90"
+        },
+        {
+          "name": "@stacksjs/enums",
+          "version": "0.75.277",
+          "integrity": "sha512-DT2IpgX659a0AElJpSLF21Is3GUCuPTGTLlnZIn1eGn57EoaGb0BXDHrbGE7XWQwNcY6SuniI66zY8PVo4u6Ow==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/enums/-/enums-0.75.277.tgz",
+          "bytes": 5555,
+          "filesSha256": "de0cea95e3c606f11372bef00c9f6d8b08e086c587c0265a541a339fadf1442c"
+        },
+        {
+          "name": "@stacksjs/env",
+          "version": "0.75.277",
+          "integrity": "sha512-+1jsKJ0FXmjmf7gnRR8xFQVgFmr9dwN5CkBPyv1hEqDXMXvN+unMxxeBOZV5aM40g46Et06Qi/1o0mnUJiYrBw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/env/-/env-0.75.277.tgz",
+          "bytes": 35780,
+          "filesSha256": "57965f13f703546a95fe8d3d45892d6e928243aba6a9df421b76b068190d3406"
+        },
+        {
+          "name": "@stacksjs/error-handling",
+          "version": "0.75.277",
+          "integrity": "sha512-YPzHvdkItFboRz43GAMkSLb27IAIbnOrQ8n0gv+EdEBBD0GLABazxv2yOuv2lI1i3em7GCFCS3CgZ8bX4w2mUg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/error-handling/-/error-handling-0.75.277.tgz",
+          "bytes": 37524,
+          "filesSha256": "0cab8818a3c64c34bcb71058bb568c03a45b80c431c99843cd988a3885bffd40"
+        },
+        {
+          "name": "@stacksjs/events",
+          "version": "0.75.277",
+          "integrity": "sha512-/uQvW2ptSm/UG3j0euH/aAceotlDPwFKD0dBamc/ul34fYkZmQajjR977+CMwbMKrVy9YCh6TD96C6zwGQWXmA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/events/-/events-0.75.277.tgz",
+          "bytes": 12981,
+          "filesSha256": "8cba2d28d9474fe8dec0f9e608a03d2ce176b3b3832b427503a3fbbe6a6baf9c"
+        },
+        {
+          "name": "@stacksjs/feature-flags",
+          "version": "0.75.277",
+          "integrity": "sha512-PgIm2KHpRMwwvldIifokTVo3yqWS9Yi5uhkcaOHAWbOEpPV4j9QosDx+OXHxOb223OZULKcPW+v39cbStIwB1A==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/feature-flags/-/feature-flags-0.75.277.tgz",
+          "bytes": 9014,
+          "filesSha256": "ed81ea7cc3f97996999da0c3f35e993996350843b543da829b1351c673d714eb"
+        },
+        {
+          "name": "@stacksjs/faker",
+          "version": "0.75.277",
+          "integrity": "sha512-w3dgb1Pj1xbljj0HVcpx8Jz6be20K6VpkynKeWEw0BHq0b4WmFRn5omnHnC8vaZVPPQMaxgA3OU3AKkrbnLvgw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/faker/-/faker-0.75.277.tgz",
+          "bytes": 5367,
+          "filesSha256": "1cb7f6cac49b057856c8c1058cb8b946efb0197c5d02e476377baeafb2779f4e"
+        },
+        {
+          "name": "@stacksjs/features",
+          "version": "0.75.277",
+          "integrity": "sha512-CJ/1Ml7i8Jo+mU+UipLOC/UyWF2048tH9pE+GUZwVelvggC7s3+VXsn1eH4r4yAYtXVbMtpD6cj4igiw4oHeqw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/features/-/features-0.75.277.tgz",
+          "bytes": 6224,
+          "filesSha256": "3e5ede0f2dcea48671db2e1d0625613bd72c8d0c9ace2553dc43c7902409f542"
+        },
+        {
+          "name": "@stacksjs/forms",
+          "version": "0.75.277",
+          "integrity": "sha512-/cvSBwIP8mPTfCd7SGSN66OJBuDmmxTYrq1CDNX887Bk3ZvHmFpQUyddelp8amhHtdr6hqMtnAdSQrjjPOAtFg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/forms/-/forms-0.75.277.tgz",
+          "bytes": 12796,
+          "filesSha256": "788ddb6e8f969ef50da45e1ce02890a46b2701c58fd7d56704d62df489c5229b"
+        },
+        {
+          "name": "@stacksjs/git",
+          "version": "0.75.277",
+          "integrity": "sha512-rrPKU5RSQ5tN/UhSw8ikFhN6qMgLIaSWJbv6nUeU9gcQs3OxObRBbUIkBnz6KsFtvC3He0BbfgApk6WBnM3mXg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/git/-/git-0.75.277.tgz",
+          "bytes": 3640,
+          "filesSha256": "71c7cf1be81f28fb79cbcbbd3714b7ed49419c4c9e532aeceb503ca7604d4034"
+        },
+        {
+          "name": "@stacksjs/github",
+          "version": "0.75.277",
+          "integrity": "sha512-jQuaDKrEai2k8KPE86x3Dm7fXohM5MY6HmJyob0yVJsZ1Tv0RPfSGc+WOe2n091UWiGqfySHvVzPTu50yYIqlw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/github/-/github-0.75.277.tgz",
+          "bytes": 13750,
+          "filesSha256": "efc5fddca772db614e50e1a1b6494c8b0d3371259f38fc893ea8e904ab64d0c6"
+        },
+        {
+          "name": "@stacksjs/http",
+          "version": "0.75.277",
+          "integrity": "sha512-cHU03hl3Oxt5sknHRZTRlZ/Mr2S6dKYv055RyHsiC7uyECAOkXwae2gkuhDXLFeUCNXrUQYMu9l9y22w3JTpQQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/http/-/http-0.75.277.tgz",
+          "bytes": 4978,
+          "filesSha256": "373e042a22fd5db1fca493114c34e7d4b73a7c7cfa1e6a60888d416ede55327f"
+        },
+        {
+          "name": "@stacksjs/i18n",
+          "version": "0.75.277",
+          "integrity": "sha512-bhF6QYe83HPyr7+dQB6Usz00LaOvii3Jy8a0dmQyAOnOxHgbkgXBmONq906RBSz2uTBqeKVcpfKmTQUkdz9fRQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/i18n/-/i18n-0.75.277.tgz",
+          "bytes": 21218,
+          "filesSha256": "ee666f671e4c924475f9540aa413a6c8774366454de4d56707c5c6fb9efb6b43"
+        },
+        {
+          "name": "@stacksjs/health",
+          "version": "0.75.277",
+          "integrity": "sha512-28gtACp9k7rwwFMUVzLxAbbxEMomLt9ZWK4kkseUOUznHFl1uHyVRGCL44jVM/1PaF2Zgm7S9PA7pCgKrOJf1Q==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/health/-/health-0.75.277.tgz",
+          "bytes": 2277,
+          "filesSha256": "420156904b420b40c73fbd23c4e20a193d68dd26e9dd5cf5177ae01547b5b4dd"
+        },
+        {
+          "name": "@stacksjs/image",
+          "version": "0.75.277",
+          "integrity": "sha512-b5CIqFBvd2j5tqJQPTfHWwAWcLecPUms6aj8JSdVfgLf/fMstIoN/QQoiKGSSSkf9NZyPfNESYcnz4m1oM2umQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/image/-/image-0.75.277.tgz",
+          "bytes": 15148,
+          "filesSha256": "01ba6747fceae866817ff795cda79e17f0156875a619325c58fce064269eb773"
+        },
+        {
+          "name": "@stacksjs/lint",
+          "version": "0.75.277",
+          "integrity": "sha512-97w9wEE2oPtjcQX5XSqupbKleex01LvYpGyBKn0duDdzfQPg0Qme9vxPbUn3Isnp8Hw7Jl/Fqjm9+FkFrSM4vw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/lint/-/lint-0.75.277.tgz",
+          "bytes": 3062,
+          "filesSha256": "adf87b8a939390c55ce0e5f9a40dbcfef7d1413769104338a8445c569fd1dc4f"
+        },
+        {
+          "name": "@stacksjs/logging",
+          "version": "0.75.277",
+          "integrity": "sha512-zXdDU7e5+myXu0FEf2Ryqt1Vzwq7c0Y4V+tA2cU952BPIEOd6l9p6kHc8gBx0EsQyYTp0VCIy2Ty6MqCuHe7MQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/logging/-/logging-0.75.277.tgz",
+          "bytes": 10957,
+          "filesSha256": "a489911c7a582fe3df9961e1673d76125a90a94d71cc9fe3913063e7f40386a8"
+        },
+        {
+          "name": "@stacksjs/mobile",
+          "version": "0.75.277",
+          "integrity": "sha512-LilGEA3h3kwCG44btolhg+MhLDoA+/ZEVw4rmKWLfmjMtBY3EVD2bwR9nrFyXH7ujRf73Grvxu1wL7eGqOelww==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/mobile/-/mobile-0.75.277.tgz",
+          "bytes": 83423,
+          "filesSha256": "27c539ad22621b3be4f3202cb151b86e0833c93462252145e5bae90dd52f43ae"
+        },
+        {
+          "name": "@stacksjs/model-meta",
+          "version": "0.75.277",
+          "integrity": "sha512-IjtLKiGR1+5xjQf5+wcydGnoSY7XepxEAJUzc0pJbg7OghjLbHx0nBSiRpTJGe7w5t4KhGizJ8eNN/x0BWpfAw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/model-meta/-/model-meta-0.75.277.tgz",
+          "bytes": 5312,
+          "filesSha256": "158bae5d72a6a7b83cf47d21d28002bd71783153913bfcbed3ee3614c0022a89"
+        },
+        {
+          "name": "@stacksjs/newsletter",
+          "version": "0.75.277",
+          "integrity": "sha512-xsVcK78RDftLBnZFAUGbm0kYLyqK2RW9kMyefxGDKCu/1N4C5DB3FmH5XNZl/jgGRSbzx9cheh3rTBTXzgREDw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/newsletter/-/newsletter-0.75.277.tgz",
+          "bytes": 12387,
+          "filesSha256": "5623d67f57d9d1c1c1bdc9e0c122c23ecbfe0773d7f831342beff6dd785e434e"
+        },
+        {
+          "name": "@stacksjs/notifications",
+          "version": "0.75.277",
+          "integrity": "sha512-t3ENecnFbiSEAJ3cPkG6F9zjIA0nrb5+6SwCpXekdnensOEtOe0bdZZc5ZRkVi5zllQcgH+Ast8Z7pMWb5sxKA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/notifications/-/notifications-0.75.277.tgz",
+          "bytes": 29208,
+          "filesSha256": "ff598fc226abfc72c695bd8fd9da9ca622bec75e932d062d37d6ba19e114fa9a"
+        },
+        {
+          "name": "@stacksjs/objects",
+          "version": "0.75.277",
+          "integrity": "sha512-aqvL9su7XMvCNjmYLm2A60xuqwQiLNM7shwgA3MqOLbLolw/nlS2hzLtOs++M0OfHWDsJxgL8aV1DV9wH+IqKw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/objects/-/objects-0.75.277.tgz",
+          "bytes": 5664,
+          "filesSha256": "a9f7fea53e18fb7cb7855408ebb1ddd11e99fc798b5e6f2645190e8902522610"
+        },
+        {
+          "name": "@stacksjs/pagination",
+          "version": "0.75.277",
+          "integrity": "sha512-4CR7Cq38BDpXLNUH7wmSyos35+RDFsFfwpxy3uA8s6GK6erFnE5p3FAd3jpYytndo6P4FPB5AJqR7QoMl8T6JA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/pagination/-/pagination-0.75.277.tgz",
+          "bytes": 3961,
+          "filesSha256": "3ea8e26d62a1d6e51ca1b1baec013f9d9638f18df57004e95b987730ceea9a8b"
+        },
+        {
+          "name": "@stacksjs/orm",
+          "version": "0.75.277",
+          "integrity": "sha512-aXuZzfdkw50vVfUQK2ZKU9dvVSbsE7qfbBDyyLWexeJn8T1vyTmmbXuATHowQUDU+aWn3BwY/nAE+FRg267y9g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/orm/-/orm-0.75.277.tgz",
+          "bytes": 166356,
+          "filesSha256": "cf9a2a88d0ed08ea88030cb87fbf01798e06c51ad882bb783e7036ff74758109"
+        },
+        {
+          "name": "@stacksjs/path",
+          "version": "0.75.277",
+          "integrity": "sha512-B77eSrXkIj/0vtNk/FwAFXbL6hiCAB0jAeXpEpWUWZdfXQvKWbUeLsXQ4taIkzka6EQrREYVorCjzlUYrtaqqw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/path/-/path-0.75.277.tgz",
+          "bytes": 19116,
+          "filesSha256": "e1bb13259221ef2fa3d8a21238bb5cf9adad83ceb4f1c884f3788cea9b6b02bc"
+        },
+        {
+          "name": "@stacksjs/push",
+          "version": "0.75.277",
+          "integrity": "sha512-OCKy6kFtHEzIHHrXdCpYQ77nE/SZonUBVzS6mykcxA/90dnS8cnP9+ra4XHxnmWXxQ2HYIVNx95dhIdzq2uqUw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/push/-/push-0.75.277.tgz",
+          "bytes": 11770,
+          "filesSha256": "960ce366799730944ebf537c5aea8f61ae4a08505d28a3e92b8ff7abb3dfa018"
+        },
+        {
+          "name": "@stacksjs/payments",
+          "version": "0.75.277",
+          "integrity": "sha512-1A3xV371eGiAc12Q2zKIXg3LW2SGXDSlWOLSuRUHLIxsgGQJCQLcGnNfx3pkTZjYNSut21rRHDmTBEXg7smKxw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/payments/-/payments-0.75.277.tgz",
+          "bytes": 71131,
+          "filesSha256": "16067afe5787e8e2e05c8cc85bc2cac98a834fc1cd00646121037d6c12480b88"
+        },
+        {
+          "name": "@stacksjs/query-builder",
+          "version": "0.75.277",
+          "integrity": "sha512-vv5ehp3zlWVXamDqvIfzJb/FPCtiKOR+g+3nir4DHkubVoClWW0ncthi/4sxX3PLP0HQf42O+dx3wSFqyhNCOA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/query-builder/-/query-builder-0.75.277.tgz",
+          "bytes": 6510,
+          "filesSha256": "27dd52fe0deac4bae882ea2270a8a7fd4ec1b5eb1e62d2078ba5b5ff673b59e5"
+        },
+        {
+          "name": "@stacksjs/realtime",
+          "version": "0.75.277",
+          "integrity": "sha512-kqqXkX6mEM9waZgdCROwDl3QbV/VrdC+fqUcVwThqtSBWpW+MkOkq28bChOa84UlSw55sLPDFXvzu4AkdErH2w==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/realtime/-/realtime-0.75.277.tgz",
+          "bytes": 10389,
+          "filesSha256": "58f83686d5e38dce4bfe5237e87975684efa82f452a36e122085a68316bb3f69"
+        },
+        {
+          "name": "@stacksjs/registry",
+          "version": "0.75.277",
+          "integrity": "sha512-QK7okluyhyHuOF4msWdsFQGnJa1uZSvItU0UkbTa6hu6ITFs7llWlQbAlmPMz+G5N6We4DYtD9S8vpKQSML00A==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/registry/-/registry-0.75.277.tgz",
+          "bytes": 2211,
+          "filesSha256": "502e59f0bdcb3a3298448d9be43d79774db6d41392dc3cb3cab5e651362ae4c7"
+        },
+        {
+          "name": "@stacksjs/repl",
+          "version": "0.75.277",
+          "integrity": "sha512-V5VquZQOpzYkRDst0wSxL82wy7uNbUAqFVe4LtblwiR/7wvqqwvrfno2BXTU2236r2qikIl1gEpcxRyF/RWOkg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/repl/-/repl-0.75.277.tgz",
+          "bytes": 3338,
+          "filesSha256": "238c30d994eaa530e97675651be687946d716dcd424e6a158ca93f5d7abe00e5"
+        },
+        {
+          "name": "@stacksjs/queue",
+          "version": "0.75.277",
+          "integrity": "sha512-rTkCW5KLL9AMbrrw6aj30N4N0JTQzRg6e3aVolnC03NA6lEBieC9pA3l8WHLYp4ulqkhtpW2Z6Vq2a1c+Y4U/Q==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/queue/-/queue-0.75.277.tgz",
+          "bytes": 57762,
+          "filesSha256": "3b127155cf0441b2699f72fa35f28f199d5dc6f6106b2b7fbd43691aa4b9d3cc"
+        },
+        {
+          "name": "@stacksjs/router",
+          "version": "0.75.277",
+          "integrity": "sha512-Vx4yc9v0OK9t5SbQFp2rgn3PdHa/L6zClprW3LH712MnNJWz+6Q9vXahEQte8vVFojBZtON18JwoF+bd0AOb8g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/router/-/router-0.75.277.tgz",
+          "bytes": 73973,
+          "filesSha256": "8a37ddcc6e9e4195606753c8970cfeb3a25061c5c991be6aa61ecf77fdef6d08"
+        },
+        {
+          "name": "@stacksjs/scheduler",
+          "version": "0.75.277",
+          "integrity": "sha512-0p6A5ZEpOyf0svLMfVMUkt62aF4gJdmDx+PmTmnGW+oN49QL0sziw3naBny1UGqWpAhfRo6sDYb/Tf1To/gSUw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/scheduler/-/scheduler-0.75.277.tgz",
+          "bytes": 12737,
+          "filesSha256": "136895301e4ccf9ccc2bcacd100f8f9dcab5b97987475f15ca9e8fad7ec1160d"
+        },
+        {
+          "name": "@stacksjs/search-engine",
+          "version": "0.75.277",
+          "integrity": "sha512-1alkB+SOGq9jeKkNT+V0OkMbYElAFILz3n6VGiBBUJ4BTX+y2EuiwsMFXv/sTCmX/sKmcSK4v0Z9KMXOUdt/sA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/search-engine/-/search-engine-0.75.277.tgz",
+          "bytes": 16948,
+          "filesSha256": "430f9b8d1e41d9cdba662f9fe2a4b613cbbf84325a8e5dfbd4f2c324250e8054"
+        },
+        {
+          "name": "@stacksjs/security",
+          "version": "0.75.277",
+          "integrity": "sha512-dJdB2jIUC5HCbH9O+anZ68AJAxNdaASOPsuOZdF8Zj66IGEfYnq7qDxXLNOOCWyq+reAvOkIwLALv8Kh1DioXA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/security/-/security-0.75.277.tgz",
+          "bytes": 14002,
+          "filesSha256": "d5526fc28a5bb57d76a41f693d60a3919853c64c38a3d7f44977a1dfb0d8da3a"
+        },
+        {
+          "name": "@stacksjs/server",
+          "version": "0.75.277",
+          "integrity": "sha512-aVSTYgGBNPZHA0ClTqze2Xs6xyhecP8vhw+5aVQeC2ZhxJ52p5r3PtrUhf8++Ib+ROiAoQ5yl0r4grDojVBPtg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/server/-/server-0.75.277.tgz",
+          "bytes": 27905,
+          "filesSha256": "627e041176ff203bfcabf802b7eab90924bfa2fb6e3ec74476b0258d14983df8"
+        },
+        {
+          "name": "@stacksjs/shell",
+          "version": "0.75.277",
+          "integrity": "sha512-aSfcZMxUtQJlzbCfOGUqisfNl5iZ/o0dycRApbfMNMVV0Zwg5Ul10VwawEX7OXcW4vcd9Ot+U62c7o+QkeX8Vg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/shell/-/shell-0.75.277.tgz",
+          "bytes": 3147,
+          "filesSha256": "4cad50f0596ce010bf14608fb8921d15ec4ff87c0cd705763f6efdea28c87673"
+        },
+        {
+          "name": "@stacksjs/skills",
+          "version": "0.75.277",
+          "integrity": "sha512-paC9f620230dn2WGufv1Z5i6cBesVgOK23Cmx9yWw1EWQ3kNqxutcaJowKxcM1o3hkh7s5BTCwPSroXM71DXGw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/skills/-/skills-0.75.277.tgz",
+          "bytes": 11544,
+          "filesSha256": "ca889ff06d6aa3f7fd8121e78851444c00a7cae9171d4ada8f632127df5be87f"
+        },
+        {
+          "name": "@stacksjs/sites",
+          "version": "0.75.277",
+          "integrity": "sha512-XztcHZiFq34jQ6431gpI22VB94f2TpkoS1X0qQ2atwTynFNY0k9S+u/gj5UnC//qMl+VpG952wCnFztRZRXjMA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/sites/-/sites-0.75.277.tgz",
+          "bytes": 8542,
+          "filesSha256": "b2b627e101dab5a7af22e2178fddb2aa6154478e27cfa76e0a46d425f3c92da5"
+        },
+        {
+          "name": "@stacksjs/slug",
+          "version": "0.75.277",
+          "integrity": "sha512-8J1fGz9yhOP0GB4nCt6z4O9mljv9H3RbnolBqS6hmJmJeicEovHsSqyZs8noc5mW652Y2DXRHmMwcdiBS7WQRQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/slug/-/slug-0.75.277.tgz",
+          "bytes": 2825,
+          "filesSha256": "202a9afee05582915d3e0766835b78bf11f376e2699b9e92e5a752145151f5fb"
+        },
+        {
+          "name": "@stacksjs/sms",
+          "version": "0.75.277",
+          "integrity": "sha512-1D1wGBnkxXH+qesXvQok4aj5j5C67fv67SzE2AZ45q4uqZmiI3WbTgSMyBCBo3iSZlmrVv6iXGDGRvWwY55BYw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/sms/-/sms-0.75.277.tgz",
+          "bytes": 14735,
+          "filesSha256": "41ec6c77ac7ba47212fd7a82834df56a60d6f74244ccfce95a5de7619fe86011"
+        },
+        {
+          "name": "@stacksjs/socials",
+          "version": "0.75.277",
+          "integrity": "sha512-HpDqz84C65pL+UE8IG5ZzrzR6xzKWQzF+gRHV2IRSjAOTKklYEbnrYc00tI4lo/URQ7qK96Uv/Y/yO1BVtgiHQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/socials/-/socials-0.75.277.tgz",
+          "bytes": 36527,
+          "filesSha256": "2400bb079e589e4a723a49b5d073ed8f68dc12adcfb3446e03dd3b8b4b8cab48"
+        },
+        {
+          "name": "@stacksjs/storage",
+          "version": "0.75.277",
+          "integrity": "sha512-5FHEj6zEar/o4K+bBSbQ8SHD1ZK8yc/y0kYta6ld7dFPm7IvacaAFZBTq6R9sGqaPTSZzWAok7nJCdEF0ZzACQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/storage/-/storage-0.75.277.tgz",
+          "bytes": 71471,
+          "filesSha256": "4899db127d9017fbd7832d552c41e4188ac0d6510af3575f7dd8a7444b7d269c"
+        },
+        {
+          "name": "@stacksjs/strings",
+          "version": "0.75.277",
+          "integrity": "sha512-wasA/d5K1ulB/vIH70kd5UgB2NZxVjJQ3WsdW4bNs9a1Jv3n5FZXyQJJphRPtUJoMSw+/9h9PkLnH3xVU9EMrw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/strings/-/strings-0.75.277.tgz",
+          "bytes": 19867,
+          "filesSha256": "0f81426b868588547b2c0081efd77786eb0a8a1c07652bdf72fc54e85b678f71"
+        },
+        {
+          "name": "@stacksjs/testing",
+          "version": "0.75.277",
+          "integrity": "sha512-uEn6G6Kep8Enxt6SJaqZ4iJ+3DeVr0+IVqZ5T895wNfC5GDWTL5ME4ufh7inTBokJOd6p/Vwv3fxzS64oQWoVA==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/testing/-/testing-0.75.277.tgz",
+          "bytes": 30188,
+          "filesSha256": "bb92179e55e26d7322b61293cda74666f60e2c8214c28cd93b2eee06245ef0ce"
+        },
+        {
+          "name": "@stacksjs/tunnel",
+          "version": "0.75.277",
+          "integrity": "sha512-QihXTAyK3Zazjmf5dSgVKlNP/xcaKvOX+pj+IwptWie/koQqnOjnUTxHxyfTI5o3ngR+OZokZpGT8m/lYYb1qQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/tunnel/-/tunnel-0.75.277.tgz",
+          "bytes": 2961,
+          "filesSha256": "fdc7d1e2f74839c54968fc6de708eb29d6da3e46c7b72ea01caf2780c911308d"
+        },
+        {
+          "name": "@stacksjs/tinker",
+          "version": "0.75.277",
+          "integrity": "sha512-7+yOE3w8VB7I5E3JtuL5C1CSGlVq6FlXXXhSI1C+h0ySTAnc/J+jYtbhxPEg8NvyNe59lpthGewVGFV9G89f6g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/tinker/-/tinker-0.75.277.tgz",
+          "bytes": 12225,
+          "filesSha256": "de45a1d09e81a123bd1828ae7e43afde97042703ac86afe3646f96a4cef60e2e"
+        },
+        {
+          "name": "@stacksjs/types",
+          "version": "0.75.277",
+          "integrity": "sha512-I9LDa8985Ahi/iarhPP2jX7U5d2Gz40Fxzbyw3+SuzDuLICTqQQ6FXMX/vTru37JCxx9/v7jsVw3pvqh0JDPFQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/types/-/types-0.75.277.tgz",
+          "bytes": 75525,
+          "filesSha256": "1dc6b4f6292acfecd8dd258a1d8a56ea5310d421104094a1edea0008000f6c5f"
+        },
+        {
+          "name": "@stacksjs/ui",
+          "version": "0.75.277",
+          "integrity": "sha512-cSh+WL9cwj345Q5YiBxgPK3h5MsIwUUO4svk2nO0PwmOc0eGomafDbqWS1V11YIK31a56BrJ12JAXF989FkeGQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/ui/-/ui-0.75.277.tgz",
+          "bytes": 7795,
+          "filesSha256": "84fa642010644095bc8a38bb05de5209f0258749771461d8c4f510d2293744b2"
+        },
+        {
+          "name": "@stacksjs/utils",
+          "version": "0.75.277",
+          "integrity": "sha512-sAH2vQSneq8SgGKLShRbKTG6eVosj41AeDtvmWfb18qLfmyPu7Jn06AiYJiRT05UAJvEx3T+rTChX6q8pJYi5A==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/utils/-/utils-0.75.277.tgz",
+          "bytes": 29602,
+          "filesSha256": "9770fa6b1f03b9ca2540ded30366b087ecafd7701efab38d51178225240dda01"
+        },
+        {
+          "name": "@stacksjs/validation",
+          "version": "0.75.277",
+          "integrity": "sha512-2LkcTTwcQQ8YwH8GEv5JLKu9JrmSbmimbYNHiPge/Qkgek5dkvzBq6wsSVGls24XC7psnQ0grLXC7c3Nrsrbqw==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/validation/-/validation-0.75.277.tgz",
+          "bytes": 16402,
+          "filesSha256": "ac5ffc95860332257c43fc3682acc124bec35a6df98d7c672098b07c7a015b53"
+        },
+        {
+          "name": "stacks",
+          "version": "0.75.277",
+          "integrity": "sha512-8/vwJN5T0zIHAhcjccaFVTZkja9wNBvO2zKbO0Y0Wf600xHILO/PBIE6+N1WQndNm0he0mPhaONXauz0m2wKoQ==",
+          "tarball": "https://registry.npmjs.org/stacks/-/stacks-0.75.277.tgz",
+          "bytes": 62228,
+          "filesSha256": "1fc67649bad91a30a9f23b2849dedd8c93586ec16ccaef6464b35682efc0b515"
+        },
+        {
+          "name": "@stacksjs/video",
+          "version": "0.75.277",
+          "integrity": "sha512-LHUj/SyNyReHmESowNrpeuZ1Zu44J+9cSl1LUjSAu1MgmSaYF/9jqvUAiKBNUjIa3UYsqIlQ5KsDxURl4/3mGQ==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/video/-/video-0.75.277.tgz",
+          "bytes": 8879,
+          "filesSha256": "924a550acb8d8a9ec1000c7a3ea4f89a0d09dde493cf804b1432a3f84b043903"
+        },
+        {
+          "name": "@stacksjs/whois",
+          "version": "0.75.277",
+          "integrity": "sha512-8kzEYEBxUtJz0c/kEC77u9UVoWF874zUnxl8fRbKDwfwNU4/sQx1S4xBJj+WYcmG23fvvvtgAVDxYLTyeQSk6A==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/whois/-/whois-0.75.277.tgz",
+          "bytes": 11546,
+          "filesSha256": "2e090e05aef4d665f7bae2aaec6e67ae1b60b9d579b3596a38889f32e561af5a"
+        }
+      ],
+      "releaseCommand": "bun run release:patch",
+      "releaseScript": "./buddy release --bump patch"
+    },
+    {
+      "repository": "craft-native/craft",
+      "commit": "ed74f316788ff1ff41a3c22889b7436888539764",
+      "tag": "v0.0.301",
+      "gates": [
+        {
+          "runId": 39894808868,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "accept exact release source",
+            "validate release identity",
+            "accept exact native runtimes",
+            "release-sbom / vulnerability-scan",
+            "verify and stage npm packages",
+            "release-sbom / generate",
+            "pantry (darwin-arm64)",
+            "pantry (linux-x86-64)",
+            "verify downloaded darwin-x64",
+            "verify downloaded linux-x64",
+            "verify downloaded darwin-arm64",
+            "attach and verify release SBOMs",
+            "verify release assets",
+            "verify downloaded windows-x64",
+            "publish complete verified release",
+            "npm",
+            "publish verified Zig package to pantry",
+            "notify registry and channel after publication"
+          ]
+        },
+        {
+          "runId": 39894808181,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "Android software emulator",
+            "zig-core (ubuntu-latest)",
+            "Vulkan SDK ABI (ubuntu-latest)",
+            "windows-multi-window",
+            "zig-core (macos-latest)",
+            "Vulkan SDK ABI (windows-latest)",
+            "integration",
+            "ios-native-templates",
+            "typescript-sdk",
+            "create-craft",
+            "Vulkan SDK ABI (macos-latest)",
+            "lint",
+            "ios-builder",
+            "ts-maps",
+            "android-builder",
+            "publish-commit"
+          ]
+        },
+        {
+          "runId": 39894808219,
+          "workflow": ".github/workflows/mobile-e2e.yml",
+          "requiredJobs": [
+            "Android emulator",
+            "iOS Zig runtime slice",
+            "android-navigation (34)",
+            "iOS native UI (uikit)",
+            "iOS native Metal surface",
+            "iOS native UI (navigation-unit)",
+            "Harness unit tests",
+            "iOS native UI (navigation-ui-controls)",
+            "media-cache / ios",
+            "media-cache / sdk",
+            "media-cache / android",
+            "iOS simulator",
+            "android-navigation (35)",
+            "iOS native UI (navigation-ui-core)",
+            "iOS hybrid navigation",
+            "Mobile E2E summary"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "craft-native",
+          "version": "0.0.301",
+          "integrity": "sha512-rBpHucPrJuOPa8VL+VkkPslNAdVEVoOG3+6Zp7aQpsm5Wcm1Q7BdBvHtf+2nFw3ODx573E3+bMfVHWs6WSw5Gw==",
+          "tarball": "https://registry.npmjs.org/craft-native/-/craft-native-0.0.301.tgz",
+          "bytes": 1327628,
+          "filesSha256": "6966aaf9aea3dbacd7a9b9a782d1ff4c418c29788ee9b902df4508e1de465b64"
+        }
+      ],
+      "releaseCommand": "bun run release:patch",
+      "releaseScript": "bun scripts/release-version.ts --preflight && bun x --bun @stacksjs/bumpx patch --recursive --commit --tag --push --yes --no-changelog --execute \"bun scripts/release-version.ts --pending && bun scripts/generate-release-changelog.ts && git add CHANGELOG.md\""
+    },
+    {
+      "repository": "stacksjs/stx",
+      "commit": "4b3bae7f367c76fd5cd65878eea3fde6763cf9aa",
+      "tag": "v0.2.669",
+      "gates": [
+        {
+          "runId": 39863476622,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "Verify the exact release source",
+            "Verify native signing on macOS 15",
+            "npm",
+            "icons"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "stx-router",
+          "version": "0.2.669",
+          "integrity": "sha512-lBGve1q7AMvATAleh6uX5p6i6eeeWorWlY42Ssb+yeK7fvDso/RlZTPUW3R4Jo5dAjcrtxJShoGmLZlnG9IOwA==",
+          "tarball": "https://registry.npmjs.org/stx-router/-/stx-router-0.2.669.tgz",
+          "bytes": 82878,
+          "filesSha256": "33243d3956b0cc40804ddd82c17cd386404b5d136d8439cfc8b146d732aff05e"
+        },
+        {
+          "name": "@stacksjs/sanitizer",
+          "version": "0.2.669",
+          "integrity": "sha512-fAGC2BlGB3lMINsXL4rXIcPVFQB89v9lrpy12AN+QlNmUjc5yVvFew5IIgfT7RvhB428frd7xD+v9Vzb9AW20g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/sanitizer/-/sanitizer-0.2.669.tgz",
+          "bytes": 4743,
+          "filesSha256": "c34620c00ff080748d9dc710e1f8884307c5631422717a4134891a6ca1336085"
+        },
+        {
+          "name": "@stacksjs/desktop",
+          "version": "0.2.669",
+          "integrity": "sha512-hKgIOjPdEj9riP4eOQLLHgnbiWLZa24KIu3m3y9m9xu/NRgB/T17kjNt77EXuF9NoKprk9x06x0ptlbNiKkz2Q==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/desktop/-/desktop-0.2.669.tgz",
+          "bytes": 108740,
+          "filesSha256": "24960eda5bf27a515f49a99728f6a21c361129377b3864b59de04d0b4654119e"
+        }
+      ],
+      "releaseCommand": "bun run release:patch",
+      "releaseScript": "bun x --bun @stacksjs/bumpx patch --recursive --yes"
+    },
+    {
+      "repository": "stacksjs/stx",
+      "commit": "85dc9535c5ddf8f465fde3b4c195e80411f1a766",
+      "tag": "v0.2.670",
+      "gates": [
+        {
+          "runId": 39880293592,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "Verify the exact release source",
+            "Verify native signing on macOS 15",
+            "npm",
+            "icons"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "bun-plugin-stx",
+          "version": "0.2.670",
+          "integrity": "sha512-s2/0WBu6gJQF9gaZ31P+Qkg1XM/BUg96MI2tWvOpFpu3S2pssCVB09R0P8xPuSJnNWG9zIR11er656hALCzIzA==",
+          "tarball": "https://registry.npmjs.org/bun-plugin-stx/-/bun-plugin-stx-0.2.670.tgz",
+          "bytes": 124136,
+          "filesSha256": "304048c9f30e0be22278c5e4dd7f40091e5850e186e54ffe72c550f960bfdd9d"
+        },
+        {
+          "name": "@stacksjs/components",
+          "version": "0.2.670",
+          "integrity": "sha512-6n4y1qRG/amNpfkrqq7Sfn9ofuJGPeTVKEzdgb3PGZxWNPlY1hnjta1qho+WzgH+j7nBCZLuCvAEuq5D5e361g==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/components/-/components-0.2.670.tgz",
+          "bytes": 560131,
+          "filesSha256": "d978442626d6593e454ed585a2012a0d47681aeb46e6abf19e8aced4c41f626f"
+        },
+        {
+          "name": "@stacksjs/stx",
+          "version": "0.2.670",
+          "integrity": "sha512-q+002TEudwpuRpFhTAOl8J9LEfIbgaEICuqbSeyFqMUPi3w5RTHhyClRZKEpO0qPH4GD5tb9mF03y3hdQcdtSg==",
+          "tarball": "https://registry.npmjs.org/@stacksjs/stx/-/stx-0.2.670.tgz",
+          "bytes": 2284190,
+          "filesSha256": "2d55267953b0cae00f4468ca97f3aee73617c4a5a3593959d4b4f56a7cc67911"
+        }
+      ],
+      "releaseCommand": "bun run release:patch",
+      "releaseScript": "bun x --bun @stacksjs/bumpx patch --recursive --yes"
+    }
+  ],
+  "consumer": {
+    "lockfile": "bun.lock",
+    "sha256": "f61f6a2d290fc4f9546bad28f0900ca928abd18b0a53e14f306208600e4449dd",
+    "bunVersion": "1.4.2",
+    "checks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "ebd8da86de6bd11a3410f3acc7f193bb1f36be67ef87f13ef9808224078ae8b8"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "bff60778ce0ce5dd240c3fa4f1a5a290662eb2c238a28464218109fbfd0fee49"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ]
+  }
+}
