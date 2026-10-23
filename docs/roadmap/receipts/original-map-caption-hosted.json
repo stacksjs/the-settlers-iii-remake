@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T02:26:25.628040+00:00",
+  "repository": "stacksjs/the-settlers-iii-remake",
+  "commit": "0274face5fc503e55f70d02277c7f21d4738d957",
+  "runId": 39887327617,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "jobId": 120198437046,
+      "name": "game",
+      "conclusion": "success"
+    }
+  ],
+  "browser": {
+    "steps": 41,
+    "failedSteps": 0,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "mediaIdentity": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "a75b60d5d226cd949fbcabe3d3dd488319be679e2ffa256e7ff157fccb2d54c8",
+        "bytes": 995267,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    }
+  },
+  "artifact": {
+    "id": 12472613663,
+    "sha256": "f3130c0cf787d8b9523088e01079c1ca2b627af0f75539b2e3fb9c6b3332babb",
+    "bytes": 3026
+  },
+  "limit": "Original demo map load/save/restore and browser rendering acceptance. Gold behavior, native game presentation and redistribution rights remain unverified."
+}
