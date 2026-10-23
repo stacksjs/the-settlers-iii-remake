@@ -64,6 +64,18 @@ describe('suspension and demolition', () => {
     order(s, 'suspend', { building: id, suspended: false })
     until(s, () => b.phase === 'active', 2000)
   })
+  test('demolishing a working building releases its worker resource claims', () => {
+    const s = session()
+    const id = place(s, 'woodcutter', anchors.forest)
+    const b = s.state.buildings.get(id)!
+    until(s, () => b.phase === 'active' && [...s.state.claims.values()].includes(b.worker), 4000)
+    const worker = b.worker
+    expect(worker).toBeGreaterThan(0)
+    order(s, 'demolish', { building: id })
+    expect([...s.state.claims.values()]).not.toContain(worker)
+    expect(s.state.settlers.get(worker)!.workplace).toBe(0)
+    expect(conserved(s)).toBe(true)
+  })
   test('demolition in every phase releases people, jobs and reservations without duplicating goods', () => {
     for (const phase of ['leveling', 'delivering', 'building', 'active'] as const) {
       const map = landscape([{ kind: 'elevation', ...anchors.west, radius: 3, amount: 6 }])

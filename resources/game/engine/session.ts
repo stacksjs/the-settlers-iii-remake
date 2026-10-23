@@ -232,7 +232,6 @@ function demolish(ctx: Context, b: Building): void {
     const left = dropToGround(ctx, b.owner, door, good, refund)
     record(ctx, b.owner, 'recovered', good, refund - left)
   }
-  for (const [tile, id] of [...ctx.state.claims]) if (ctx.state.settlers.get(id)?.workplace === b.id) ctx.state.claims.delete(tile)
   templeLost(ctx, b)
   markFootprint(ctx, b, 0)
   ctx.state.buildings.delete(b.id)

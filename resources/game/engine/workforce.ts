@@ -30,6 +30,10 @@ export function release(ctx: Context, s: Settler, reason: string): void {
     occupy(ctx, s, tileOf(ctx, s))
   }
   if (s.cargo) dropCargo(ctx, s)
+  // Detach first so a cancelled work program cannot send this released
+  // worker back to its old building. Its owner still releases resource
+  // claims, doorstep reservations and any interrupted recruitment order.
+  if (program) finishers.get(program.kind)?.(ctx, s, program, false, reason)
   halt(s); s.diagnostic = reason
 }
 
