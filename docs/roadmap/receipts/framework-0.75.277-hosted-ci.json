@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T06:06:16.367266+00:00",
+  "repository": "stacksjs/the-settlers-iii-remake",
+  "commit": "0722228b5b9f77f677c6b6f05b0b50be5819b024",
+  "runId": 39908707454,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "game",
+      "jobId": 120266480899,
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy lint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run typecheck",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy test --unit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:import",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run bun run assets:verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./buddy build views",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the production campaign in Chrome",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain non-media browser diagnostics",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Provision managed tools",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v7",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "originalArtifact": {
+    "id": 12481609238,
+    "sha256": "b9ed240edd8c6a3d744081da78b11585cbb1046b094c471a61523bbd126aaef5",
+    "bytes": 3028,
+    "archiveCrcVerified": true,
+    "files": [
+      "browser-server.log",
+      "shots/campaign-media.json",
+      "shots/campaign.json"
+    ]
+  },
+  "productionBrowser": {
+    "steps": 41,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "media": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "a75b60d5d226cd949fbcabe3d3dd488319be679e2ffa256e7ff157fccb2d54c8",
+        "bytes": 995267,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    }
+  },
+  "limit": "Hosted browser acceptance does not establish original Gold Edition behavioral parity, public native Zig package consumption, or native game presentation."
+}

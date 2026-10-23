@@ -12,7 +12,7 @@ The [STX 0.2.670 publication record](receipts/stx-0.2.670-publication.json) veri
 
 The [Craft publication record](receipts/craft-0.0.301-publication.json) verifies all eight original npm archives, four native archives, downloaded ARM64 CLI execution, exact source CI and sixteen mobile jobs. A separate clean consumer exposed two public Zig package failures: Pantry advertises an invalid native hash, and Craft requires a sibling zig-js checkout. S3-010 is reopened and its dependency frontier is reconciled. The npm SDK upgrade does not close public native graphics consumption or native game delivery.
 
-Historical [0.75.274 adoption](receipts/framework-0.75.274-receipt.json) and [hosted CI](receipts/framework-0.75.274-hosted-ci.json) remain available. This checkpoint covers local production browser acceptance; a hosted run for the new upgrade is recorded separately after push. It does not establish original Gold parity or complete native game presentation.
+Historical [0.75.274 adoption](receipts/framework-0.75.274-receipt.json) and [hosted CI](receipts/framework-0.75.274-hosted-ci.json) remain available. The [hosted 0.75.277 upgrade CI](receipts/framework-0.75.277-hosted-ci.json) passed frozen installation, types, lint, units, source asset import, production build and all 41 real browser steps. Its original diagnostic artifact is verified by GitHub SHA-256 and archive CRC. It does not establish original Gold parity or complete native game presentation.
 
 This checkpoint supersedes the initial release statuses retained below. The supplied remake repository remains the available reference; no installed original Gold executable or original execution captures have been supplied.
 
