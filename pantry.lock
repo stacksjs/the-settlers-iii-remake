@@ -5,18 +5,18 @@
     "": {
       "name": "the-settlers-iii-remake",
       "dependencies": {
-        "@stacksjs/actions": "^0.75.271",
-        "@stacksjs/env": "^0.75.271",
-        "@stacksjs/path": "^0.75.271",
-        "@stacksjs/stx": "0.2.668",
+        "@stacksjs/actions": "^0.75.273",
+        "@stacksjs/env": "^0.75.273",
+        "@stacksjs/path": "^0.75.273",
+        "@stacksjs/stx": "0.2.669",
         "craft-native": "0.0.296",
-        "stacks": "^0.75.271"
+        "stacks": "^0.75.273"
       },
       "devDependencies": {
-        "@stacksjs/components": "0.2.668",
+        "@stacksjs/components": "0.2.669",
         "@stacksjs/ts-png": "0.1.10",
         "better-dx": "^0.2.38",
-        "bun-plugin-stx": "0.2.668"
+        "bun-plugin-stx": "0.2.669"
       },
       "system": {
         "bun.sh": "1.4.2",

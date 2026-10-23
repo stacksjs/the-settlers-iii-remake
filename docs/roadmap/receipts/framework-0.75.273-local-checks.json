@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-23T00:01:19.461023+00:00",
+  "consumer": {
+    "lockfile": "bun.lock",
+    "sha256": "6c7ead403a206ba8c00c133489e0afd71a6a94c437987ea99fcf876e7d119ce4",
+    "bunVersion": "1.4.2",
+    "checks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "8f5e695fd7be20411baa7515404669cc301a94c5500cbf860f5db4bb9dadaf64"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "32e569dfb3ccfbc432593a76b39d1fb4042563610488f3c24beabc80ec622f11"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "a14ec242009cc6468a551cac181df84d6570cd0b5ce0536d0077f19a94f8cd39"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ]
+  },
+  "normalUpgradeCommand": "./buddy upgrade --stable",
+  "normalStxInstallCommands": [
+    "bun add --exact @stacksjs/stx@0.2.669",
+    "bun add --dev --exact @stacksjs/components@0.2.669 bun-plugin-stx@0.2.669"
+  ],
+  "pantryVersion": "0.11.113",
+  "productionBuildExitCode": 0,
+  "productionBrowser": {
+    "url": "http://127.0.0.1:3450/",
+    "viewport": {
+      "width": 1440,
+      "height": 960
+    },
+    "freshRaster": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "0274fa130611c7d2fb89f244f45dcdbc1dd2563473bd07bd0c777898176091cf",
+        "bytes": 755111,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    },
+    "visualInspection": "Inspected the fresh local screenshot: original converted terrain, buildings and settlers render with the current custom HUD and generated map. This is not the original interface or an original-map parity claim.",
+    "coverage": [
+      "keyboard construction",
+      "speed",
+      "pause",
+      "audio",
+      "background checkpoint",
+      "reload"
+    ]
+  },
+  "logs": [
+    {
+      "name": "game-framework-273-upgrade.log",
+      "sha256": "39783bd2f190119fd3e90581d3af6089a06cdbe58401e2cdfd533d475e6b94eb",
+      "bytes": 4111
+    },
+    {
+      "name": "game-stx-669-install.log",
+      "sha256": "5460f3a59b11632b9518b381ccb9acf20612eb49690db2cd977bb8512284c155",
+      "bytes": 471
+    },
+    {
+      "name": "game-framework-273-pantry-install.log",
+      "sha256": "c61860a83b478c5161b25a5aaecc40a392628ed5c6918339556a02446eaa14f7",
+      "bytes": 3361
+    },
+    {
+      "name": "game-framework-273-frozen.log",
+      "sha256": "d222a70d5e71890c6606b2286ae5c65f6e721dca2fc5600f43cf6501c507a336",
+      "bytes": 112
+    },
+    {
+      "name": "game-framework-273-build.log",
+      "sha256": "b72f52d8a757add7ae5f13ec6b22169360113998663186eb37817f93e1ba14f3",
+      "bytes": 1889
+    },
+    {
+      "name": "game-framework-273-installed-verification.log",
+      "sha256": "58f9aaaa5f4bb951c56480e818ce786e6799550e1ac496eca280b13b2485c642",
+      "bytes": 89
+    },
+    {
+      "name": "game-framework-273-bumpx-contexts.log",
+      "sha256": "1bfe6e6c80c0bd27fac75f8ed0efdf1d039993c9a7024b19cb1a3c670e49ce64",
+      "bytes": 5315
+    }
+  ]
+}

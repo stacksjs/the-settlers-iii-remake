@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checks": [
+    {
+      "owner": "@stacksjs/actions",
+      "version": "0.2.26",
+      "resolvedEntry": "node_modules/@stacksjs/actions/node_modules/@stacksjs/bumpx/dist/src/index.js",
+      "originalArchiveIntegrity": "sha512-fgoQd9bZf8u/7qY5kL2rJiHsP5wv03xu3MVb7/9c0aitTNbUu9+u/3Vk/eNUz/sKPiIuZFA0erE76Ca6nD8y/g==",
+      "originalInstalledFilesMatched": 19
+    },
+    {
+      "owner": "@stacksjs/buddy",
+      "version": "0.2.26",
+      "resolvedEntry": "node_modules/@stacksjs/buddy/node_modules/@stacksjs/bumpx/dist/src/index.js",
+      "originalArchiveIntegrity": "sha512-fgoQd9bZf8u/7qY5kL2rJiHsP5wv03xu3MVb7/9c0aitTNbUu9+u/3Vk/eNUz/sKPiIuZFA0erE76Ca6nD8y/g==",
+      "originalInstalledFilesMatched": 19
+    }
+  ],
+  "limit": "Checks framework dependency resolution and original installed bytes. The shared better-dx root tool may retain a different compatible version."
+}

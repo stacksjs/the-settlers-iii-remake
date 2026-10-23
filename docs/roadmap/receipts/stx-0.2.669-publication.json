@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "repository": "stacksjs/stx",
+  "tag": "v0.2.669",
+  "commit": "4b3bae7f367c76fd5cd65878eea3fde6763cf9aa",
+  "releaseRunId": 39863476622,
+  "sourceCiRunId": 39863476821,
+  "releaseJobs": [
+    {
+      "name": "Verify the exact release source",
+      "jobId": 120119728848,
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify native signing on macOS 15",
+      "jobId": 120119729072,
+      "conclusion": "success"
+    },
+    {
+      "name": "npm",
+      "jobId": 120124776899,
+      "conclusion": "success"
+    },
+    {
+      "name": "icons",
+      "jobId": 120130830810,
+      "conclusion": "success"
+    }
+  ],
+  "originalNpmArchives": [
+    {
+      "name": "stx-router",
+      "version": "0.2.669",
+      "shasum": "3f0d3de09c3e05d83800718b562d673cd00afd50",
+      "integrity": "sha512-lBGve1q7AMvATAleh6uX5p6i6eeeWorWlY42Ssb+yeK7fvDso/RlZTPUW3R4Jo5dAjcrtxJShoGmLZlnG9IOwA==",
+      "file": "stx-router-0.2.669.tgz",
+      "bytes": 82878,
+      "sha256": "a157a77960c59dd687f216d74bd86df0aba800a8348e22725827dffcb2d81161",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/sanitizer",
+      "version": "0.2.669",
+      "shasum": "366ca030cf9a5639c5cb909b839e1a734cd4b009",
+      "integrity": "sha512-fAGC2BlGB3lMINsXL4rXIcPVFQB89v9lrpy12AN+QlNmUjc5yVvFew5IIgfT7RvhB428frd7xD+v9Vzb9AW20g==",
+      "file": "_stacksjs_sanitizer-0.2.669.tgz",
+      "bytes": 4743,
+      "sha256": "18b1e409c34062b8e01b079a21fd83f963c6a6e2b229b81aa4fb2948b50bd80b",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/desktop",
+      "version": "0.2.669",
+      "shasum": "d9f3884a3570eadfd52a558bcbacbc3bbc709ee4",
+      "integrity": "sha512-hKgIOjPdEj9riP4eOQLLHgnbiWLZa24KIu3m3y9m9xu/NRgB/T17kjNt77EXuF9NoKprk9x06x0ptlbNiKkz2Q==",
+      "file": "_stacksjs_desktop-0.2.669.tgz",
+      "bytes": 108740,
+      "sha256": "b216515777a189693cc3332e1d2346f754303ffe75177ea43c07d584e4ded22c",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "bun-plugin-stx",
+      "version": "0.2.669",
+      "shasum": "819e1bd7cdcf5846706e9fb0e27623d67cb325f0",
+      "integrity": "sha512-V0z7lHdZjahd1Xyltez0RGbPQTsZsjOsFGLVi9v4SiBMRFJVzoQ+JpIaIoaYNTGyNuZMUNCgY9KwvHS0ATCXvA==",
+      "file": "bun-plugin-stx-0.2.669.tgz",
+      "bytes": 124133,
+      "sha256": "331df9dd75407c5c24bb79db40aecdf9afe5cf885d3543efd49e39d903c1b602",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/iconify-core",
+      "version": "0.2.669",
+      "shasum": "b117b5623f62e1e31aea500d55696dc52465e946",
+      "integrity": "sha512-TuPiEmiWHVMoR+JeZRISca/wyo2ASa9dLeHViEbPrw7wTUydMJYsBo6UcY4zUT/L6yV5fDMs3FnHZZZq4VGgrQ==",
+      "file": "_stacksjs_iconify-core-0.2.669.tgz",
+      "bytes": 4361,
+      "sha256": "277f7aedb8a0e9c5f09829af713fac3cbbb93c2919ace6666f0360f9e5b5cdb1",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/components",
+      "version": "0.2.669",
+      "shasum": "80dc4337992f82af68721c310532d0b703b9cf24",
+      "integrity": "sha512-LDL38hhBTgXBOW0vzVCGW8cp+SaEtGc7U6hf3DNeh0bH2Kj+K6Xkn/bEGNRhYznosYwi62nmqO6CPl3iMd5zpw==",
+      "file": "_stacksjs_components-0.2.669.tgz",
+      "bytes": 558764,
+      "sha256": "367f67d1aae0dc9c16fa7e8b4e3dfbf7d3ab1144b75d39301ef48832bb0d6dd4",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/stx",
+      "version": "0.2.669",
+      "shasum": "8d188f3edad89bf1772c82623d86af1bc28c1579",
+      "integrity": "sha512-Q9XRibNo3wQ4oI6LpFiGSNZjCAp8v2SmORvIIJKlpxsiE3UnJHOsVq2G2HFI5RjnDI9+qNRF+7nmIfRRU7CAng==",
+      "file": "_stacksjs_stx-0.2.669.tgz",
+      "bytes": 2283174,
+      "sha256": "0dd6da4a40dd058ddc172623a3236824b3f5b84cc5e89270d9719f9b805f537a",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/stx-vscode",
+      "version": "0.2.669",
+      "shasum": "72b03709c43040a092d1d3135475f31da86bbc83",
+      "integrity": "sha512-FHlhDNj1heaEg+/bcecO/7hNTlzamKc104utFR2Z0gqo/k4VCxgXKe9LGHzWLnkHn0Mdj/n6RbYZsl3ZDxY+Aw==",
+      "file": "_stacksjs_stx-vscode-0.2.669.tgz",
+      "bytes": 94602,
+      "sha256": "aa37db04953c5ad9ef67d4bc24e57a23dcc168f424f4655d8848c6febbff6a0a",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "@stacksjs/iconify-generator",
+      "version": "0.2.669",
+      "shasum": "16a12ccbf073f9b5d71a212076d30e5098eac270",
+      "integrity": "sha512-Q4wsoBKyvEjFTFnRFBH7sMnFtqybC/krRchIbM1KOKkZjIad2y8BqoLJNuotYYKhdH0ti2ADW62fd0uMTo857A==",
+      "file": "_stacksjs_iconify-generator-0.2.669.tgz",
+      "bytes": 39945,
+      "sha256": "bd5b8cceaedb138a5fb5ef7c9baa1a539f456bb532dc0bb53a0426d08ba6c258",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    },
+    {
+      "name": "create-stx",
+      "version": "0.2.669",
+      "shasum": "db880a558ceea4287d7ac9f2b1156d64ff9fe028",
+      "integrity": "sha512-LFjYIIMbrD1lTdc4ylEPLXIl9docdFgu8Acs9zndWacPXK4/NsvvVQ28Eys/z5gfRXwD8UyUOsjsZGvb9OmF/Q==",
+      "file": "create-stx-0.2.669.tgz",
+      "bytes": 7620,
+      "sha256": "65e70f60bed64eac4d5c3f0a623d4ca5e82c866824cc5b80512c238fc199297d",
+      "matchedOriginalMetadataAndCompleteBytes": true
+    }
+  ],
+  "separateExtensionPublication": {
+    "runId": 39863476614,
+    "conclusion": "failure",
+    "reason": "VSCE_PAT is not configured on the repository; this is not a completed marketplace publication."
+  }
+}
