@@ -411,12 +411,12 @@
         "settlers-gold",
         "type:feature",
         "priority:p0",
+        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile",
-        "ready-for-agent"
+        "platform:mobile"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -1849,14 +1849,13 @@
       "id": 5964137489,
       "number": 73,
       "url": "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-071] Make AI recover from economic deadlocks",
       "labels": [
         "settlers-gold",
         "type:feature",
         "priority:p1",
-        "ready-for-agent",
         "subsystem:07",
         "platform:browser",
         "platform:native"
