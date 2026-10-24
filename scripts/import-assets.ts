@@ -136,17 +136,28 @@ const strikeSprites: Record<string, [number, number, number]> = { swordsman: [12
 for (const [profession, ranks] of Object.entries(strikeSprites)) for (const [rank, seq] of ranks.entries()) await sequence(`strike:${profession}-${rank + 1}`, 12, seq, 'all', materialRefs, true)
 // Roman priests (the reference's MAGE): file 11, walking sequence 195.
 await sequence('priest', 11, 195, 'all', materialRefs, true)
+const torsoReferences = [
+  'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/TorsoTranslator.java',
+  'jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java',
+]
+for (const path of torsoReferences) await getReference(path)
+// This prototype palette is an explicit presentation choice. Original player
+// colors remain unverified; the DAT decoder preserves the source grayscale.
+const torsoTint = [0.88, 0.72, 0.34] as const
 for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key === 'priest' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:'))) {
   const worker = await dat(entry.source.file)
   if (!worker.has(entry.source.actualSequence, 0x3112)) continue
   const torsoFrames = worker.frames(entry.source.actualSequence, 0x3112)
   if (!torsoFrames[entry.source.frame]) continue
   const torso = worker.decode(torsoFrames[entry.source.frame]!, 'torso'), body = entry.sprite
-  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=0.88/0.72/0.34`)
+  entry.inputs.push(...torsoReferences.map(path => `reference:${path}`))
+  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=${torsoTint.join('/')},palette=prototype-unverified`)
   for (let y = 0; y < torso.height; y++) for (let x = 0; x < torso.width; x++) {
     const from = (y * torso.width + x) * 4, dx = x + torso.offsetX - body.offsetX, dy = y + torso.offsetY - body.offsetY
     if (!torso.data[from + 3] || dx < 0 || dy < 0 || dx >= body.width || dy >= body.height) continue
-    torso.data.copy(body.data, (dy * body.width + dx) * 4, from, from + 4)
+    const to = (dy * body.width + dx) * 4
+    for (let channel = 0; channel < 3; channel++) body.data[to + channel] = Math.round(torso.data[from + channel]! * torsoTint[channel]!)
+    body.data[to + 3] = torso.data[from + 3]!
   }
 }
 for (const [key, index] of Object.entries({ grass: 0, water: 17, rock: 21, sand: 31 })) {

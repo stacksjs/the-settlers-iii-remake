@@ -33,10 +33,15 @@ test('DAT frame enumeration rejects pointers into its table or outside the archi
   }
 })
 
-test('DAT player-color torso shades composite as opaque settlement gold', () => {
-  const data = fixture(); data[188] = 31
-  const sprite = new S3Dat(data).decode(173, 'torso')
-  expect([...sprite.data]).toEqual([0, 0, 0, 0, 224, 184, 87, 255])
+test('DAT torso decoding preserves the grayscale player-color layer and transparent skips', () => {
+  // TorsoTranslator at the pinned reference masks the low five bits and
+  // truncates their conversion to eight-bit grayscale. Palette selection is
+  // presentation behavior, not information stored in a DAT torso pixel.
+  for (const [encoded, gray] of [[0, 0], [1, 8], [15, 123], [30, 246], [31, 255], [255, 255]] as const) {
+    const data = fixture(); data[188] = encoded
+    const sprite = new S3Dat(data).decode(173, 'torso')
+    expect([...sprite.data]).toEqual([0, 0, 0, 0, gray, gray, gray, 255])
+  }
 })
 
 test('landscape sections use direct frames and their shorter header', () => {

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T07:48:28.770770+00:00",
+  "scope": "DAT grayscale torso decoding and explicit prototype palette selection, not original player-color or Gold Edition parity.",
+  "sources": [
+    {
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/TorsoTranslator.java",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "sha256": "4c5d64d2e303a91bebc05819585f4e6aad141b77a4dc63aefe4f2cce779825fd"
+    },
+    {
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java",
+      "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "sha256": "67c0cfceab2612d3a88e51a5e1a302cafc86e3279553c9a1982f55bcc3a2f569"
+    }
+  ],
+  "red": "The public decoder returned gold RGB 7/6/3 for encoded shade 1, where the reference grayscale conversion is 8/8/8.",
+  "green": {
+    "decoderTests": 5,
+    "decoderFailures": 0,
+    "decoderAssertions": 18,
+    "vectors": [
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        8
+      ],
+      [
+        15,
+        123
+      ],
+      [
+        30,
+        246
+      ],
+      [
+        31,
+        255
+      ],
+      [
+        255,
+        255
+      ]
+    ],
+    "unitTests": 222,
+    "unitFailures": 0,
+    "unitAssertions": 22363,
+    "typecheck": "passed",
+    "lint": "0errors0warnings",
+    "convertedSpriteFrames": 3836,
+    "convertedSounds": 6,
+    "provenanceFiles": 42,
+    "productionBuild": "passed",
+    "browserSteps": 41,
+    "consoleErrors": [],
+    "failedRequests": []
+  },
+  "visual": {
+    "schemaVersion": 1,
+    "screenshot": {
+      "sha256": "555a1675a8cf496efe450d9e627b66ba17d5c21c5ae17fd9f620683ad224cde0",
+      "bytes": 998867,
+      "width": 1440,
+      "height": 960
+    },
+    "captureStatus": "captured",
+    "browserExitCode": 0,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+  },
+  "localVisualInspection": "Fresh 1440x960 screenshot inspected. Original demo sprites are visible; custom HUD and faceted terrain remain. This is not a matched original Gold scene.",
+  "logs": [
+    {
+      "name": "decoder-red.log",
+      "sha256": "0b25a3de4c71861c068292c75208fa47e54f3190c33b5ee3442e11c066198fe8"
+    },
+    {
+      "name": "decoder-green.log",
+      "sha256": "612ea94e95253c27f54331c3623ff3cc75762fc5a5199ddf5f4555612f416e32"
+    },
+    {
+      "name": "assets-import.log",
+      "sha256": "f11ee114bb1ef873359fd93da754f65cc2b295f784380f73152501d7bd6b4c4b"
+    },
+    {
+      "name": "assets-verify.log",
+      "sha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+    },
+    {
+      "name": "typecheck.log",
+      "sha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+    },
+    {
+      "name": "lint.log",
+      "sha256": "2523fcd7528f38fa75a160fb5dd26ced21214ae876a8f6d78e401c4830e6340d"
+    },
+    {
+      "name": "unit.log",
+      "sha256": "818ceb55a303f149f71d8ba47fff2b6a1a7dddf5ac05ba43f14fecc4e0573d28"
+    },
+    {
+      "name": "build.log",
+      "sha256": "9f6ab566cb59f7021071e4fd759168c31d6f75ac66c780ee9bc0b9179188b043"
+    },
+    {
+      "name": "browser.log",
+      "sha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+    }
+  ],
+  "limitations": [
+    "The importer still applies the explicit prototype gold tint. Per-player tinting and the original palette remain unfinished.",
+    "Native game presentation and original Gold observations remain unverified.",
+    "The current normal framework287 upgrade candidate is uncommitted, pending final288 qualification and adoption."
+  ]
+}

@@ -54,8 +54,10 @@ export class S3Dat {
           if (color === 'torso') {
             if (at >= this.bytes.length) throw new Error('Truncated DAT torso')
             const shade = this.bytes[at++]! & 31
-            const value = Math.round(shade * 255 / 31)
-            data[pixel] = Math.round(value * 0.88); data[pixel + 1] = Math.round(value * 0.72); data[pixel + 2] = Math.round(value * 0.34)
+            // The source stores a grayscale player-color mask, not a palette.
+            // Match the pinned reference translator's five-to-eight-bit truncation.
+            const value = Math.floor(shade * 255 / 31)
+            data[pixel] = value; data[pixel + 1] = value; data[pixel + 2] = value
           }
           else {
             const value = this.u16(at); at += 2
