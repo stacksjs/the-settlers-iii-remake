@@ -4,6 +4,18 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: original browser interface and execution evidence (2026-10-24)
+
+The committed browser implementation at `8cb2352556a1277439e7d7a8b936e741c7f8da15` adds the following evidence. The October 21 table below remains a historical baseline.
+
+- The maintained importer converts 95 files from the pinned public Amazons demo, including 3,836 world sprite frames, 52 interface images and six PCM WAV clips. Interface images include the panel backgrounds for all three reference profiles and active/inactive controls. The [interface import receipt](roadmap/receipts/original-interface-import-2026-10-24.json) records source selectors, dimensions and hashes. This is a selected-content inventory, not a complete Gold content catalog.
+- The browser uses original stone/vine panel art, minimap edges and menu controls. Layout follows the pinned remake's three geometry profiles. Real browser checks cover the 480, 600 and 768 reference profiles plus a narrow phone viewport: minimap input, stone-frame input ownership, the transparent world corner and independently scrolling content. The [control-frame receipt](roadmap/receipts/original-control-frame-2026-10-24.json) retains those checks. Header text, fonts, content and lower system controls remain partly custom or incomplete.
+- The frame implementation passed 227 unit tests and the 53-step browser campaign. Its [exact committed CI run](https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40085157687) also passed the four frame/input cases. These checks establish the implemented behavior, not an original-game comparison.
+- Bun, a real browser and the original published Craft 0.0.319 macOS binary executed the same five-tick simulation fixture, including save/restore and replay, with checksum `c331a944`. The [native-engine receipt](roadmap/receipts/native-engine-cli-2026-10-24.json) records this headless execution. It does not demonstrate persistent native frame callbacks, game graphics, the HUD, input or native application lifecycle.
+- The game consumes Stacks 0.75.288, STX 0.2.679, Craft 0.0.319 and Pantry 0.11.126. Its [framework adoption receipt](roadmap/receipts/framework-0.75.288-adoption.json) records the installed release evidence. Later upstream source changes and release candidates are separate from this installed game state.
+
+There is no original Gold executable, installer or save fixture available for comparison. The available reference is the pinned remake repository and public demo. Original timings, balance, palette, fonts, complete sound and campaign behavior remain unverified. The game does not yet meet the Gold Edition or full native-platform finish line. Local screenshot hashes identify captures; the receipts do not provide public raster inspection or establish redistribution rights.
+
 ## Update: physical economy engine (2026-10-22)
 
 The table below records the 2026-10-21 prototype review and is kept as that record. Since then the browser game runs on `resources/game/engine`, which changes several verdicts:
@@ -17,7 +29,7 @@ The table below records the 2026-10-21 prototype review and is kept as that reco
 
 Still not matched: no value is an admitted original observation. Costs, capacities and preferred meals are manual candidates. Geometry is reference-remake evidence; for barracks the reference definition (5 planks, 4 stone) differs from the manual table (4 planks, 5 stone). Timings, radii and population values are explicit placeholders that name their owning issues. Withering vines, siege equipment, a computer player that fights, other civilizations, ships, trade, campaigns, original maps in play, the original control center and multiplayer remain open roadmap work.
 
-## Confirmed matches and gaps
+## 2026-10-21 baseline matches and gaps
 
 | Area | Evidence and verdict |
 | --- | --- |
