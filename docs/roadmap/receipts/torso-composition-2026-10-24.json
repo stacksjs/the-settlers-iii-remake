@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:05:28.078517+00:00",
+  "scope": "Original DAT body and torso composition. No claim of complete media conversion, original palette, native presentation or Gold Edition parity.",
+  "reference": {
+    "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "sha256": "67c0cfceab2612d3a88e51a5e1a302cafc86e3279553c9a1982f55bcc3a2f569"
+  },
+  "originalProblem": {
+    "measuredFrames": 2638,
+    "clippedFrames": 303,
+    "clippedOpaquePixels": 10031,
+    "examples": [
+      {
+        "key": "soldier:swordsman-1",
+        "frame": 17,
+        "source": {
+          "file": 12,
+          "sequence": 9,
+          "actualSequence": 9,
+          "section": 262,
+          "frame": 17
+        },
+        "lost": 15
+      },
+      {
+        "key": "soldier:swordsman-1",
+        "frame": 18,
+        "source": {
+          "file": 12,
+          "sequence": 9,
+          "actualSequence": 9,
+          "section": 262,
+          "frame": 18
+        },
+        "lost": 16
+      },
+      {
+        "key": "soldier:swordsman-1",
+        "frame": 53,
+        "source": {
+          "file": 12,
+          "sequence": 9,
+          "actualSequence": 9,
+          "section": 262,
+          "frame": 53
+        },
+        "lost": 3
+      },
+      {
+        "key": "soldier:swordsman-1",
+        "frame": 54,
+        "source": {
+          "file": 12,
+          "sequence": 9,
+          "actualSequence": 9,
+          "section": 262,
+          "frame": 54
+        },
+        "lost": 6
+      },
+      {
+        "key": "soldier:swordsman-1",
+        "frame": 55,
+        "source": {
+          "file": 12,
+          "sequence": 9,
+          "actualSequence": 9,
+          "section": 262,
+          "frame": 55
+        },
+        "lost": 2
+      },
+      {
+        "key": "soldier:swordsman-2",
+        "frame": 12,
+        "source": {
+          "file": 12,
+          "sequence": 11,
+          "actualSequence": 11,
+          "section": 262,
+          "frame": 12
+        },
+        "lost": 2
+      },
+      {
+        "key": "soldier:swordsman-2",
+        "frame": 15,
+        "source": {
+          "file": 12,
+          "sequence": 11,
+          "actualSequence": 11,
+          "section": 262,
+          "frame": 15
+        },
+        "lost": 3
+      },
+      {
+        "key": "soldier:swordsman-2",
+        "frame": 16,
+        "source": {
+          "file": 12,
+          "sequence": 11,
+          "actualSequence": 11,
+          "section": 262,
+          "frame": 16
+        },
+        "lost": 6
+      }
+    ]
+  },
+  "sourceRegression": "A clothing layer extending left and above its body retained only the body rectangle. The public composition test failed on bounds before the correction.",
+  "fixedConversion": {
+    "measuredFrames": 2638,
+    "clippedFrames": 0,
+    "clippedOpaquePixels": 0,
+    "checkedOpaquePixels": 362065,
+    "mismatchedPixels": 0,
+    "examples": []
+  },
+  "checks": {
+    "assetDecoderTests": 8,
+    "assetDecoderAssertions": 30,
+    "unitTests": 225,
+    "unitFailures": 0,
+    "unitAssertions": 22375,
+    "typecheck": "passed",
+    "lint": "0errors0warnings",
+    "productionBuild": "passed,1page",
+    "browserSteps": 41,
+    "consoleErrors": [],
+    "failedRequests": [],
+    "assets": "3836frames,1024x6685RGBAatlas,6PCMWAV,42fileswithverifiedbyteandinputprovenance"
+  },
+  "atlas": {
+    "sha256": "1f0ec9aee41f98dacf59d7805d532b3f675582079064bcd794590131c4fc940f",
+    "manifestSha256": "f0d8267287378e70c0de489947dbdead89a11557c6c9c49e8bdfd86ecfe93fec"
+  },
+  "visual": {
+    "schemaVersion": 1,
+    "screenshot": {
+      "sha256": "a1eef8b899d1cf8b89f46719bb5eeb4b778c0b075db649780e24719d05819b4e",
+      "bytes": 998730,
+      "width": 1440,
+      "height": 960
+    },
+    "captureStatus": "captured",
+    "browserExitCode": 0,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+  },
+  "localVisualInspection": "Fresh 1440x960 screenshot inspected. Demo entities render with the corrected atlas anchors. The custom HUD and faceted terrain remain, with no matched original Gold scene.",
+  "logs": [
+    {
+      "name": "composition-red.log",
+      "sha256": "09f528823f5755f9b5bb6ce4926133153cc00f11e07f390b1eb484b41a274637"
+    },
+    {
+      "name": "composition-green.log",
+      "sha256": "a5c621b1cb69db701f60e8d2536fcc0f4aebf266ec8564d7c4b7801f73cba339"
+    },
+    {
+      "name": "composition-assets-import.log",
+      "sha256": "551eb28b68df8e69ff3757818a961614fb47eb4b6c484d143aa0a6c55a9d7612"
+    },
+    {
+      "name": "composition-assets-verify.log",
+      "sha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+    },
+    {
+      "name": "composition-typecheck.log",
+      "sha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+    },
+    {
+      "name": "composition-lint.log",
+      "sha256": "15dc5814049d621225eb3754e7d81538c9b01a93d297a15d400d4e760e9bfe0a"
+    },
+    {
+      "name": "composition-unit.log",
+      "sha256": "ab309e48818fd3148024cc6db387e01cd155b97c0415b7c8f2a0d346ed9c6531"
+    },
+    {
+      "name": "composition-build.log",
+      "sha256": "bf2620c89e307054cd7d2af43a8833032eee82891f5c22932cf45ccb53c686eb"
+    },
+    {
+      "name": "composition-browser.log",
+      "sha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+    }
+  ],
+  "measurementHarnessSha256": "c69266105d0b2a34f2410e37afac888708e6165894cd815f4cdb97173f5db726",
+  "limitations": [
+    "The importer still uses its explicitly unverified prototype gold palette.",
+    "Native game presentation, original Gold observations and remaining roadmap acceptance are unfinished.",
+    "Current framework287 consumer candidate is uncommitted; final288 qualification and adoption remain pending."
+  ]
+}

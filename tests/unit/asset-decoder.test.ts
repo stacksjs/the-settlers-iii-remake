@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { expect, test } from 'bun:test'
-import { S3Dat } from '../../scripts/lib/s3-dat'
+import { composeDatSprites, S3Dat } from '../../scripts/lib/s3-dat'
 
 function fixture(meta = 0x8101): Buffer {
   const data = Buffer.alloc(256)
@@ -42,6 +42,38 @@ test('DAT torso decoding preserves the grayscale player-color layer and transpar
     const sprite = new S3Dat(data).decode(173, 'torso')
     expect([...sprite.data]).toEqual([0, 0, 0, 0, gray, gray, gray, 255])
   }
+})
+
+test('DAT clothing outside the body rectangle keeps its full bounds and signed anchor', () => {
+  const body = { width: 2, height: 1, offsetX: -1, offsetY: -2, data: Buffer.from([255, 0, 0, 255, 0, 255, 0, 255]) }
+  const torso = { width: 1, height: 2, offsetX: -2, offsetY: -3, data: Buffer.from([0, 0, 255, 255, 123, 123, 123, 255]) }
+  const result = composeDatSprites([body, torso])
+  expect([result.width, result.height, result.offsetX, result.offsetY]).toEqual([3, 2, -2, -3])
+  expect([...result.data]).toEqual([
+    0, 0, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0,
+    123, 123, 123, 255, 255, 0, 0, 255, 0, 255, 0, 255,
+  ])
+  expect([...body.data]).toEqual([255, 0, 0, 255, 0, 255, 0, 255])
+})
+
+test('DAT layer order replaces opaque pixels and transparent pixels leave the body visible', () => {
+  const body = { width: 2, height: 1, offsetX: 0, offsetY: 0, data: Buffer.from([255, 0, 0, 255, 0, 255, 0, 255]) }
+  const torso = { ...body, data: Buffer.from([0, 0, 0, 0, 0, 0, 255, 255]) }
+  const empty = { width: 0, height: 0, offsetX: -100, offsetY: 100, data: Buffer.alloc(0) }
+  const result = composeDatSprites([body, empty, torso])
+  expect([result.width, result.height, result.offsetX, result.offsetY]).toEqual([2, 1, 0, 0])
+  expect([...result.data]).toEqual([255, 0, 0, 255, 0, 0, 255, 255])
+  expect(composeDatSprites([empty])).toEqual({ ...empty, offsetX: 0, offsetY: 0 })
+})
+
+test('DAT composition rejects damaged layers and excessive anchor distances before drawing', () => {
+  const pixel = { width: 1, height: 1, offsetX: 0, offsetY: 0, data: Buffer.from([0, 0, 0, 255]) }
+  expect(() => composeDatSprites([])).toThrow('needs a layer')
+  expect(() => composeDatSprites([{ ...pixel, data: Buffer.alloc(0) }])).toThrow('Invalid DAT')
+  expect(() => composeDatSprites([{ ...pixel, offsetX: Infinity }])).toThrow('Invalid DAT')
+  expect(() => composeDatSprites([{ ...pixel, offsetY: 32768 }])).toThrow('Invalid DAT')
+  expect(() => composeDatSprites([pixel, { ...pixel, offsetX: 32767 }])).toThrow('exceeds bounds')
+  expect(() => composeDatSprites([{ ...pixel, data: Buffer.from([0, 0, 0, 127]) }])).toThrow('opaque or transparent')
 })
 
 test('landscape sections use direct frames and their shorter header', () => {

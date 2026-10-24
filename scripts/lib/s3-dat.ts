@@ -3,6 +3,35 @@
 import { Buffer } from 'node:buffer'
 
 export interface Sprite { width: number, height: number, offsetX: number, offsetY: number, data: Buffer }
+
+/** Compose DAT layers in anchor coordinates, in their drawing order. */
+export function composeDatSprites(layers: readonly Sprite[]): Sprite {
+  if (!layers.length) throw new Error('DAT composition needs a layer')
+  let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity
+  for (const layer of layers) {
+    if (![layer.width, layer.height, layer.offsetX, layer.offsetY].every(Number.isSafeInteger)
+      || layer.width < 0 || layer.height < 0 || layer.width > 2048 || layer.height > 2048
+      || layer.offsetX < -32768 || layer.offsetX > 32767 || layer.offsetY < -32768 || layer.offsetY > 32767
+      || !layer.width !== !layer.height || layer.data.length !== layer.width * layer.height * 4)
+      throw new Error('Invalid DAT composition layer')
+    if (!layer.width) continue
+    left = Math.min(left, layer.offsetX); top = Math.min(top, layer.offsetY)
+    right = Math.max(right, layer.offsetX + layer.width); bottom = Math.max(bottom, layer.offsetY + layer.height)
+  }
+  if (left === Infinity) return { width: 0, height: 0, offsetX: 0, offsetY: 0, data: Buffer.alloc(0) }
+  const width = right - left, height = bottom - top
+  if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width > 4096 || height > 4096) throw new Error('DAT composition exceeds bounds')
+  const data = Buffer.alloc(width * height * 4)
+  for (const layer of layers) for (let y = 0; y < layer.height; y++) for (let x = 0; x < layer.width; x++) {
+    const from = (y * layer.width + x) * 4
+    if (!layer.data[from + 3]) continue
+    if (layer.data[from + 3] !== 255) throw new Error('DAT composition requires opaque or transparent pixels')
+    const dx = x + layer.offsetX - left, dy = y + layer.offsetY - top
+    layer.data.copy(data, (dy * width + dx) * 4, from, from + 4)
+  }
+  return { width, height, offsetX: left, offsetY: top, data }
+}
+
 export class S3Dat {
   private sections = new Map<number, number[]>()
   constructor(private bytes: Buffer) {

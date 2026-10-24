@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
-import { S3Dat } from './lib/s3-dat'
+import { composeDatSprites, S3Dat } from './lib/s3-dat'
 import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
 import { writeContentManifest } from './lib/content-provenance'
@@ -151,14 +151,12 @@ for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key 
   if (!torsoFrames[entry.source.frame]) continue
   const torso = worker.decode(torsoFrames[entry.source.frame]!, 'torso'), body = entry.sprite
   entry.inputs.push(...torsoReferences.map(path => `reference:${path}`))
-  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=${torsoTint.join('/')},palette=prototype-unverified`)
+  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=${torsoTint.join('/')},palette=prototype-unverified,composition=anchor-bounds-union`)
   for (let y = 0; y < torso.height; y++) for (let x = 0; x < torso.width; x++) {
-    const from = (y * torso.width + x) * 4, dx = x + torso.offsetX - body.offsetX, dy = y + torso.offsetY - body.offsetY
-    if (!torso.data[from + 3] || dx < 0 || dy < 0 || dx >= body.width || dy >= body.height) continue
-    const to = (dy * body.width + dx) * 4
-    for (let channel = 0; channel < 3; channel++) body.data[to + channel] = Math.round(torso.data[from + channel]! * torsoTint[channel]!)
-    body.data[to + 3] = torso.data[from + 3]!
+    const from = (y * torso.width + x) * 4
+    for (let channel = 0; channel < 3; channel++) torso.data[from + channel] = Math.round(torso.data[from + channel]! * torsoTint[channel]!)
   }
+  entry.sprite = composeDatSprites([body, torso])
 }
 for (const [key, index] of Object.entries({ grass: 0, water: 17, rock: 21, sand: 31 })) {
   const landscape = await dat(0), at = landscape.frames(index, 0x2412)[0]!
