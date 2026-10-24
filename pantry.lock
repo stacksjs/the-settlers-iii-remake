@@ -5,21 +5,22 @@
     "": {
       "name": "the-settlers-iii-remake",
       "dependencies": {
-        "@stacksjs/actions": "0.75.277",
-        "@stacksjs/env": "0.75.277",
-        "@stacksjs/path": "0.75.277",
-        "@stacksjs/stx": "0.2.670",
-        "craft-native": "0.0.301",
-        "stacks": "0.75.277"
+        "@stacksjs/actions": "0.75.288",
+        "@stacksjs/env": "0.75.288",
+        "@stacksjs/path": "0.75.288",
+        "@stacksjs/stx": "0.2.679",
+        "craft-native": "0.0.319",
+        "stacks": "0.75.288",
+        "ts-pantry": "0.11.126"
       },
       "devDependencies": {
-        "@stacksjs/components": "0.2.670",
+        "@stacksjs/components": "0.2.679",
         "@stacksjs/ts-png": "0.1.10",
         "better-dx": "^0.2.38",
-        "bun-plugin-stx": "0.2.670"
+        "bun-plugin-stx": "0.2.679"
       },
       "system": {
-        "bun.sh": "1.4.2",
+        "bun.sh": "1.4.4",
         "curl.se": "^8.22.0",
         "git-scm.org": "^2.47.0",
         "github.com/mail-os/mail": "^0.3.2",
@@ -32,11 +33,11 @@
     }
   },
   "packages": {
-    "bun.sh@1.4.2": {
+    "bun.sh@1.4.4": {
       "name": "bun.sh",
-      "version": "1.4.2",
+      "version": "1.4.4",
       "source": "pantry",
-      "resolved": "registry:bun.sh@1.4.2"
+      "resolved": "registry:bun.sh@1.4.4"
     },
     "curl.se/ca-certs@2026.3.19": {
       "name": "curl.se/ca-certs",

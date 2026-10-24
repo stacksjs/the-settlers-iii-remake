@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T00:53:17.094285+00:00",
+  "status": "consumer-attempt-rejected",
+  "framework": {
+    "version": "0.75.283",
+    "source": "bd92eac4d7913afc232c99ce4a14af31dcbc05e7",
+    "sourceCi": 40039560274,
+    "releaser": 40039561197,
+    "publication": "Verified all 86 original npm archive identities and all five original native archives. The published artifacts passed their release gates."
+  },
+  "consumer": {
+    "upgrade": "./buddy upgrade --version 0.75.283 completed through the maintained command",
+    "installation": "Normal Bun install, Pantry 0.11.123 install and frozen Bun install completed",
+    "failure": "The required post-database migration command failed with SQLite syntax error near split. Pantry incorrectly returned exit code zero.",
+    "reproduction": "A direct ./buddy migrate exited one on 1789486698564-backfill-errors-resolution.sql.",
+    "cause": "The disabled-feature filter split SQL on every semicolon. Semicolons inside the migration's documentation became statement boundaries, leaving comment text as executable SQL. A second regression also demonstrated corruption of quoted data."
+  },
+  "owningSourceFixes": [
+    {
+      "repository": "stacksjs/stacks",
+      "commit": "801f002c1918a7cfd217e88479296de0c92ad442",
+      "change": "Use the existing SQL-aware statement parser when filtering disabled-feature migrations.",
+      "sourceCi": 40044037244,
+      "sourceCiConclusion": "success"
+    },
+    {
+      "repository": "pantry-pm/pantry",
+      "commit": "4ef4b9988d951b838610eb9fd45c05a849bf691d",
+      "change": "Propagate required setup failures to the explicit install command and invalidate the old completion marker before forced setup."
+    },
+    {
+      "repository": "pantry-pm/pantry",
+      "commit": "bff2ee6c27026aec66a65215a23a22d33e8fb73b",
+      "change": "Give TypeScript config results independent ownership of parsed strings and arrays. This fixes an invalid free exposed by the hosted lifecycle regression."
+    }
+  ],
+  "acceptance": "This receipt rejects the application installation attempt. It does not invalidate the verified original archive identities or certify a later release. The next adoption still requires published source fixes, normal installation, successful migrations, application checks and a fresh production browser campaign."
+}

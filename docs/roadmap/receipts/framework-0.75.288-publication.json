@@ -1,0 +1,989 @@
+{
+  "schemaVersion": 1,
+  "repository": "stacksjs/stacks",
+  "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+  "tag": "v0.75.288",
+  "recordedAt": "2026-10-24T08:20:44.594887+00:00",
+  "workflows": {
+    "sourceCi": {
+      "id": 40074513289,
+      "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+      "conclusion": "success",
+      "requiredJobs": [
+        "typecheck",
+        "compile",
+        "scaffold-smoke",
+        "test (core-2)",
+        "lint",
+        "artifact-freshness",
+        "Release evidence (ubuntu-latest)",
+        "deployment-target",
+        "test (auth-1)",
+        "Release evidence (macos-latest)",
+        "test (auth-2)",
+        "test (auth-3)",
+        "test (buddy)",
+        "Release evidence (windows-latest)",
+        "test (auth-4)",
+        "test (core-1)",
+        "deploy"
+      ],
+      "conditionalJobs": [
+        {
+          "name": "dependency-locks",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "publish-commit",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    "release": {
+      "id": 40074513897,
+      "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+      "conclusion": "success",
+      "requiredJobs": [
+        "wait for earlier releases",
+        "accept exact release source CI",
+        "release gate",
+        "npm",
+        "homebrew"
+      ]
+    }
+  },
+  "npmArchives": {
+    "packages": [
+      {
+        "name": "@stacksjs/cron",
+        "version": "0.75.288",
+        "shasum": "2f69be91b0bfda616c88e40842bbdca13620faf0",
+        "integrity": "sha512-+ZR2HQsNK1/o7SmYv3kaXLaKi9NVpgIqwwH4fLLX6dTir3VuQlQfTWh3j2gaJkf9jRserQbK8T2WGbVoDuIchw==",
+        "file": "_stacksjs_cron-0.75.288.tgz",
+        "bytes": 5368,
+        "sha256": "5a7c91014ce1384aa0f97cc8f601a75fd4065cb277c4668c78db61efbd9f98d0",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/collections",
+        "version": "0.75.288",
+        "shasum": "5905d4cf901a8def2304327b4890075deea53b54",
+        "integrity": "sha512-IzV4B+2FVfOIk2MGzYIQXUsg+o30z0hx4gV5gNS2w0wFe3+jEOcgHhzEWozIJj66M3g+oYBO1zYWybwY58m6lQ==",
+        "file": "_stacksjs_collections-0.75.288.tgz",
+        "bytes": 2803,
+        "sha256": "26c16d05be238d7ab5652ec2e06f7be34d27d6e97de59b6618bfc4c10ff4e6fd",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/audio",
+        "version": "0.75.288",
+        "shasum": "31c27b7412c9f8b28e76fd91171127148eb91080",
+        "integrity": "sha512-GwtXw5tQSJB75NJImTw5HpMmZ8xUEClvUlLqfHj3ThrHQ68rBOhz63O0Bhze9+2qeJv3qqqRC7MeVvJWqWz/rg==",
+        "file": "_stacksjs_audio-0.75.288.tgz",
+        "bytes": 7916,
+        "sha256": "38dd21f08344a6d51b0ec8e5615e8ef8bb619b12bec3a3b6baf3fa1a9b03f1f8",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/arrays",
+        "version": "0.75.288",
+        "shasum": "dd7835dd1b8cfd6c44eb8d9f1468783567b647f5",
+        "integrity": "sha512-M+uz3Icpl9ITTMpC3Ds91KBgeB4Xi4Nqy/TjVNHbCbw6IfIkQtNSq2Al43HXN/K6hw1X+1YKq4TtWUkyQHgWkQ==",
+        "file": "_stacksjs_arrays-0.75.288.tgz",
+        "bytes": 12571,
+        "sha256": "42d639bc29b3500c5e4bc62b1d2e6e85a6bf43047e49fa2c8b34cfabca9b8d0a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/datetime",
+        "version": "0.75.288",
+        "shasum": "5675c71cbcc706deeb54bfb455741dc0d0144c57",
+        "integrity": "sha512-hCAX7T24CUIzG+FxLnM7dS5GNNM8nJCo/8r3ibCPe/gdrRszn3BRub+VU/jTuIj/Pb2SitSuF93lwjvP60VspA==",
+        "file": "_stacksjs_datetime-0.75.288.tgz",
+        "bytes": 13420,
+        "sha256": "d7b4bf9a0380e8012a30bbe2733cd4c2332e2569a1ff6ee1bf71f019e60bb740",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/browser-extension",
+        "version": "0.75.288",
+        "shasum": "c4f2f681625a1c0ad9bd7e4c5164c0b49a419ca7",
+        "integrity": "sha512-WxIOPo57nMttwHYmSQMw1CHyJcU2tvb+/5WBl1Ks+DsGpDN+5pSFdRqSM3BXzGUqRb0LJ9UenJS/qVz/N8q/TQ==",
+        "file": "_stacksjs_browser-extension-0.75.288.tgz",
+        "bytes": 43311,
+        "sha256": "a880d2a6484a662d1368130bcc83a71728f881aba53aa560b96734ec67148889",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/desktop-build",
+        "version": "0.75.288",
+        "shasum": "5432fc88e1c9687af5a122c654f34df3c3b4d9f7",
+        "integrity": "sha512-Ba0DfOy/me1PobgPUxqY2yDGr5qZjkcOx0GcwRRexOsdXJBJtl/7MBOIReU16ZNuWqvwCNIPwloG8WNAujBLSw==",
+        "file": "_stacksjs_desktop-build-0.75.288.tgz",
+        "bytes": 36609,
+        "sha256": "c163db0216caf82d4bed5191e32c605682c818f1381dc04572616fdb4ff5f468",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/charts",
+        "version": "0.75.288",
+        "shasum": "fe8e4e1eb8aabcf3956c3401f63ecb89cf451710",
+        "integrity": "sha512-MnsowTRjfhHrUbWKI3wII5l5zmMB9eQms4QI5Tb2ZG/nlS98nXY6PS8w5WygvMKHbFNVE1z4VATA5p5kHiRiTg==",
+        "file": "_stacksjs_charts-0.75.288.tgz",
+        "bytes": 9441,
+        "sha256": "f4e834ad29c4533614cb109ac09cd500726c63566b65136b372c8819be6099c3",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/faker",
+        "version": "0.75.288",
+        "shasum": "6968d64cf71256cd0254188f4e1c9cb778e654d1",
+        "integrity": "sha512-Vrgcehs9SiivIf8wstuyTc5EFxumTwfmrRGc6ui1XHDmLHMAeBti1qrD128rBN5J60b/bk/iRfv52Cnn9674dw==",
+        "file": "_stacksjs_faker-0.75.288.tgz",
+        "bytes": 5370,
+        "sha256": "0a3dd5cc160211e6aaac499ec34a1cee92fb3e9bca2955b0825f45a7eea2daf7",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/enums",
+        "version": "0.75.288",
+        "shasum": "4acad9a8767eee030944dc4f97da612020787960",
+        "integrity": "sha512-l5x39ZdyCYnF1etQ8LdrqaoVJP6GqpxJh2sXdJHlfi1mWAmv0acYjpOwEoJVT1qeTCNQQQGB+kYzfyFG893/Iw==",
+        "file": "_stacksjs_enums-0.75.288.tgz",
+        "bytes": 5556,
+        "sha256": "88e95d152f6c56631b52b028f7a012c5bfb764c5a022a5244c01417bd7a4cb8a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/git",
+        "version": "0.75.288",
+        "shasum": "2ef5442c9090d1af0c93e03c92fc164529ff8d82",
+        "integrity": "sha512-d9jwKRT7r6V8OoHDiUw5z1ZLA8OSFO8RXaOjRvo/3GPz6NFSG+1WSDGTR5Zjubmzh4IrzGxs4YEE76g7O6vaLw==",
+        "file": "_stacksjs_git-0.75.288.tgz",
+        "bytes": 3639,
+        "sha256": "c453aa2d80a563a008455727531540afccb0be88cf62bd0f7baf7070d8dfa4ff",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/github",
+        "version": "0.75.288",
+        "shasum": "9debd0efe48175d5122f43d520cf506fa16165dc",
+        "integrity": "sha512-UPAhL7LI4eoehlo9fu6E++3lm8YoE26kFtGQaKVJ1VDTAD9qMwX08n9bHHd0S/VQyarZZiW9qf4xcrzvNqX9kA==",
+        "file": "_stacksjs_github-0.75.288.tgz",
+        "bytes": 13750,
+        "sha256": "138408c31acdf791f3ba5cef34fc713a5eaa60a1a08096ae4979f2198d9fb56f",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/http",
+        "version": "0.75.288",
+        "shasum": "703b706bf6366c59fb4896f176e1f03b3fee0eb0",
+        "integrity": "sha512-nJWCVN3oFNnKhuHfvSvhBybdq1Y2GwOqnrcpKmNdhw28CHAVXRi/6lukgHXp9RGHqwwszlpHn9w5cgUszF1TPg==",
+        "file": "_stacksjs_http-0.75.288.tgz",
+        "bytes": 4974,
+        "sha256": "c110d7831dd833f064aff562d7758bfacde126a07c182f863b32726515ee925b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/health",
+        "version": "0.75.288",
+        "shasum": "cda79a64fc282d0592736fcf4425d165bb0f490f",
+        "integrity": "sha512-x8b5LD37mvxxlsyzyM+egEEscHiifEBc8metpFxwUIe6COBaZlXohzpp1oSX/igX5NRvzqLd2MZefQq793v9kA==",
+        "file": "_stacksjs_health-0.75.288.tgz",
+        "bytes": 2276,
+        "sha256": "20f7395b1349661bb26c0a25801c78e6e5cfb52d0fe5d6599d581e587a36556a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/pagination",
+        "version": "0.75.288",
+        "shasum": "7cf6a7c50c7ba6b2dd23c4cbd5cd5fa709659247",
+        "integrity": "sha512-uW0Hd/S3kSfI2ybexgvY1VR6Ph5lKNA+yzjTseqjYDplqdx/FC5LbkXnGJQAzKVqARHvlVEC0z37IiMxXmdaZg==",
+        "file": "_stacksjs_pagination-0.75.288.tgz",
+        "bytes": 3959,
+        "sha256": "93d781d8727a171e46bc00405e9cc395c829a1afbb17e21a0001388fc7752288",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/lint",
+        "version": "0.75.288",
+        "shasum": "298a963ef01f70fa3c66627456da1f535bd3b29b",
+        "integrity": "sha512-rBdT2F1DMh2uMCyvispSzv/NYywE84gLS3Oer4jo5DOWVYgO6ZtUCqAzEa8BT/Y10EwgP5qo/JYPhUTBobf8uQ==",
+        "file": "_stacksjs_lint-0.75.288.tgz",
+        "bytes": 3062,
+        "sha256": "2d08747ef8192e33bb5a3f244872bd16c6ae5dadad899c82e085df1acfa715c2",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/path",
+        "version": "0.75.288",
+        "shasum": "1f032e22078c3150b94b1f3c4311354537afc22a",
+        "integrity": "sha512-N7hOGSB5+xe1RZLb/OaQahrRQXNKQu/lAu4mRccxpbL9yI6XCnpPg6CHWUGRI+LuQsQJQ9nRqDq4xeyQX6SzIQ==",
+        "file": "_stacksjs_path-0.75.288.tgz",
+        "bytes": 19123,
+        "sha256": "b794c59f17ebd8ab49c4bb5fc8d2e27ec4e635c6753777d5ec972f20f327528a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/shell",
+        "version": "0.75.288",
+        "shasum": "7e67bf1080e38ba2762599a5daee873c07353c00",
+        "integrity": "sha512-LuNJO6+yD+k+hm6y1EcJjbdhfQlFsrAg5SFRrGJLhgOjGquIElZEAYy/xinRWnF0nCZVpJ4WzFV9SROjtOwCTQ==",
+        "file": "_stacksjs_shell-0.75.288.tgz",
+        "bytes": 3149,
+        "sha256": "9976d5899c021b086edd3fbbf4d9f592d23eb1c9d28385d045a9d8c03a6a6dda",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/tinker",
+        "version": "0.75.288",
+        "shasum": "ff5c881ce84cefd08376f255d39122dedbea2fca",
+        "integrity": "sha512-L98M1Fg/ZUSq5uFgE6JBaj/Hj9pFpot6PjrS0xawUj2w7jibeR23e1RRJKE9lZ7Bf/bjLJ6nJD6QEBHy2bZL+Q==",
+        "file": "_stacksjs_tinker-0.75.288.tgz",
+        "bytes": 12233,
+        "sha256": "71b9efa5c3c255b7ad004e9d918da718e68a6176c93e0ac3a0cfe56c0d6f6f5d",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/query-builder",
+        "version": "0.75.288",
+        "shasum": "5a721362d8430658ee2c0d8187e05f5469e8f870",
+        "integrity": "sha512-mTy/MemWWFs6uXPiazuTwrMAhuXY0nLaATI9kaJpCpxB5/QkRaV/Su4Xy48dZBcvTc5Sz83PRuEoje3HKIA8xw==",
+        "file": "_stacksjs_query-builder-0.75.288.tgz",
+        "bytes": 6514,
+        "sha256": "f7ee4542d84d4b2311038bbffa42365f03675d617d20212266efb51164e8ff11",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/video",
+        "version": "0.75.288",
+        "shasum": "897bf42d027e84afed6ca19797630b96e1a415a2",
+        "integrity": "sha512-cN82qhI+WumakY7TweQGIRxhVoJPgz6kolfKX8r3PW+7ZPuM5wFRD7l1H/7BC4CKLDrOekHz0c03XjmJrkwF/A==",
+        "file": "_stacksjs_video-0.75.288.tgz",
+        "bytes": 8880,
+        "sha256": "4a08360639fe197b2adaf540698b1784a988a912ce8c23db69a81e68ff169fbd",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/strings",
+        "version": "0.75.288",
+        "shasum": "2ae4fdf3b353a51b664c8ee45a9bf009ebb6e173",
+        "integrity": "sha512-0i+KzkzP+YOPkWww5y6CCYClZRuIba7S1F7PBJCqpRQiBmIPVaE/QEahvGQvYKd6M2DYmLSsr8epSxYdUpoKjw==",
+        "file": "_stacksjs_strings-0.75.288.tgz",
+        "bytes": 19872,
+        "sha256": "f6a5c496e17f6ed9dfe6ff2d7d1a69a71c722d79b874bd2dce7f2b8a595faa5a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/tunnel",
+        "version": "0.75.288",
+        "shasum": "d670076468d761022b31f352d68a3fadb61ebaf7",
+        "integrity": "sha512-3krLuHUEeE4A9/M2jv+Ei8R9Mp35BWEULtZBXj8FeKtdjmy39JQMF4QRWyCAnUSGn0Rqu+Z1DFXiYe+lZqcaUg==",
+        "file": "_stacksjs_tunnel-0.75.288.tgz",
+        "bytes": 2958,
+        "sha256": "e6b5f6c152a4dcbd46a9be117b572101dcd7c5485b742f23f3808f72caad1191",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/alias",
+        "version": "0.75.288",
+        "shasum": "80df68c54a48cab110d1bda621c25ef892e780a6",
+        "integrity": "sha512-8Cm4z3ksXn0COlaKFpDW/i+YIDzHFWBTAelCUm0J35VhEx95Y6DPK8oNr3tdcMcNOJJgJkTWmrkSD1v1YS1O6A==",
+        "file": "_stacksjs_alias-0.75.288.tgz",
+        "bytes": 4303,
+        "sha256": "203d76677e414ee4d6bc5c43bbacc4fa386556858cffa726cefc7f150bc4726e",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/events",
+        "version": "0.75.288",
+        "shasum": "1028ea81aa76974750f104bf769f0ce80d85ecd3",
+        "integrity": "sha512-KJVl4s1IQoW4gQabf5bfcYhiDA1RWmdL6WnkfRuTW0KW2VX1D8vTZ1KPHxQbfmeMGbPI+8qWMXzrLjXbKW+GPQ==",
+        "file": "_stacksjs_events-0.75.288.tgz",
+        "bytes": 12979,
+        "sha256": "d0b0fe35e0277f490fc373943f0202383b34421f307cef3c9026cb6083980066",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/features",
+        "version": "0.75.288",
+        "shasum": "2f18bf7a688f419516622878a5be629f1f0bb69e",
+        "integrity": "sha512-HuhD2PrS64xop/xMBTBCP/I2DfXGhkQeNPQCROORx1MU+5knxjsNJkxh8+9NTDiGAIPWCv8aWkx2sQn4jaTtqA==",
+        "file": "_stacksjs_features-0.75.288.tgz",
+        "bytes": 6225,
+        "sha256": "3e48652ae5d43da52e5c070c64ad9046acc71fb794ae4c920d12418f5e083baa",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/calendar-api",
+        "version": "0.75.288",
+        "shasum": "bc428d8ea7ca4778a829797779ae23d5a7d8d597",
+        "integrity": "sha512-PG7dMxH/rBa2KdkUWpZNjRlWgZ/pfpheLi9IWqu2QyJzTF355p4393vZ1Nxo4WxcNeOQp4VmnUrcNN71V6tRfw==",
+        "file": "_stacksjs_calendar-api-0.75.288.tgz",
+        "bytes": 7135,
+        "sha256": "691d52ca122f427b3d0792a195453e674fcfe5ce1a02bf43125c90addfe3f86b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/repl",
+        "version": "0.75.288",
+        "shasum": "a8a5067508f5342b5f74840bec55eb68d90f8632",
+        "integrity": "sha512-RxBAxSdDq7thItNIONZjBE8lHFN9JAwgypP7FWPjEay0MPLEvOa77XMmynRSSl0fzffHTsmDxedo7X1uzo2Y5A==",
+        "file": "_stacksjs_repl-0.75.288.tgz",
+        "bytes": 3336,
+        "sha256": "00a0e09cf0199ca9b5616d91247b0a4d73a8fa4b0227e11f402464eaa3700819",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/env",
+        "version": "0.75.288",
+        "shasum": "545e6d34302cb7f8168a0d25d9fafefe03d641d4",
+        "integrity": "sha512-HpKHDajQZxSYEjwd8Q8TEKpAIFVKxlj3YL3JOm+IsAU5IB0Bm/uxe8TfX4MK8ky9V258EwLC66vMHjn3eMt9LA==",
+        "file": "_stacksjs_env-0.75.288.tgz",
+        "bytes": 35781,
+        "sha256": "eb8cb71ac5bad8900d64b5b4fe421fe575d24f87041675380bfe45781b55ebaa",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/composables",
+        "version": "0.75.288",
+        "shasum": "14f49d0a000046a3e3ba2ac6398aa9f2888cb9da",
+        "integrity": "sha512-nvtoYkhHuo2hF1FasI/N25FIY2+lDVYcMLQz6Fov9JmnSSXVNkVMnD3FqmI7CtAwnEAJ2uQu55I6Y999rbj5CQ==",
+        "file": "_stacksjs_composables-0.75.288.tgz",
+        "bytes": 83419,
+        "sha256": "287bc6bcb20c5b6526d03b09c610644b358366c8a8a86677fe8c31371e146b10",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/config",
+        "version": "0.75.288",
+        "shasum": "417c2f5f961cda9a1ff61a98a2c72b4c8766d90d",
+        "integrity": "sha512-uT972H9QK55p+6qYd5uIZw2CUAPj8PQxXPtWLlRFYimglAeywezTBiG5XL+a7omlOMSdBIQ63Y5RSi1IKj8Gyg==",
+        "file": "_stacksjs_config-0.75.288.tgz",
+        "bytes": 29785,
+        "sha256": "fb2a65c8971fe97a2ecd45449fcc8265c6aeb131a1960859a560a569da1ee211",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/browser",
+        "version": "0.75.288",
+        "shasum": "9b95cf83d59be28a8cd456f79a80c26709ca2e02",
+        "integrity": "sha512-io4jKuF2pfzulkPl0jSxyck0VFoqWKGTiQwOfBjR1tTwO6SC9YCOyuPj2uuSAtnoVqx7UngyZBK4F6NAnC7RxA==",
+        "file": "_stacksjs_browser-0.75.288.tgz",
+        "bytes": 26080,
+        "sha256": "d37214840fb584acc5aea30e7ed607b9a82cb5558aa1b6cc960b10c087b12744",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/types",
+        "version": "0.75.288",
+        "shasum": "b4aa42f45eb7ad56e15c840545a77caf3cb4594f",
+        "integrity": "sha512-r/j7EyDxCSi26UttVvr5Rc4lUt7XwqG4TTjAZg6lz2Ms2okYCCaBhrFA2NuM8UrScgJKN40SDsiaVxT3HeD5Fg==",
+        "file": "_stacksjs_types-0.75.288.tgz",
+        "bytes": 75530,
+        "sha256": "50d9611fc0507ade42e0d1038095f06a5f910a15126f8751dd0118cfc1baee1f",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/mobile",
+        "version": "0.75.288",
+        "shasum": "866d5a07a8b10dbedb24c0426983000b9cca1b95",
+        "integrity": "sha512-1QcvQS8aq4rJGzDEdV/ASpWXnfNAD+DK46krz4PiubNs2sOm5131RH17eG+z7foEL7sQR/oJpGu/G5n/e2IX4Q==",
+        "file": "_stacksjs_mobile-0.75.288.tgz",
+        "bytes": 85930,
+        "sha256": "8c5b56caf9055624491251894c9f95de8f8eecb5a6f299ded2c8d18a15312255",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/cache",
+        "version": "0.75.288",
+        "shasum": "48259bfb89989def69a26e6f8c83c3f5587eefc2",
+        "integrity": "sha512-U9S9P7R4464NW0pemFOiYuR34LBGntDCCH7lWiEctb70fPuRwH+RGp5IbrKqBq4UfiW0/IdBunsX2JYinboA2Q==",
+        "file": "_stacksjs_cache-0.75.288.tgz",
+        "bytes": 9668,
+        "sha256": "c24ef08f3481709e565378e3823bbc95af677c0609b12579b61657b97d974382",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/api",
+        "version": "0.75.288",
+        "shasum": "5a33431fa1ec1c546bea5f67795285a0602641a0",
+        "integrity": "sha512-9OdJLs0kOdDjoRDOvK3JBZaEejd6gNEgLHTrJF8ExiyZMaaIFdN5b0qRqJ7CvTOuG4D+Y4Q9/QOc8l6JDHKPKg==",
+        "file": "_stacksjs_api-0.75.288.tgz",
+        "bytes": 16641,
+        "sha256": "eb9e924e21ba1f76073ea29ceafaae15f0736cf8c2771c4d50e9e68830e02a53",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/docs",
+        "version": "0.75.288",
+        "shasum": "b0f88529c946a35bb9ea99571dac69814f4d78ae",
+        "integrity": "sha512-HvxegTydubh7hQ+DT7/ZlQcglM5QSje7MRGViU1D2yGeAvjROxTMjGs//h2rmoS756vc7VBH7EhAVrvaBzle2w==",
+        "file": "_stacksjs_docs-0.75.288.tgz",
+        "bytes": 2858,
+        "sha256": "6531275b185c7188d737202452a0c5d822622cbed363ed6d3ca8e9fbef091ebc",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/image",
+        "version": "0.75.288",
+        "shasum": "d4636575aa9d5a2c0e7835eabe763b76a111dfd6",
+        "integrity": "sha512-cEpfeKxsS8q3Qtvsp8gwaQxt9DIb7mXSa/fn/nVQhy4HVxxtxahTRZygXC0kQ9qf/4qEe8Sh0NTPjGXvd0Lf4A==",
+        "file": "_stacksjs_image-0.75.288.tgz",
+        "bytes": 15153,
+        "sha256": "7f5cf3ad51f852b0fefbbf65dcd46a4efb1bc617defe70f2ea32ae72f1de8fbe",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/action-runner",
+        "version": "0.75.288",
+        "shasum": "e071c710f40802c085a5c9438eb70b88b986525d",
+        "integrity": "sha512-XKRjqTC+w5xzRzX6bHNrKLI86vyQnILdsiRClOt6zgoUrjS12xqDxfubUBjkV7iN9l/bi0J4LRLaAbIb6Nv9kw==",
+        "file": "_stacksjs_action-runner-0.75.288.tgz",
+        "bytes": 2692,
+        "sha256": "a75ab24009dc563030907cb33e811107355eb319b19ab7d31f421f898d3dd3d2",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/error-handling",
+        "version": "0.75.288",
+        "shasum": "06410edec7c33c78cfdd28cc5578e6bbc0a18692",
+        "integrity": "sha512-2iDQv1Ce3PP8ihq3Oq1n21xwCP0ROoflZ6/BxDUm6SBgS39cuzdYPuX4kYgDuUNLTgfNIuWvlVgcZcMRsR9K3w==",
+        "file": "_stacksjs_error-handling-0.75.288.tgz",
+        "bytes": 37522,
+        "sha256": "165d9ddd726b15fcd8ea1919c03f88fcf0dd84bd9ca0e8f67a2156d84b9f03ae",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/registry",
+        "version": "0.75.288",
+        "shasum": "477cf1717b6af3a2b32bb04b222d5a2f226489e8",
+        "integrity": "sha512-JGZsFd8wjCQmPe0VTFB81o/lutHFnqegyaIC8r0hNidf5SOeJEwcMCT/kjxt03rEdu46K2riXSD41zlv4VBq9A==",
+        "file": "_stacksjs_registry-0.75.288.tgz",
+        "bytes": 2211,
+        "sha256": "b37843c98ded5c48da79add45c5c6977adf705f142af219bdbfb7b5aa746304b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/ui",
+        "version": "0.75.288",
+        "shasum": "6bcf3ea1d3f168549811f2005c92cc20382018d9",
+        "integrity": "sha512-39ZSoUqhuHQbldgdXnRlGcKJx+4X3nW6Q2cQ8BnCQVtlkrhciU25FgwkeaTf+ITPeJ0rJxA6ENguzD3mVBFoFA==",
+        "file": "_stacksjs_ui-0.75.288.tgz",
+        "bytes": 7793,
+        "sha256": "99e20841d029d32c8e9f1c0b8377d2c5bd19cebd2cf62ce4f6d2480af586ca46",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/security",
+        "version": "0.75.288",
+        "shasum": "6cec1cb959793cfaabac47a0d80f67b518aff496",
+        "integrity": "sha512-2jUFC9zpYKNqy6xHnOFqrxvXxSzqw+ijNIfWVT3F2IVOUP32TQrc0QCJ305jmS7jD9d6DVizLawBZUwAqqXRzw==",
+        "file": "_stacksjs_security-0.75.288.tgz",
+        "bytes": 13996,
+        "sha256": "0b51844d2717b3e200cbb4f706779dbf937ee8fcddd228c08d958d4eb23922f9",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/logging",
+        "version": "0.75.288",
+        "shasum": "f6986ddc125fa71bc6a2d6a233a0a22a9b98b2f4",
+        "integrity": "sha512-y1NMN0DcYHAZIXA/9ZYPJwZAoiz20gpGoehzmjU9TbFMI07e69VwgFTj5l/7DhFb5+CKnLFUvR1ghOcDuYRTdg==",
+        "file": "_stacksjs_logging-0.75.288.tgz",
+        "bytes": 10956,
+        "sha256": "36566270e035032fbf0b27bbe04d05ac24649410234caf6b736bf4aee42dc2ef",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/cloud",
+        "version": "0.75.288",
+        "shasum": "052daa1c4e6c1cb8461e4ada651dd75c7df42098",
+        "integrity": "sha512-yWgeLWF0JJaeI9j0CBGIt2McLDD+Pz+eSnTVlhQwK9mCr9V1QlAvemdTBcR+74cDLbEqs+fTmUqajf85IISzKw==",
+        "file": "_stacksjs_cloud-0.75.288.tgz",
+        "bytes": 29867,
+        "sha256": "ab99c147efff3248c31a3290e76c0964b69bc60e380c8575f38d0ab4eb70f54b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/whois",
+        "version": "0.75.288",
+        "shasum": "b3a38473fddea337140f0380c3a51f510e83d970",
+        "integrity": "sha512-uI9I9sobU3DbfUI5vkiEIvWIPT6LwUbK8zb4MOlcEWnkmL5T2BVEz+ncceQ30Tvx4iLk/AtAZS5A72+Z60u35A==",
+        "file": "_stacksjs_whois-0.75.288.tgz",
+        "bytes": 11547,
+        "sha256": "f8579d4b0dab3d4c348863dc5632b7d588dde043ff270cf546ef171e2176052e",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/cli",
+        "version": "0.75.288",
+        "shasum": "c562c4319ef95624bfcca63ba02bea395426c0dd",
+        "integrity": "sha512-n2VPyuhBTOZN2PXLamh0DMy9KCiD2fl+4VljPbU2MG9T1XZadew/4csrDniJ5rhhvhk29HOB1MHxWxJBNqbI1Q==",
+        "file": "_stacksjs_cli-0.75.288.tgz",
+        "bytes": 23142,
+        "sha256": "878394bfd1a8f9d472b1d8bf86a7a996c99a93609f5464e84796ae4376bd4c39",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/i18n",
+        "version": "0.75.288",
+        "shasum": "02574c2301b7cfb91b4abdd2bbbcbd29ae82cc35",
+        "integrity": "sha512-T5UDuNp/46tP4S89rdz4wmioG+ThV7nf+3wbc1ICDBSwufY9OIY6w1PxtVVosM6F/d4BtQ/A2YKcpCfeVFRLtQ==",
+        "file": "_stacksjs_i18n-0.75.288.tgz",
+        "bytes": 21230,
+        "sha256": "ac4c77992bb03714a0c11c06cf3f82364e82b1c09c97c7cafd83c1e72303b6c9",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/realtime",
+        "version": "0.75.288",
+        "shasum": "c23cce387e67aa1c9a8931396bb938f8f230bb30",
+        "integrity": "sha512-ojQSRImi0VKeiD+j0Hd8kEQXX68rN9aEc34YXR76JwkrOMuqX7TGPisEOTC3Mw1UhwnTAFc5f5bDsR2CHOdXVA==",
+        "file": "_stacksjs_realtime-0.75.288.tgz",
+        "bytes": 10392,
+        "sha256": "7edf7661dab3ef9550231f241cb41cccb536f898b7a394ecc0366d4541e9a073",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/storage",
+        "version": "0.75.288",
+        "shasum": "0449826a9827fd212705b180787d72829fd9fa1e",
+        "integrity": "sha512-drmvNsLSqKK1Czz8k/UTMc0u+cJP4v9VgXvE1AsCdf0XN5jzs3EWyzUM6An5LIgCoaGO/a3Iuogl+GOsSrkhTg==",
+        "file": "_stacksjs_storage-0.75.288.tgz",
+        "bytes": 71462,
+        "sha256": "20acb44d0eef90b5456d7efc8a048c4250c31e4fc00207eb8f6a2048db2f215f",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/push",
+        "version": "0.75.288",
+        "shasum": "7a0ee1923819ab6452861d6881f0c193e97a4ea6",
+        "integrity": "sha512-ccrBZzZhyyNffE4myH/Sq6Kh0ghijAdX8hJ24TEy/V0jMMKtzUQBYKYAwcsmo8FaiLiJ3PUG5DdS+0Gg04R8qA==",
+        "file": "_stacksjs_push-0.75.288.tgz",
+        "bytes": 11765,
+        "sha256": "f46ed46191c06beb52cd2eb43e1a459f44abfe882b36d88bb893abf637b155ef",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/utils",
+        "version": "0.75.288",
+        "shasum": "b73f2829f47beb0995eedc64049aa35e0bbd4872",
+        "integrity": "sha512-mtjPh2S01NEpdBMdjTA0+s52on9SaeVxnoZlOF3F6nsSUGxk6iD7DGNSSbcWlAqZc0zjr+jTvOZTNl7bnz/T2w==",
+        "file": "_stacksjs_utils-0.75.288.tgz",
+        "bytes": 29611,
+        "sha256": "587f7fd6f5073aa5955518b8020a5305894ba18e34282e6c01a1ea3931eb6e5d",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/router",
+        "version": "0.75.288",
+        "shasum": "7a2095040cce6a1d223044487f7e9f5b22ee45fa",
+        "integrity": "sha512-3RcA5LNu8vELmfOeyq0bdbKPZZQcF9XMe7nEMdDN3YYDSWYw4fj1NvO1xh/MIIZ+xhGWolBQ7euA7F8g5BfIXA==",
+        "file": "_stacksjs_router-0.75.288.tgz",
+        "bytes": 73793,
+        "sha256": "aeb59abe0c69d6e14e4f7aa304eba9600c12c676b98519689a6f16bdb32badb7",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/skills",
+        "version": "0.75.288",
+        "shasum": "c5d9c6a3db879ab69984c3d4e3ca6cd9a124b496",
+        "integrity": "sha512-mjf8X5RQ18k6VUUDYHY8OX0OYEyTCgEQgXwGzOpd+C92J2QFs3ZEH3rY1+o9D4K5MJ7rGa1ZefTzteV4nH9aHw==",
+        "file": "_stacksjs_skills-0.75.288.tgz",
+        "bytes": 11549,
+        "sha256": "4b02be0f24d83ac1d2232b7556cbe9fd08109d1fc67530425895fdba46e3f74e",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/dns",
+        "version": "0.75.288",
+        "shasum": "81ab76b25d8d1e722dcf6c9ddceb4d07904ef3d5",
+        "integrity": "sha512-0dnt/nhsvdMsGqHPjq/Z36RtLmK9TW63muKi1i49bgssBTlEc2JzdVOdvKrd54bL0D+Hae5QdnU0R+PVf42ABg==",
+        "file": "_stacksjs_dns-0.75.288.tgz",
+        "bytes": 7257,
+        "sha256": "b29c8b6cba70372c22d2b5dc71a2e1e4ec4c862666e4ea9e2997c079bf786ba4",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/build",
+        "version": "0.75.288",
+        "shasum": "b4f0248d40329630ea0d90f06ae25374abfa7dab",
+        "integrity": "sha512-4qnSbu1LxwnIp+i9C/bjj81SxPucmt/ij4HGGLwAn6j5vBUSvteU9qMCfeS2wqt/jQf1KE9IGZ2nhDIOkiKz1A==",
+        "file": "_stacksjs_build-0.75.288.tgz",
+        "bytes": 108601,
+        "sha256": "4bf06ca422ed80f55187eab5f4bbba736edbdc4b5c1f541ae0a49304ffec9eef",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/validation",
+        "version": "0.75.288",
+        "shasum": "b1ee541a4d01e51e4f586c20e89d8e01afdab076",
+        "integrity": "sha512-h5wDn8u0A7bi5bmTuFZQOdwaVZ34MxmIBD5/q9yvUucS2uCz308YalWK1WJXZ7MQVksI17h0uonPPHWjUbES7A==",
+        "file": "_stacksjs_validation-0.75.288.tgz",
+        "bytes": 16413,
+        "sha256": "5cd029e3b3f45ac735a81ed4981e8a1e675c3a7f3c750985de2ffb6a7026b587",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/ai",
+        "version": "0.75.288",
+        "shasum": "e2c42caa460e9558a557aefe77bf5cfcbe8af7e0",
+        "integrity": "sha512-JHA2EI+/cbKJnUnVF7k9I3rgctcmvZpfAHcgc0DkRl2v0JwZ+9vHyqAL+w5TEQ4ToUS5LCvUmXomz5QW52qxkw==",
+        "file": "_stacksjs_ai-0.75.288.tgz",
+        "bytes": 57005,
+        "sha256": "643c7491fb7d2096224df30d29797751e50bcdd22fdb8ccf52632100d01bfd5b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/objects",
+        "version": "0.75.288",
+        "shasum": "4a432b8513ec80bd32eda90756fb5862e39288d5",
+        "integrity": "sha512-wxvU7TW/wFZ+/9cOWG3pv77Y1wuorzl+1QMxC3XRxnB0D/lBRKpsQwMCvLSaN1uUUjY/8do0h5LWY4zVkSQgSA==",
+        "file": "_stacksjs_objects-0.75.288.tgz",
+        "bytes": 5665,
+        "sha256": "c2a2fce1678466a67d17d9f0c78b8e5b8e236750cdb9722008d1fec886c43912",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/defaults",
+        "version": "0.75.288",
+        "shasum": "aa991333425ac6d41b7bb409344a88d1b38f6679",
+        "integrity": "sha512-4I778re2dNQ0zD2K92KZs0rzPeizmJXK6cgwud2gDw8w+bWFoIXxL0v9gdY79Ixeu18Cf/myR0H6AWbe3Zce6A==",
+        "file": "_stacksjs_defaults-0.75.288.tgz",
+        "bytes": 4896301,
+        "sha256": "e9aa10475a9500d2df94f19ca4de1a0fb40bdae11cc6f30e14453e0ff24b4958",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/model-meta",
+        "version": "0.75.288",
+        "shasum": "53d53e26e082169fe4232f509124eef11126b51f",
+        "integrity": "sha512-hCCc8RZ9gVN7gPkXFDsSE2qabfkLkDM0eYnmJQYQJINFW293xSOOjbmzCLFT8bAY64+DcuVgmjAeu7BwWlINhQ==",
+        "file": "_stacksjs_model-meta-0.75.288.tgz",
+        "bytes": 5315,
+        "sha256": "b0bcb182ad72feb3a2db6d7a35158b35032577d85165b975e3995b9b281d708b",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/database",
+        "version": "0.75.288",
+        "shasum": "26a418fd1b963ad46c24ae8c805f87cbe15e501f",
+        "integrity": "sha512-g2n+TrEamrHkwQ/B4X/vBxqIvBm3lA5ORJMeB8GoAF29w2Vt3v2j+YsEzdgF3HN3ohyYsj/Xd+yGym9IqXhogA==",
+        "file": "_stacksjs_database-0.75.288.tgz",
+        "bytes": 225148,
+        "sha256": "d71c121df8c89ea8f568c1f7e6a086f7229c59d9c6a694202775ff10bef60c80",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/orm",
+        "version": "0.75.288",
+        "shasum": "f98307eeb432fe2a47eca5088e589991c8562bfc",
+        "integrity": "sha512-v6tEwHcvPkwo6soWHR2sgR1xA7ra8WYpGDaCMDcydpksHPRcbMHRYXhdE9L45+pAusIq8RyHifY2N4yMc37SCQ==",
+        "file": "_stacksjs_orm-0.75.288.tgz",
+        "bytes": 166328,
+        "sha256": "4f092e9226342f34dfc16d1da44fe56ec5cebdb72afbe4379526acd15c7efe35",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/sms",
+        "version": "0.75.288",
+        "shasum": "068f8425ab17b722f3b207c616c136f58d671844",
+        "integrity": "sha512-UWm5S/mthNJoKC23ItcIHvC0ViYFPfThmOGWow9Fqoc/vU1hqcUsALQ9VjmGBN9UFvFhrHQcN9b26Uzo7ZHqcA==",
+        "file": "_stacksjs_sms-0.75.288.tgz",
+        "bytes": 14739,
+        "sha256": "496e1146bb6aa278f5e8ee9f6c79753e18e38018c804ca9dcfef227479caa8ec",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/queue",
+        "version": "0.75.288",
+        "shasum": "d278dbf3e3b3299b7c25d2b53dc3d246138650ff",
+        "integrity": "sha512-8Hsh7+2S0RdQxpvjrWRxGQozUOgBhMmFB+ctQipy00oduT0XRqD16uwV0BFdz4GvORFitYS12EnFoI9+xlMABQ==",
+        "file": "_stacksjs_queue-0.75.288.tgz",
+        "bytes": 57759,
+        "sha256": "b7dbc7b9ff443205675be4b04746a10260ce4112707157d4a316cb5024a5f8fb",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/email",
+        "version": "0.75.288",
+        "shasum": "2b64c1978022f5244bba632beee2ae6472ac78e1",
+        "integrity": "sha512-DDBHjP0/7HnF3E6LkofDnbrmQJXpBZDVHMgV5fq6rG2RmonEk2DxXYIuVbT33dBrTCIhR1CoOMQL52QgqU2C7w==",
+        "file": "_stacksjs_email-0.75.288.tgz",
+        "bytes": 51206,
+        "sha256": "35ec16a9c47aedd6973bbce8ff4bd78c1d379ac07c4de98641436222a7819160",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/slug",
+        "version": "0.75.288",
+        "shasum": "aa906a880e3fd58b0a77801d04b8e10712798a81",
+        "integrity": "sha512-g1zrQBFGVPUP/jei4RW12Jy91HbHCcUDh5FjUY5xTzhDvb/1DFK+gmCi/hjmqLcHUylgLTx/GITypfLV4bRTow==",
+        "file": "_stacksjs_slug-0.75.288.tgz",
+        "bytes": 2829,
+        "sha256": "fe75d47d330828d4591607cbcfb8cb2f696004991abd6ff474555b5317220b3c",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/feature-flags",
+        "version": "0.75.288",
+        "shasum": "df897c01a93f0ed6467595c3a2be7a2e1cf8fcac",
+        "integrity": "sha512-F/+jgXeeiNME+Op0V5kyp4FXPK2v4kg6IkfRUw7ZZ5e4Fx+zID+ZlYKHUBw/wMatgLQaE7oz8cCxVMqvHFnlHA==",
+        "file": "_stacksjs_feature-flags-0.75.288.tgz",
+        "bytes": 9012,
+        "sha256": "a45ebf8d2f98e7457cb92fd988654bc9c9e0762cf07534aa776c547332afc55d",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/analytics",
+        "version": "0.75.288",
+        "shasum": "12e82fdeb73b25a2a09ef58a1b011efba2a91897",
+        "integrity": "sha512-ECT5w4AEdXbYSsBjwJiTSTaH84XLMlRzBuZlxy0pfijOaJj/x1wilipaO9wpE98QFUiYQMwAtKKmmqUFCK/MOg==",
+        "file": "_stacksjs_analytics-0.75.288.tgz",
+        "bytes": 8008,
+        "sha256": "1627dd770d2664fd76ed0b46769fb26e737ad421243105aa2350722b7f930c25",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/socials",
+        "version": "0.75.288",
+        "shasum": "f6940e4314b81cf94853d68dabb7788e4dfa2d2e",
+        "integrity": "sha512-ywCmGKwdIUGXPmxB7/gEJt2ycFvCpI5++EYxwd04JWbIf+oRfX9B1pipRsfIJwPDJiHFqFd0aLIrm0/sHBOMdQ==",
+        "file": "_stacksjs_socials-0.75.288.tgz",
+        "bytes": 36537,
+        "sha256": "9d3d24a2d205d1457e8b2e6bbc943d8c52e9dc468c26c1f3872516e196d959cf",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/chat",
+        "version": "0.75.288",
+        "shasum": "a49683462e14ff637d619451baeb37fa7d9afbd0",
+        "integrity": "sha512-ipr2wXuZwU9wrJQJxAMDGol6xpzZp7mS1ZgKuw5N24R/xfigGB05P3dqF8wJLjZ5zxcjoK8wiOArIQdDyvBIZw==",
+        "file": "_stacksjs_chat-0.75.288.tgz",
+        "bytes": 37666,
+        "sha256": "81fe6dbd75b744cf04fffd62f6defc7302621dd095cdbaaa262090651d4eb0ba",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/payments",
+        "version": "0.75.288",
+        "shasum": "1ba70f2d4520d790f9a9176335b4e62f54b23566",
+        "integrity": "sha512-wIXwle4Ak570ok7Fs5EPIgnYD8z/FCxGNA/jFAb7u7PnzfeY6D0kYbq7sAQPBG6Xr6mjrEOkZ46oSE+LFzEDkw==",
+        "file": "_stacksjs_payments-0.75.288.tgz",
+        "bytes": 71344,
+        "sha256": "ecaaea426e2610db0485b03620733b4fd23961a13648b637c804c9c7ef6c9a4d",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/newsletter",
+        "version": "0.75.288",
+        "shasum": "09b8d959907b817597ad78dcfe8fc4aaca080dfc",
+        "integrity": "sha512-Adf8/Rmf0xnOZ8DZNeJuNlTDtVVNNk8wXQ14yRbLGXJE5BBcoCg7MwghPnEHEGV1omLNM0tp6g+PscK2yW9SYw==",
+        "file": "_stacksjs_newsletter-0.75.288.tgz",
+        "bytes": 12388,
+        "sha256": "21665cd561c9f65da2c091b7a4471aff8c606b47c72da6f8fe7c48bebd8071b3",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/auth",
+        "version": "0.75.288",
+        "shasum": "49c054cc2fcc3eafa5dbaa9c2168b7a818b9f24f",
+        "integrity": "sha512-nVuYLc1zhP3+5DpPkQ5qIfRtvnYG4MG/n7/X+2cb22CfqR8bdTJRHzB6gSzSKBvHZt2yrj2990V2aO12QTc5kg==",
+        "file": "_stacksjs_auth-0.75.288.tgz",
+        "bytes": 122447,
+        "sha256": "f2f42770808aea5a00e045c8d5eeb179e17377e8b117a0b2a953853d2d13a529",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/search-engine",
+        "version": "0.75.288",
+        "shasum": "fb10baceb78cad3b249ab4d39c8cfff4fafca337",
+        "integrity": "sha512-rKd5WqG7D8OEjaX2sf0DlWI2KcU2aE7K5VXROzFZ6Zgnx0JnuwtwSZb6t5B8Y4d/I9Rs5Kcj3q8HnioUpLJBEQ==",
+        "file": "_stacksjs_search-engine-0.75.288.tgz",
+        "bytes": 16952,
+        "sha256": "b850c93599559a3b807d4449c99a692e749258e29794a4cfa44410bff0b5dd6f",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/server",
+        "version": "0.75.288",
+        "shasum": "856de03fd852054725db231923f4595f16e5032d",
+        "integrity": "sha512-cLGKZhDqhypXdmteEa/L+vjf68iDtwDdY4L7a616Q0ALCXGMalGsjYR1ZVT5dUnECtyOBgeXnG1wivKJO5wEIA==",
+        "file": "_stacksjs_server-0.75.288.tgz",
+        "bytes": 27911,
+        "sha256": "08040b538475ab92914a4717ea2e929b3d7f49c6ddba466fa592b7dc79bf0d67",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/testing",
+        "version": "0.75.288",
+        "shasum": "bf469dc01ce7756e4fb524d031826f7a30d8ffa0",
+        "integrity": "sha512-FiVvzmcT70+wMNLDvfZc4aWnmms0pHR1PhIdyaVXh+x6V/mnDntvcPONv/xfMRaHo6HHx0zCLLBIP0gonW9iFA==",
+        "file": "_stacksjs_testing-0.75.288.tgz",
+        "bytes": 30194,
+        "sha256": "6b0b6716500e7b0dbdde1cffb02f19a6aa3a6100e6a19c2b84aad59c6a7ef888",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/notifications",
+        "version": "0.75.288",
+        "shasum": "f422408cb2a44b0a52b75c61e8fc0760e57e0a89",
+        "integrity": "sha512-gnLccVv80TS7mPHAYsljBHOVtv8RG3/yJVdzNqef33pNYbTUg+cMMjg4IfJeV7XtwH5V90cdpyiMJxcwI7oO6g==",
+        "file": "_stacksjs_notifications-0.75.288.tgz",
+        "bytes": 29209,
+        "sha256": "61eaebff4554f2edf266eee5165ca4ff4a85f3c31a5d3138fd3694e5d6674b11",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/commerce",
+        "version": "0.75.288",
+        "shasum": "bfc7638a4879f5ced321fcabc4dacc851f32c6ca",
+        "integrity": "sha512-r6T/CWOxYuFj8rGvUqV7HUqS2BqiD4mV5ZlEimUEAQRzIoLE/YZ8Yn8USS1z1EdaYuF5FAWEG/774FvqhwvCWQ==",
+        "file": "_stacksjs_commerce-0.75.288.tgz",
+        "bytes": 187407,
+        "sha256": "850b3405a7ee7d3ad62843ad890c71082ad7b5ab4e7e567f024ae7d34f000269",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/sites",
+        "version": "0.75.288",
+        "shasum": "049d49a7448deded9977c0ef795390cc55799c84",
+        "integrity": "sha512-x/7t2kGwOPVmWB9cfLU6AgxY6vPOaeiDrt6UvlEWFlr1PhArH3naGhYsKULV5gax93aZLxhsR2wf0hok7N5KcA==",
+        "file": "_stacksjs_sites-0.75.288.tgz",
+        "bytes": 8548,
+        "sha256": "09391ae9388a59b1425f2400036b7ee0aedf5bd543058f9340392a27dbc8fbee",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/forms",
+        "version": "0.75.288",
+        "shasum": "39a48874f5f31488515c6c3d16c81ba78640fd86",
+        "integrity": "sha512-+5/yO2TzVtdKSwgbAtTXSDLxFwwmnt7NP4hFFGLEwZ8dj1a7V8bNp7A+zmUowEAajf3XkgzF9wveZE9DErfaaQ==",
+        "file": "_stacksjs_forms-0.75.288.tgz",
+        "bytes": 12786,
+        "sha256": "f4e8f04462901722e24eb83345d6d01c846faaa57afc8fdcd8a1bde39f850ffd",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/cms",
+        "version": "0.75.288",
+        "shasum": "6c44f7e3569fa8cfe4899cd3e9095be9b69e5a28",
+        "integrity": "sha512-ZvSSGuwRBYGZNwGDyyDeAmdb+lylC6q8o5JgKEEQmrUnnTG8cNFCKP1XQYo3YHvPvz2+jrVcF+rj+hq9cClIaQ==",
+        "file": "_stacksjs_cms-0.75.288.tgz",
+        "bytes": 42726,
+        "sha256": "77b2e1e4ee4a22660247f424a7adb64eea05876baa9260b7b7f3c2f4c703eb06",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/scheduler",
+        "version": "0.75.288",
+        "shasum": "61c4aecac3e267f7a8f6a314a5b4fd381ae06445",
+        "integrity": "sha512-Q2a+oaYsDsGjS0ST62xyIl644dBTX2x6RbrN1vEwiIiO3GuYagKAdHr/aA846gXyow7yx0+R877n7/RzzfolKA==",
+        "file": "_stacksjs_scheduler-0.75.288.tgz",
+        "bytes": 12743,
+        "sha256": "e3ecffad7fa4749f9922403e116b6f867bd8a60a778683f6b53b6284783cb4b8",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/actions",
+        "version": "0.75.288",
+        "shasum": "d333795fbb8e3567db455a2488404d1e774958d9",
+        "integrity": "sha512-2Np+JGOet2oDjVJgW0hXhlvcWH8Ehbi50r/YnzZW8BHDKeGheHkhk78jdg/p4DqobwxhVXfX037BW9bF0oYsOw==",
+        "file": "_stacksjs_actions-0.75.288.tgz",
+        "bytes": 214842,
+        "sha256": "c5fc6dd5d367ee33fecf953ada787a173ebf14c83257782a6b92055fed7ed977",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "@stacksjs/buddy",
+        "version": "0.75.288",
+        "shasum": "e528253fa5f2274257f50e61bff63438b0c58cff",
+        "integrity": "sha512-u1UBFoHv97sPaFeGTl9PE5Jxeuyri41aJncYQ25JfTrTEUBStZddo5FsSFBK21yWxulqbaxZzjLYWZU8cChaQQ==",
+        "file": "_stacksjs_buddy-0.75.288.tgz",
+        "bytes": 377247,
+        "sha256": "6da1f8486cf4ff12ab58815c9a0d1a0875ab3682f79f150abb8973fcdb6e4b8a",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      },
+      {
+        "name": "stacks",
+        "version": "0.75.288",
+        "shasum": "6341dec311f1dd7bf250271fb52f2467f2daf1b6",
+        "integrity": "sha512-58nvt4blSJLAJ/0Tm32l2E9yFF35pDYgtMSbXadv2G/f5vFGWGzINgKZUsE2KyKgiQezrbCeXwK69XQp9htNHQ==",
+        "file": "stacks-0.75.288.tgz",
+        "bytes": 62219,
+        "sha256": "e506dcfcc15e00f3963862c6e42faf122e7cff013c7e0d643690a94369a85dfd",
+        "matchedOriginalMetadataAndCompleteBytes": true
+      }
+    ],
+    "failures": []
+  },
+  "nativeArchives": {
+    "tag": "v0.75.288",
+    "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+    "manifestSha256": "4871bc9edd47fe88e8b0505d90a67e1d5c5dbc07eb576251f98bea8f88b49381",
+    "archives": [
+      {
+        "name": "buddy-linux-x64.zip",
+        "size": 57832937,
+        "sha256": "75d9d5aac6fb60899cb0c0ec9c4556047b8f93861f3564fccf7f298cbbb6413a",
+        "matchedOriginalManifestAndGithubDigest": true,
+        "zipCrcEntryAndNativeArchitectureVerified": true
+      },
+      {
+        "name": "buddy-linux-arm64.zip",
+        "size": 57700444,
+        "sha256": "2cc6b55d0aa6e0d133da40ba5fbf7cef0c5453adc854288031044af2c7b943b6",
+        "matchedOriginalManifestAndGithubDigest": true,
+        "zipCrcEntryAndNativeArchitectureVerified": true
+      },
+      {
+        "name": "buddy-windows-x64.zip",
+        "size": 60763150,
+        "sha256": "b8ca8bae85bf93f5a548f144726fd5748e4d66fe83827e9cdc2e34af244b2000",
+        "matchedOriginalManifestAndGithubDigest": true,
+        "zipCrcEntryAndNativeArchitectureVerified": true
+      },
+      {
+        "name": "buddy-darwin-x64.zip",
+        "size": 49495122,
+        "sha256": "90ffd8e268f41ba81ba65da751ad3fa9de3da1e8805e30ece305efdd5aeb2958",
+        "matchedOriginalManifestAndGithubDigest": true,
+        "zipCrcEntryAndNativeArchitectureVerified": true
+      },
+      {
+        "name": "buddy-darwin-arm64.zip",
+        "size": 47041507,
+        "sha256": "b029b75a8b58600482ffb21ffb5a1da7c2a505ce038b029e9913233ff0f8d4e1",
+        "matchedOriginalManifestAndGithubDigest": true,
+        "zipCrcEntryAndNativeArchitectureVerified": true
+      }
+    ]
+  },
+  "nativeHost": {
+    "host": "darwin-arm64",
+    "command": "original released buddy-darwin-arm64 --version",
+    "exitCode": 0,
+    "output": "buddy/0.75.288 stacks/0.75.288 darwin-arm64 bun-v1.4.4",
+    "executableSha256": "9396ed23f7409def77c641f4ae7a0831346c66c168e85c36665aa3ffe47c8ee4",
+    "archive": "buddy-darwin-arm64.zip",
+    "matchedOriginalVerifiedArchive": true
+  },
+  "releaseCommandEvidence": {
+    "command": "bun run release:patch",
+    "commandExitCode": 0,
+    "preReleaseSource": "f362574af2aa3224a32efb20e1c222143264b90c",
+    "preReleaseValidation": "All9installedtooling packages verified against their original archives and full source/release gates; all5frameworkchecks passed. The normal exact-tag full source CI gate is still required by the Releaser.",
+    "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+    "tag": "v0.75.288",
+    "author": "Chris <chris@stacksjs.com>",
+    "committer": "Chris <chris@stacksjs.com>",
+    "coauthors": [],
+    "normalFastForwardMainAndTagPush": true,
+    "runtime": "Bun1.4.4",
+    "publisherBootstrap": "qualified original native Pantry0.11.126",
+    "logSha256": "c65ff5e04eda9c145810bfe0586e510aa06203d9a97e7700d029e2057e495308",
+    "recordedAt": "2026-10-24T07:33:29.802918+00:00",
+    "publicationQualification": "pending exact-tag CI, release gates and original public artifact verification"
+  },
+  "scope": "Published framework artifacts and exact source/release workflows. Application acceptance remains separate."
+}

@@ -1,0 +1,723 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "repository": "stacksjs/stacks",
+      "commit": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+      "tag": "v0.75.288",
+      "gates": [
+        {
+          "runId": 40074513289,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "typecheck",
+            "compile",
+            "scaffold-smoke",
+            "test (core-2)",
+            "lint",
+            "artifact-freshness",
+            "Release evidence (ubuntu-latest)",
+            "deployment-target",
+            "test (auth-1)",
+            "Release evidence (macos-latest)",
+            "test (auth-2)",
+            "test (auth-3)",
+            "test (buddy)",
+            "Release evidence (windows-latest)",
+            "test (auth-4)",
+            "test (core-1)",
+            "deploy"
+          ]
+        },
+        {
+          "runId": 40074513897,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "wait for earlier releases",
+            "accept exact release source CI",
+            "release gate",
+            "npm",
+            "homebrew"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "@stacksjs/action-runner",
+          "version": "0.75.288",
+          "integrity": "sha512-XKRjqTC+w5xzRzX6bHNrKLI86vyQnILdsiRClOt6zgoUrjS12xqDxfubUBjkV7iN9l/bi0J4LRLaAbIb6Nv9kw=="
+        },
+        {
+          "name": "@stacksjs/actions",
+          "version": "0.75.288",
+          "integrity": "sha512-2Np+JGOet2oDjVJgW0hXhlvcWH8Ehbi50r/YnzZW8BHDKeGheHkhk78jdg/p4DqobwxhVXfX037BW9bF0oYsOw=="
+        },
+        {
+          "name": "@stacksjs/ai",
+          "version": "0.75.288",
+          "integrity": "sha512-JHA2EI+/cbKJnUnVF7k9I3rgctcmvZpfAHcgc0DkRl2v0JwZ+9vHyqAL+w5TEQ4ToUS5LCvUmXomz5QW52qxkw=="
+        },
+        {
+          "name": "@stacksjs/alias",
+          "version": "0.75.288",
+          "integrity": "sha512-8Cm4z3ksXn0COlaKFpDW/i+YIDzHFWBTAelCUm0J35VhEx95Y6DPK8oNr3tdcMcNOJJgJkTWmrkSD1v1YS1O6A=="
+        },
+        {
+          "name": "@stacksjs/analytics",
+          "version": "0.75.288",
+          "integrity": "sha512-ECT5w4AEdXbYSsBjwJiTSTaH84XLMlRzBuZlxy0pfijOaJj/x1wilipaO9wpE98QFUiYQMwAtKKmmqUFCK/MOg=="
+        },
+        {
+          "name": "@stacksjs/api",
+          "version": "0.75.288",
+          "integrity": "sha512-9OdJLs0kOdDjoRDOvK3JBZaEejd6gNEgLHTrJF8ExiyZMaaIFdN5b0qRqJ7CvTOuG4D+Y4Q9/QOc8l6JDHKPKg=="
+        },
+        {
+          "name": "@stacksjs/arrays",
+          "version": "0.75.288",
+          "integrity": "sha512-M+uz3Icpl9ITTMpC3Ds91KBgeB4Xi4Nqy/TjVNHbCbw6IfIkQtNSq2Al43HXN/K6hw1X+1YKq4TtWUkyQHgWkQ=="
+        },
+        {
+          "name": "@stacksjs/audio",
+          "version": "0.75.288",
+          "integrity": "sha512-GwtXw5tQSJB75NJImTw5HpMmZ8xUEClvUlLqfHj3ThrHQ68rBOhz63O0Bhze9+2qeJv3qqqRC7MeVvJWqWz/rg=="
+        },
+        {
+          "name": "@stacksjs/auth",
+          "version": "0.75.288",
+          "integrity": "sha512-nVuYLc1zhP3+5DpPkQ5qIfRtvnYG4MG/n7/X+2cb22CfqR8bdTJRHzB6gSzSKBvHZt2yrj2990V2aO12QTc5kg=="
+        },
+        {
+          "name": "@stacksjs/browser",
+          "version": "0.75.288",
+          "integrity": "sha512-io4jKuF2pfzulkPl0jSxyck0VFoqWKGTiQwOfBjR1tTwO6SC9YCOyuPj2uuSAtnoVqx7UngyZBK4F6NAnC7RxA=="
+        },
+        {
+          "name": "@stacksjs/browser-extension",
+          "version": "0.75.288",
+          "integrity": "sha512-WxIOPo57nMttwHYmSQMw1CHyJcU2tvb+/5WBl1Ks+DsGpDN+5pSFdRqSM3BXzGUqRb0LJ9UenJS/qVz/N8q/TQ=="
+        },
+        {
+          "name": "@stacksjs/buddy",
+          "version": "0.75.288",
+          "integrity": "sha512-u1UBFoHv97sPaFeGTl9PE5Jxeuyri41aJncYQ25JfTrTEUBStZddo5FsSFBK21yWxulqbaxZzjLYWZU8cChaQQ=="
+        },
+        {
+          "name": "@stacksjs/build",
+          "version": "0.75.288",
+          "integrity": "sha512-4qnSbu1LxwnIp+i9C/bjj81SxPucmt/ij4HGGLwAn6j5vBUSvteU9qMCfeS2wqt/jQf1KE9IGZ2nhDIOkiKz1A=="
+        },
+        {
+          "name": "@stacksjs/cache",
+          "version": "0.75.288",
+          "integrity": "sha512-U9S9P7R4464NW0pemFOiYuR34LBGntDCCH7lWiEctb70fPuRwH+RGp5IbrKqBq4UfiW0/IdBunsX2JYinboA2Q=="
+        },
+        {
+          "name": "@stacksjs/calendar-api",
+          "version": "0.75.288",
+          "integrity": "sha512-PG7dMxH/rBa2KdkUWpZNjRlWgZ/pfpheLi9IWqu2QyJzTF355p4393vZ1Nxo4WxcNeOQp4VmnUrcNN71V6tRfw=="
+        },
+        {
+          "name": "@stacksjs/charts",
+          "version": "0.75.288",
+          "integrity": "sha512-MnsowTRjfhHrUbWKI3wII5l5zmMB9eQms4QI5Tb2ZG/nlS98nXY6PS8w5WygvMKHbFNVE1z4VATA5p5kHiRiTg=="
+        },
+        {
+          "name": "@stacksjs/chat",
+          "version": "0.75.288",
+          "integrity": "sha512-ipr2wXuZwU9wrJQJxAMDGol6xpzZp7mS1ZgKuw5N24R/xfigGB05P3dqF8wJLjZ5zxcjoK8wiOArIQdDyvBIZw=="
+        },
+        {
+          "name": "@stacksjs/cli",
+          "version": "0.75.288",
+          "integrity": "sha512-n2VPyuhBTOZN2PXLamh0DMy9KCiD2fl+4VljPbU2MG9T1XZadew/4csrDniJ5rhhvhk29HOB1MHxWxJBNqbI1Q=="
+        },
+        {
+          "name": "@stacksjs/cloud",
+          "version": "0.75.288",
+          "integrity": "sha512-yWgeLWF0JJaeI9j0CBGIt2McLDD+Pz+eSnTVlhQwK9mCr9V1QlAvemdTBcR+74cDLbEqs+fTmUqajf85IISzKw=="
+        },
+        {
+          "name": "@stacksjs/cms",
+          "version": "0.75.288",
+          "integrity": "sha512-ZvSSGuwRBYGZNwGDyyDeAmdb+lylC6q8o5JgKEEQmrUnnTG8cNFCKP1XQYo3YHvPvz2+jrVcF+rj+hq9cClIaQ=="
+        },
+        {
+          "name": "@stacksjs/collections",
+          "version": "0.75.288",
+          "integrity": "sha512-IzV4B+2FVfOIk2MGzYIQXUsg+o30z0hx4gV5gNS2w0wFe3+jEOcgHhzEWozIJj66M3g+oYBO1zYWybwY58m6lQ=="
+        },
+        {
+          "name": "@stacksjs/commerce",
+          "version": "0.75.288",
+          "integrity": "sha512-r6T/CWOxYuFj8rGvUqV7HUqS2BqiD4mV5ZlEimUEAQRzIoLE/YZ8Yn8USS1z1EdaYuF5FAWEG/774FvqhwvCWQ=="
+        },
+        {
+          "name": "@stacksjs/composables",
+          "version": "0.75.288",
+          "integrity": "sha512-nvtoYkhHuo2hF1FasI/N25FIY2+lDVYcMLQz6Fov9JmnSSXVNkVMnD3FqmI7CtAwnEAJ2uQu55I6Y999rbj5CQ=="
+        },
+        {
+          "name": "@stacksjs/config",
+          "version": "0.75.288",
+          "integrity": "sha512-uT972H9QK55p+6qYd5uIZw2CUAPj8PQxXPtWLlRFYimglAeywezTBiG5XL+a7omlOMSdBIQ63Y5RSi1IKj8Gyg=="
+        },
+        {
+          "name": "@stacksjs/cron",
+          "version": "0.75.288",
+          "integrity": "sha512-+ZR2HQsNK1/o7SmYv3kaXLaKi9NVpgIqwwH4fLLX6dTir3VuQlQfTWh3j2gaJkf9jRserQbK8T2WGbVoDuIchw=="
+        },
+        {
+          "name": "@stacksjs/database",
+          "version": "0.75.288",
+          "integrity": "sha512-g2n+TrEamrHkwQ/B4X/vBxqIvBm3lA5ORJMeB8GoAF29w2Vt3v2j+YsEzdgF3HN3ohyYsj/Xd+yGym9IqXhogA=="
+        },
+        {
+          "name": "@stacksjs/datetime",
+          "version": "0.75.288",
+          "integrity": "sha512-hCAX7T24CUIzG+FxLnM7dS5GNNM8nJCo/8r3ibCPe/gdrRszn3BRub+VU/jTuIj/Pb2SitSuF93lwjvP60VspA=="
+        },
+        {
+          "name": "@stacksjs/defaults",
+          "version": "0.75.288",
+          "integrity": "sha512-4I778re2dNQ0zD2K92KZs0rzPeizmJXK6cgwud2gDw8w+bWFoIXxL0v9gdY79Ixeu18Cf/myR0H6AWbe3Zce6A=="
+        },
+        {
+          "name": "@stacksjs/desktop-build",
+          "version": "0.75.288",
+          "integrity": "sha512-Ba0DfOy/me1PobgPUxqY2yDGr5qZjkcOx0GcwRRexOsdXJBJtl/7MBOIReU16ZNuWqvwCNIPwloG8WNAujBLSw=="
+        },
+        {
+          "name": "@stacksjs/dns",
+          "version": "0.75.288",
+          "integrity": "sha512-0dnt/nhsvdMsGqHPjq/Z36RtLmK9TW63muKi1i49bgssBTlEc2JzdVOdvKrd54bL0D+Hae5QdnU0R+PVf42ABg=="
+        },
+        {
+          "name": "@stacksjs/docs",
+          "version": "0.75.288",
+          "integrity": "sha512-HvxegTydubh7hQ+DT7/ZlQcglM5QSje7MRGViU1D2yGeAvjROxTMjGs//h2rmoS756vc7VBH7EhAVrvaBzle2w=="
+        },
+        {
+          "name": "@stacksjs/email",
+          "version": "0.75.288",
+          "integrity": "sha512-DDBHjP0/7HnF3E6LkofDnbrmQJXpBZDVHMgV5fq6rG2RmonEk2DxXYIuVbT33dBrTCIhR1CoOMQL52QgqU2C7w=="
+        },
+        {
+          "name": "@stacksjs/enums",
+          "version": "0.75.288",
+          "integrity": "sha512-l5x39ZdyCYnF1etQ8LdrqaoVJP6GqpxJh2sXdJHlfi1mWAmv0acYjpOwEoJVT1qeTCNQQQGB+kYzfyFG893/Iw=="
+        },
+        {
+          "name": "@stacksjs/env",
+          "version": "0.75.288",
+          "integrity": "sha512-HpKHDajQZxSYEjwd8Q8TEKpAIFVKxlj3YL3JOm+IsAU5IB0Bm/uxe8TfX4MK8ky9V258EwLC66vMHjn3eMt9LA=="
+        },
+        {
+          "name": "@stacksjs/error-handling",
+          "version": "0.75.288",
+          "integrity": "sha512-2iDQv1Ce3PP8ihq3Oq1n21xwCP0ROoflZ6/BxDUm6SBgS39cuzdYPuX4kYgDuUNLTgfNIuWvlVgcZcMRsR9K3w=="
+        },
+        {
+          "name": "@stacksjs/events",
+          "version": "0.75.288",
+          "integrity": "sha512-KJVl4s1IQoW4gQabf5bfcYhiDA1RWmdL6WnkfRuTW0KW2VX1D8vTZ1KPHxQbfmeMGbPI+8qWMXzrLjXbKW+GPQ=="
+        },
+        {
+          "name": "@stacksjs/faker",
+          "version": "0.75.288",
+          "integrity": "sha512-Vrgcehs9SiivIf8wstuyTc5EFxumTwfmrRGc6ui1XHDmLHMAeBti1qrD128rBN5J60b/bk/iRfv52Cnn9674dw=="
+        },
+        {
+          "name": "@stacksjs/feature-flags",
+          "version": "0.75.288",
+          "integrity": "sha512-F/+jgXeeiNME+Op0V5kyp4FXPK2v4kg6IkfRUw7ZZ5e4Fx+zID+ZlYKHUBw/wMatgLQaE7oz8cCxVMqvHFnlHA=="
+        },
+        {
+          "name": "@stacksjs/features",
+          "version": "0.75.288",
+          "integrity": "sha512-HuhD2PrS64xop/xMBTBCP/I2DfXGhkQeNPQCROORx1MU+5knxjsNJkxh8+9NTDiGAIPWCv8aWkx2sQn4jaTtqA=="
+        },
+        {
+          "name": "@stacksjs/forms",
+          "version": "0.75.288",
+          "integrity": "sha512-+5/yO2TzVtdKSwgbAtTXSDLxFwwmnt7NP4hFFGLEwZ8dj1a7V8bNp7A+zmUowEAajf3XkgzF9wveZE9DErfaaQ=="
+        },
+        {
+          "name": "@stacksjs/git",
+          "version": "0.75.288",
+          "integrity": "sha512-d9jwKRT7r6V8OoHDiUw5z1ZLA8OSFO8RXaOjRvo/3GPz6NFSG+1WSDGTR5Zjubmzh4IrzGxs4YEE76g7O6vaLw=="
+        },
+        {
+          "name": "@stacksjs/github",
+          "version": "0.75.288",
+          "integrity": "sha512-UPAhL7LI4eoehlo9fu6E++3lm8YoE26kFtGQaKVJ1VDTAD9qMwX08n9bHHd0S/VQyarZZiW9qf4xcrzvNqX9kA=="
+        },
+        {
+          "name": "@stacksjs/health",
+          "version": "0.75.288",
+          "integrity": "sha512-x8b5LD37mvxxlsyzyM+egEEscHiifEBc8metpFxwUIe6COBaZlXohzpp1oSX/igX5NRvzqLd2MZefQq793v9kA=="
+        },
+        {
+          "name": "@stacksjs/http",
+          "version": "0.75.288",
+          "integrity": "sha512-nJWCVN3oFNnKhuHfvSvhBybdq1Y2GwOqnrcpKmNdhw28CHAVXRi/6lukgHXp9RGHqwwszlpHn9w5cgUszF1TPg=="
+        },
+        {
+          "name": "@stacksjs/i18n",
+          "version": "0.75.288",
+          "integrity": "sha512-T5UDuNp/46tP4S89rdz4wmioG+ThV7nf+3wbc1ICDBSwufY9OIY6w1PxtVVosM6F/d4BtQ/A2YKcpCfeVFRLtQ=="
+        },
+        {
+          "name": "@stacksjs/image",
+          "version": "0.75.288",
+          "integrity": "sha512-cEpfeKxsS8q3Qtvsp8gwaQxt9DIb7mXSa/fn/nVQhy4HVxxtxahTRZygXC0kQ9qf/4qEe8Sh0NTPjGXvd0Lf4A=="
+        },
+        {
+          "name": "@stacksjs/lint",
+          "version": "0.75.288",
+          "integrity": "sha512-rBdT2F1DMh2uMCyvispSzv/NYywE84gLS3Oer4jo5DOWVYgO6ZtUCqAzEa8BT/Y10EwgP5qo/JYPhUTBobf8uQ=="
+        },
+        {
+          "name": "@stacksjs/logging",
+          "version": "0.75.288",
+          "integrity": "sha512-y1NMN0DcYHAZIXA/9ZYPJwZAoiz20gpGoehzmjU9TbFMI07e69VwgFTj5l/7DhFb5+CKnLFUvR1ghOcDuYRTdg=="
+        },
+        {
+          "name": "@stacksjs/mobile",
+          "version": "0.75.288",
+          "integrity": "sha512-1QcvQS8aq4rJGzDEdV/ASpWXnfNAD+DK46krz4PiubNs2sOm5131RH17eG+z7foEL7sQR/oJpGu/G5n/e2IX4Q=="
+        },
+        {
+          "name": "@stacksjs/model-meta",
+          "version": "0.75.288",
+          "integrity": "sha512-hCCc8RZ9gVN7gPkXFDsSE2qabfkLkDM0eYnmJQYQJINFW293xSOOjbmzCLFT8bAY64+DcuVgmjAeu7BwWlINhQ=="
+        },
+        {
+          "name": "@stacksjs/newsletter",
+          "version": "0.75.288",
+          "integrity": "sha512-Adf8/Rmf0xnOZ8DZNeJuNlTDtVVNNk8wXQ14yRbLGXJE5BBcoCg7MwghPnEHEGV1omLNM0tp6g+PscK2yW9SYw=="
+        },
+        {
+          "name": "@stacksjs/notifications",
+          "version": "0.75.288",
+          "integrity": "sha512-gnLccVv80TS7mPHAYsljBHOVtv8RG3/yJVdzNqef33pNYbTUg+cMMjg4IfJeV7XtwH5V90cdpyiMJxcwI7oO6g=="
+        },
+        {
+          "name": "@stacksjs/objects",
+          "version": "0.75.288",
+          "integrity": "sha512-wxvU7TW/wFZ+/9cOWG3pv77Y1wuorzl+1QMxC3XRxnB0D/lBRKpsQwMCvLSaN1uUUjY/8do0h5LWY4zVkSQgSA=="
+        },
+        {
+          "name": "@stacksjs/orm",
+          "version": "0.75.288",
+          "integrity": "sha512-v6tEwHcvPkwo6soWHR2sgR1xA7ra8WYpGDaCMDcydpksHPRcbMHRYXhdE9L45+pAusIq8RyHifY2N4yMc37SCQ=="
+        },
+        {
+          "name": "@stacksjs/pagination",
+          "version": "0.75.288",
+          "integrity": "sha512-uW0Hd/S3kSfI2ybexgvY1VR6Ph5lKNA+yzjTseqjYDplqdx/FC5LbkXnGJQAzKVqARHvlVEC0z37IiMxXmdaZg=="
+        },
+        {
+          "name": "@stacksjs/path",
+          "version": "0.75.288",
+          "integrity": "sha512-N7hOGSB5+xe1RZLb/OaQahrRQXNKQu/lAu4mRccxpbL9yI6XCnpPg6CHWUGRI+LuQsQJQ9nRqDq4xeyQX6SzIQ=="
+        },
+        {
+          "name": "@stacksjs/payments",
+          "version": "0.75.288",
+          "integrity": "sha512-wIXwle4Ak570ok7Fs5EPIgnYD8z/FCxGNA/jFAb7u7PnzfeY6D0kYbq7sAQPBG6Xr6mjrEOkZ46oSE+LFzEDkw=="
+        },
+        {
+          "name": "@stacksjs/push",
+          "version": "0.75.288",
+          "integrity": "sha512-ccrBZzZhyyNffE4myH/Sq6Kh0ghijAdX8hJ24TEy/V0jMMKtzUQBYKYAwcsmo8FaiLiJ3PUG5DdS+0Gg04R8qA=="
+        },
+        {
+          "name": "@stacksjs/query-builder",
+          "version": "0.75.288",
+          "integrity": "sha512-mTy/MemWWFs6uXPiazuTwrMAhuXY0nLaATI9kaJpCpxB5/QkRaV/Su4Xy48dZBcvTc5Sz83PRuEoje3HKIA8xw=="
+        },
+        {
+          "name": "@stacksjs/queue",
+          "version": "0.75.288",
+          "integrity": "sha512-8Hsh7+2S0RdQxpvjrWRxGQozUOgBhMmFB+ctQipy00oduT0XRqD16uwV0BFdz4GvORFitYS12EnFoI9+xlMABQ=="
+        },
+        {
+          "name": "@stacksjs/realtime",
+          "version": "0.75.288",
+          "integrity": "sha512-ojQSRImi0VKeiD+j0Hd8kEQXX68rN9aEc34YXR76JwkrOMuqX7TGPisEOTC3Mw1UhwnTAFc5f5bDsR2CHOdXVA=="
+        },
+        {
+          "name": "@stacksjs/registry",
+          "version": "0.75.288",
+          "integrity": "sha512-JGZsFd8wjCQmPe0VTFB81o/lutHFnqegyaIC8r0hNidf5SOeJEwcMCT/kjxt03rEdu46K2riXSD41zlv4VBq9A=="
+        },
+        {
+          "name": "@stacksjs/repl",
+          "version": "0.75.288",
+          "integrity": "sha512-RxBAxSdDq7thItNIONZjBE8lHFN9JAwgypP7FWPjEay0MPLEvOa77XMmynRSSl0fzffHTsmDxedo7X1uzo2Y5A=="
+        },
+        {
+          "name": "@stacksjs/router",
+          "version": "0.75.288",
+          "integrity": "sha512-3RcA5LNu8vELmfOeyq0bdbKPZZQcF9XMe7nEMdDN3YYDSWYw4fj1NvO1xh/MIIZ+xhGWolBQ7euA7F8g5BfIXA=="
+        },
+        {
+          "name": "@stacksjs/scheduler",
+          "version": "0.75.288",
+          "integrity": "sha512-Q2a+oaYsDsGjS0ST62xyIl644dBTX2x6RbrN1vEwiIiO3GuYagKAdHr/aA846gXyow7yx0+R877n7/RzzfolKA=="
+        },
+        {
+          "name": "@stacksjs/search-engine",
+          "version": "0.75.288",
+          "integrity": "sha512-rKd5WqG7D8OEjaX2sf0DlWI2KcU2aE7K5VXROzFZ6Zgnx0JnuwtwSZb6t5B8Y4d/I9Rs5Kcj3q8HnioUpLJBEQ=="
+        },
+        {
+          "name": "@stacksjs/security",
+          "version": "0.75.288",
+          "integrity": "sha512-2jUFC9zpYKNqy6xHnOFqrxvXxSzqw+ijNIfWVT3F2IVOUP32TQrc0QCJ305jmS7jD9d6DVizLawBZUwAqqXRzw=="
+        },
+        {
+          "name": "@stacksjs/server",
+          "version": "0.75.288",
+          "integrity": "sha512-cLGKZhDqhypXdmteEa/L+vjf68iDtwDdY4L7a616Q0ALCXGMalGsjYR1ZVT5dUnECtyOBgeXnG1wivKJO5wEIA=="
+        },
+        {
+          "name": "@stacksjs/shell",
+          "version": "0.75.288",
+          "integrity": "sha512-LuNJO6+yD+k+hm6y1EcJjbdhfQlFsrAg5SFRrGJLhgOjGquIElZEAYy/xinRWnF0nCZVpJ4WzFV9SROjtOwCTQ=="
+        },
+        {
+          "name": "@stacksjs/sites",
+          "version": "0.75.288",
+          "integrity": "sha512-x/7t2kGwOPVmWB9cfLU6AgxY6vPOaeiDrt6UvlEWFlr1PhArH3naGhYsKULV5gax93aZLxhsR2wf0hok7N5KcA=="
+        },
+        {
+          "name": "@stacksjs/skills",
+          "version": "0.75.288",
+          "integrity": "sha512-mjf8X5RQ18k6VUUDYHY8OX0OYEyTCgEQgXwGzOpd+C92J2QFs3ZEH3rY1+o9D4K5MJ7rGa1ZefTzteV4nH9aHw=="
+        },
+        {
+          "name": "@stacksjs/slug",
+          "version": "0.75.288",
+          "integrity": "sha512-g1zrQBFGVPUP/jei4RW12Jy91HbHCcUDh5FjUY5xTzhDvb/1DFK+gmCi/hjmqLcHUylgLTx/GITypfLV4bRTow=="
+        },
+        {
+          "name": "@stacksjs/sms",
+          "version": "0.75.288",
+          "integrity": "sha512-UWm5S/mthNJoKC23ItcIHvC0ViYFPfThmOGWow9Fqoc/vU1hqcUsALQ9VjmGBN9UFvFhrHQcN9b26Uzo7ZHqcA=="
+        },
+        {
+          "name": "@stacksjs/socials",
+          "version": "0.75.288",
+          "integrity": "sha512-ywCmGKwdIUGXPmxB7/gEJt2ycFvCpI5++EYxwd04JWbIf+oRfX9B1pipRsfIJwPDJiHFqFd0aLIrm0/sHBOMdQ=="
+        },
+        {
+          "name": "@stacksjs/storage",
+          "version": "0.75.288",
+          "integrity": "sha512-drmvNsLSqKK1Czz8k/UTMc0u+cJP4v9VgXvE1AsCdf0XN5jzs3EWyzUM6An5LIgCoaGO/a3Iuogl+GOsSrkhTg=="
+        },
+        {
+          "name": "@stacksjs/strings",
+          "version": "0.75.288",
+          "integrity": "sha512-0i+KzkzP+YOPkWww5y6CCYClZRuIba7S1F7PBJCqpRQiBmIPVaE/QEahvGQvYKd6M2DYmLSsr8epSxYdUpoKjw=="
+        },
+        {
+          "name": "@stacksjs/testing",
+          "version": "0.75.288",
+          "integrity": "sha512-FiVvzmcT70+wMNLDvfZc4aWnmms0pHR1PhIdyaVXh+x6V/mnDntvcPONv/xfMRaHo6HHx0zCLLBIP0gonW9iFA=="
+        },
+        {
+          "name": "@stacksjs/tinker",
+          "version": "0.75.288",
+          "integrity": "sha512-L98M1Fg/ZUSq5uFgE6JBaj/Hj9pFpot6PjrS0xawUj2w7jibeR23e1RRJKE9lZ7Bf/bjLJ6nJD6QEBHy2bZL+Q=="
+        },
+        {
+          "name": "@stacksjs/tunnel",
+          "version": "0.75.288",
+          "integrity": "sha512-3krLuHUEeE4A9/M2jv+Ei8R9Mp35BWEULtZBXj8FeKtdjmy39JQMF4QRWyCAnUSGn0Rqu+Z1DFXiYe+lZqcaUg=="
+        },
+        {
+          "name": "@stacksjs/types",
+          "version": "0.75.288",
+          "integrity": "sha512-r/j7EyDxCSi26UttVvr5Rc4lUt7XwqG4TTjAZg6lz2Ms2okYCCaBhrFA2NuM8UrScgJKN40SDsiaVxT3HeD5Fg=="
+        },
+        {
+          "name": "@stacksjs/ui",
+          "version": "0.75.288",
+          "integrity": "sha512-39ZSoUqhuHQbldgdXnRlGcKJx+4X3nW6Q2cQ8BnCQVtlkrhciU25FgwkeaTf+ITPeJ0rJxA6ENguzD3mVBFoFA=="
+        },
+        {
+          "name": "@stacksjs/utils",
+          "version": "0.75.288",
+          "integrity": "sha512-mtjPh2S01NEpdBMdjTA0+s52on9SaeVxnoZlOF3F6nsSUGxk6iD7DGNSSbcWlAqZc0zjr+jTvOZTNl7bnz/T2w=="
+        },
+        {
+          "name": "@stacksjs/validation",
+          "version": "0.75.288",
+          "integrity": "sha512-h5wDn8u0A7bi5bmTuFZQOdwaVZ34MxmIBD5/q9yvUucS2uCz308YalWK1WJXZ7MQVksI17h0uonPPHWjUbES7A=="
+        },
+        {
+          "name": "@stacksjs/video",
+          "version": "0.75.288",
+          "integrity": "sha512-cN82qhI+WumakY7TweQGIRxhVoJPgz6kolfKX8r3PW+7ZPuM5wFRD7l1H/7BC4CKLDrOekHz0c03XjmJrkwF/A=="
+        },
+        {
+          "name": "@stacksjs/whois",
+          "version": "0.75.288",
+          "integrity": "sha512-uI9I9sobU3DbfUI5vkiEIvWIPT6LwUbK8zb4MOlcEWnkmL5T2BVEz+ncceQ30Tvx4iLk/AtAZS5A72+Z60u35A=="
+        },
+        {
+          "name": "stacks",
+          "version": "0.75.288",
+          "integrity": "sha512-58nvt4blSJLAJ/0Tm32l2E9yFF35pDYgtMSbXadv2G/f5vFGWGzINgKZUsE2KyKgiQezrbCeXwK69XQp9htNHQ=="
+        }
+      ]
+    },
+    {
+      "repository": "pantry-pm/pantry",
+      "commit": "91ded221f8de3badd9fc5ab1d4072d561c1eb1d4",
+      "tag": "v0.11.126",
+      "gates": [
+        {
+          "runId": 40057270032,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "source-ci / verify exact full source CI",
+            "pantry",
+            "npm",
+            "discord-notification"
+          ]
+        },
+        {
+          "runId": 40057269977,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "typecheck",
+            "lint",
+            "test",
+            "action-native-services (8.4.11)",
+            "action-native-services (26.7.0)",
+            "Explicit native toolchain pins (ubuntu-latest)",
+            "action-redis-service",
+            "windows-git",
+            "native-browser",
+            "action-native-tools",
+            "zig-tests",
+            "Explicit native toolchain pins (macos-latest)",
+            "windows-native-runtime",
+            "continuous-release"
+          ]
+        },
+        {
+          "runId": 40057270011,
+          "workflow": ".github/workflows/build-zig.yml",
+          "requiredJobs": [
+            "compile-all",
+            "Native Windows CLI and compiler links"
+          ]
+        },
+        {
+          "runId": 40057270018,
+          "workflow": ".github/workflows/deploy-registry.yml",
+          "requiredJobs": [
+            "verify / Registry checks (Bun 1.4.2)",
+            "verify / Registry checks (Bun 1.4.3)",
+            "source-ci / verify exact full source CI",
+            "hetzner",
+            "discord-notification"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "ts-pantry",
+          "version": "0.11.126",
+          "integrity": "sha512-gKiXcAGuVplVGO0C3i8j5eh7pvIzK3HKXtCfrsE/+nHj9oMBXJwa9Ybc+0rjpdr4PDgULHp5TT/vRMjiH+fiKg=="
+        }
+      ]
+    },
+    {
+      "repository": "pickier/pickier",
+      "commit": "0ce83cbbf06f23b0c05a61b332e074292d69961a",
+      "tag": "v0.1.77",
+      "gates": [
+        {
+          "runId": 39999788567,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "npm"
+          ]
+        },
+        {
+          "runId": 39999788210,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "native",
+            "lint",
+            "typecheck",
+            "test"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "pickier",
+          "version": "0.1.77",
+          "integrity": "sha512-ccrUEA9nRlPYXkRUaZ2UHncyH8L7Xy1tuX2KbSlgKN3pO//slDfXe716Q79kKCCDgL8MqoR5eCyHHXRp7qNIlg=="
+        }
+      ]
+    },
+    {
+      "repository": "stacksjs/stx",
+      "commit": "e2b4b9010cf11dd3abbf1df096a57f3eb5b28366",
+      "tag": "v0.2.679",
+      "gates": [
+        {
+          "runId": 40068280139,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "lint",
+            "native-signing",
+            "test",
+            "typecheck",
+            "publish-commit"
+          ]
+        },
+        {
+          "runId": 40068280213,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "Verify the exact release source",
+            "Verify native signing on macOS 15",
+            "npm",
+            "icons"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "@stacksjs/desktop",
+          "version": "0.2.679",
+          "integrity": "sha512-f2ES+M8wMcQ6ldIc8yc8HkYJiDSBvT2rcL98h09cc5mcVT4V11w8EKE0hXcDw4v4L6YR1ZnOOngOfNzeD558vA=="
+        },
+        {
+          "name": "@stacksjs/sanitizer",
+          "version": "0.2.679",
+          "integrity": "sha512-/AXpigo5YCWXrzDMxBYtTynDr6zWG/ttNlQvDTKjDmc1NuDGD5bFg2bQ7kuPGMtV8zcqJEJbdlsP7ARnGyyUvg=="
+        },
+        {
+          "name": "stx-router",
+          "version": "0.2.679",
+          "integrity": "sha512-5GZl8aIS91kjHJC684mGYcFvcJT53Q9QPUnr/On9UwcfmW9frpCwvPbUDog/UhqI6M11dtvzaiR/iM49gTstDQ=="
+        },
+        {
+          "name": "bun-plugin-stx",
+          "version": "0.2.679",
+          "integrity": "sha512-8HffRWiedgje/6zxFrnzf10arhm01cMjXXbvdRrWvHNcv3hBLYqwtcsu6zS+ib6o3X0MozgB9+yiV1qNGcPXDg=="
+        },
+        {
+          "name": "@stacksjs/stx",
+          "version": "0.2.679",
+          "integrity": "sha512-/lSGwBNU5E8Dg7BeGp5Le+58EmoFZE0NFaWuSCoLn7lzo0z6kDPkzlSZnBTsHYSqDY8S9N/D3537H1tlNLZRRg=="
+        },
+        {
+          "name": "@stacksjs/components",
+          "version": "0.2.679",
+          "integrity": "sha512-Nxpvn/CZwbZVF/acFjPZa+7RY9xOEBLsfQ4CMYyGTTq5XAT2diuVlWwYe/dwuz8/9Fy+2YFTmq62Qe+dZqaHLw=="
+        }
+      ]
+    },
+    {
+      "repository": "craft-native/craft",
+      "commit": "1fbc91e435afa5a75e65c71b7a15741b4d7927e5",
+      "tag": "v0.0.319",
+      "gates": [
+        {
+          "runId": 40045955871,
+          "workflow": ".github/workflows/release.yml",
+          "requiredJobs": [
+            "accept exact release source",
+            "validate release identity",
+            "accept exact native runtimes",
+            "release-sbom / vulnerability-scan",
+            "verify and stage npm packages",
+            "release-sbom / generate",
+            "pantry (darwin-arm64)",
+            "pantry (linux-x86-64)",
+            "verify downloaded darwin-x64",
+            "verify downloaded linux-x64",
+            "verify downloaded darwin-arm64",
+            "attach and verify release SBOMs",
+            "verify release assets",
+            "verify downloaded windows-x64",
+            "publish complete verified release",
+            "npm",
+            "publish verified Zig package to pantry",
+            "notify registry and channel after publication"
+          ]
+        },
+        {
+          "runId": 40045956605,
+          "workflow": ".github/workflows/ci.yml",
+          "requiredJobs": [
+            "Android software emulator",
+            "zig-core (ubuntu-latest)",
+            "Vulkan SDK ABI (ubuntu-latest)",
+            "windows-multi-window",
+            "zig-core (macos-latest)",
+            "Vulkan SDK ABI (windows-latest)",
+            "integration",
+            "ios-native-templates",
+            "typescript-sdk",
+            "create-craft",
+            "Vulkan SDK ABI (macos-latest)",
+            "lint",
+            "ios-builder",
+            "ts-maps",
+            "android-builder",
+            "publish-commit"
+          ]
+        },
+        {
+          "runId": 40045956722,
+          "workflow": ".github/workflows/mobile-e2e.yml",
+          "requiredJobs": [
+            "Android emulator",
+            "iOS Zig runtime slice",
+            "android-navigation (34)",
+            "iOS native UI (uikit)",
+            "iOS native Metal surface",
+            "iOS native UI (navigation-unit)",
+            "Harness unit tests",
+            "iOS native UI (navigation-ui-controls)",
+            "media-cache / ios",
+            "media-cache / sdk",
+            "media-cache / android",
+            "iOS simulator",
+            "android-navigation (35)",
+            "iOS native UI (navigation-ui-core)",
+            "iOS hybrid navigation",
+            "Mobile E2E summary"
+          ]
+        }
+      ],
+      "packages": [
+        {
+          "name": "craft-native",
+          "version": "0.0.319",
+          "integrity": "sha512-6tJG3C8V3SXB1JWPPxQZq127wCECGq2wu6DWx412IUJCsmtQH/9Z2dQiMZBocUucxNMY3CX472i+R/o/ecfdgg=="
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "typecheck",
+    "lint",
+    "test",
+    "assets:verify",
+    "fidelity:check",
+    "roadmap:check",
+    "test:browser"
+  ]
+}

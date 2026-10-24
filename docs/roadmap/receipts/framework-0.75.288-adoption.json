@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:30:39.997332+00:00",
+  "framework": "0.75.288",
+  "source": "ef341d1b182a0d70deac1e38733d6ef4d7a6dd38",
+  "state": "Verified normal published-package adoption. Browser prototype acceptance only; complete Gold and native game acceptance remain open.",
+  "normalInstallation": {
+    "upgrade": "./buddy upgrade --version 0.75.288",
+    "upgradeExitCode": 0,
+    "setup": "qualified original Pantry0.11.126 install --force",
+    "setupExitCode": 0,
+    "requiredMigrate": "passed",
+    "requiredSeed": "passed",
+    "optionalModelGeneration": "passed",
+    "frozenBunInstallExitCode": 0
+  },
+  "tooling": {
+    "bun": "1.4.4",
+    "stx": "0.2.679",
+    "components": "0.2.679",
+    "plugin": "0.2.679",
+    "desktop": "0.2.679",
+    "sanitizer": "0.2.679",
+    "router": "0.2.679",
+    "craft": "0.0.319",
+    "pantry": "0.11.126"
+  },
+  "installedVerification": {
+    "packages": 95,
+    "allOriginalArchivesAndInstalledFilesMatched": true,
+    "consumerChecks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "43fe05c71754088c028076c847b802bb18d395400beb4678696ed922cded9539"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "17d47cc290f1fb45ad00425eae4f447a5a96e8472f88c306c5bc6d4c66c289fe"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ],
+    "lockfileSha256": "c80e16a120279db1430a815e76186724db402f869683ed64b3aa5c5f18e11b8f",
+    "invocation": {
+      "package": "@stacksjs/actions",
+      "version": "0.75.288",
+      "export": "@stacksjs/actions/release-evidence",
+      "moduleSha256": "deddfbbf90d7fda0b24768692ae5127afa8a6b60bed32a75ded72bc9483762ba",
+      "executedPublishedModule": true,
+      "selectedPackages": 95,
+      "consumer": {
+        "lockfile": "bun.lock",
+        "sha256": "c80e16a120279db1430a815e76186724db402f869683ed64b3aa5c5f18e11b8f",
+        "bunVersion": "1.4.4",
+        "checks": [
+          {
+            "script": "typecheck",
+            "exitCode": 0,
+            "outputSha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+          },
+          {
+            "script": "lint",
+            "exitCode": 0,
+            "outputSha256": "43fe05c71754088c028076c847b802bb18d395400beb4678696ed922cded9539"
+          },
+          {
+            "script": "test",
+            "exitCode": 0,
+            "outputSha256": "17d47cc290f1fb45ad00425eae4f447a5a96e8472f88c306c5bc6d4c66c289fe"
+          },
+          {
+            "script": "assets:verify",
+            "exitCode": 0,
+            "outputSha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+          },
+          {
+            "script": "fidelity:check",
+            "exitCode": 0,
+            "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+          },
+          {
+            "script": "roadmap:check",
+            "exitCode": 0,
+            "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+          },
+          {
+            "script": "test:browser",
+            "exitCode": 0,
+            "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+          }
+        ]
+      }
+    }
+  },
+  "production": {
+    "build": "passed,1SSGpage",
+    "browserSteps": 41,
+    "consoleErrors": [],
+    "failedRequests": [],
+    "media": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "a1eef8b899d1cf8b89f46719bb5eeb4b778c0b075db649780e24719d05819b4e",
+        "bytes": 998730,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    },
+    "localCapture": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/campaign-IybYyD/campaign.png",
+    "localVisualInspection": "Fresh screenshot personally inspected. Original demo sprites render; custom green HUD and faceted terrain remain. No original Gold scene equivalence is established."
+  },
+  "sharedEngine": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.319\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "bf56ef2b71cb1ee5498cf7101d4f886978f7ccd42f995524d1201b38f2372176",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "7393dc541cbee3b0a1fe86c1d8f9f5870ab729966242cf853618a2d36efb52a2"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "logs": [
+    {
+      "name": "game-framework-288-normal-upgrade.log",
+      "sha256": "37a5efbce4b19ff9fcc3b3f3ec51a4fdfd1a5ef77ae4be98ed7eef15bbf6884d"
+    },
+    {
+      "name": "game-framework-288-required-normal-install.log",
+      "sha256": "5842806af2c10d0511895135c5d78e4a5fd69e8224e71b43d60c4b6c8530e26c"
+    },
+    {
+      "name": "game-framework-288-frozen-install.log",
+      "sha256": "ece28d546ae01cdd28e8320443a414d73350186f96d79233c2af45e05adcb7ac"
+    },
+    {
+      "name": "game-framework-288-assets-import.log",
+      "sha256": "551eb28b68df8e69ff3757818a961614fb47eb4b6c484d143aa0a6c55a9d7612"
+    },
+    {
+      "name": "game-framework-288-build.log",
+      "sha256": "aac7762d9c8b0e3f5fc1542864631f6901e9f5c0d129d2a141149b0f1fbc459d"
+    },
+    {
+      "name": "game-framework-288-installed-acceptance.log",
+      "sha256": "468756a877fbc6fa65233bbbf89a69fc89f4770ba54ab7c41dfd5064aff0e555"
+    },
+    {
+      "name": "game-framework-288-native-engine-browser.log",
+      "sha256": "303d95133caedbb1eca24cee4c4b70bea85259af689bba117258255050edcb12"
+    }
+  ],
+  "limits": [
+    "One native CLI simulation fixture is not native game presentation, persistent frame clocks, input or lifecycle acceptance.",
+    "Original Gold behavior, full campaigns and remaining roadmap issues are incomplete.",
+    "GUI imagery is decoded and privately inspected, but the current HUD has not adopted it.",
+    "Historical283consumerrejection and287candidate receipts are retained as dated evidence, not current acceptance."
+  ]
+}

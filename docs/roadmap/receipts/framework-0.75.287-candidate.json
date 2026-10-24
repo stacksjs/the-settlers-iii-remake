@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "framework": "0.75.287",
+  "source": "1da96fa50fd68c7a0cecbc384612dcd0640f42b3",
+  "recordedAt": "2026-10-24T07:10:27.101336+00:00",
+  "state": "Uncommitted normal-upgrade candidate. Final complete tooling gate and final framework adoption remain pending.",
+  "packageJsonSha256": "da6734b28a020f5295ca79742fbe5b7f233b03a3805b7ea362ba68dfc25c62b2",
+  "bunLockSha256": "26b7a7d4fe8c9469cd63acde3a11c32f7ac4e36b3d26a69cdfe07a831f357668",
+  "normalInstallation": {
+    "upgrade": "./buddy upgrade --version 0.75.287",
+    "upgradeExitCode": 0,
+    "setup": "pantry0.11.126 install --force",
+    "setupExitCode": 0,
+    "requiredCommands": [
+      "./buddy migrate",
+      "./buddy seed"
+    ],
+    "requiredCommandsSucceeded": true,
+    "optionalModelGenerationSucceeded": true,
+    "frozenBunInstallExitCode": 0
+  },
+  "applicationChecks": {
+    "typecheck": "passed",
+    "lint": "passed,0errors0warnings",
+    "unitTests": {
+      "passed": 222,
+      "failed": 0,
+      "assertions": 22358
+    },
+    "assets": "3836spriteframes,6PCMWAVfiles,42convertedfiles,exactbyte/inputprovenanceverified",
+    "fidelityContract": "passed; documentaryscopeonly",
+    "roadmap": "passed;107implementationissues12epics1master",
+    "productionBuild": "passed,1SSGpage",
+    "browser": {
+      "passedSteps": 41,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "media": {
+        "schemaVersion": 1,
+        "screenshot": {
+          "sha256": "464d839ea971791c6211611631d57691fac1f22afb5dbe7c92be073c7dbc62e6",
+          "bytes": 998789,
+          "width": 1440,
+          "height": 960
+        },
+        "captureStatus": "captured",
+        "browserExitCode": 0,
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+      }
+    }
+  },
+  "localVisualInspection": {
+    "screenshot": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/campaign-2ielsv/campaign.png",
+    "sha256": "464d839ea971791c6211611631d57691fac1f22afb5dbe7c92be073c7dbc62e6",
+    "observed": "Original demo sprite atlas and tutorial terrain are visible. The HUD is a custom dark green layout, and terrain facets remain prominent. No matched Gold Edition scene or original UI equivalence is established.",
+    "publicRaster": "withheld-pending-redistribution-evidence"
+  },
+  "sharedEngine": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.319\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "bf56ef2b71cb1ee5498cf7101d4f886978f7ccd42f995524d1201b38f2372176",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "7393dc541cbee3b0a1fe86c1d8f9f5870ab729966242cf853618a2d36efb52a2"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "logs": [
+    {
+      "name": "game-framework-287-normal-upgrade.log",
+      "sha256": "b5a90745a85e3a380b7d620df3b013724d08760bbcdcbbebe292c1b1997a870d"
+    },
+    {
+      "name": "game-framework-287-tool-alignment.log",
+      "sha256": "fc39a9c69af5753438b5c86956b115942fb816a813a20a8794f1ee2a30db1ab2"
+    },
+    {
+      "name": "game-framework-287-required-normal-install.log",
+      "sha256": "7fff65e878ef21082ec6b9d684cbfa489db89314d55c80a032690bd9e92490bf"
+    },
+    {
+      "name": "game-framework-287-frozen-install.log",
+      "sha256": "326c668a4b8a1ccbfe9a6582ee23981afb710bd560eb59e0c90cd8c62a494d5d"
+    },
+    {
+      "name": "game-framework-287-assets-import.log",
+      "sha256": "f11ee114bb1ef873359fd93da754f65cc2b295f784380f73152501d7bd6b4c4b"
+    },
+    {
+      "name": "game-framework-287-assets-verify.log",
+      "sha256": "3889310a030d71b507d0d6bd6fd8c953a7ccafc5478a89cbf385d97b7c8d522c"
+    },
+    {
+      "name": "game-framework-287-typecheck.log",
+      "sha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+    },
+    {
+      "name": "game-framework-287-lint.log",
+      "sha256": "0b1ed345e3ce84a3d216e96f89fc3a1f8b64091566d3c0f745cc144c1ec9be7f"
+    },
+    {
+      "name": "game-framework-287-unit.log",
+      "sha256": "fe7741256918c8526ad2ed732e92bcfbe3df3113c48e457a3f8dd5e32b4b779a"
+    },
+    {
+      "name": "game-framework-287-fidelity.log",
+      "sha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    {
+      "name": "game-framework-287-roadmap.log",
+      "sha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    },
+    {
+      "name": "game-framework-287-build.log",
+      "sha256": "29222459784ec09c9ccec5a924184065afbe2113e7d2b6edcca34271982c18b0"
+    },
+    {
+      "name": "game-framework-287-production-browser.log",
+      "sha256": "fc8514ac0d02571c3c52860915a9f675a5149347a4ce83a367fa5eb7640071dc"
+    },
+    {
+      "name": "game-framework-287-native-engine-browser.log",
+      "sha256": "303d95133caedbb1eca24cee4c4b70bea85259af689bba117258255050edcb12"
+    }
+  ],
+  "outstanding": [
+    "STX0.2.679 full icon/release gate",
+    "Pending remaining STX source alignment in Stacks and its maintained patch release",
+    "Final installed-source verification and game adoption",
+    "Original Gold Edition observations and native game presentation"
+  ]
+}

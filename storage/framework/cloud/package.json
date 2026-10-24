@@ -31,19 +31,19 @@
     "deploy": "bun deploy.ts"
   },
   "dependencies": {
-    "@stacksjs/config": "^0.75.277",
-    "@stacksjs/dns": "^0.75.277",
-    "@stacksjs/logging": "^0.75.277",
-    "@stacksjs/path": "^0.75.277",
-    "@stacksjs/queue": "^0.75.277",
-    "@stacksjs/router": "^0.75.277",
-    "@stacksjs/storage": "^0.75.277",
-    "@stacksjs/utils": "^0.75.277",
-    "@stacksjs/validation": "^0.75.277"
+    "@stacksjs/config": "^0.75.288",
+    "@stacksjs/dns": "^0.75.288",
+    "@stacksjs/logging": "^0.75.288",
+    "@stacksjs/path": "^0.75.288",
+    "@stacksjs/queue": "^0.75.288",
+    "@stacksjs/router": "^0.75.288",
+    "@stacksjs/storage": "^0.75.288",
+    "@stacksjs/utils": "^0.75.288",
+    "@stacksjs/validation": "^0.75.288"
   },
   "devDependencies": {
-    "@stacksjs/cli": "^0.75.277",
+    "@stacksjs/cli": "^0.75.288",
     "better-dx": "^0.2.37",
-    "@stacksjs/env": "^0.75.277"
+    "@stacksjs/env": "^0.75.288"
   }
 }

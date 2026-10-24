@@ -5,7 +5,7 @@
   "private": true,
   "description": "A browser settlement strategy game built with Stacks, stx and Craft",
   "engines": {
-    "bun": "1.4.2"
+    "bun": "1.4.4"
   },
   "scripts": {
     "build:reset": "rm -rf node_modules && pantry install && ./buddy generate:types && ./buddy lint:fix",
@@ -73,12 +73,13 @@
     "publication:check": "bun scripts/content.ts --publication"
   },
   "dependencies": {
-    "@stacksjs/actions": "0.75.277",
-    "@stacksjs/env": "0.75.277",
-    "@stacksjs/path": "0.75.277",
-    "@stacksjs/stx": "0.2.670",
-    "craft-native": "0.0.301",
-    "stacks": "0.75.277"
+    "@stacksjs/actions": "0.75.288",
+    "@stacksjs/env": "0.75.288",
+    "@stacksjs/path": "0.75.288",
+    "@stacksjs/stx": "0.2.679",
+    "craft-native": "0.0.319",
+    "stacks": "0.75.288",
+    "ts-pantry": "0.11.126"
   },
   "workspaces": [
     "storage/framework",
@@ -94,10 +95,10 @@
     "commit-msg": "bun x gitlint --edit \"$1\""
   },
   "devDependencies": {
-    "@stacksjs/components": "0.2.670",
+    "@stacksjs/components": "0.2.679",
     "@stacksjs/ts-png": "0.1.10",
     "better-dx": "^0.2.38",
-    "bun-plugin-stx": "0.2.670"
+    "bun-plugin-stx": "0.2.679"
   },
   "author": "Chris <chris@stacksjs.com>",
   "repository": {
