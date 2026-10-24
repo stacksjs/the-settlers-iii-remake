@@ -21,6 +21,59 @@ export const campaignSteps = [
   },
   { action: 'assert', selector: '.campaign-name', text: 'Generated landscape' },
   { action: 'assert', selector: '.map-location', text: 'Generated landscape' },
+  {
+    action: 'evaluate',
+    expression: `(() => {
+      const main = document.querySelector('.main-menu [aria-selected=true] img');
+      const sub = document.querySelector('.category-list [aria-pressed=true] img');
+      if (!main?.src.endsWith('/build-active.png') || !sub?.src.endsWith('/build-resources-active.png')) throw new Error('Initial original menu art does not follow the open menu');
+      return true;
+    })()`,
+  },
+  { action: 'click', selector: '.main-menu button', text: 'Goods' },
+  {
+    action: 'evaluate',
+    expression: `(() => {
+      if (!document.querySelector('.main-menu [aria-selected=true] img')?.src.endsWith('/goods-active.png') || !document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/goods-stock-active.png')) throw new Error('Goods art does not follow the open menu');
+      return true;
+    })()`,
+  },
+  { action: 'click', selector: '.category-list button', text: 'Transport' },
+  {
+    action: 'evaluate',
+    expression: `(() => {
+      if (!document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/goods-transport-active.png')) throw new Error('Transport art does not follow the open submenu');
+      return true;
+    })()`,
+  },
+  { action: 'click', selector: '.main-menu button', text: 'Settlers' },
+  {
+    action: 'evaluate',
+    expression: `(() => {
+      if (!document.querySelector('.main-menu [aria-selected=true] img')?.src.endsWith('/settlers-active.png') || !document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/settlers-statistics-active.png')) throw new Error('Settler art does not follow the open menu');
+      return true;
+    })()`,
+  },
+  { action: 'click', selector: '.main-menu button', text: 'Goods' },
+  {
+    action: 'evaluate',
+    expression: `(() => {
+      if (!document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/goods-transport-active.png')) throw new Error('Returning to Goods lost its original submenu art');
+      return true;
+    })()`,
+  },
+  { action: 'click', selector: '.main-menu button', text: 'Buildings' },
+  {
+    action: 'evaluate',
+    expression: `(async () => {
+      const sidebar = document.querySelector('.sidebar').getBoundingClientRect();
+      const map = document.querySelector('.map-region').getBoundingClientRect();
+      if (sidebar.right > map.left || sidebar.left !== 0) throw new Error('Desktop control panel is not on the left');
+      await Promise.all([...document.querySelectorAll('.main-menu img, .category-list img')].map(image => image.decode()));
+      if (!document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/build-resources-active.png')) throw new Error('Returning to Buildings lost its original submenu art');
+      return { originalMenuImagesDecoded: 7, panelOnLeft: true };
+    })()`,
+  },
   // Choosing a building moves the keyboard cursor to the nearest valid site.
   { action: 'click', selector: '.building-choice', text: 'Sawmill' },
   { action: 'press', key: 'Enter' },

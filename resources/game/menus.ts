@@ -19,6 +19,22 @@ export const LABELS: Record<string, string> = {
   statistics: 'Statistics', occupations: 'Occupations',
 }
 
+// MainPanel.java at the pinned remake revision maps these menu meanings to
+// original GUI images. Keep application menu names separate from image names.
+const MAIN_IMAGES: Record<string, string> = { buildings: 'build', goods: 'goods', settlers: 'settlers' }
+const SUB_IMAGES: Record<Main, Record<string, string>> = {
+  buildings: { resources: 'build-resources', food: 'build-food', military: 'build-military', misc: 'build-social' },
+  goods: { inventory: 'goods-stock', tools: 'goods-tools', distribution: 'goods-distribution', transport: 'goods-transport' },
+  settlers: { statistics: 'settlers-statistics', occupations: 'settlers-professions', military: 'settlers-warriors' },
+}
+
+/** Original active/inactive art follows the same menu state as its controls. */
+export function menuImage(main: string, sub: string | null, active: boolean): string {
+  const key = sub === null ? MAIN_IMAGES[main] : SUB_IMAGES[main as Main]?.[sub]
+  if (!key) throw new Error(`Unknown control center image: ${main}/${sub}`)
+  return `/assets/settlers-original/ui/${key}-${active ? 'active' : 'inactive'}.png`
+}
+
 export const initialMenu = (): MenuState => ({ main: 'buildings', sub: 'resources', last: {} })
 
 /** Opens a main menu at the sub-menu the player last used there. Unknown menus leave the state as it was. */

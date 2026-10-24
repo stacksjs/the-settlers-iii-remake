@@ -1,6 +1,6 @@
 <script client>
 import { catalog, mountGame, snapshot } from '../game/controller'
-import { chooseMenu, initialMenu, LABELS, MENUS, openMenu } from '../game/menus'
+import { chooseMenu, initialMenu, LABELS, menuImage, MENUS, openMenu } from '../game/menus'
 import type { Game } from '../game/controller'
 
 const map = useRef<HTMLCanvasElement>('island')
@@ -111,10 +111,10 @@ onDestroy(() => game?.dispose())
         <div class="settlement-heading"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
         <section class="control-center" aria-label="Control center">
           <div class="flex gap-1 main-menu" role="tablist" aria-label="Control center">
-            <button :for="name in mains" type="button" role="tab" :aria-selected="menu().main === name" @click="menu.set(openMenu(menu(), name))">{{ LABELS[name] }}</button>
+            <button :for="name in mains" type="button" role="tab" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-selected="menu().main === name" @click="menu.set(openMenu(menu(), name))"><img :src="menuImage(name, null, menu().main === name)" width="55" height="55" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
           </div>
           <div class="flex flex-wrap gap-1 category-list" :aria-label="LABELS[menu().main] + ' menus'">
-            <button :for="name in subs()" type="button" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))">{{ LABELS[name] }}</button>
+            <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
           </div>
           <div :if="menu().main === 'buildings'">
             <div class="flex items-center justify-between section-heading"><h2>{{ LABELS[menu().sub] }} buildings</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
@@ -205,4 +205,26 @@ onDestroy(() => game?.dispose())
 @media(max-width:760px) { .game-shell { height:auto; min-height:100dvh; grid-template-rows:118px 58px auto; } .masthead { padding:12px 14px; flex-wrap:wrap; gap:8px; } .masthead nav { min-width:0; width:100%; justify-content:space-between; gap:4px; } .brand strong { font-size:19px; } .brand-mark,.campaign,.quiet-button>span[aria-hidden="true"] { display:none; } .brand small { font-size:8px; letter-spacing:2px; } .quiet-button { padding:7px 9px; font-size:11px; } .playfield { display:flex; flex-direction:column; } .map-region { height:65dvh; min-height:420px; } .sidebar { min-width:0; overflow:visible; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .settlement-heading { grid-column:span 2; } .sidebar section { min-width:0; padding:17px; } .building-catalog { grid-template-columns:1fr; } .building-choice { min-height:66px; } .sidebar-footer,.chronicle { grid-column:span 2; } .stocks { justify-content:flex-start; flex-shrink:1; } .population { font-size:11px; } .army { display:none; } .resource-strip { padding:0 12px; gap:9px; } .map-caption { top:75px; } .advisor { left:12px; right:12px; bottom:12px; padding:12px; } .guide-panel { left:14px; max-width:calc(100% - 28px); top:66px; padding:18px; max-height:calc(100% - 80px); overflow:auto; } .result-panel { max-width:calc(100% - 28px); } }
 @media(max-width:480px) { .sidebar { display:block; } .building-catalog { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .quiet-button { padding:7px; } .inspector>div:first-child,.border-report>div:first-child { flex-wrap:wrap; gap:6px; } }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } }
+.main-menu { justify-content:space-between; gap:17px; }
+.main-menu button { flex:none; width:53px; height:55px; padding:0; border:0; border-radius:0; background:transparent; overflow:hidden; }
+.main-menu button[aria-selected="true"] { background:transparent; }
+.main-menu img { display:block; width:55px; height:55px; max-width:none; image-rendering:pixelated; }
+.category-list { gap:4px; justify-content:space-between; flex-wrap:nowrap; }
+.category-list button { flex:none; width:45px; height:40px; padding:0; border-radius:0; background:transparent; }
+.category-list button[aria-pressed="true"] { background:transparent; }
+.category-list img { display:block; width:45px; height:40px; image-rendering:pixelated; }
+.main-menu button:hover,.category-list button:hover { filter:brightness(1.15); }
+@media(min-width:761px) {
+  .playfield { grid-template-columns:224px minmax(0,1fr); }
+  .sidebar { grid-column:1; grid-row:1; border-left:0; border-right:1px solid var(--line); }
+  .map-region { grid-column:2; grid-row:1; }
+  .sidebar section { padding:14px 10px; }
+  .settlement-heading { padding:15px 10px; }
+  .building-choice { display:flex; flex-direction:column; align-items:center; padding:6px 3px; text-align:center; min-height:112px; }
+  .building-choice strong { font-size:10px; }
+  .building-choice small { font-size:9px; }
+  .overview { padding:10px!important; }
+  .specialists { flex-wrap:wrap; }
+  .specialists .quiet-button { white-space:normal; }
+}
 </style>

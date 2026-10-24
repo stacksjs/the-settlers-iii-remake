@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:51:05.056980+00:00",
+  "scope": "Partial original control-center presentation, browser only",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "selectors": "MainPanel.java, original active/inactive main and submenu images",
+    "dimensions": "768 reference primary images scaled to 55x55 inside 53x55 slots with 17px spacing; secondary images 45x40."
+  },
+  "change": [
+    "Desktop settlement management moves to the left.",
+    "All three main menus and the implemented submenus use the maintained original PNG catalog.",
+    "Active image selection follows actual menu state, including each main menu remembering its last submenu.",
+    "Accessible button names, native keyboard activation and visible focus styles are retained."
+  ],
+  "checks": {
+    "typecheck": "pass",
+    "lint": "0 errors, 0 warnings",
+    "menuTests": "3 pass, 0 fail, 46 assertions",
+    "productionBuild": "pass",
+    "browser": {
+      "steps": 53,
+      "allStepsPassed": true,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "media": {
+        "schemaVersion": 1,
+        "screenshot": {
+          "sha256": "cd04546c981930c601b9782b2fe016f2aad4673640670096986f370e6416738e",
+          "bytes": 1021050,
+          "width": 1440,
+          "height": 960
+        },
+        "captureStatus": "captured",
+        "browserExitCode": 0,
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+      },
+      "privateScreenshot": "storage/framework/runtime/shots/campaign-IifO4k/campaign.png"
+    },
+    "responsive": [
+      {
+        "device": "Mobile S",
+        "viewport": "320x568",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Mobile L",
+        "viewport": "428x926",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Tablet",
+        "viewport": "768x1024",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Desktop",
+        "viewport": "1280x720",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Wide",
+        "viewport": "1920x1080",
+        "horizontalOverflowPx": 0
+      }
+    ]
+  },
+  "preflight": {
+    "designRead": "Dense original-reference game controls; variance 2, motion 1, density 9. Marketing hero, CTA and sales-page composition rules do not apply.",
+    "auditBefore": "330px right sidebar, text menu buttons, custom green surfaces.",
+    "inspected": "Fresh campaign screenshot and responsive desktop 1280x720 / phone 320x568 captures personally inspected.",
+    "framework": "stx reactive attributes and ts-css utility layout, existing custom CSS, no added dependencies.",
+    "safety": "No raw browser globals in template scripts, no added animations, existing reduced-motion support retained, no new user strings containing separator dashes.",
+    "accessibility": "Original image buttons have explicit accessible names and titles; decorative images have empty alt; existing focus ring retained.",
+    "scopeLimit": "The panel is still custom, including header, fonts, rectangular minimap and scroll behavior. Original stone-panel geometry and full native HUD are not qualified."
+  },
+  "logs": [
+    {
+      "name": "game-original-menu-typecheck.log",
+      "sha256": "68da95fee841417deb0341f4f3e21b3a365b9d4845cabb7951d316dd0ab28d36"
+    },
+    {
+      "name": "game-original-menu-lint.log",
+      "sha256": "1570d779bd9eac0a54c964392feff19498129f93e53736f604389de24ad18b84"
+    },
+    {
+      "name": "game-original-menu-unit.log",
+      "sha256": "0ddaec493961efee329999be5272b76ce6535d9ae870fc53f4f081667122743e"
+    },
+    {
+      "name": "game-original-menu-build.log",
+      "sha256": "f4d0d7f50900f2363cbd1527c9c38e5f999144352c6a0e0997a69ff348376b86"
+    },
+    {
+      "name": "game-original-menu-browser.log",
+      "sha256": "fc8514ac0d02571c3c52860915a9f675a5149347a4ce83a367fa5eb7640071dc"
+    },
+    {
+      "name": "game-original-menu-responsive.log",
+      "sha256": "bea7d11fc17aae8156dc8c69f977e5f9f9e7e51fe7b4fee113baaeabafd63fce"
+    }
+  ],
+  "limits": [
+    "No original Gold executable, installer or saves are available. Rules and timings are not verified against Gold Edition.",
+    "Original rasters and screenshots are private; no redistribution grant is established.",
+    "This browser change does not implement or prove native presentation, shared native clocks or native input."
+  ]
+}
