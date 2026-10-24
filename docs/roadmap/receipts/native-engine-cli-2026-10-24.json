@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "craftVersion": "craft version 0.0.319\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+  "executableSha256": "bf56ef2b71cb1ee5498cf7101d4f886978f7ccd42f995524d1201b38f2372176",
+  "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+  "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
+  "bunVersion": "1.4.4",
+  "result": {
+    "tick": 5,
+    "checksum": "c331a944",
+    "restoredChecksum": "c331a944",
+    "replay": {
+      "ok": true,
+      "ticks": 5,
+      "checksum": "c331a944"
+    }
+  },
+  "nativeExitCode": 0,
+  "matchedBunReference": true,
+  "webViewUsed": false,
+  "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.",
+  "gameSource": "e882ae317f1bbf66daa3808cf598a09f79f5f97e",
+  "craftSource": "1fbc91e435afa5a75e65c71b7a15741b4d7927e5",
+  "originalPublicationEvidence": "https://github.com/stacksjs/stacks/blob/2a510253a06c86af6145d7011a465f31237b3b8b/docs/guide/buddy/receipts/craft-0.0.319-publication.json",
+  "command": "bun scripts/native-engine-check.ts",
+  "binarySelection": "Maintained craft-native SDK resolver, using the normally installed and archive-verified Craft0.0.319 executable.",
+  "scriptSha256": "32b3f4d164d1e69c3b9211c70686ed3db96b11d495f642aa5cb5666b8b4f96f7",
+  "issuesRemainOpen": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/94",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/26"
+  ]
+}

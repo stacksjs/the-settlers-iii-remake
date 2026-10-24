@@ -41,3 +41,9 @@ Inspect existing Apple team resources before creating replacements. Reuse valid 
 The registry records 120 slots, including adopted source issues. Reconcile stable remote markers before creating anything, preserve adopted issue bodies/titles/parents, and retain actual URLs. Use native parent and blocking relationships where GitHub permits them; every body also contains explicit dependencies. Record platform-imposed relationship restrictions instead of losing edges.
 
 Only open issues whose blockers were closed as completed receive `ready-for-agent`. Closing a required blocker as not planned does not satisfy it. A documented partial correction can advance an issue without closing it. Close only after every acceptance criterion has evidence. Never close an epic because its tracking entries were created.
+
+## Shared engine native CLI check
+
+Run `bun scripts/native-engine-check.ts` with the qualified native Craft executable available through the SDK's normal resolver. It bundles `tests/fixtures/native-engine-probe.ts` once and runs the same artifact in Bun and Craft's own JavaScript engine. The fixture queues a future command, advances five ticks, restores its save and verifies its replay. Missing executables, runtime errors, timeouts and differing output fail the check.
+
+The [macOS Craft 0.0.319 receipt](receipts/native-engine-cli-2026-10-24.json) ties the executed binary to its original verified publication and records matching checksums. The latest local receipt is written to `storage/framework/runtime/native-engine-receipt.json`. This check covers one headless fixture. It does not establish persistent native frame callbacks, native graphics or controls, browser presentation parity, or Gold Edition behavior. S3-023 and S3-092 remain open.
