@@ -8,7 +8,7 @@ The game installs Stacks **0.75.294**, all six STX packages **0.2.686**, Craft *
 
 The [framework publication](receipts/framework-0.75.294-publication.json) retains verification of 86 original npm archives, all five original native archives, and execution of the original ARM64 Buddy binary. This release was cut independently; the receipt does not claim this chat executed that release command. The retained upstream plans identify the original Pantry, Pickier, STX and Craft publications. Later releases require their own qualification before adoption.
 
-Craft 0.0.330 has [complete native Metal publication evidence](receipts/native-metal-0.0.330-publication.json): exact source and release gates, original public package consumption, one actual macOS native UI test, two actual iOS native tests, and six personally inspected captures. The original native tests cover changing frames, pixel comparisons, scale, resize, suspension/resume, ownership and disposal. These are maintained Metal surface fixtures. They do not establish native game rendering, persistent game frame callbacks, a native HUD, or Gold Edition parity. S3-011 remains open until downstream hosted acceptance is retained.
+Craft 0.0.330 has [complete native Metal publication evidence](receipts/native-metal-0.0.330-publication.json): exact source and release gates, original public package consumption, one actual macOS native UI test, two actual iOS native tests, and six personally inspected captures. The original native tests cover changing frames, pixel comparisons, scale, resize, suspension/resume, ownership and disposal. These are maintained Metal surface fixtures. They do not establish native game rendering, persistent game frame callbacks, a native HUD, or Gold Edition parity. [Hosted downstream acceptance](receipts/framework-0.75.294-hosted-ci.json) also passed with the original diagnostic artifact independently verified. S3-011 is completed.
 
 The [shared-engine receipt](receipts/native-engine-cli-0.0.330.json) records the original Craft 0.0.330 executable resolved through the installed SDK and normal PATH. The same bundled five-tick save/restore/replay fixture produces checksum `c331a944` in Craft, Bun and a real browser, with zero browser console or network errors. This headless execution does not establish native presentation.
 
@@ -44,6 +44,6 @@ Commits created for this execution use Chris attribution without coauthor traile
 
 Current package adoption and local regression results are recorded in the current checkpoint. Final framework/native adoption, encrypted production bootstrap, protected CI decryption, and final lockfile evidence remain pending. The existing game baseline remains the browser prototype described in [specification.md](specification.md).
 
-## Remaining capability gates
+## Initial capability gaps (historical)
 
 These corrections do not complete native window presentation, fonts/text, terrain triangles, typed retained game hosting, RenderSurface/HUD delivery, original physical logistics, Gold campaigns, multiplayer, signing, or store submission. The corresponding implementation issues remain open. HomeOS shared-core adoption also remains open and independent of supported game platforms. Original-content redistribution rights are unverified and continue to block bundled release.

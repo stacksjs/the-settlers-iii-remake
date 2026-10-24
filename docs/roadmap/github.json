@@ -428,8 +428,8 @@
       "id": 5964115974,
       "number": 392,
       "url": "https://github.com/craft-native/craft/issues/392",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-011] Implement native Metal surfaces on macOS and iOS",
       "labels": [
         "settlers-gold",

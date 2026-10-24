@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "source": "5a161f283bcafafc12d3a35e0e4ee897022f464f",
+  "runId": 40122692537,
+  "url": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40122692537",
+  "status": "completed",
+  "conclusion": "success",
+  "requiredJob": "game",
+  "jobId": 120957471400,
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v7",
+      "conclusion": "success"
+    },
+    {
+      "name": "Provision managed tools",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run bun install --frozen-lockfile",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run ./buddy lint",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run bun run typecheck",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run bun run assets:import",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run ./buddy test --unit",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run bun run assets:verify",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run ./buddy build views",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify the production campaign in Chrome",
+      "conclusion": "success"
+    },
+    {
+      "name": "Retain non-media browser diagnostics",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Provision managed tools",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/checkout@v7",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "originalArtifact": {
+    "id": 12572516145,
+    "bytes": 5406,
+    "sha256": "15b03daf4260a68f030ee93b5d0a2d49778c50dfa3505c5440cae3eb668a15a7",
+    "githubDigestMatched": true,
+    "zipCrcPassed": true
+  },
+  "campaign": {
+    "passed": 58,
+    "failed": 0,
+    "consoleErrors": [],
+    "failedRequests": [],
+    "media": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "1fdeef2549fc2277dd8009056094b05f5dc892573dc394503c4935ce30b34fcc",
+        "bytes": 922474,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    }
+  },
+  "controlFrames": [
+    {
+      "viewport": "1280x720",
+      "passed": 9,
+      "failed": 0,
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": "1280x850",
+      "passed": 9,
+      "failed": 0,
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": "1440x960",
+      "passed": 9,
+      "failed": 0,
+      "consoleErrors": [],
+      "failedRequests": []
+    },
+    {
+      "viewport": "320x568",
+      "passed": 9,
+      "failed": 0,
+      "consoleErrors": [],
+      "failedRequests": []
+    }
+  ],
+  "frameMedia": {
+    "schemaVersion": 1,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "captures": [
+      {
+        "viewport": "1280x720",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "2f4222a5cd1a59342b5b811ffa468e598c52812cd149ee11d57270ac492f0a22",
+          "bytes": 489415,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "viewport": "1280x850",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "d662af1f64ac6c79a2ca2a35941d140ab70c6c870fd9fdacfa9af2699ab415d1",
+          "bytes": 532674,
+          "width": 1280,
+          "height": 850
+        }
+      },
+      {
+        "viewport": "1440x960",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "4c28a42939ff4234d9faf37262e31277cfc136cfbf8eb5db51da249f54859e58",
+          "bytes": 556008,
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "viewport": "320x568",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "5f4c26907421ffc2bf7407256047b4962ffe9fe890b03cc349f7de2dde5b733d",
+          "bytes": 162006,
+          "width": 320,
+          "height": 568
+        }
+      }
+    ]
+  },
+  "scope": "Hosted frozen installation, build, package/application checks and browser prototype. Native game presentation and Gold parity remain unverified.",
+  "recordedAt": "2026-10-24T19:02:34.581874+00:00",
+  "roadmapReadback": {
+    "entries": 120,
+    "result": "passed",
+    "nativeMetalIssue": "https://github.com/craft-native/craft/issues/392",
+    "state": "closed",
+    "stateReason": "completed",
+    "outputSha256": "032c6e8a8839d26f4ce7da178e95e7d94f3fb9d782e24150bba9b608f97e5243"
+  }
+}
