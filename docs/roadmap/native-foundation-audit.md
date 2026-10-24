@@ -46,3 +46,11 @@ These changes do not complete text rendering, terrain triangles, GPU presentatio
 ## Evidence retention
 
 Use the source repositories' retained tests and immutable commit links. Record exact executed counts and failures in the execution receipt. A flaky or failed broad test is reported explicitly and investigated; it is never silently represented as a passing native gate. The game's passing prototype campaign remains useful regression evidence but proves none of the missing original systems.
+
+## Execution addendum, 2026-10-24
+
+The inventory above records the October 21 baseline. The [shared engine receipt](receipts/native-engine-cli-2026-10-24.json) adds execution evidence from the original published Craft 0.0.319 macOS binary. Its executable SHA-256 matches the retained upstream publication record. The maintained `scripts/native-engine-check.ts` bundles the public game engine once, queues a future command, advances five ticks, restores the serialized save and verifies the recorded replay. Bun and Craft produced checksum `c331a944`. A real browser executed the identical bundle through the Stacks CDP driver and produced the same result, without console errors or failed requests.
+
+This is one shared simulation fixture executed without a WebView in Craft. It does not exercise persistent frame callbacks, native game rendering, normalized native game input, or native application lifecycle. It also does not establish original Gold Edition behavior. The engineering rules profile and its unverified values remain explicit.
+
+The [checkpoint disposal receipt](receipts/checkpoint-disposal-2026-10-24.json) records a separate application coordinator correction: closing the game during any of four delayed storage phases prevents another request or a false success, even when the adapter completes after cancellation. All ten checkpoint tests passed. An already-issued commit can still complete in an adapter that ignores cancellation; the intact state remains recoverable, while the closed coordinator reports disposal. Native host storage and lifecycle acceptance remain outstanding under S3-017 and S3-091.
