@@ -2,6 +2,8 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { resolveCraftBinary } from 'craft-native'
 
+if (process.argv.slice(2).some(arg => arg !== '--browser')) throw new Error('Usage: bun scripts/native-engine-check.ts [--browser]')
+
 // Consume the maintained SDK resolver and public native CLI. No WebView or
 // substitute runtime is involved; binary publication provenance is separate.
 const requested = resolveCraftBinary()
@@ -26,6 +28,34 @@ try {
     throw new Error(`Shared engine execution differs in Craft (exit ${code}): ${stdout}${stderr}`)
   const version = Bun.spawnSync([binary, '--version'], { stdout: 'pipe', stderr: 'pipe', timeout: 10_000 })
   if (version.exitCode !== 0) throw new Error('Cannot record the Craft native CLI version')
+  let browser: { result: unknown, consoleErrors: unknown[], failedRequests: unknown[], driverSha256: string } | undefined
+  if (process.argv.includes('--browser')) {
+    const driver = join(Bun.resolveSync('@stacksjs/defaults/package.json', root), '../ai/skills/stacks-browse/scripts/browse.ts')
+    const server = Bun.serve({
+      hostname: '127.0.0.1', port: 0,
+      fetch(request) {
+        const url = new URL(request.url)
+        if (url.pathname === '/probe.js') return new Response(source, { headers: { 'Content-Type': 'application/javascript' } })
+        if (url.pathname === '/favicon.ico') return new Response(null, { status: 204 })
+        if (url.pathname !== '/') return new Response('Not found', { status: 404 })
+        return new Response('<!doctype html><title>Shared engine fixture</title><main>Shared engine runtime comparison</main>', { headers: { 'Content-Type': 'text/html' } })
+      },
+    })
+    try {
+      const step = {
+        action: 'evaluate',
+        expression: `(async () => { const response = await fetch('/probe.js'); if (!response.ok) throw new Error('Fixture fetch failed'); const result = (0, eval)(await response.text()); if (result !== ${JSON.stringify(expected)}) throw new Error('Browser simulation differs from native execution'); return JSON.parse(result); })()`,
+      }
+      const process = Bun.spawn([Bun.argv[0]!, driver, 'scenario', server.url.href, '--step', JSON.stringify(step)], { cwd: root, stdout: 'pipe', stderr: 'pipe', timeout: 60_000 })
+      const [exitCode, output, errors] = await Promise.all([process.exited, new Response(process.stdout).text(), new Response(process.stderr).text()])
+      if (exitCode !== 0) throw new Error(`Browser engine check failed (exit ${exitCode}): ${output}${errors}`)
+      const report = JSON.parse(output) as { steps?: { ok?: boolean, value?: unknown }[], consoleErrors?: unknown[], failedRequests?: unknown[] }
+      if (report.steps?.[0]?.ok !== true || JSON.stringify(report.steps[0].value) !== expected || report.consoleErrors?.length !== 0 || report.failedRequests?.length !== 0)
+        throw new Error('Browser did not verify the complete shared engine result without errors')
+      browser = { result: report.steps[0].value, consoleErrors: report.consoleErrors, failedRequests: report.failedRequests, driverSha256: Bun.SHA256.hash(await Bun.file(driver).arrayBuffer(), 'hex') }
+    }
+    finally { await server.stop(true) }
+  }
   const receipt = {
     schemaVersion: 1,
     craftVersion: `${version.stdout.toString()}${version.stderr.toString()}`.trim(),
@@ -37,6 +67,7 @@ try {
     nativeExitCode: code,
     matchedBunReference: true,
     webViewUsed: false,
+    browser,
     scope: 'One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.',
   }
   await Bun.write(join(runtime, 'native-engine-receipt.json'), `${JSON.stringify(receipt, null, 2)}\n`)

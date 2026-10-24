@@ -18,22 +18,7 @@
   "nativeExitCode": 0,
   "matchedBunReference": true,
   "webViewUsed": false,
-  "scope": "One headless simulation, save/restore and replay fixture matched in Bun, a real browser and the original native Craft CLI. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.",
-  "gameSource": "e882ae317f1bbf66daa3808cf598a09f79f5f97e",
-  "craftSource": "1fbc91e435afa5a75e65c71b7a15741b4d7927e5",
-  "originalPublicationEvidence": "https://github.com/stacksjs/stacks/blob/2a510253a06c86af6145d7011a465f31237b3b8b/docs/guide/buddy/receipts/craft-0.0.319-publication.json",
-  "command": "bun scripts/native-engine-check.ts",
-  "binarySelection": "Maintained craft-native SDK resolver, using the normally installed and archive-verified Craft0.0.319 executable.",
-  "scriptSha256": "32b3f4d164d1e69c3b9211c70686ed3db96b11d495f642aa5cb5666b8b4f96f7",
-  "issuesRemainOpen": [
-    "https://github.com/stacksjs/the-settlers-iii-remake/issues/94",
-    "https://github.com/stacksjs/the-settlers-iii-remake/issues/26"
-  ],
   "browser": {
-    "driver": "Stacks stacks-browse CDP scenario from the installed @stacksjs/defaults package",
-    "reportSha256": "6b0411a6a5fbf0c503388f62303c1fee1414a30da3c8b5f0f081e6c829283189",
-    "sameBundleAsNative": true,
-    "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
     "result": {
       "tick": 5,
       "checksum": "c331a944",
@@ -46,6 +31,17 @@
     },
     "consoleErrors": [],
     "failedRequests": [],
-    "browserPresentationVerified": false
-  }
+    "driverSha256": "7393dc541cbee3b0a1fe86c1d8f9f5870ab729966242cf853618a2d36efb52a2"
+  },
+  "scope": "One headless simulation, save/restore and replay fixture matched in Bun, a real browser and the original native Craft CLI. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.",
+  "gameSource": "e882ae317f1bbf66daa3808cf598a09f79f5f97e",
+  "craftSource": "1fbc91e435afa5a75e65c71b7a15741b4d7927e5",
+  "originalPublicationEvidence": "https://github.com/stacksjs/stacks/blob/2a510253a06c86af6145d7011a465f31237b3b8b/docs/guide/buddy/receipts/craft-0.0.319-publication.json",
+  "binarySelection": "Maintained craft-native SDK resolver, using the normally installed and archive-verified Craft0.0.319 executable.",
+  "issuesRemainOpen": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/94",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/26"
+  ],
+  "command": "bun scripts/native-engine-check.ts --browser",
+  "scriptSha256": "116489bd1d8587e7a5168c7a6dbe7d9e3bfac5fac54ec48a0f40c588331b0993"
 }
