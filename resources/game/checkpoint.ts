@@ -20,6 +20,7 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
   let head: Head | null | undefined, running: Promise<void> | null = null
   let queued: { text: string, waiters: ((result: SaveResult) => void)[] } | null = null
   const key = (name: string): string => `${prefix}:${name}`
+  const disposed = (): SaveResult => ({ ok: false, reason: 'disposed', message: 'The game was closed while the checkpoint was being written.' })
 
   async function readHead(): Promise<Head | null> {
     const raw = await store.get(key('head'), lifetime.signal)
@@ -41,22 +42,26 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
   }
 
   async function write(text: string): Promise<SaveResult> {
-    if (lifetime.signal.aborted) return { ok: false, reason: 'disposed', message: 'The game was closed before the checkpoint was written.' }
+    if (lifetime.signal.aborted) return disposed()
     try {
       head ??= await readHead()
+      if (lifetime.signal.aborted) return disposed()
       const slot = head?.slot === 'a' ? 'b' : 'a', generation = (head?.generation ?? 0) + 1, digest = sha256(text)
       await store.set(key(slot), JSON.stringify({ generation, sha256: digest, text }), lifetime.signal)
+      if (lifetime.signal.aborted) return disposed()
       const stored = await readSlot(slot)
+      if (lifetime.signal.aborted) return disposed()
       if (!stored || stored.generation !== generation || stored.text !== text) return { ok: false, reason: 'verify', message: 'The checkpoint did not read back intact. The previous checkpoint is kept.' }
       const next: Head = { version: 1, slot, generation, sha256: digest, bytes: text.length }
       await store.set(key('head'), JSON.stringify(next), lifetime.signal)
+      if (lifetime.signal.aborted) return disposed()
       head = next
       return { ok: true, generation }
     }
     catch (error) {
       // Whatever failed, the head still names the last complete checkpoint.
       head = undefined
-      if (lifetime.signal.aborted) return { ok: false, reason: 'disposed', message: 'The game was closed before the checkpoint was written.' }
+      if (lifetime.signal.aborted) return disposed()
       return { ok: false, reason: 'storage', message: error instanceof Error && /quota/i.test(error.message) ? 'Device storage is full. The previous checkpoint is kept.' : 'Device storage refused the checkpoint. The previous checkpoint is kept.' }
     }
   }
@@ -71,7 +76,7 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
   return {
     /** Requests a checkpoint of serialized state. Later requests made while one is writing replace earlier queued ones. */
     save(text: string): Promise<SaveResult> {
-      if (lifetime.signal.aborted) return Promise.resolve({ ok: false, reason: 'disposed', message: 'The game was closed before the checkpoint was written.' })
+      if (lifetime.signal.aborted) return Promise.resolve(disposed())
       return new Promise((resolve) => {
         if (queued) { queued.text = text; queued.waiters.push(resolve) }
         else queued = { text, waiters: [resolve] }

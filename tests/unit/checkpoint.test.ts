@@ -85,6 +85,44 @@ describe('checkpoints', () => {
     expect(await createCheckpoints(m.store, 'game').load()).toBe('kept')
   })
 
+  test.each(['head-read', 'slot-write', 'slot-read', 'head-write'] as const)('disposal during %s stops the next storage operation even when the adapter completes', async (phase) => {
+    const m = memory()
+    expect(await createCheckpoints(m.store, 'game').save('kept')).toEqual({ ok: true, generation: 1 })
+    const entered = Promise.withResolvers<void>(), complete = Promise.withResolvers<void>()
+    const calls: string[] = []
+    const store: CheckpointStore = {
+      async get(key) {
+        calls.push(`get:${key}`)
+        if ((phase === 'head-read' && key === 'game:head') || (phase === 'slot-read' && key === 'game:b')) {
+          entered.resolve()
+          await complete.promise
+        }
+        return m.data.get(key)
+      },
+      async set(key, value) {
+        calls.push(`set:${key}`)
+        if ((phase === 'slot-write' && key === 'game:b') || (phase === 'head-write' && key === 'game:head')) {
+          entered.resolve()
+          await complete.promise
+        }
+        // A completed storage request may arrive after cancellation. The
+        // coordinator still owns whether it starts another request or succeeds.
+        m.data.set(key, value)
+      },
+    }
+    const c = createCheckpoints(store, 'game'), result = c.save('late')
+    await entered.promise
+    c.dispose()
+    const atDisposal = [...calls]
+    complete.resolve()
+    expect(await result).toMatchObject({ ok: false, reason: 'disposed' })
+    await c.flush()
+    expect(calls).toEqual(atDisposal)
+    // An already-issued head commit can complete in an adapter that ignores
+    // cancellation. It remains loadable, but must not report success after close.
+    expect(await createCheckpoints(m.store, 'game').load()).toBe(phase === 'head-write' ? 'late' : 'kept')
+  })
+
   test('flush waits for the write in progress, and a legacy single-key save is still found', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game', 'old-save')
     m.data.set('old-save', 'legacy')

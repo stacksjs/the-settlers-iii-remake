@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/93",
+  "baseline": "e2ca96e700f0fe32ce9660ed58de0a7b5e7946ea",
+  "problem": "An adapter completing after disposal could cause the checkpoint coordinator to start additional storage operations and report success after the game closed. Four public-interface cases reproduced false success before the fix.",
+  "change": "Check disposal after every awaited checkpoint operation before starting another request or acknowledging success. Keep existing ordered/coalesced saves and the two-slot format.",
+  "validation": {
+    "newDeterministicRegressionCases": 4,
+    "totalCheckpointTests": 10,
+    "failures": 0,
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "typecheck": "passed"
+  },
+  "limits": [
+    "An already-issued storage commit may finish if the adapter ignores cancellation. The intact committed state remains recoverable, while the closed coordinator reports disposed.",
+    "Real native/browser host lifecycle and storage qualification remain outstanding. S3-091 remains open."
+  ],
+  "logs": [
+    {
+      "name": "game-checkpoint-disposal-red.log",
+      "sha256": "cc0e1c7a0f719b6c779c6308adccf8271de41bfe4295d2291a85653e940f3351"
+    },
+    {
+      "name": "game-checkpoint-disposal-green.log",
+      "sha256": "c224c1836ec709d879373cef7a1a481d6beae3ae05207b989e41c2faa855838c"
+    },
+    {
+      "name": "game-checkpoint-disposal-lint.log",
+      "sha256": "da58c2636a8348c6a0bade8f3474250fcffc243fa6141a11c14a79d327b4a73d"
+    },
+    {
+      "name": "game-checkpoint-disposal-types.log",
+      "sha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+    }
+  ]
+}
