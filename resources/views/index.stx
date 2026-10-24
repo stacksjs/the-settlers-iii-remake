@@ -1,5 +1,6 @@
 <script client>
 import { catalog, mountGame, snapshot } from '../game/controller'
+import { controlLayout } from '../game/control-layout'
 import { chooseMenu, initialMenu, LABELS, menuImage, MENUS, openMenu } from '../game/menus'
 import type { Game } from '../game/controller'
 
@@ -17,6 +18,10 @@ const subs = derived(() => [...MENUS[menu().main]])
 const showGuide = state(false)
 const confirmRestart = state(false)
 const reduceMotion = usePreferredReducedMotion()
+const desktopHud = useMediaQuery('(min-width: 761px)')
+const largeHud = useMediaQuery('(min-height: 902px)')
+const mediumHud = useMediaQuery('(min-height: 734px)')
+const hud = derived(() => controlLayout(!desktopHud() || largeHud() ? 768 : mediumHud() ? 600 : 480))
 let game: Game | null = null
 const options = derived(() => catalog.filter(item => item.menu === menu().sub))
 const stocked = derived(() => view().goods.filter(item => item.amount > 0))
@@ -66,7 +71,7 @@ onDestroy(() => game?.dispose())
       </div>
     </section>
 
-    <main class="playfield">
+    <main class="playfield" :style="hud().style" :data-hud-profile="hud().profile">
       <section class="map-region" aria-label="Settlement map">
         <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag with the right button to pan and with the left to mark soldiers, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
@@ -102,20 +107,24 @@ onDestroy(() => game?.dispose())
       <aside class="sidebar" aria-label="Settlement management">
         <section class="overview" aria-label="Overview map">
           <canvas ref="overview" class="overview-map" width="288" height="192" role="img" aria-label="Overview of the land you have explored. Click to move the view there.">The overview map needs Canvas 2D.</canvas>
+          <div class="minimap-frame-left" aria-hidden="true"></div>
+          <div class="minimap-frame-right" aria-hidden="true"></div>
+        </section>
+        <div class="original-panel">
+          <div class="flex main-menu" role="tablist" aria-label="Control center">
+            <button :for="name in mains" type="button" role="tab" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-selected="menu().main === name" @click="menu.set(openMenu(menu(), name))"><img :src="menuImage(name, null, menu().main === name)" width="55" height="55" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
+          </div>
+          <div class="flex category-list" :aria-label="LABELS[menu().main] + ' menus'">
+            <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
+          </div>
+          <div class="hud-content">
           <div class="flex gap-1 mt-2 overview-modes">
             <button type="button" class="text-button" @click="nextTerritory()" title="Territory display: player colours, land and sea, or terrain">Territory: {{ view().minimap.territory === 'players' ? 'players' : view().minimap.territory === 'simple' ? 'land and sea' : 'terrain' }}</button>
             <button type="button" class="text-button" @click="nextSettlers()" title="Settlers display: all, soldiers only or none">Settlers: {{ view().minimap.settlers === 'all' ? 'all' : view().minimap.settlers === 'military' ? 'soldiers' : 'none' }}</button>
             <button type="button" class="text-button" :aria-pressed="view().minimap.buildings" @click="game?.overview({ buildings: !view().minimap.buildings })">Buildings: {{ view().minimap.buildings ? 'shown' : 'hidden' }}</button>
           </div>
-        </section>
         <div class="settlement-heading"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
         <section class="control-center" aria-label="Control center">
-          <div class="flex gap-1 main-menu" role="tablist" aria-label="Control center">
-            <button :for="name in mains" type="button" role="tab" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-selected="menu().main === name" @click="menu.set(openMenu(menu(), name))"><img :src="menuImage(name, null, menu().main === name)" width="55" height="55" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
-          </div>
-          <div class="flex flex-wrap gap-1 category-list" :aria-label="LABELS[menu().main] + ' menus'">
-            <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
-          </div>
           <div :if="menu().main === 'buildings'">
             <div class="flex items-center justify-between section-heading"><h2>{{ LABELS[menu().sub] }} buildings</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
             <div class="building-catalog">
@@ -191,6 +200,8 @@ onDestroy(() => game?.dispose())
         <section class="needs-panel" :if="view().needs.length" aria-label="Needs attention"><h2>Needs attention</h2><ul class="profession-list"><li :for="need in view().needs"><span>{{ need }}</span></li></ul></section>
         <details class="chronicle" open><summary>Settlement chronicle</summary><p :for="line in view().events">{{ line.text }} <button :if="line.at" type="button" class="text-button" @click="game?.goto(line.at.x, line.at.y)">Show</button></p></details>
         <footer class="sidebar-footer">Built with Stacks, stx and Craft. Original demo sprites, converted for the browser. Rules are the Roman engineering profile, not a verified original ruleset.</footer>
+          </div>
+        </div>
       </aside>
     </main>
   </div>
@@ -205,26 +216,46 @@ onDestroy(() => game?.dispose())
 @media(max-width:760px) { .game-shell { height:auto; min-height:100dvh; grid-template-rows:118px 58px auto; } .masthead { padding:12px 14px; flex-wrap:wrap; gap:8px; } .masthead nav { min-width:0; width:100%; justify-content:space-between; gap:4px; } .brand strong { font-size:19px; } .brand-mark,.campaign,.quiet-button>span[aria-hidden="true"] { display:none; } .brand small { font-size:8px; letter-spacing:2px; } .quiet-button { padding:7px 9px; font-size:11px; } .playfield { display:flex; flex-direction:column; } .map-region { height:65dvh; min-height:420px; } .sidebar { min-width:0; overflow:visible; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .settlement-heading { grid-column:span 2; } .sidebar section { min-width:0; padding:17px; } .building-catalog { grid-template-columns:1fr; } .building-choice { min-height:66px; } .sidebar-footer,.chronicle { grid-column:span 2; } .stocks { justify-content:flex-start; flex-shrink:1; } .population { font-size:11px; } .army { display:none; } .resource-strip { padding:0 12px; gap:9px; } .map-caption { top:75px; } .advisor { left:12px; right:12px; bottom:12px; padding:12px; } .guide-panel { left:14px; max-width:calc(100% - 28px); top:66px; padding:18px; max-height:calc(100% - 80px); overflow:auto; } .result-panel { max-width:calc(100% - 28px); } }
 @media(max-width:480px) { .sidebar { display:block; } .building-catalog { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .quiet-button { padding:7px; } .inspector>div:first-child,.border-report>div:first-child { flex-wrap:wrap; gap:6px; } }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } }
-.main-menu { justify-content:space-between; gap:17px; }
-.main-menu button { flex:none; width:53px; height:55px; padding:0; border:0; border-radius:0; background:transparent; overflow:hidden; }
+/* The original art has fixed openings. Geometry is computed from the pinned
+   reference layout, while the local UI content remains scrollable inside it. */
+.playfield { --hud-unit:min(1px,calc(100vw / var(--hud-width))); position:relative; display:block; }
+.sidebar { position:relative; margin:0 auto; width:calc(var(--hud-width) * var(--hud-unit)); height:calc(var(--hud-profile) * var(--hud-unit)); min-height:0; display:block; overflow:visible; background:transparent; border:0; pointer-events:none; }
+.sidebar .overview { position:absolute; left:0; top:0; width:100%; height:calc(var(--mini-height) * var(--hud-unit)); padding:0!important; border:0; pointer-events:auto; clip-path:polygon(0 0,100% 0,calc(var(--panel-width) / var(--hud-width) * 100%) 100%,0 100%); }
+.overview-map { position:absolute; left:calc(var(--mini-map-left) * var(--hud-unit)); top:calc(var(--mini-map-top) * var(--hud-unit)); width:calc(var(--mini-map-width) * var(--hud-unit)); height:calc(var(--mini-map-height) * var(--hud-unit)); aspect-ratio:auto; background:transparent; border:0; border-radius:0; clip-path:polygon(33.333333% 0,100% 0,66.666667% 100%,0 100%); pointer-events:auto; }
+.minimap-frame-left,.minimap-frame-right { position:absolute; top:0; height:100%; background-size:100% 100%; background-repeat:no-repeat; image-rendering:pixelated; pointer-events:none; }
+.minimap-frame-left { left:0; width:calc(var(--panel-width) * var(--hud-unit)); background-image:var(--minimap-image); }
+.minimap-frame-right { left:calc(var(--panel-width) * var(--hud-unit)); width:calc(var(--mini-right-width) * var(--hud-unit)); background-image:var(--minimap-right-image); }
+.original-panel { position:absolute; left:0; top:calc(var(--mini-height) * var(--hud-unit)); width:calc(var(--panel-width) * var(--hud-unit)); height:calc(var(--panel-height) * var(--hud-unit)); background-image:var(--panel-image); background-size:100% 100%; image-rendering:pixelated; pointer-events:auto; }
+.original-panel::after { content:""; position:absolute; left:100%; top:0; height:100%; width:calc(var(--panel-edge) * var(--hud-unit)); background-image:var(--panel-right-image); background-size:100% 100%; pointer-events:none; }
+.main-menu,.category-list { position:absolute; margin:0; justify-content:flex-start; flex-wrap:nowrap; }
+.main-menu { left:calc(var(--primary-left) * var(--hud-unit)); top:calc(var(--primary-top) * var(--hud-unit)); gap:calc(var(--primary-gap) * var(--hud-unit)); }
+.main-menu button { flex:none; width:calc(var(--primary-width) * var(--hud-unit)); height:calc(var(--primary-height) * var(--hud-unit)); padding:0; border:0; border-radius:0; background:transparent; overflow:hidden; }
 .main-menu button[aria-selected="true"] { background:transparent; }
-.main-menu img { display:block; width:55px; height:55px; max-width:none; image-rendering:pixelated; }
-.category-list { gap:4px; justify-content:space-between; flex-wrap:nowrap; }
-.category-list button { flex:none; width:45px; height:40px; padding:0; border-radius:0; background:transparent; }
+.main-menu img { display:block; width:calc(var(--primary-image) * var(--hud-unit)); height:calc(var(--primary-image) * var(--hud-unit)); max-width:none; image-rendering:pixelated; }
+.category-list { left:calc(var(--secondary-left) * var(--hud-unit)); top:calc(var(--secondary-top) * var(--hud-unit)); gap:calc(var(--secondary-gap) * var(--hud-unit)); }
+.category-list button { flex:none; width:calc(var(--secondary-width) * var(--hud-unit)); height:calc(var(--secondary-height) * var(--hud-unit)); padding:0; border-radius:0; background:transparent; }
 .category-list button[aria-pressed="true"] { background:transparent; }
-.category-list img { display:block; width:45px; height:40px; image-rendering:pixelated; }
+.category-list img { display:block; width:100%; height:100%; image-rendering:pixelated; }
 .main-menu button:hover,.category-list button:hover { filter:brightness(1.15); }
+.hud-content { position:absolute; left:calc(var(--content-left) * var(--hud-unit)); top:calc(var(--content-top) * var(--hud-unit)); width:calc(var(--content-width) * var(--hud-unit)); height:calc(var(--content-height) * var(--hud-unit)); overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#7d8a8a #101a23; image-rendering:auto; background:#07131b90; }
+.hud-content section { padding:10px 6px; background:transparent; border-color:#b9c9c826; }
+.hud-content .settlement-heading { padding:10px 6px; background:transparent; }
+.hud-content .settlement-heading h1 { font-size:20px; margin:4px 0; }
+.hud-content .eyebrow { display:none; }
+.hud-content .overview-modes { margin:0; padding:4px 6px; justify-content:flex-start; gap:2px 10px; }
+.hud-content .text-button { font-size:10px; }
+.hud-content .building-choice { display:flex; flex-direction:column; align-items:center; padding:6px 3px; text-align:center; min-height:108px; background:#142c3899; border-color:#77939a40; }
+.hud-content .building-choice:hover,.hud-content .building-choice[aria-pressed="true"] { background:#30424ecc; border-color:var(--gold); }
+.hud-content .building-choice strong { font-size:10px; }
+.hud-content .building-choice small { font-size:9px; }
+.hud-content .specialists { flex-wrap:wrap; }
+.hud-content .specialists .quiet-button { white-space:normal; }
+.hud-content .sidebar-footer,.hud-content .chronicle { padding:10px 6px; }
 @media(min-width:761px) {
-  .playfield { grid-template-columns:224px minmax(0,1fr); }
-  .sidebar { grid-column:1; grid-row:1; border-left:0; border-right:1px solid var(--line); }
-  .map-region { grid-column:2; grid-row:1; }
-  .sidebar section { padding:14px 10px; }
-  .settlement-heading { padding:15px 10px; }
-  .building-choice { display:flex; flex-direction:column; align-items:center; padding:6px 3px; text-align:center; min-height:112px; }
-  .building-choice strong { font-size:10px; }
-  .building-choice small { font-size:9px; }
-  .overview { padding:10px!important; }
-  .specialists { flex-wrap:wrap; }
-  .specialists .quiet-button { white-space:normal; }
+  .playfield { --hud-unit:calc((100dvh - 134px) / var(--hud-profile)); }
+  .map-region { width:100%; height:100%; }
+  .sidebar { position:absolute; margin:0; top:0; left:0; }
+  .map-caption { left:calc((var(--panel-width) + var(--panel-edge)) * var(--hud-unit) + 20px); top:calc(var(--mini-height) * var(--hud-unit) + 14px); }
+  .advisor { left:calc((var(--panel-width) + var(--panel-edge)) * var(--hud-unit) + 22px); }
 }
 </style>

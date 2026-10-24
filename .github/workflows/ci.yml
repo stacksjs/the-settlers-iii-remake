@@ -41,6 +41,7 @@ jobs:
           settlers_server_pid=$!
           trap 'kill "$settlers_server_pid"' EXIT
           bun run test:browser http://127.0.0.1:3450/
+          bun tests/browser/control-frame.ts http://127.0.0.1:3450/
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
       - name: Retain non-media browser diagnostics
@@ -51,5 +52,7 @@ jobs:
           path: |
             storage/framework/runtime/shots/campaign.json
             storage/framework/runtime/shots/campaign-media.json
+            storage/framework/runtime/shots/control-frame.json
+            storage/framework/runtime/shots/control-frame-media.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

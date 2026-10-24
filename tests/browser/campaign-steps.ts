@@ -66,9 +66,9 @@ export const campaignSteps = [
   {
     action: 'evaluate',
     expression: `(async () => {
-      const sidebar = document.querySelector('.sidebar').getBoundingClientRect();
+      const sidebar = document.querySelector('.original-panel').getBoundingClientRect();
       const map = document.querySelector('.map-region').getBoundingClientRect();
-      if (sidebar.right > map.left || sidebar.left !== 0) throw new Error('Desktop control panel is not on the left');
+      if (sidebar.left !== 0 || map.left !== 0 || sidebar.right >= map.right) throw new Error('Desktop control panel does not overlay the left of the full map');
       await Promise.all([...document.querySelectorAll('.main-menu img, .category-list img')].map(image => image.decode()));
       if (!document.querySelector('.category-list [aria-pressed=true] img')?.src.endsWith('/build-resources-active.png')) throw new Error('Returning to Buildings lost its original submenu art');
       return { originalMenuImagesDecoded: 7, panelOnLeft: true };

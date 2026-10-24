@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T10:14:44.681785+00:00",
+  "scope": "Partial original browser HUD frame and input ownership",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "sources": [
+      {
+        "path": "ControlPanelLayoutProperties.java",
+        "sha256": "8e12da0ebb64ae61b5bb451a3a71337d0b9809b5a0d963a2f83b2596825be691"
+      },
+      {
+        "path": "MiniMapLayoutProperties.java",
+        "sha256": "c7d7192680bbe84194ab1f114da32c8b923cc066f1d508818db9b4819bf20399"
+      },
+      {
+        "path": "OriginalControls.java",
+        "sha256": "5253762e9c98ae6056495d944bfd8dccbff9404c6a6bafa4c14dbd8dd53dbd94"
+      }
+    ]
+  },
+  "implementation": [
+    "All three reference panel/minimap background variants, including each separately stretched minimap frame edge.",
+    "Original main and submenu openings, cropping, spacing and scrollable content opening.",
+    "World canvas fills the playfield under the left HUD; the minimap uses its sheared opening.",
+    "The stone minimap frame consumes input; the minimap remains interactive and the transparent outside corner permits world input."
+  ],
+  "regression": {
+    "red": "Real browser hit testing at 1280x720 found that clicking the stone frame reached the world canvas beneath it.",
+    "green": "A clipped pointer boundary consumes only the original frame shape. All three desktop profiles verify stone/world isolation, live minimap input and transparent outside-corner input."
+  },
+  "checks": {
+    "typecheck": "pass",
+    "lint": "0 errors, 0 warnings",
+    "unit": "227 pass, 0 fail, 22380 assertions, 31 files",
+    "assets": "52 original UI PNGs and 95 converted files retain complete byte/input provenance",
+    "productionBuild": "pass",
+    "campaign": {
+      "steps": 53,
+      "allPassed": true,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "media": {
+        "schemaVersion": 1,
+        "screenshot": {
+          "sha256": "ba882f67a7771f68db9e12cea8733642732753ce18d3456146c13e49cd3810f1",
+          "bytes": 1144217,
+          "width": 1440,
+          "height": 960
+        },
+        "captureStatus": "captured",
+        "browserExitCode": 0,
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+      }
+    },
+    "frames": [
+      {
+        "viewport": "1280x720",
+        "browserExitCode": 0,
+        "result": {
+          "profile": 480,
+          "viewport": "1280x720",
+          "panel": {
+            "width": 166.03125,
+            "height": 412.640625
+          },
+          "openingsContained": true,
+          "fixedControlsDuringScroll": true
+        },
+        "consoleErrors": [],
+        "failedRequests": []
+      },
+      {
+        "viewport": "1280x850",
+        "browserExitCode": 0,
+        "result": {
+          "profile": 600,
+          "viewport": "1280x850",
+          "panel": {
+            "width": 210.015625,
+            "height": 513.125
+          },
+          "openingsContained": true,
+          "fixedControlsDuringScroll": true
+        },
+        "consoleErrors": [],
+        "failedRequests": []
+      },
+      {
+        "viewport": "1440x960",
+        "browserExitCode": 0,
+        "result": {
+          "profile": 768,
+          "viewport": "1440x960",
+          "panel": {
+            "width": 232.953125,
+            "height": 586.703125
+          },
+          "openingsContained": true,
+          "fixedControlsDuringScroll": true
+        },
+        "consoleErrors": [],
+        "failedRequests": []
+      },
+      {
+        "viewport": "320x568",
+        "browserExitCode": 0,
+        "result": {
+          "profile": 768,
+          "viewport": "320x568",
+          "panel": {
+            "width": 207.578125,
+            "height": 522.78125
+          },
+          "openingsContained": true,
+          "fixedControlsDuringScroll": true
+        },
+        "consoleErrors": [],
+        "failedRequests": []
+      }
+    ],
+    "frameMedia": {
+      "schemaVersion": 1,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "captures": [
+        {
+          "viewport": "1280x720",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "c620e95f151cbf5a2df6cbb691785c2a9dd747305e736348da3986d1db0f33e7",
+            "bytes": 634624,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        {
+          "viewport": "1280x850",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "1c62038a3bc1a4c0303169e39a8d30bba1ac71d3ca47bae887f45cc6a2afd1b9",
+            "bytes": 889973,
+            "width": 1280,
+            "height": 850
+          }
+        },
+        {
+          "viewport": "1440x960",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "20826e056b2f4973d95792a95d8d5f1f7dd15f2ad6b3e9d32281a05ef207f34b",
+            "bytes": 899593,
+            "width": 1440,
+            "height": 960
+          }
+        },
+        {
+          "viewport": "320x568",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "baeb016b395547f454c9cecbd98267c2245a988e0c0d16149372f85f7fc955bf",
+            "bytes": 165781,
+            "width": 320,
+            "height": 568
+          }
+        }
+      ]
+    },
+    "responsive": [
+      {
+        "device": "Mobile S",
+        "viewport": "320x568",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Mobile L",
+        "viewport": "428x926",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Tablet",
+        "viewport": "768x1024",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Desktop",
+        "viewport": "1280x720",
+        "horizontalOverflowPx": 0
+      },
+      {
+        "device": "Wide",
+        "viewport": "1920x1080",
+        "horizontalOverflowPx": 0
+      }
+    ]
+  },
+  "preflight": {
+    "design": "Original-reference dense game HUD; variance2, motion1, density9. Landing-page-only composition checks do not apply.",
+    "visualInspection": "Fresh final campaign raster, 480/600 profile rasters and full 320px phone responsive raster personally inspected.",
+    "stack": "stx signals/composables/reactive bindings, ts-css utilities, original PNG frame art and custom CSS. No dependencies added.",
+    "accessibility": "Names, titles and focus styles retained on menu buttons. Content scrolls independently of menu buttons. Existing keyboard game controls remain exercised.",
+    "motion": "No new animations; existing reduced-motion handling retained.",
+    "content": "No new user-visible copy or separator dashes. Original images remain local and are excluded from public CI rasters."
+  },
+  "logs": [
+    {
+      "name": "game-original-frame-typecheck-final.log",
+      "sha256": "15eb1d0d54c9ef0f526ba874463acdac7dfe7789587664d204f59aafb9817960"
+    },
+    {
+      "name": "game-original-frame-lint-complete.log",
+      "sha256": "57ad8034e2db36c2adc18c97456ad27bd42d68df46f50852939ddba18c1aacf0"
+    },
+    {
+      "name": "game-original-frame-unit.log",
+      "sha256": "7d82f320cd292535d9e1a0b2f03e9f24976d9a5ecc2e8b02ba176e378aec61a5"
+    },
+    {
+      "name": "game-original-frame-assets.log",
+      "sha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    {
+      "name": "game-original-frame-input-build.log",
+      "sha256": "cae2fd617ed0bb21d24d6a0151911364fb17041c5163a9dffe03c6a046384054"
+    },
+    {
+      "name": "game-original-frame-input-red.log",
+      "sha256": "3cb65cfa7e7862e00f58ee32892b0e19747b6722375b5f8ce508003f7d5ddd0b"
+    },
+    {
+      "name": "game-original-frame-input-red-report.json",
+      "sha256": "df3bcb32aae9b98c6e0171d040a74c34a257ef49a9e051fd55e29eaa30f2c17f"
+    },
+    {
+      "name": "game-original-frame-input-green.log",
+      "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    },
+    {
+      "name": "game-original-frame-input-campaign.log",
+      "sha256": "fc8514ac0d02571c3c52860915a9f675a5149347a4ce83a367fa5eb7640071dc"
+    },
+    {
+      "name": "game-original-frame-responsive.log",
+      "sha256": "0a8d08896c81cf9f229caa83a56f384198fb7f39068d8ba072b0d0a764242093"
+    }
+  ],
+  "limits": [
+    "Header, typography, text content, inventory controls and scroll behavior remain application-specific. The baked lower-bar artwork is not a completed original system/notification interface.",
+    "Only the pinned remake and Amazons demo are available. No original Gold executable measurements, installer or saves are available.",
+    "This browser frame does not prove native RenderSurface, native HUD, clocks, input, complete campaigns or exact Gold fidelity.",
+    "Redistribution permission for original rasters remains unverified. Raster publication is withheld."
+  ]
+}
