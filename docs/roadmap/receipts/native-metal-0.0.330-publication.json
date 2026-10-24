@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "source": "5407363b43b6240377c56ceed75e308a39554cf8",
+  "version": "0.0.330",
+  "release": {
+    "schemaVersion": 1,
+    "source": "5407363b43b6240377c56ceed75e308a39554cf8",
+    "version": "0.0.330",
+    "maintainedReleaseCommand": "bun run release:patch",
+    "originalNpmPackages": 8,
+    "originalNativeArchives": 4,
+    "originalZigPackageVerified": true,
+    "unchangedPublicZigColdConsumerPassed": true,
+    "installedSdkOriginalFullTreeAndExact50RequiredJobsPassed": true,
+    "actualOriginalMacCliExecutedThroughSdkPathResolution": true,
+    "iosNativeMetalTests": 2,
+    "macNativeMetalUITests": 1,
+    "nativeScreenshotsPersonallyInspected": 6,
+    "sourceReceipt": "installed-sdk-receipt.json",
+    "limitations": [
+      "Vulkan implementation belongs to subsequent source work and is not present in this release.",
+      "Full native game integration and Gold Edition fidelity remain unfinished."
+    ],
+    "verifiedAt": "2026-10-24T17:16:16.210345+00:00"
+  },
+  "macOS": {
+    "source": "5407363b43b6240377c56ceed75e308a39554cf8",
+    "artifact": 12565227606,
+    "originalZipSha256": "sha256:6cf3680c4b413cec804c05fa2353f2a7f9eed39975e0e55aefd893173b46c351",
+    "originalZipBytes": 95383,
+    "originalZipCrcPassed": true,
+    "exactCommittedHarnessSurfaceFixtureHashes": true,
+    "rawSourceDirty": true,
+    "rawStatus": "?? artifacts/native-metal-macos/run-j4eAax/verification.json\n",
+    "trackedSourceUnchanged": true,
+    "actualXCTest": {
+      "devicesAndConfigurations": [
+        {
+          "device": {
+            "architecture": "arm64",
+            "deviceId": "db556573707de9b397ebeb429f696a355b9ad34f",
+            "deviceName": "My Mac",
+            "modelName": "Apple Virtual Machine 1",
+            "osBuildNumber": "25G83",
+            "osVersion": "26.6.2",
+            "platform": "macOS"
+          },
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 1,
+          "skippedTests": 0,
+          "testPlanConfiguration": {
+            "configurationId": "1",
+            "configurationName": "Test Scheme Action"
+          }
+        }
+      ],
+      "environmentDescription": "MacMetalSurfaceFixture \u00b7 Built with macOS 26.6.2",
+      "expectedFailures": 0,
+      "failedTests": 0,
+      "finishTime": 1792856085.85,
+      "passedTests": 1,
+      "result": "Passed",
+      "skippedTests": 0,
+      "startTime": 1792856064.61,
+      "statistics": [],
+      "testFailures": [],
+      "title": "Test - MacMetalSurfaceFixture",
+      "topInsights": [],
+      "totalTestCount": 1
+    },
+    "applicationsDisposed": true,
+    "workspaceDisposed": true,
+    "visualInspection": "All3 original exported captures personally inspected",
+    "scope": "Native AppKit Metal fixture only. Not native game rendering.",
+    "frames": [
+      {
+        "file": "attachments/4DE2080A-1009-4EB2-A75C-5FA23917F458.png",
+        "sha256": "c7d74255ed3ae9e703fd40321b18a4fe39d28c6760c6e759447985ee219ebcff",
+        "bytes": 5120,
+        "width": 256,
+        "height": 192,
+        "personallyInspected": true
+      },
+      {
+        "file": "attachments/4F48809A-8FE5-4778-B871-88AB3F573937.png",
+        "sha256": "05f1a758e777a8ecb4e939a34d8f1d2c00e0e99750b688bcfd691fce362d998f",
+        "bytes": 4338,
+        "width": 160,
+        "height": 120,
+        "personallyInspected": true
+      },
+      {
+        "file": "attachments/5A01F628-CCB9-4C74-8386-29880CBBEB54.png",
+        "sha256": "452013eab32591679d4a70e8b1c678ae8602a4e42e6bfbe5eaf84a6911e9781b",
+        "bytes": 4336,
+        "width": 160,
+        "height": 120,
+        "personallyInspected": true
+      }
+    ]
+  },
+  "iOS": {
+    "schemaVersion": 1,
+    "source": "5407363b43b6240377c56ceed75e308a39554cf8",
+    "runId": 40106747701,
+    "artifactId": 12564678540,
+    "originalArtifactSha256": "0d04ed368b5c0f9e89e32a0b96d587ac8a635839d3092465f1edf397e1635858",
+    "completeBytesAndZipCrcVerified": true,
+    "actualNativeTestsPassed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "screenshots": [
+      {
+        "name": "Native Metal resumed frame_0_A7E44094-C757-4076-84D3-200DE5EFC593.png",
+        "file": "5B1EBC1E-1F4A-47B1-ABDE-2A546797C89D.png",
+        "sha256": "d369580b42356d4116ceee8401678b365ca8bd4e45a01ed3910776a2d7ae9d41",
+        "width": 1206,
+        "height": 2622,
+        "personallyInspected": true
+      },
+      {
+        "name": "Native Metal resized frame_0_9057F79B-F495-4429-BFFA-D6A0D3A4BE12.png",
+        "file": "7AAD6BAB-8079-44EC-8C1F-112791C0CB3C.png",
+        "sha256": "7a65d57ca38f3542e223d92cb0411f96604c917bd37bff95ea61fd6a3c9a6419",
+        "width": 1206,
+        "height": 2622,
+        "personallyInspected": true
+      },
+      {
+        "name": "Native Metal initial frame_0_39E003F9-714D-4CE9-8E25-CFCF78D50E01.png",
+        "file": "D86EA844-5719-453B-B506-45835E19F1C9.png",
+        "sha256": "24f879a80b63a869b9aad608b4d69706b0e06f418b61b173e2c182479104fc5d",
+        "width": 1206,
+        "height": 2622,
+        "personallyInspected": true
+      }
+    ],
+    "inspected": true,
+    "observed": "Original XCTest captures show first-party colored quadrants at frame60, resized frame61 and continued presentation after background/resume at62.",
+    "scope": "Native Metal fixture only. Full native game and Gold fidelity remain unfinished.",
+    "verifiedAt": "2026-10-24T17:13:14.456883+00:00"
+  },
+  "iOSIndependentSourceAndXCTestVerification": {
+    "source": "5407363b43b6240377c56ceed75e308a39554cf8",
+    "sourceFilesMatched": [
+      "packages/ios/scripts/test-metal-surface.ts",
+      "packages/ios/scripts/native-fixture-command.ts",
+      "packages/zig/src/metal_surface.zig",
+      "packages/ios/fixtures/metal-surface/fixture.zig",
+      "packages/ios/fixtures/metal-surface/HostApp.swift",
+      "packages/ios/fixtures/metal-surface/MetalSurfaceTests.swift",
+      "packages/ios/fixtures/metal-surface/MetalSurfaceUITests.swift"
+    ],
+    "sourceFileHashes": {
+      "packages/ios/scripts/test-metal-surface.ts": "2d7730cf1e3c9552bba793489c27efbcc508ce12b62f5a5fa8bf745253bf4b0f",
+      "packages/ios/scripts/native-fixture-command.ts": "7c66ead45997b44e61e7dde14e87a344f07cd34934ba65fbb95ed0211496a68e",
+      "packages/zig/src/metal_surface.zig": "00fc0b983a46efdd529859dc4b7946a563dd0c12f44500b0004d657d3ff2cc2d",
+      "packages/ios/fixtures/metal-surface/fixture.zig": "86a6c88dff2edd0f407eea056ce6ad2e82b63abeafebb52e5d7b6a1870506476",
+      "packages/ios/fixtures/metal-surface/HostApp.swift": "13ea90c163cca56a6c1bedba333fd509d8759c36acd93702bf3fab73d93f1ef0",
+      "packages/ios/fixtures/metal-surface/MetalSurfaceTests.swift": "4f059680863c191cba8a6f120feebf7083dbea55e2ad5ddf6c9183c1ac3c3bb4",
+      "packages/ios/fixtures/metal-surface/MetalSurfaceUITests.swift": "d395c57b7622c6ef19c3ab263f5199874ca9c18b32a22444d1349fcea503572a"
+    },
+    "independentOriginalXCTestSummaries": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "consumer": "framework-0.75.294-receipt.json",
+  "scope": "Maintained native Metal surface fixtures and published package adoption. Full native game, persistent native game frame callbacks, HUD and Gold Edition parity remain unfinished."
+}

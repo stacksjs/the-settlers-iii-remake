@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T18:50:56.100888+00:00",
+  "installedOriginalPackages": 95,
+  "receipt": "framework-0.75.294-receipt.json",
+  "publication": "framework-0.75.294-publication.json",
+  "productionBuild": "Passed after normal restored package installation",
+  "browser": {
+    "campaign": {
+      "steps": 58,
+      "passed": true,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "media": {
+        "schemaVersion": 1,
+        "screenshot": {
+          "sha256": "eadfce00b7c7e59dd01012cd2d24188071db2fbcd92940eef9bb6197805ac2a4",
+          "bytes": 920107,
+          "width": 1440,
+          "height": 960
+        },
+        "captureStatus": "captured",
+        "browserExitCode": 0,
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+      },
+      "screenshotPersonallyInspected": true
+    },
+    "controlFrames": [
+      {
+        "viewport": "1280x720",
+        "steps": 9,
+        "passed": true,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "keyboardScroll": {
+          "keyboardScrolled": true,
+          "scrollTop": 80
+        }
+      },
+      {
+        "viewport": "1280x850",
+        "steps": 9,
+        "passed": true,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "keyboardScroll": {
+          "keyboardScrolled": true,
+          "scrollTop": 80
+        }
+      },
+      {
+        "viewport": "1440x960",
+        "steps": 9,
+        "passed": true,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "keyboardScroll": {
+          "keyboardScrolled": true,
+          "scrollTop": 80
+        }
+      },
+      {
+        "viewport": "320x568",
+        "steps": 9,
+        "passed": true,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "keyboardScroll": {
+          "keyboardScrolled": true,
+          "scrollTop": 80
+        }
+      }
+    ],
+    "frameMedia": {
+      "schemaVersion": 1,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "captures": [
+        {
+          "viewport": "1280x720",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "a1492e0ff0ab25784ad5ece45538a6e2ec3d4bf076c2d34222e801a61acae2f3",
+            "bytes": 429622,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        {
+          "viewport": "1280x850",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "67233e9a10678d98359ab6664c0e3500577772c248c740e8cdd07b9101df0e34",
+            "bytes": 521047,
+            "width": 1280,
+            "height": 850
+          }
+        },
+        {
+          "viewport": "1440x960",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "f094ac821bb438f31318d099f2fb21a20d6b2b7fc9af23b5b34da485dea62b0c",
+            "bytes": 562567,
+            "width": 1440,
+            "height": 960
+          }
+        },
+        {
+          "viewport": "320x568",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "6e07c7f408243af3f5cc17929bbf04a2a00fbdbf4157da9eca0560b3b476d8f8",
+            "bytes": 161954,
+            "width": 320,
+            "height": 568
+          }
+        }
+      ]
+    }
+  },
+  "locks": {
+    "bun.lock": "edc200166c28b4047b8c9738e6671ff4f03db6ef68d134c33dbae8a9c0c2604c",
+    "pantry.lock": "0b620ed05643c8ab5184b17322f7f1c4bf850c288b99a4223ffc0ce6dc1c438f"
+  },
+  "scope": "Verified published dependencies and local browser prototype. Full native game, Gold rules/content parity and redistribution permission remain unverified.",
+  "additionalLint": {
+    "originalFailure": "One rule exceeded its unchanged 5000ms wall-time budget at 7776ms while native/browser checks were running.",
+    "sourceChangedToSuppressFailure": false,
+    "repeatCommand": "./buddy lint",
+    "sameBudgetsAndRules": true,
+    "repeatResult": "0 errors, 0 warnings",
+    "originalFailureLogSha256": "16570ceaf257c89d8679b25c5ca79fe124a0e1d47cb39f25a295fc3a5b6cddb5",
+    "repeatLogSha256": "de09522a30a4dd7f225ce754f9bc2f7b226e5d0c3d4c60d45a69a8612a29bac3"
+  }
+}

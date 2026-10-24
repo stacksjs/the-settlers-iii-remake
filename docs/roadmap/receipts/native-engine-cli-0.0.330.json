@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "craftVersion": "craft version 0.0.330\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+  "executableSha256": "2a6c16e78ee8726f480c9b7a861b9b30623303cf00f665cfd3d0c5864b9899b1",
+  "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+  "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
+  "bunVersion": "1.4.4",
+  "result": {
+    "tick": 5,
+    "checksum": "c331a944",
+    "restoredChecksum": "c331a944",
+    "replay": {
+      "ok": true,
+      "ticks": 5,
+      "checksum": "c331a944"
+    }
+  },
+  "nativeExitCode": 0,
+  "matchedBunReference": true,
+  "webViewUsed": false,
+  "browser": {
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "consoleErrors": [],
+    "failedRequests": [],
+    "driverSha256": "faed169eb4bea2e1440b7ff56df3a53d670ea5032eb264af1071093dac648beb"
+  },
+  "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+}
