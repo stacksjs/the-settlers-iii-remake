@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/94",
+  "baseline": "e606ab4f6f15540709a9c9bd987abce00d203679",
+  "problem": "The recorder retained execution ticks but discarded command arrival times. Queuing a command at tick0 to execute at4 made its own five-tick recording diverge at0, because verification omitted the earlier pending queue. The verifier also ignored the declared end interval and could overlook submissions outside it.",
+  "interface": {
+    "currentFormat": 2,
+    "timeline": "submissions contain the actual arrival tick and immutable command copy, in arrival order",
+    "finalChecksum": "Includes accepted commands queued after the last advance, including zero-tick recordings",
+    "compatibility": "Format1 remains readable with its original execution-tick-as-arrival interpretation. Missing historical arrival times cannot be reconstructed. The save schema and rules catalog are unchanged.",
+    "diagnostics": "Preserves existing first divergent transition labels; final snapshot errors use the end tick. Malformed intervals, arrival ordering and checksums throw TypeError; invalid advances are rejected before changing state."
+  },
+  "legacyFixture": {
+    "path": "tests/fixtures/replay-format-1.json",
+    "producer": "e606ab4f6f15540709a9c9bd987abce00d203679",
+    "sha256": "2fe56826d6cd4a51600948a6a895eefac62e0fc56722d4521d2426c0cab9817a",
+    "recordedTicks": 5,
+    "knownFinalChecksum": "6b98801a"
+  },
+  "validation": {
+    "newPublicRecorderRegressions": 12,
+    "focusedTests": 35,
+    "fullUnitTests": 218,
+    "failures": 0,
+    "assertions": 22342,
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "typecheck": "passed"
+  },
+  "logs": [
+    {
+      "name": "game-replay-timeline-red.log",
+      "sha256": "171bf29756f5a47bc4ae406ccc05522f2da8b34e3ada7690c8e630396c2d1432"
+    },
+    {
+      "name": "game-replay-interval-red.log",
+      "sha256": "c89a1e85d60fb8b0348c2781d98be4eeff2b7b5f73e2231ea73d27ef63322ccc"
+    },
+    {
+      "name": "game-replay-hidden-submission-red.log",
+      "sha256": "27cbcf93d9d9523b75c275b52edaa7fca5f6bbda8d42e30096decd85a7bdc426"
+    },
+    {
+      "name": "game-replay-fractional-advance-red.log",
+      "sha256": "6bd5ba542502ee3fd5b399069425c264d94d9158d58aba52a9ae463a2f95a2c9"
+    },
+    {
+      "name": "game-replay-checksum-metadata-red.log",
+      "sha256": "1b7e02c9214167f30005e8a2667f9939e6c18c7ace5fdd84569119a8666fb58f"
+    },
+    {
+      "name": "game-replay-final-rejection-red.log",
+      "sha256": "a9a8228023c5d30bfc1c9c531aa74b98bd62af9f4eeb2b725a0ec1f62f49e76c"
+    },
+    {
+      "name": "game-replay-complete-focused.log",
+      "sha256": "a0667bc0264a61df874080260cd82340b13354ebbedefb1ee5e8ce1364c6a628"
+    },
+    {
+      "name": "game-replay-all-unit.log",
+      "sha256": "3651993661c8805b439a3c3a9c6dc93f9353a127a8a43a59d519b233ec4c0ccc"
+    },
+    {
+      "name": "game-replay-lint.log",
+      "sha256": "0a0f177fd3276298b19eea481edce14d85dc70ec812f1da05f45c3af042de1c1"
+    },
+    {
+      "name": "game-replay-typecheck.log",
+      "sha256": "696bc2ed103d43ca05ac6bbabce250ad0638f029906b9645e7b559e713cad32c"
+    }
+  ],
+  "outstanding": [
+    "Native and browser runtime replay comparison",
+    "Engine implementation version qualification",
+    "Original Gold Edition behavior qualification"
+  ],
+  "scope": "Completed timeline and validation correction at the shared public engine interface. S3-092 remains open for its remaining platform and version acceptance."
+}

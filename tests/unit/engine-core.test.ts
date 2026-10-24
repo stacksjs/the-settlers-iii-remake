@@ -311,7 +311,7 @@ describe('saves and replays', () => {
     const replay = recorder.replay()
     expect(verify(JSON.parse(JSON.stringify(replay)), rules)).toMatchObject({ ok: true, ticks: 420, checksum: checksum(s.state) })
     const changed = structuredClone(replay)
-    changed.commands[1]!.x = (changed.commands[1]!.x as number) + 1
+    changed.submissions[1]!.command.x = (changed.submissions[1]!.command.x as number) + 1
     const divergent = verify(changed, rules)
     expect(divergent).toMatchObject({ ok: false, reason: 'divergence', tick: 120 })
     const corrupted = structuredClone(replay)
