@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
+import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
 import { composeDatSprites, S3Dat } from './lib/s3-dat'
 import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
@@ -24,7 +25,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -50,7 +51,7 @@ const getReference = async (path: string): Promise<string> => {
 await getReference('README.md')
 await getReference('LICENSE.txt')
 const mappingPath = 'jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json'
-const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping: number[] } | null)[]
+const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping?: number[], guiMapping?: number[] } | null)[]
 const datFiles = new Map<number, S3Dat>()
 const datInputs = new Map<number, string>()
 const names = await readdir(resolve(source, 'Gfx'))
@@ -68,7 +69,7 @@ const entries: { key: string, frame: number, source: { file: number, sequence: n
 // Sprites the demo data does not contain are listed in the manifest rather than substituted.
 const missing: { key: string, file: number, sequence: number, frame: number | null, reason: string }[] = []
 async function sequence(key: string, file: number, gold: number, frames: number[] | 'all', references: string[] = [], optional = false): Promise<void> {
-  const reader = await dat(file), actual = mappings[file]?.settlersMapping[gold] ?? gold
+  const reader = await dat(file), actual = mappings[file]?.settlersMapping?.[gold] ?? gold
   if (actual < 0) {
     if (!optional) throw new Error(`Demo does not include required sprite ${key}`)
     missing.push({ key, file, sequence: gold, frame: null, reason: 'sequence absent from the demo mapping' }); return
@@ -197,6 +198,33 @@ for (const key of imported) {
   const used = entries.filter(entry => entry.key === `building:${key}`)
   addOutput(`${key}.png`, ['buildings'], used.flatMap(entry => entry.inputs), used.flatMap(entry => entry.selection))
 }
+
+// Native images and browser images consume the same unmodified interface PNGs.
+// Keep them separate from the world atlas so UI chrome does not change sprite indices.
+for (const path of interfaceReferencePaths) await getReference(path)
+const interfaceReferences = interfaceReferencePaths.map(path => `reference:${path}`)
+const interfaceInputs: string[] = []
+const interfaceSelections: string[] = []
+await mkdir(resolve(output, 'ui'), { recursive: true })
+for (const image of interfaceImages) {
+  const reader = await dat(image.file)
+  const mapping = image.section === 0x11306 ? mappings[image.file]?.guiMapping : mappings[image.file]?.settlersMapping
+  const actual = mapping?.[image.sequence] ?? image.sequence
+  if (actual < 0) throw new Error(`Demo does not include required interface image ${image.key}`)
+  const at = reader.frames(actual, image.section)[image.frame]
+  if (at === undefined) throw new Error(`Demo does not include required interface frame ${image.key}`)
+  const sprite = reader.decode(at, '565', image.section === 0x11306 ? 'gui' : 'displaced')
+  if (sprite.width !== image.width || sprite.height !== image.height) throw new Error(`Original interface image ${image.key} has unexpected dimensions ${sprite.width}x${sprite.height}`)
+  await Bun.write(resolve(output, image.path), png.sync.write({ width: sprite.width, height: sprite.height, data: sprite.data }))
+  const input = datInputs.get(image.file)!
+  const selection = `${input}:section=0x${image.section.toString(16)},gold-sequence=${image.sequence},demo-sequence=${actual},frame=${image.frame},header=${image.section === 0x11306 ? 'gui' : 'displaced'},color=565`
+  addOutput(image.path, ['interface-and-icons'], [input, `reference:${mappingPath}`, ...interfaceReferences], [selection])
+  interfaceInputs.push(input)
+  interfaceSelections.push(selection)
+}
+await Bun.write(resolve(output, 'ui-manifest.json'), JSON.stringify({ version: 1, source: { repository, revision, download, sha256 }, images: interfaceImages }, null, 2))
+addOutput('ui-manifest.json', ['generated-metadata'], [...interfaceInputs, `reference:${mappingPath}`, ...interfaceReferences], interfaceSelections)
+console.log(`Converted ${interfaceImages.length} original interface images, including all three reference panel resolutions.`)
 
 // The original sound bank stores mono PCM. Write complete, browser-readable WAV headers.
 const sounds = await readFile(resolve(source, 'Snd/Siedler3_00.dat'))

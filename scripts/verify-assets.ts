@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import type { AtlasFrame } from '../resources/game/assets'
+import { interfaceImages } from '../resources/game/interface-assets'
 import { contentPolicy } from '../docs/content/policy'
 import { inspectContentBundle } from './lib/content-provenance'
 
@@ -23,5 +24,15 @@ for (const [key, file] of Object.entries(sounds)) {
   if (bytes.toString('ascii', 0, 4) !== 'RIFF' || bytes.toString('ascii', 8, 12) !== 'WAVE' || bytes.readUInt32LE(4) !== bytes.length - 8 || bytes.readUInt32LE(40) !== bytes.length - 44 || bytes.readUInt16LE(20) !== 1 || bytes.readUInt16LE(22) !== 1 || bytes.readUInt16LE(34) !== 16) throw new Error(`Invalid PCM WAV ${key}`)
 }
 console.log(`Verified ${manifest.sprites.length} original sprite frames, RGBA transparency, source provenance and ${Object.keys(sounds).length} PCM WAV sounds.`)
+if (!(await Bun.file(resolve(directory, 'ui-manifest.json')).exists())) throw new Error('Original interface images are missing. Run assets:import.')
+const ui = await Bun.file(resolve(directory, 'ui-manifest.json')).json() as { version: number, images: typeof interfaceImages }
+if (ui.version !== 1 || !Array.isArray(ui.images) || ui.images.length !== interfaceImages.length) throw new Error('Invalid original interface image catalog')
+for (const expected of interfaceImages) {
+  const images = ui.images.filter(image => image.key === expected.key)
+  if (images.length !== 1 || Object.entries(expected).some(([key, value]) => images[0]![key as keyof typeof expected] !== value)) throw new Error(`Invalid original interface selector ${expected.key}`)
+  const image = png.sync.read(Buffer.from(await Bun.file(resolve(directory, expected.path)).arrayBuffer()))
+  if (image.width !== expected.width || image.height !== expected.height) throw new Error(`Invalid original interface dimensions ${expected.key}`)
+}
+console.log(`Verified ${interfaceImages.length} original interface images and their source selectors.`)
 const provenance = await inspectContentBundle(directory, contentPolicy)
 console.log(`Verified complete byte and input provenance for ${provenance.files.length} converted files. Redistribution evidence is checked separately by publication:check.`)

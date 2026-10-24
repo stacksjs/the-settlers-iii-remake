@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T09:44:15.479847+00:00",
+  "scope": "S3-004 partial: maintained original interface asset conversion and browser delivery",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "download": "https://archive.org/download/S3aDemoUs/s3a_demo_us.exe",
+    "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65"
+  },
+  "inputs": {
+    "catalog": {
+      "path": "resources/game/interface-assets.ts",
+      "sha256": "574a17c7212a9dc445b6a6771b7f32a2a6057e4f8387f235af5ebce6358918a2"
+    },
+    "provenanceManifestSha256": "80980ae1da0d0807b3c4e4bbf1e8d884770be1d870f2d69c40377d8ad42abff0"
+  },
+  "outputs": {
+    "worldSpriteFrames": 3836,
+    "interfaceBackgrounds": 12,
+    "interfaceControls": 40,
+    "convertedFiles": 95,
+    "pcmWavSounds": 6,
+    "uiManifestSha256": "857ef71f2bbf3cf4206d2df8bedb3f8825682b60902bf12a4a05fcde0d5d5d52",
+    "images": [
+      {
+        "key": "panel-480",
+        "sequence": 2,
+        "width": 136,
+        "height": 338,
+        "path": "ui/panel-480.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 0,
+        "sha256": "21200d29610c7bef6bfc13f2cfa7d24a54b19875a71c22f2a500a6e40d5cc385"
+      },
+      {
+        "key": "panel-right-480",
+        "sequence": 3,
+        "width": 8,
+        "height": 338,
+        "path": "ui/panel-right-480.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 0,
+        "sha256": "14c5b5b4ee1906d85411a0a6c068ce1b3e83d1ca6f57db7aaeafbe85633e196b"
+      },
+      {
+        "key": "minimap-480",
+        "sequence": 0,
+        "width": 136,
+        "height": 142,
+        "path": "ui/minimap-480.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 0,
+        "sha256": "53447117423310331d2b57df57e837fc1147ffaad15a114a4bb43ae7b23c6120"
+      },
+      {
+        "key": "minimap-right-480",
+        "sequence": 1,
+        "width": 71,
+        "height": 142,
+        "path": "ui/minimap-right-480.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 0,
+        "sha256": "1a7b47696f71515177d8aaf26d30ca99ce733da46723a63a28eb82352c6c3761"
+      },
+      {
+        "key": "panel-600",
+        "sequence": 2,
+        "width": 176,
+        "height": 430,
+        "path": "ui/panel-600.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 1,
+        "sha256": "104aada10f266af0334e73321838bf2268530796815c58f329df6da32d84e7bd"
+      },
+      {
+        "key": "panel-right-600",
+        "sequence": 3,
+        "width": 8,
+        "height": 430,
+        "path": "ui/panel-right-600.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 1,
+        "sha256": "060065c137c8347d09f5cc0492e4e98b4f3d3b4bd4cfa060217b672ca362d558"
+      },
+      {
+        "key": "minimap-600",
+        "sequence": 0,
+        "width": 176,
+        "height": 170,
+        "path": "ui/minimap-600.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 1,
+        "sha256": "3aa430c0b5eae2efc978cef48359712c65dceab9cb3f505a568e24ad17525ab3"
+      },
+      {
+        "key": "minimap-right-600",
+        "sequence": 1,
+        "width": 84,
+        "height": 170,
+        "path": "ui/minimap-right-600.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 1,
+        "sha256": "6fe273aa4c66224ae14540634b0b88f592903e309e165622f38da2c719d43352"
+      },
+      {
+        "key": "panel-768",
+        "sequence": 2,
+        "width": 216,
+        "height": 544,
+        "path": "ui/panel-768.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 2,
+        "sha256": "204240d715872b5f23efb528ee989061e9e98afd20253ce10c49db53e717139f"
+      },
+      {
+        "key": "panel-right-768",
+        "sequence": 3,
+        "width": 8,
+        "height": 544,
+        "path": "ui/panel-right-768.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 2,
+        "sha256": "65fd4ea5f5b6abc71b61f63d935f9190e5f727c0f082b0783d2ca1e94093184b"
+      },
+      {
+        "key": "minimap-768",
+        "sequence": 0,
+        "width": 216,
+        "height": 224,
+        "path": "ui/minimap-768.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 2,
+        "sha256": "76cb1cf77031a5fe851f9f239dfac10b39d46355d2e515c56299f5782be19826"
+      },
+      {
+        "key": "minimap-right-768",
+        "sequence": 1,
+        "width": 117,
+        "height": 224,
+        "path": "ui/minimap-right-768.png",
+        "kind": "background",
+        "file": 4,
+        "section": 262,
+        "frame": 2,
+        "sha256": "4c8ed61e606200b72d37a54c53ef4a53bd320a42407f184fa166c9cfb83fcd84"
+      },
+      {
+        "key": "build-inactive",
+        "sequence": 51,
+        "path": "ui/build-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "1d7602ca6e8de17ebe78ed0ac5e82f8e67f8ac5d70afb13519f85521b4871697"
+      },
+      {
+        "key": "build-active",
+        "sequence": 60,
+        "path": "ui/build-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "2a3e374d39ba18e4218c1fa7026d9ec08084b3136d40ea2b816306eeadb69644"
+      },
+      {
+        "key": "goods-inactive",
+        "sequence": 54,
+        "path": "ui/goods-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "a2abb2978048030f08e47a142d0d8f406241972416f9d36026d7ba5ca213d41a"
+      },
+      {
+        "key": "goods-active",
+        "sequence": 63,
+        "path": "ui/goods-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "a6946fb7624073c658f8235b432ae74aba20eb2ff892f266a2982cfd69b8b6b8"
+      },
+      {
+        "key": "settlers-inactive",
+        "sequence": 57,
+        "path": "ui/settlers-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "78de7a5b084403a6d92b1603e9cfcc9538404174452da4acf57ad6aeb1c53bf3"
+      },
+      {
+        "key": "settlers-active",
+        "sequence": 66,
+        "path": "ui/settlers-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 33,
+        "height": 33,
+        "sha256": "93ee0679c98369b196a347ea44e33a46121a434771e2a778964693dbeea07334"
+      },
+      {
+        "key": "build-resources-inactive",
+        "sequence": 69,
+        "path": "ui/build-resources-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "6658eea10935080f829948a71f818364863a657d2a312accbeee1763df3033aa"
+      },
+      {
+        "key": "build-resources-active",
+        "sequence": 81,
+        "path": "ui/build-resources-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "891e90e17d2ef05bf7c5ee07c9ab15ac4694593e23540576d98a05cc051976ab"
+      },
+      {
+        "key": "build-food-inactive",
+        "sequence": 72,
+        "path": "ui/build-food-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "52c9a865514ca4a23b5eaa7277fa9ae300fcbf79f8827f15c285a26414ffcd63"
+      },
+      {
+        "key": "build-food-active",
+        "sequence": 84,
+        "path": "ui/build-food-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "8086af9907e19ca8b6396474b3570360d5daa6dbdbdcba54e0c312ed7803aa58"
+      },
+      {
+        "key": "build-military-inactive",
+        "sequence": 75,
+        "path": "ui/build-military-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "26f377d8476923f170b2f1de4e50e9cf602466570a6e81cfd54326761f5f630f"
+      },
+      {
+        "key": "build-military-active",
+        "sequence": 87,
+        "path": "ui/build-military-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "43cfeb703cd72ee19db3d7767fa4f0bc80d50cad99e2e91ef4138f56996c7125"
+      },
+      {
+        "key": "build-social-inactive",
+        "sequence": 78,
+        "path": "ui/build-social-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "e40a7afbedf383515a1eeeacc01ef787811d288125b7844c7095f362e8444346"
+      },
+      {
+        "key": "build-social-active",
+        "sequence": 90,
+        "path": "ui/build-social-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "b618ed44b5cd7bd41fbcdd21184a56d14f8b7cb9df1de60b7f41ad1ed3431701"
+      },
+      {
+        "key": "goods-stock-inactive",
+        "sequence": 258,
+        "path": "ui/goods-stock-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "766b5a13adc8b632b051cafa8583243ed832f02efe87e18a54faa1c9b995dc5f"
+      },
+      {
+        "key": "goods-stock-active",
+        "sequence": 270,
+        "path": "ui/goods-stock-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "b8777e25644ebbaf26240245e9da4eb60cfec669775feae00298bc510b5d05db"
+      },
+      {
+        "key": "goods-tools-inactive",
+        "sequence": 261,
+        "path": "ui/goods-tools-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "30340dad429354785855baa2cfc8e38ecbb0485b15ccad38e2228fd1180a5527"
+      },
+      {
+        "key": "goods-tools-active",
+        "sequence": 273,
+        "path": "ui/goods-tools-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "8742fbc27fff531c9eb824740886aa148ebbf96fda3464da06754dea2f87ef5d"
+      },
+      {
+        "key": "goods-distribution-inactive",
+        "sequence": 264,
+        "path": "ui/goods-distribution-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "cf670f5d33bdee9bdcfff69c43313aba71d72bb69c042edb6d1eaae15f668bdf"
+      },
+      {
+        "key": "goods-distribution-active",
+        "sequence": 276,
+        "path": "ui/goods-distribution-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "e4d48829c4bd40ecd5a28a58e34443c2af056c0e1b957fad83eebf4482996c29"
+      },
+      {
+        "key": "goods-transport-inactive",
+        "sequence": 267,
+        "path": "ui/goods-transport-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "d8fb569ad5de4ef7e4a57180d45920e49a490caa14d9e43a9683549472058b52"
+      },
+      {
+        "key": "goods-transport-active",
+        "sequence": 279,
+        "path": "ui/goods-transport-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "adb879f26b3996d61bd61d8178f0aa586f46ba299c25cc29e0336eeeed4a84ae"
+      },
+      {
+        "key": "settlers-statistics-inactive",
+        "sequence": 234,
+        "path": "ui/settlers-statistics-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "7e4648f96375bd3ab11cd1d76b0460ed1fd39eb7d361a9ceffd1dd93565ca930"
+      },
+      {
+        "key": "settlers-statistics-active",
+        "sequence": 246,
+        "path": "ui/settlers-statistics-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "1c6998189e8b4c5b4cc904970e6303266eae04428d25e07b06ad621e2b0fef49"
+      },
+      {
+        "key": "settlers-professions-inactive",
+        "sequence": 237,
+        "path": "ui/settlers-professions-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "fd2f288a9ef4f41f466dec955fc290b45fdc292733544aeef87abd6bd37144c3"
+      },
+      {
+        "key": "settlers-professions-active",
+        "sequence": 249,
+        "path": "ui/settlers-professions-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "5d81ae1f80ba639154d187a3f3b785fdc74fee3ae6b5205ee355f36ae03d0e81"
+      },
+      {
+        "key": "settlers-warriors-inactive",
+        "sequence": 240,
+        "path": "ui/settlers-warriors-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "ba7418831c266bcf25a5b14610bf6d725e12628085f7dd18887323c4089a8560"
+      },
+      {
+        "key": "settlers-warriors-active",
+        "sequence": 252,
+        "path": "ui/settlers-warriors-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "750134dbb1262fc72e2724ef65512229e673ed2f02756e93609519d184f071af"
+      },
+      {
+        "key": "settlers-production-inactive",
+        "sequence": 243,
+        "path": "ui/settlers-production-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "00423b9aa45d249ec10b0136ddcd718ca2ad4383c77a8b7b068328266cf4375a"
+      },
+      {
+        "key": "settlers-production-active",
+        "sequence": 255,
+        "path": "ui/settlers-production-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 27,
+        "height": 24,
+        "sha256": "dc602d4a9fe1e6dd30e114f736a9fd6a6cdc86964b86fbd64267dedba868511f"
+      },
+      {
+        "key": "system-inactive",
+        "sequence": 93,
+        "path": "ui/system-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 18,
+        "height": 27,
+        "sha256": "db4f1c2af62c947b6890701d322dce648927870c4e3adbb83e947f95de14c520"
+      },
+      {
+        "key": "system-active",
+        "sequence": 96,
+        "path": "ui/system-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 18,
+        "height": 27,
+        "sha256": "2f47973e016c6823eb81941772bf36cc82c089ba3af52cef6612f68079b8aea3"
+      },
+      {
+        "key": "lower-scroll-inactive",
+        "sequence": 111,
+        "path": "ui/lower-scroll-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "41f6d0dcccbb005fe4c42cf0514431e5e2f7644b2d34717b663fc39ef732ccda"
+      },
+      {
+        "key": "lower-scroll-active",
+        "sequence": 99,
+        "path": "ui/lower-scroll-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "f481a1599a838066f87773e56edd8576c112fb4d8c1a861d82f43283c1d51220"
+      },
+      {
+        "key": "lower-swords-inactive",
+        "sequence": 114,
+        "path": "ui/lower-swords-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "8cd462a8848e8da60a278986e6b03c16e50ce6a5f63fa21216ac2beb023bd7ad"
+      },
+      {
+        "key": "lower-swords-active",
+        "sequence": 102,
+        "path": "ui/lower-swords-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "b2248d98048e0391a824be84ce4da1f16044c661eff8e3e74ad01cc45459f9a7"
+      },
+      {
+        "key": "lower-signpost-inactive",
+        "sequence": 117,
+        "path": "ui/lower-signpost-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "e4ce3feac90ebcbee2e591978af40e2fb5c3f953a94f937ea136a1aad2aa893a"
+      },
+      {
+        "key": "lower-signpost-active",
+        "sequence": 105,
+        "path": "ui/lower-signpost-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "b42c84b73c107163e6d8117416610d2270e88f857d909ba3faeae9ac8f2994c9"
+      },
+      {
+        "key": "lower-pots-inactive",
+        "sequence": 120,
+        "path": "ui/lower-pots-inactive.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "a2fd6c0a8c07e1d298e43b2fa0a0088f3ad1ca141fca497143019dfba1d29758"
+      },
+      {
+        "key": "lower-pots-active",
+        "sequence": 108,
+        "path": "ui/lower-pots-active.png",
+        "kind": "control",
+        "file": 3,
+        "section": 70406,
+        "frame": 0,
+        "width": 24,
+        "height": 24,
+        "sha256": "07a224761cbf1e5f82d11aa039fece9feba53f30c2e78a0848d4cc188f5c4a23"
+      }
+    ]
+  },
+  "regression": {
+    "before": "assets:verify rejected missing original interface images through the maintained CLI.",
+    "after": "assets:import exports all 52 images; assets:verify validates exact selectors, dimensions and full converted-file/input provenance."
+  },
+  "checks": {
+    "typecheck": "pass",
+    "lint": "0 errors, 0 warnings",
+    "unit": "227 pass, 0 fail, 22380 assertions, 31 files",
+    "productionBuild": "pass, one generated page",
+    "browser": {
+      "steps": 42,
+      "imagesDecodedAtRecordedDimensions": 52,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "media": {
+        "schemaVersion": 1,
+        "screenshot": {
+          "sha256": "d76adbfb38eedc6c170d6af3620dcf3e5422e8ea4ccd76940464b90a7736ff80",
+          "bytes": 998655,
+          "width": 1440,
+          "height": 960
+        },
+        "captureStatus": "captured",
+        "browserExitCode": 0,
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+      },
+      "privateScreenshot": "storage/framework/runtime/shots/campaign-RBfOjr/campaign.png",
+      "visualInspection": "Inspected fresh screenshot. Existing custom right-hand green HUD is unchanged."
+    }
+  },
+  "priorIndependentDecodeComparison": {
+    "matchedPreviouslyDecodedOriginalImages": 28,
+    "images": [
+      {
+        "key": "minimap-480",
+        "sha256": "53447117423310331d2b57df57e837fc1147ffaad15a114a4bb43ae7b23c6120"
+      },
+      {
+        "key": "minimap-600",
+        "sha256": "3aa430c0b5eae2efc978cef48359712c65dceab9cb3f505a568e24ad17525ab3"
+      },
+      {
+        "key": "minimap-768",
+        "sha256": "76cb1cf77031a5fe851f9f239dfac10b39d46355d2e515c56299f5782be19826"
+      },
+      {
+        "key": "minimap-right-480",
+        "sha256": "1a7b47696f71515177d8aaf26d30ca99ce733da46723a63a28eb82352c6c3761"
+      },
+      {
+        "key": "minimap-right-600",
+        "sha256": "6fe273aa4c66224ae14540634b0b88f592903e309e165622f38da2c719d43352"
+      },
+      {
+        "key": "minimap-right-768",
+        "sha256": "4c8ed61e606200b72d37a54c53ef4a53bd320a42407f184fa166c9cfb83fcd84"
+      },
+      {
+        "key": "panel-480",
+        "sha256": "21200d29610c7bef6bfc13f2cfa7d24a54b19875a71c22f2a500a6e40d5cc385"
+      },
+      {
+        "key": "panel-600",
+        "sha256": "104aada10f266af0334e73321838bf2268530796815c58f329df6da32d84e7bd"
+      },
+      {
+        "key": "panel-768",
+        "sha256": "204240d715872b5f23efb528ee989061e9e98afd20253ce10c49db53e717139f"
+      },
+      {
+        "key": "panel-right-480",
+        "sha256": "14c5b5b4ee1906d85411a0a6c068ce1b3e83d1ca6f57db7aaeafbe85633e196b"
+      },
+      {
+        "key": "panel-right-600",
+        "sha256": "060065c137c8347d09f5cc0492e4e98b4f3d3b4bd4cfa060217b672ca362d558"
+      },
+      {
+        "key": "panel-right-768",
+        "sha256": "65fd4ea5f5b6abc71b61f63d935f9190e5f727c0f082b0783d2ca1e94093184b"
+      },
+      {
+        "key": "build-inactive",
+        "sha256": "1d7602ca6e8de17ebe78ed0ac5e82f8e67f8ac5d70afb13519f85521b4871697"
+      },
+      {
+        "key": "build-active",
+        "sha256": "2a3e374d39ba18e4218c1fa7026d9ec08084b3136d40ea2b816306eeadb69644"
+      },
+      {
+        "key": "goods-inactive",
+        "sha256": "a2abb2978048030f08e47a142d0d8f406241972416f9d36026d7ba5ca213d41a"
+      },
+      {
+        "key": "goods-active",
+        "sha256": "a6946fb7624073c658f8235b432ae74aba20eb2ff892f266a2982cfd69b8b6b8"
+      },
+      {
+        "key": "settlers-inactive",
+        "sha256": "78de7a5b084403a6d92b1603e9cfcc9538404174452da4acf57ad6aeb1c53bf3"
+      },
+      {
+        "key": "settlers-active",
+        "sha256": "93ee0679c98369b196a347ea44e33a46121a434771e2a778964693dbeea07334"
+      },
+      {
+        "key": "build-resources-inactive",
+        "sha256": "6658eea10935080f829948a71f818364863a657d2a312accbeee1763df3033aa"
+      },
+      {
+        "key": "build-resources-active",
+        "sha256": "891e90e17d2ef05bf7c5ee07c9ab15ac4694593e23540576d98a05cc051976ab"
+      },
+      {
+        "key": "build-food-inactive",
+        "sha256": "52c9a865514ca4a23b5eaa7277fa9ae300fcbf79f8827f15c285a26414ffcd63"
+      },
+      {
+        "key": "build-food-active",
+        "sha256": "8086af9907e19ca8b6396474b3570360d5daa6dbdbdcba54e0c312ed7803aa58"
+      },
+      {
+        "key": "build-military-inactive",
+        "sha256": "26f377d8476923f170b2f1de4e50e9cf602466570a6e81cfd54326761f5f630f"
+      },
+      {
+        "key": "build-military-active",
+        "sha256": "43cfeb703cd72ee19db3d7767fa4f0bc80d50cad99e2e91ef4138f56996c7125"
+      },
+      {
+        "key": "build-social-inactive",
+        "sha256": "e40a7afbedf383515a1eeeacc01ef787811d288125b7844c7095f362e8444346"
+      },
+      {
+        "key": "build-social-active",
+        "sha256": "b618ed44b5cd7bd41fbcdd21184a56d14f8b7cb9df1de60b7f41ad1ed3431701"
+      },
+      {
+        "key": "system-inactive",
+        "sha256": "db4f1c2af62c947b6890701d322dce648927870c4e3adbb83e947f95de14c520"
+      },
+      {
+        "key": "system-active",
+        "sha256": "2f47973e016c6823eb81941772bf36cc82c089ba3af52cef6612f68079b8aea3"
+      }
+    ]
+  },
+  "logs": [
+    {
+      "name": "game-original-interface-import-red.log",
+      "sha256": "30987c8200acddc247bedb034c4ac9320e3d918502cdd4ab1e797031deab8ea0"
+    },
+    {
+      "name": "game-original-interface-import-green.log",
+      "sha256": "535795222d5b1695dff942cbd8fc4bc84e0560a0845974248f363b8f565206e2"
+    },
+    {
+      "name": "game-original-interface-verify.log",
+      "sha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    {
+      "name": "game-original-interface-typecheck.log",
+      "sha256": "a48327f86a63a4787178a8b0f53735669001cd417dee6cb7db2ccad6720004fc"
+    },
+    {
+      "name": "game-original-interface-lint-final.log",
+      "sha256": "b939cb9eab9ab68a101cd2b2e4da5a6928ed1169a7b7312d98e43e3aa0ceff98"
+    },
+    {
+      "name": "game-original-interface-unit.log",
+      "sha256": "cd2d2a5bafc8572201e8375541cf620bb058bf10496ece446c7316cce83701a4"
+    },
+    {
+      "name": "game-original-interface-build.log",
+      "sha256": "ad12f6e21e3438a532fd3c83f12e3779d895332e7fbf8215df167adfc5224001"
+    },
+    {
+      "name": "game-original-interface-browser.log",
+      "sha256": "fc8514ac0d02571c3c52860915a9f675a5149347a4ce83a367fa5eb7640071dc"
+    }
+  ],
+  "limits": [
+    "The available source is the pinned remake repository and its Amazons demo. No original Gold executable, installer or saves are available.",
+    "The original stone-and-vine left HUD has not yet replaced the custom HUD. Native image availability does not prove native presentation.",
+    "Exact Gold rules, timings, campaign behavior, full asset inventory and native game acceptance remain unverified.",
+    "Original rasters remain untracked and private. No redistribution grant is established."
+  ]
+}

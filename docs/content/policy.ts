@@ -13,7 +13,7 @@ export const contentPolicy: ContentPolicy = {
     { id: 'goods-and-wares', status: 'partial', description: 'Pile sizes one to eight for 23 Roman goods. Other factions\' goods, interface icons and remaining wares remain uninventoried.' },
     { id: 'animals-and-wildlife', status: 'not-imported', description: 'Livestock, wildlife and their directional/action sequences.' },
     { id: 'effects-and-magic', status: 'not-imported', description: 'Spell effects, projectiles, fire, smoke, explosions and other transient visual media.' },
-    { id: 'interface-and-icons', status: 'not-imported', description: 'Control-center chrome, minimap symbols, goods/building/unit icons, portraits, faction symbols and cursors.' },
+    { id: 'interface-and-icons', status: 'partial', description: 'Twelve control-panel and minimap backgrounds for the 480/600/768 reference layouts, plus forty main-menu, submenu, system and lower-tab control images. Other interface icons, portraits, faction symbols and cursors remain uninventoried.' },
     { id: 'fonts', status: 'not-imported', description: 'Original font files, glyphs and localization coverage.' },
     { id: 'localized-text', status: 'not-imported', description: 'Original interface, error, objective and help strings for each supported locale.' },
     { id: 'sound-effects', status: 'partial', description: 'Four selected demo effects, without a complete action-to-sound catalog.' },
