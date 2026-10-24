@@ -18,7 +18,8 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Your browser could not create the game canvas.')
   let atlas: Atlas | null = null, width = 0, height = 0, pixelRatio = 1
-  const camera: Camera = { x: 0, y: 0, zoom: 1.5 }
+  // The pinned reference's ScreenPosition starts at 100%, preserving original sprite pixels.
+  const camera: Camera = { x: 0, y: 0, zoom: 1 }
   const chunks = new Map<string, { canvas: HTMLCanvasElement, left: number, top: number, signature: string }>()
   let patterns: Map<string, CanvasPattern> | null = null
 

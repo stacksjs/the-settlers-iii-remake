@@ -404,14 +404,13 @@
       "id": 5964115608,
       "number": 391,
       "url": "https://github.com/craft-native/craft/issues/391",
-      "state": "open",
-      "stateReason": "reopened",
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-010] Implement textured sprites, terrain triangles, and text",
       "labels": [
         "settlers-gold",
         "type:feature",
         "priority:p0",
-        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
@@ -440,7 +439,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -464,7 +464,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 1,
       "nativeParent": true,
@@ -676,14 +677,13 @@
       "id": 5964119428,
       "number": 2958,
       "url": "https://github.com/stacksjs/stacks/issues/2958",
-      "state": "open",
-      "stateReason": null,
+      "state": "closed",
+      "stateReason": "completed",
       "title": "[S3-021] Enforce source-first release and dependency evidence",
       "labels": [
         "settlers-gold",
         "type:feature",
         "priority:p0",
-        "ready-for-agent",
         "subsystem:02",
         "platform:browser",
         "platform:native",
@@ -759,7 +759,8 @@
         "type:feature",
         "priority:p2",
         "subsystem:02",
-        "platform:homeos"
+        "platform:homeos",
+        "ready-for-agent"
       ],
       "milestone": 11,
       "nativeParent": true,
@@ -2476,7 +2477,8 @@
         "platform:browser",
         "platform:native",
         "platform:desktop",
-        "platform:mobile"
+        "platform:mobile",
+        "ready-for-agent"
       ],
       "milestone": 9,
       "nativeParent": true,

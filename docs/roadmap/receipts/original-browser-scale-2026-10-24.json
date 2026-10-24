@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T15:28:33.424963+00:00",
+  "ticket": "S3-086",
+  "scope": "Initial browser sprite scale only; terrain, complete HUD, mobile playability and Gold presentation remain incomplete.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "commit": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/ScreenPosition.java",
+    "sha256": "1489fc07ce75d8db9630f924bdc0c57a2fbb044c94de234e6a2ca30d1d5ebdad",
+    "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/ScreenPosition.java",
+    "evidence": "ScreenPosition initializes zoom and oldZoom to1. MapContent.zoom100 uses1. Terrain projection already uses the reference16x9 grid. The reference also adjusts minimum zoom for maps shorter than the view; this change does not implement its complete camera bounds."
+  },
+  "before": {
+    "browserExitCode": 1,
+    "failure": "Error: Initial original sprite scale differs from the pinned reference: {\"sourceWidth\":167,\"sourceHeight\":191,\"displayedWidth\":250.5,\"displayedHeight\":286.5}\n    at <anonymous>:22:11"
+  },
+  "after": {
+    "browserExitCode": 0,
+    "actualProductionCanvasDraw": {
+      "sourceWidth": 167,
+      "sourceHeight": 191,
+      "displayedWidth": 167,
+      "displayedHeight": 191,
+      "sourceToCssPixelRatio": 1,
+      "devicePixelRatio": 1,
+      "productionCanvas": true
+    },
+    "consoleErrors": [],
+    "failedRequests": [],
+    "screenshotSha256": "f0f337e82b10534eef8709399f242bba70ecf0195c2fcc54580b65769787b422",
+    "screenshotInspected": true,
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "verification": {
+    "productionBuildExitCode": 0,
+    "typecheckExitCode": 0,
+    "lintExitCode": 0,
+    "campaignSteps": 58,
+    "fourControlFrameCases": {
+      "stepsEach": 9,
+      "allKeyboardScrollTop": 80
+    },
+    "probe": "Observes the real canvas drawImage calls for the original castle atlas region, preserving/restoring the context method. Does not modify renderer behavior or inject game state.",
+    "buddyTypecheckExitCode": 0,
+    "roadmapTrackingEntriesReadBack": 120
+  },
+  "logs": [
+    {
+      "name": "camera-native-scale-red.log",
+      "sha256": "23620a7f2105fd14e37374565097ad8a611c114d3be14ee3690dab375730d725"
+    },
+    {
+      "name": "camera-native-scale-green.log",
+      "sha256": "373a4dbb309f7689a35519c849798ea30c1158975683cb8d3a3ce5a5f33a1013"
+    },
+    {
+      "name": "game-native-scale-build.log",
+      "sha256": "6a4d550dd45aac50e7df59cc8a8a2e65fdaa5fbbdc4a5a87ae8343f83ca86788"
+    },
+    {
+      "name": "game-native-scale-typecheck.log",
+      "sha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+    },
+    {
+      "name": "game-native-scale-lint.log",
+      "sha256": "b70c0df53a5b77866086d84b20407d4174a8dcaead03116a5f13be5a68db5cfb"
+    },
+    {
+      "name": "game-native-scale-campaign.log",
+      "sha256": "fc8514ac0d02571c3c52860915a9f675a5149347a4ce83a367fa5eb7640071dc"
+    },
+    {
+      "name": "game-native-scale-control-frame.log",
+      "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    },
+    {
+      "name": "game-native-scale-buddy-typecheck.log",
+      "sha256": "9f3c910f377550583fbddf659e267876e4a8acf54b3d3bde83daa86b3c88a54f"
+    }
+  ],
+  "limits": [
+    "Matching the pinned remake initial scale does not establish original Gold camera behavior or full visual fidelity.",
+    "Original texture interpolation, fonts, all controls and native game frames remain separate open work."
+  ]
+}
