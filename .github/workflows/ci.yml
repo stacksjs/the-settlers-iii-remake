@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Provision managed tools
         uses: pantry-pm/pantry/packages/action@3a37ec776aa9e37e17bd8e3aea2d457cdbd02c36
         with:

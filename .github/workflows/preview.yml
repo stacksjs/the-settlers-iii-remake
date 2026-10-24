@@ -67,7 +67,7 @@ jobs:
 
       - name: Setup Pantry
         if: steps.check.outputs.configured == 'true'
-        uses: pantry-pm/pantry/packages/action@cdb82193cb344c2b881a88ea79f88243f5522e0f # v0.11.75
+        uses: pantry-pm/pantry/packages/action@91ded221f8de3badd9fc5ab1d4072d561c1eb1d4 # v0.11.126
 
       - name: Install dependencies
         if: steps.check.outputs.configured == 'true'
