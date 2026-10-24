@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T15:14:55.918972+00:00",
+  "ticket": "S3-010",
+  "issue": "https://github.com/craft-native/craft/issues/391",
+  "scope": "Executable public CPU graphics API. Native window surfaces and full game integration have separate acceptance tickets.",
+  "release": {
+    "version": "0.0.329",
+    "source": "f320444f8dbf1701770b411dcf07b855dafb724d",
+    "maintainedCommand": {
+      "command": "bun run release:patch",
+      "exitCode": 0,
+      "releaseSource": "f320444f8dbf1701770b411dcf07b855dafb724d",
+      "logSha256": "a8fb47b7fcab4151ca28d3d205e953d35a47972aad6670fa8d65d0d03723127d",
+      "sourceLocation": "Task-owned clean main release clone; original source and lock retained."
+    },
+    "gates": [
+      {
+        "runId": 40088406669,
+        "workflow": ".github/workflows/release.yml",
+        "requiredJobs": [
+          "accept exact native runtimes",
+          "validate release identity",
+          "accept exact release source",
+          "verify and stage npm packages",
+          "release-sbom / vulnerability-scan",
+          "release-sbom / generate",
+          "pantry (linux-x86-64)",
+          "pantry (darwin-arm64)",
+          "verify release assets",
+          "attach and verify release SBOMs",
+          "verify downloaded windows-x64",
+          "verify downloaded darwin-x64",
+          "verify downloaded darwin-arm64",
+          "verify downloaded linux-x64",
+          "publish complete verified release",
+          "publish verified Zig package to pantry",
+          "npm",
+          "notify registry and channel after publication"
+        ]
+      },
+      {
+        "runId": 40088406538,
+        "workflow": ".github/workflows/ci.yml",
+        "requiredJobs": [
+          "ios-native-templates",
+          "windows-multi-window",
+          "android-builder",
+          "zig-core (macos-latest)",
+          "create-craft",
+          "ts-maps",
+          "typescript-sdk",
+          "Vulkan SDK ABI (ubuntu-latest)",
+          "Vulkan SDK ABI (windows-latest)",
+          "Vulkan SDK ABI (macos-latest)",
+          "zig-core (ubuntu-latest)",
+          "Android SDK emulator",
+          "lint",
+          "ios-builder",
+          "integration",
+          "publish-commit"
+        ]
+      },
+      {
+        "runId": 40088406534,
+        "workflow": ".github/workflows/mobile-e2e.yml",
+        "requiredJobs": [
+          "iOS simulator",
+          "android-navigation (34)",
+          "iOS native Metal surface",
+          "Android emulator",
+          "iOS hybrid navigation",
+          "iOS Zig runtime slice",
+          "iOS native UI (navigation-ui-controls)",
+          "media-cache / sdk",
+          "android-navigation (35)",
+          "media-cache / ios",
+          "iOS native UI (navigation-ui-core)",
+          "iOS native UI (uikit)",
+          "Harness unit tests",
+          "iOS native UI (navigation-unit)",
+          "media-cache / android",
+          "Mobile E2E summary"
+        ]
+      }
+    ],
+    "originalZig": {
+      "success": true,
+      "message": "Published craft@0.0.329",
+      "hash": "craft-0.0.329-HIz1i553PwEQGg1KrSQAy2LbCH3XokGBf6i4maeq2eO-",
+      "artifactSha256": "a1e3d83b562979e56f0920b52afadb099d9f4ed01b20407b47b8a872b8bd17e4",
+      "tarballUrl": "https://pantry.dev/zig/packages/craft/0.0.329/tarball",
+      "fetchCommand": "zig fetch --save 'https://pantry.dev/zig/packages/craft/0.0.329/tarball'",
+      "dependency": ".craft = .{\n    .url = \"https://pantry.dev/zig/packages/craft/0.0.329/tarball\",\n    .hash = \"craft-0.0.329-HIz1i553PwEQGg1KrSQAy2LbCH3XokGBf6i4maeq2eO-\",\n},",
+      "scan": {
+        "verdict": "clean",
+        "engine": "clamav",
+        "scannedAt": "2026-10-24T12:37:35.236Z",
+        "durationMs": 4201,
+        "artifactSha256": "a1e3d83b562979e56f0920b52afadb099d9f4ed01b20407b47b8a872b8bd17e4"
+      }
+    },
+    "npmArchiveCount": 8,
+    "allEightNpmArchivesQualified": true
+  },
+  "sourceFiles": [
+    {
+      "path": "packages/zig/src/graphics.zig",
+      "sha256": "7fc5e3ff60a813ee73842f7eddd225e9766c343384bff62d93263ae18ac833b3",
+      "url": "https://github.com/craft-native/craft/blob/f320444f8dbf1701770b411dcf07b855dafb724d/packages/zig/src/graphics.zig"
+    },
+    {
+      "path": "packages/zig/src/graphics_scene.zig",
+      "sha256": "f7aab15aa900c123063386061f3cd79b831792c8655c5eec78488b01ec1ab103",
+      "url": "https://github.com/craft-native/craft/blob/f320444f8dbf1701770b411dcf07b855dafb724d/packages/zig/src/graphics_scene.zig"
+    },
+    {
+      "path": "packages/zig/test/graphics_test.zig",
+      "sha256": "dfdef18909ad85dd897b0687c11d8415e036e1613706e0e646295e92b34db32b",
+      "url": "https://github.com/craft-native/craft/blob/f320444f8dbf1701770b411dcf07b855dafb724d/packages/zig/test/graphics_test.zig"
+    },
+    {
+      "path": "packages/zig/test/fixtures/graphics-package-consumer/src/main.zig",
+      "sha256": "ab00b7dee19de64623d09afe836921a5888c0cd4abda2370b55881da1babcce7",
+      "url": "https://github.com/craft-native/craft/blob/f320444f8dbf1701770b411dcf07b855dafb724d/packages/zig/test/fixtures/graphics-package-consumer/src/main.zig"
+    }
+  ],
+  "acceptance": [
+    {
+      "criterion": "Atlas regions and player tint",
+      "evidence": "drawSprite samples explicit atlas UV regions, transforms and player masks. Exact clipped/tinted pixels, offset regions and full-atlas mask indexing are tested."
+    },
+    {
+      "criterion": "Clipping, transforms, ordering and bitmap text",
+      "evidence": "Actual sprite mirroring/rotation, watertight textured triangle edges, glyph/newline/Unicode placement and stable ordered-frame pixels are covered. Missing glyph, invalid font metadata and malformed UTF-8 fail before pixel writes."
+    },
+    {
+      "criterion": "Bounded asset and frame memory",
+      "evidence": "The real allocator failure loop checks canvas cleanup. View, pixel-work, command, text and aggregate asset budgets reject before writes; shared views deduplicate without dropping command validation. Repeated drawFrame calls allocate no frame storage."
+    },
+    {
+      "criterion": "Actual visible pixel values and failure paths",
+      "evidence": "Maintained native Zig tests inspect actual sprite, triangle and glyph buffers, including invalid UVs/NaNs/degenerate geometry/aliasing. Invalid later commands leave the original frame intact."
+    },
+    {
+      "criterion": "Maintained public consumption",
+      "evidence": "The original published Zig package builds unchanged in a cold independent consumer. The consumer executes the public graphics.scene API and compares exact bitmap/terrain/glyph/atomic frame pixels. Retained binary rerun passed after compiler cache cleanup."
+    }
+  ],
+  "publicConsumer": {
+    "startedAt": "2026-10-24T12:44:09.852350+00:00",
+    "compilerVersion": "0.18.0-dev.146+35accc06e",
+    "compilerSha256": "9372e802a53cc16a13a901a903ffc116c66627a20696af2be0a0bf328a5971e7",
+    "freshLocalAndGlobalCacheAtStart": true,
+    "files": [
+      {
+        "path": "build.zig",
+        "sha256": "0d555154d33a6a2cfe76463cb566e86736a5c7945fea2df14e45a465fcdcd2ee"
+      },
+      {
+        "path": "src/main.zig",
+        "sha256": "ab00b7dee19de64623d09afe836921a5888c0cd4abda2370b55881da1babcce7"
+      },
+      {
+        "path": "build.zig.zon",
+        "sha256": "cb61ea5fd5031534d984d3c047bc6f6b90650c7bc01eb6a8938e01c9aac86831"
+      }
+    ],
+    "finishedAt": "2026-10-24T12:46:34.866646+00:00",
+    "exitCode": 0,
+    "command": "zig build check -j1 --cache-dir local-cache",
+    "environmentCacheOption": "ZIG_GLOBAL_CACHE_DIR points to the new consumer global-cache directory",
+    "originalPublicPackageUrl": "https://pantry.dev/zig/packages/craft/0.0.329/tarball",
+    "advertisedNativeHashAcceptedByCompiler": true,
+    "publishedPackageRewritten": false,
+    "siblingCheckoutDependencySupplied": false,
+    "scope": "Original public package CPU graphics API, exact sprite/triangle/glyph/atomic-frame pixels and truthful unsupported rendering checks. No native game or JS frame callback claim."
+  },
+  "retainedConsumerRerun": {
+    "exitCode": 0,
+    "output": "documented package consumer verified exact bitmap, terrain, glyph and atomic CPU frame pixels without a window",
+    "logSha256": "b70d0019536fb448b523e988b4d9eb95cba274cb10ca0ea1860edd6fcae0b1d4"
+  },
+  "gameAdoption": "Published craft-native0.0.329 is installed through the normal dependency path; framework-0.75.290-receipt.json records its archive and complete installed-tree verification. This does not claim native game presentation.",
+  "limitations": [
+    "The drawing API consumes decoded RGBA atlases and bitmap glyph metadata. It does not establish the original Gold font or asset completeness.",
+    "Metal, Vulkan, native frame clocks/input, STX RenderSurface, the complete game HUD and every Gold campaign are separate work."
+  ]
+}
