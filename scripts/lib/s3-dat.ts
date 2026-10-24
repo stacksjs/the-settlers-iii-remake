@@ -61,14 +61,17 @@ export class S3Dat {
       return frame
     })
   }
-  decode(offset: number, color: '565' | '555' | 'torso' = '565', header: 'displaced' | 'landscape' = 'displaced'): Sprite {
+  decode(offset: number, color: '565' | '555' | 'torso' = '565', header: 'displaced' | 'landscape' | 'gui' = 'displaced'): Sprite {
+    // GUI has two reserved shorts after its dimensions; landscape has one.
+    const headerBytes = header === 'displaced' ? 12 : header === 'gui' ? 8 : 6
+    if (offset < 0 || offset + headerBytes > this.bytes.length) throw new Error('Truncated DAT sprite header')
     if (header === 'displaced' && this.u32(offset) !== 12) throw new Error('Unsupported DAT sprite header')
     const start = offset + (header === 'displaced' ? 4 : 0)
     const width = this.u16(start), height = this.u16(start + 2)
     if ((!width !== !height) || width > 2048 || height > 2048) throw new Error(`Invalid DAT sprite dimensions ${width}x${height} at ${offset}`)
     const offsetX = header === 'displaced' ? this.bytes.readInt16LE(offset + 8) : 0, offsetY = header === 'displaced' ? this.bytes.readInt16LE(offset + 10) : 0
     const data = Buffer.alloc(width * height * 4)
-    let at = offset + (header === 'displaced' ? 12 : 6)
+    let at = offset + headerBytes
     if (at % 2) at++
     for (let y = 0; y < height; y++) {
       let x = 0, done = false, runs = 0

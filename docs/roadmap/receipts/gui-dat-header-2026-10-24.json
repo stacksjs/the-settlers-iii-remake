@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T08:30:39.997332+00:00",
+  "scope": "Original DAT GUI header decoding. Private reference image inspection is not UI adoption or Gold Edition parity.",
+  "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+  "sources": [
+    {
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/GuiTranslator.java",
+      "sha256": "cfa8e2dc7e1b61aecea887d7c07467e65129bec24a78e84e52a4b85da3e82b33"
+    },
+    {
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatBitmapReader.java",
+      "sha256": "59f0b0065409f20e25b8cc1d5c2ce72474aa38a0270f8c06752798a76e95d683"
+    },
+    {
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+      "sha256": "4db1d80e35e8661dd88bc1935774fd3dd7a69a2f3592aab66e74196ff70abd2e"
+    }
+  ],
+  "red": [
+    "GUI reserved fields were read as pixel-run metadata, producing DAT row exceeds sprite width.",
+    "Truncated reserved header fields were accepted when both image dimensions were zero."
+  ],
+  "green": {
+    "decoderTests": 10,
+    "failures": 0,
+    "assertions": 35,
+    "consumerChecks": "All seven passed through the installed Actions0.75.288 verifier, recorded separately in framework-0.75.288-receipt.json.",
+    "privateDecodedControls": {
+      "sourceFileSha256": "6eaa1227068ecb90dbc6f7175ee96eaba96e8875ed54c6c6799bba3b1c0728b3",
+      "images": [
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 51,
+          "actualSequence": 51,
+          "width": 33,
+          "height": 33,
+          "path": "button-build.png",
+          "sha256": "1d7602ca6e8de17ebe78ed0ac5e82f8e67f8ac5d70afb13519f85521b4871697"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 60,
+          "actualSequence": 60,
+          "width": 33,
+          "height": 33,
+          "path": "button-build-active.png",
+          "sha256": "2a3e374d39ba18e4218c1fa7026d9ec08084b3136d40ea2b816306eeadb69644"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 54,
+          "actualSequence": 54,
+          "width": 33,
+          "height": 33,
+          "path": "button-goods.png",
+          "sha256": "a2abb2978048030f08e47a142d0d8f406241972416f9d36026d7ba5ca213d41a"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 63,
+          "actualSequence": 63,
+          "width": 33,
+          "height": 33,
+          "path": "button-goods-active.png",
+          "sha256": "a6946fb7624073c658f8235b432ae74aba20eb2ff892f266a2982cfd69b8b6b8"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 57,
+          "actualSequence": 57,
+          "width": 33,
+          "height": 33,
+          "path": "button-settlers.png",
+          "sha256": "78de7a5b084403a6d92b1603e9cfcc9538404174452da4acf57ad6aeb1c53bf3"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 66,
+          "actualSequence": 66,
+          "width": 33,
+          "height": 33,
+          "path": "button-settlers-active.png",
+          "sha256": "93ee0679c98369b196a347ea44e33a46121a434771e2a778964693dbeea07334"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 69,
+          "actualSequence": 69,
+          "width": 27,
+          "height": 24,
+          "path": "button-resources.png",
+          "sha256": "6658eea10935080f829948a71f818364863a657d2a312accbeee1763df3033aa"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 81,
+          "actualSequence": 81,
+          "width": 27,
+          "height": 24,
+          "path": "button-resources-active.png",
+          "sha256": "891e90e17d2ef05bf7c5ee07c9ab15ac4694593e23540576d98a05cc051976ab"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 72,
+          "actualSequence": 72,
+          "width": 27,
+          "height": 24,
+          "path": "button-food.png",
+          "sha256": "52c9a865514ca4a23b5eaa7277fa9ae300fcbf79f8827f15c285a26414ffcd63"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 84,
+          "actualSequence": 84,
+          "width": 27,
+          "height": 24,
+          "path": "button-food-active.png",
+          "sha256": "8086af9907e19ca8b6396474b3570360d5daa6dbdbdcba54e0c312ed7803aa58"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 75,
+          "actualSequence": 75,
+          "width": 27,
+          "height": 24,
+          "path": "button-military.png",
+          "sha256": "26f377d8476923f170b2f1de4e50e9cf602466570a6e81cfd54326761f5f630f"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 87,
+          "actualSequence": 87,
+          "width": 27,
+          "height": 24,
+          "path": "button-military-active.png",
+          "sha256": "43cfeb703cd72ee19db3d7767fa4f0bc80d50cad99e2e91ef4138f56996c7125"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 78,
+          "actualSequence": 78,
+          "width": 27,
+          "height": 24,
+          "path": "button-misc.png",
+          "sha256": "e40a7afbedf383515a1eeeacc01ef787811d288125b7844c7095f362e8444346"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 90,
+          "actualSequence": 90,
+          "width": 27,
+          "height": 24,
+          "path": "button-misc-active.png",
+          "sha256": "b618ed44b5cd7bd41fbcdd21184a56d14f8b7cb9df1de60b7f41ad1ed3431701"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 93,
+          "actualSequence": 93,
+          "width": 18,
+          "height": 27,
+          "path": "button-system.png",
+          "sha256": "db4f1c2af62c947b6890701d322dce648927870c4e3adbb83e947f95de14c520"
+        },
+        {
+          "file": "Siedler3_03.f8007e01f.dat",
+          "section": 70406,
+          "sequence": 96,
+          "actualSequence": 96,
+          "width": 18,
+          "height": 27,
+          "path": "button-system-active.png",
+          "sha256": "2f47973e016c6823eb81941772bf36cc82c089ba3af52cef6612f68079b8aea3"
+        }
+      ]
+    },
+    "privateDecodedBackgrounds": {
+      "sourceFileSha256": "05edf189777db34d27f26df3614fc7f5c283961ad15af56b98b6dee89e5147e0",
+      "images": [
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 0,
+          "actualSequence": 0,
+          "frame": 0,
+          "width": 136,
+          "height": 142,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-0.png",
+          "sha256": "53447117423310331d2b57df57e837fc1147ffaad15a114a4bb43ae7b23c6120"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 0,
+          "actualSequence": 0,
+          "frame": 1,
+          "width": 176,
+          "height": 170,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-1.png",
+          "sha256": "3aa430c0b5eae2efc978cef48359712c65dceab9cb3f505a568e24ad17525ab3"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 0,
+          "actualSequence": 0,
+          "frame": 2,
+          "width": 216,
+          "height": 224,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-2.png",
+          "sha256": "76cb1cf77031a5fe851f9f239dfac10b39d46355d2e515c56299f5782be19826"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 1,
+          "actualSequence": 1,
+          "frame": 0,
+          "width": 71,
+          "height": 142,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-right-0.png",
+          "sha256": "1a7b47696f71515177d8aaf26d30ca99ce733da46723a63a28eb82352c6c3761"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 1,
+          "actualSequence": 1,
+          "frame": 1,
+          "width": 84,
+          "height": 170,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-right-1.png",
+          "sha256": "6fe273aa4c66224ae14540634b0b88f592903e309e165622f38da2c719d43352"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 1,
+          "actualSequence": 1,
+          "frame": 2,
+          "width": 117,
+          "height": 224,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "minimap-right-2.png",
+          "sha256": "4c8ed61e606200b72d37a54c53ef4a53bd320a42407f184fa166c9cfb83fcd84"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 2,
+          "actualSequence": 2,
+          "frame": 0,
+          "width": 136,
+          "height": 338,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-0.png",
+          "sha256": "21200d29610c7bef6bfc13f2cfa7d24a54b19875a71c22f2a500a6e40d5cc385"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 2,
+          "actualSequence": 2,
+          "frame": 1,
+          "width": 176,
+          "height": 430,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-1.png",
+          "sha256": "104aada10f266af0334e73321838bf2268530796815c58f329df6da32d84e7bd"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 2,
+          "actualSequence": 2,
+          "frame": 2,
+          "width": 216,
+          "height": 544,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-2.png",
+          "sha256": "204240d715872b5f23efb528ee989061e9e98afd20253ce10c49db53e717139f"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 3,
+          "actualSequence": 3,
+          "frame": 0,
+          "width": 8,
+          "height": 338,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-right-0.png",
+          "sha256": "14c5b5b4ee1906d85411a0a6c068ce1b3e83d1ca6f57db7aaeafbe85633e196b"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 3,
+          "actualSequence": 3,
+          "frame": 1,
+          "width": 8,
+          "height": 430,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-right-1.png",
+          "sha256": "060065c137c8347d09f5cc0492e4e98b4f3d3b4bd4cfa060217b672ca362d558"
+        },
+        {
+          "file": "siedler3_04.f8007e01f.dat",
+          "sequence": 3,
+          "actualSequence": 3,
+          "frame": 2,
+          "width": 8,
+          "height": 544,
+          "offsetX": 0,
+          "offsetY": 0,
+          "path": "panel-right-2.png",
+          "sha256": "65fd4ea5f5b6abc71b61f63d935f9190e5f727c0f082b0783d2ca1e94093184b"
+        }
+      ]
+    }
+  },
+  "visualInspection": [
+    "Stone-and-vine panel216x544 and minimap216x224 inspected.",
+    "Active build33x33 and resources27x24 controls inspected."
+  ],
+  "logs": [
+    {
+      "name": "gui-decoder-red.log",
+      "sha256": "d731c0836cc03449797c48d34f05c5f8e1eaa771e3d505703d71652f02c19e9f"
+    },
+    {
+      "name": "gui-header-bounds-red.log",
+      "sha256": "5573aec4b8db9f31d8a7e0b2d0a41da536807ad7cc6027d688627745c7b9a1e8"
+    },
+    {
+      "name": "gui-decoder-green-complete.log",
+      "sha256": "ef2a6dbcad376d05ee9fbc36dd037a0fb9d6316df233797b979cd0cba0dbc246"
+    }
+  ],
+  "limits": [
+    "The 28 converted reference images remain private and are not imported by the maintained app converter yet.",
+    "The current custom HUD, native game presentation, original rules and timings still need implementation or verification."
+  ]
+}

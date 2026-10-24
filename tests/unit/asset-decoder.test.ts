@@ -88,3 +88,22 @@ test('landscape sections use direct frames and their shorter header', () => {
   expect([sprite.offsetX, sprite.offsetY]).toEqual([0, 0])
   expect([...sprite.data]).toEqual([255, 0, 0, 255, 0, 0, 255, 255])
 })
+
+test('GUI sections decode their eight-byte header without treating reserved fields as pixels', () => {
+  const data = fixture()
+  data.writeUInt32LE(0x11306, 96)
+  data.writeUInt16LE(2, 160); data.writeUInt16LE(1, 162)
+  data.writeUInt16LE(0x1234, 164); data.writeUInt16LE(0xabcd, 166)
+  data.writeUInt16LE(0x8101, 168); data.writeUInt16LE(0xf800, 170)
+  const dat = new S3Dat(data)
+  expect(dat.frames(0, 0x11306)).toEqual([160])
+  const sprite = dat.decode(160, '565', 'gui')
+  expect([sprite.width, sprite.height, sprite.offsetX, sprite.offsetY]).toEqual([2, 1, 0, 0])
+  expect([...sprite.data]).toEqual([0, 0, 0, 0, 255, 0, 0, 255])
+})
+
+test('even empty GUI and landscape images require their complete reserved header fields', () => {
+  const dat = new S3Dat(fixture())
+  expect(() => dat.decode(250, '565', 'gui')).toThrow('Truncated DAT')
+  expect(() => dat.decode(252, '565', 'landscape')).toThrow('Truncated DAT')
+})
