@@ -117,13 +117,13 @@ onDestroy(() => game?.dispose())
           <div class="flex category-list" :aria-label="LABELS[menu().main] + ' menus'">
             <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
           </div>
-          <div class="hud-content">
+          <div class="hud-content" tabindex="0" role="region" aria-label="Settlement details">
           <div class="flex gap-1 mt-2 overview-modes">
             <button type="button" class="text-button" @click="nextTerritory()" title="Territory display: player colours, land and sea, or terrain">Territory: {{ view().minimap.territory === 'players' ? 'players' : view().minimap.territory === 'simple' ? 'land and sea' : 'terrain' }}</button>
             <button type="button" class="text-button" @click="nextSettlers()" title="Settlers display: all, soldiers only or none">Settlers: {{ view().minimap.settlers === 'all' ? 'all' : view().minimap.settlers === 'military' ? 'soldiers' : 'none' }}</button>
             <button type="button" class="text-button" :aria-pressed="view().minimap.buildings" @click="game?.overview({ buildings: !view().minimap.buildings })">Buildings: {{ view().minimap.buildings ? 'shown' : 'hidden' }}</button>
           </div>
-        <div class="settlement-heading"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
+        <div class="settlement-heading" :if="menu().sub !== 'production'"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
         <section class="control-center" aria-label="Control center">
           <div :if="menu().main === 'buildings'">
             <div class="flex items-center justify-between section-heading"><h2>{{ LABELS[menu().sub] }} buildings</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
@@ -154,6 +154,15 @@ onDestroy(() => game?.dispose())
           <div :if="menu().main === 'settlers' && menu().sub === 'statistics'">
             <h2>Settler statistics</h2>
             <ul class="profession-list"><li :for="item in view().professions"><span>{{ item.name }}</span><strong>{{ item.count }}</strong></li></ul>
+          </div>
+          <div :if="menu().main === 'settlers' && menu().sub === 'production'" class="production-statistics">
+            <h2>Production statistics</h2>
+            <p class="menu-note">Made and used since settlement began. Stock includes carried goods.</p>
+            <p :if="!view().ready" class="menu-note" role="status">Preparing production statistics...</p>
+            <table class="production-table" aria-label="Goods stock, production and consumption">
+              <thead><tr><th scope="col">Good</th><th scope="col">Stock</th><th scope="col">Made</th><th scope="col">Used</th></tr></thead>
+              <tbody><tr :for="item in view().production"><th scope="row">{{ item.key }}</th><td data-figure="stock">{{ item.stock }}</td><td data-figure="produced">{{ item.produced }}</td><td data-figure="consumed">{{ item.consumed }}</td></tr></tbody>
+            </table>
           </div>
           <div :if="menu().main === 'settlers' && menu().sub === 'occupations'">
             <h2>Occupations</h2>
@@ -244,6 +253,11 @@ onDestroy(() => game?.dispose())
 .hud-content .eyebrow { display:none; }
 .hud-content .overview-modes { margin:0; padding:4px 6px; justify-content:flex-start; gap:2px 10px; }
 .hud-content .text-button { font-size:10px; }
+.production-table { width:100%; border-collapse:collapse; font-size:10px; line-height:1.6; font-variant-numeric:tabular-nums; }
+.production-table th,.production-table td { padding:3px 1px; text-align:right; font-weight:400; white-space:nowrap; }
+.hud-content:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+.production-table th:first-child { text-align:left; text-transform:capitalize; }
+.production-table thead th { color:var(--gold); border-bottom:1px solid var(--line); }
 .hud-content .building-choice { display:flex; flex-direction:column; align-items:center; padding:6px 3px; text-align:center; min-height:108px; background:#142c3899; border-color:#77939a40; }
 .hud-content .building-choice:hover,.hud-content .building-choice[aria-pressed="true"] { background:#30424ecc; border-color:var(--gold); }
 .hud-content .building-choice strong { font-size:10px; }

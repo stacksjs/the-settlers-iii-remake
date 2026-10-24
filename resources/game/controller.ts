@@ -70,7 +70,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -126,9 +126,10 @@ function army(session: Session | null) {
 }
 
 /** Figures derived from the world: goods in carriers' hands and the shortages holding buildings back. */
-function economy(session: Session): { carried: number, needs: string[] } {
+function economy(session: Session): { carried: number, needs: string[], production: { key: string, stock: number, produced: number, consumed: number }[] } {
   const stats = statistics(session, PLAYER)
   return {
+    production: session.rules.goods.map(key => ({ key, stock: stats.total[key] ?? 0, produced: stats.produced[key] ?? 0, consumed: stats.consumed[key] ?? 0 })),
     carried: Object.values(stats.stock.transit).reduce((a, n) => a + n, 0),
     needs: stats.shortages.map(s => `${rules.buildings.find(b => b.id === s.type)!.name}: ${status('active', s.shortage, false, true, true).toLowerCase()}`).slice(0, 6),
   }

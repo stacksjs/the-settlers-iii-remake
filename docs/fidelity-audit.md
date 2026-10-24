@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: published framework adoption and production figures (2026-10-24)
+
+The latest tested browser work adds the fourth Settlers submenu using its original active/inactive art. It shows all 26 goods with stock, cumulative production and cumulative consumption from the actual player ledger. Starting goods and rival production are excluded from production totals; save/restore retains the figures. These labelled cumulative figures do not claim the original Gold layout, chart or sampling interval. The [production receipt](roadmap/receipts/production-statistics-2026-10-24.json) records the checks and limits.
+
+The game now normally installs Stacks 0.75.290, all six STX packages at 0.2.682, Craft 0.0.329 and Pantry 0.11.126. The [adoption receipt](roadmap/receipts/framework-0.75.290-adoption.json) verifies all 95 selected original package archives against installed files and exact source/release gates. Seven consumer checks, the production build, the 58-step campaign and four nine-step frame cases pass. The installed browser driver sends real ArrowDown input; every focused panel scrolls 80 pixels. Local desktop and phone panel captures were inspected, without establishing full phone gameplay or original scene equivalence.
+
+The [Craft 0.0.329 fixture receipt](roadmap/receipts/native-engine-cli-craft-329-2026-10-24.json) records matching Bun, browser and original native CLI results for the same five-tick simulation, save/restore and replay fixture. Full native graphics, HUD, input, clocks and lifecycle remain incomplete. The next section records the earlier committed frame and 0.75.288 adoption as dated history.
+
 ## Update: original browser interface and execution evidence (2026-10-24)
 
 The committed browser implementation at `8cb2352556a1277439e7d7a8b936e741c7f8da15` adds the following evidence. The October 21 table below remains a historical baseline.

@@ -21,6 +21,7 @@ for (const [width, height, profile] of [[1280, 720, 480], [1280, 850, 600], [144
     if (Math.abs(overview.bottom - panel.top) > tolerance) throw new Error('Original minimap and panel are separated');
     if (primary.top < panel.top || primary.bottom > secondary.top + tolerance || secondary.bottom > content.top + tolerance) throw new Error('Original control openings overlap');
     if (content.left < panel.left || content.right > panel.right + tolerance || content.bottom > panel.bottom) throw new Error('Content escapes the original frame');
+    if (rect('.production-table').right > content.right + tolerance) throw new Error('Production figures are clipped by the original content opening');
     const left = rect('.minimap-frame-left'), right = rect('.minimap-frame-right');
     if (Math.abs(left.right - right.left) > tolerance || Math.abs(right.right - overview.right) > tolerance) throw new Error('Original minimap frame edges are separated');
     if (${width} > 760) {
@@ -47,7 +48,20 @@ for (const [width, height, profile] of [[1280, 720, 480], [1280, 850, 600], [144
   const capture = resolve(directory, `${width}x${height}.png`)
   const child = Bun.spawn([
     process.execPath, driver, 'scenario', url, '--viewport', `${width}x${height}`, '--out', capture,
-    '--step', JSON.stringify({ action: 'wait', ms: 1500 }), '--step', JSON.stringify({ action: 'evaluate', expression }),
+    '--step', JSON.stringify({ action: 'wait', ms: 1500 }),
+    '--step', JSON.stringify({ action: 'click', selector: '.main-menu button', text: 'Settlers' }),
+    '--step', JSON.stringify({ action: 'click', selector: '.category-list button', text: 'Production statistics' }),
+    '--step', JSON.stringify({ action: 'assert', selector: '.production-statistics h2', text: 'Production statistics' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression }),
+    '--step', JSON.stringify({ action: 'focus', selector: '.hud-content' }),
+    '--step', JSON.stringify({ action: 'press', key: 'ArrowDown' }),
+    '--step', JSON.stringify({ action: 'press', key: 'ArrowDown' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: `(async () => {
+      const content = document.querySelector('.hud-content'), start = performance.now();
+      while (content.scrollTop === 0 && performance.now() - start < 1000) await new Promise(resolve => requestAnimationFrame(resolve));
+      if (document.activeElement !== content || content.scrollTop === 0) throw new Error('Focused production figures cannot be scrolled with the keyboard');
+      return { keyboardScrolled: true, scrollTop: content.scrollTop };
+    })()` }),
   ], { stdout: 'pipe', stderr: 'pipe' })
   const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
   let report: unknown = { stdout, stderr }

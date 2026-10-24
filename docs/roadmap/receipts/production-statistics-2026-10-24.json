@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T14:01:14.983063+00:00",
+  "scope": "Read-only browser production figures in the fourth Settlers submenu. Partial S3-049 work, not issue completion.",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "source": "MainPanel.java maps the production submenu to original active/inactive GUI images243and255. Original Gold statistics layout and timing remain unverified."
+  },
+  "behavior": [
+    "All26goods report player1stock including carried goods, cumulative production and cumulative consumption.",
+    "Starting stock and rival production are excluded from production totals.",
+    "Reading figures leaves simulation unchanged; save/restore retains the same figures.",
+    "The control center remembers the production submenu; original active/inactive art follows selection.",
+    "The labelled panel region supports keyboard scrolling through the published framework driver."
+  ],
+  "checks": {
+    "installedConsumerScripts": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "587fb47dfe0551f5f059a2308a07904f7028ea451db8ee61c5fc857f695cec9b"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "34b50f21543ff34f7d3ea56624ad4adcb18955d39c067a8f08d41953857e55a6"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ],
+    "campaignSteps": 58,
+    "controlFrameCases": 4,
+    "stepsPerFrame": 9,
+    "trustedKeyboardScrollTop": [
+      80,
+      80,
+      80,
+      80
+    ],
+    "productionBuildExitCode": 0
+  },
+  "files": [
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "adf8cc0bf1af5f1ed337c9a37cd5fc8f93230fce4d853bd39a7564d1c82ea47f"
+    },
+    {
+      "path": "resources/game/menus.ts",
+      "sha256": "15c1594d53052b536212029b82fe3062a6eb206804b84683ef65ff8e3005443d"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "sha256": "05e467cc1d75ad4690ac5e21e9fd10f120484c653ef2a1a9d490fc567d71cb76"
+    },
+    {
+      "path": "tests/unit/menus.test.ts",
+      "sha256": "48a4499df9eb134d1736249bff048c5a38cce108d2630dfa111f6b89fca294f4"
+    },
+    {
+      "path": "tests/browser/campaign-steps.ts",
+      "sha256": "69055ed67dc5ba9b92c809efdf9a76320a000867d0820f6559582d71a1c6940b"
+    },
+    {
+      "path": "tests/browser/control-frame.ts",
+      "sha256": "83074d72fcbd876c5dd4316c31e6065f2671069ba1d5c889d3df42e3957c8027"
+    }
+  ],
+  "visualInspection": "Personally inspected fresh1280x720,1440x960and320x568captures. Original frame and menu art are present; figures fit their opening. Overall typography, header, terrain and phone gameplay remain partial/custom.",
+  "media": {
+    "schemaVersion": 1,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "captures": [
+      {
+        "viewport": "1280x720",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "4becc64e501530bb2af5db467a1cc8a1bd153c2fffb462765ca3b3e07ce38a1a",
+          "bytes": 715923,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "viewport": "1280x850",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "e805b2c39a335167f088eb3e393dd981139520af8db4460905926f1bab9756a4",
+          "bytes": 806694,
+          "width": 1280,
+          "height": 850
+        }
+      },
+      {
+        "viewport": "1440x960",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "1a3a316fa2a778db110e643ad4713786b4cd43c3b23dc37a27e6af4ef599ea0c",
+          "bytes": 939669,
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "viewport": "320x568",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "6e07c7f408243af3f5cc17929bbf04a2a00fbdbf4157da9eca0560b3b476d8f8",
+          "bytes": 161954,
+          "width": 320,
+          "height": 568
+        }
+      }
+    ]
+  },
+  "limits": [
+    "Cumulative figures are labelled as authored behavior; no Gold sampling interval, original chart or exact original layout is claimed.",
+    "No new redistribution authorization or complete Gold/native acceptance is established."
+  ]
+}

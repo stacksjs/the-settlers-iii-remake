@@ -54,6 +54,20 @@ export const campaignSteps = [
       return true;
     })()`,
   },
+  { action: 'click', selector: '.category-list button', text: 'Production statistics' },
+  { action: 'assert', selector: '.production-statistics h2', text: 'Production statistics' },
+  {
+    action: 'evaluate',
+    expression: `(async () => {
+      const image = document.querySelector('.category-list [aria-pressed=true] img');
+      await image.decode();
+      if (!image.src.endsWith('/settlers-production-active.png')) throw new Error('Production art does not follow its submenu');
+      const rows = [...document.querySelectorAll('.production-table tbody tr')];
+      if (!rows.length || !rows.some(row => Number(row.querySelector('[data-figure=stock]').textContent) > 0)) throw new Error('Starting stock is missing from production statistics');
+      if (rows.some(row => Number(row.querySelector('[data-figure=produced]').textContent) !== 0)) throw new Error('Starting goods were counted as production');
+      return { productionRows: rows.length, startingStockIsNotProduction: true };
+    })()`,
+  },
   { action: 'click', selector: '.main-menu button', text: 'Goods' },
   {
     action: 'evaluate',
@@ -62,6 +76,8 @@ export const campaignSteps = [
       return true;
     })()`,
   },
+  { action: 'click', selector: '.main-menu button', text: 'Settlers' },
+  { action: 'assert', selector: '.production-statistics h2', text: 'Production statistics' },
   { action: 'click', selector: '.main-menu button', text: 'Buildings' },
   {
     action: 'evaluate',

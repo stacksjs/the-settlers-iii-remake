@@ -6,7 +6,7 @@
 export const MENUS = {
   buildings: ['resources', 'food', 'military', 'misc'],
   goods: ['inventory', 'tools', 'distribution', 'transport'],
-  settlers: ['statistics', 'occupations', 'military'],
+  settlers: ['statistics', 'occupations', 'military', 'production'],
 } as const
 export type Main = keyof typeof MENUS
 export type Sub<M extends Main = Main> = (typeof MENUS)[M][number]
@@ -16,7 +16,7 @@ export const LABELS: Record<string, string> = {
   buildings: 'Buildings', goods: 'Goods', settlers: 'Settlers',
   resources: 'Resources', food: 'Food', military: 'Military', misc: 'Misc.',
   inventory: 'Inventory', tools: 'Tools and weapons', distribution: 'Distribution', transport: 'Transport',
-  statistics: 'Statistics', occupations: 'Occupations',
+  statistics: 'Statistics', occupations: 'Occupations', production: 'Production statistics',
 }
 
 // MainPanel.java at the pinned remake revision maps these menu meanings to
@@ -25,7 +25,7 @@ const MAIN_IMAGES: Record<string, string> = { buildings: 'build', goods: 'goods'
 const SUB_IMAGES: Record<Main, Record<string, string>> = {
   buildings: { resources: 'build-resources', food: 'build-food', military: 'build-military', misc: 'build-social' },
   goods: { inventory: 'goods-stock', tools: 'goods-tools', distribution: 'goods-distribution', transport: 'goods-transport' },
-  settlers: { statistics: 'settlers-statistics', occupations: 'settlers-professions', military: 'settlers-warriors' },
+  settlers: { statistics: 'settlers-statistics', occupations: 'settlers-professions', military: 'settlers-warriors', production: 'settlers-production' },
 }
 
 /** Original active/inactive art follows the same menu state as its controls. */

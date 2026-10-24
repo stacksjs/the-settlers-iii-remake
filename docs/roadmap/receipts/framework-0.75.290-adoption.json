@@ -1,0 +1,868 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-24T14:01:14.983063+00:00",
+  "framework": "0.75.290",
+  "source": "653cedac960e016dca9538958d8301f33294efb0",
+  "state": "Verified normal published-package adoption. Browser prototype acceptance; complete Gold and native game acceptance remain open.",
+  "normalInstallation": {
+    "upgrade": "./buddy upgrade --version 0.75.290",
+    "upgradeExitCode": 0,
+    "craft": "bun add --exact craft-native@0.0.329",
+    "craftExitCode": 0,
+    "setup": "qualified original Pantry0.11.126 install",
+    "setupExitCode": 0,
+    "frozenBunInstallExitCode": 0
+  },
+  "tooling": {
+    "bun": "1.4.4",
+    "stx": "0.2.682",
+    "components": "0.2.682",
+    "plugin": "0.2.682",
+    "desktop": "0.2.682",
+    "sanitizer": "0.2.682",
+    "router": "0.2.682",
+    "craft": "0.0.329",
+    "pantry": "0.11.126"
+  },
+  "installedVerification": {
+    "packages": 95,
+    "allOriginalArchivesAndInstalledFilesMatched": true,
+    "consumerChecks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "587fb47dfe0551f5f059a2308a07904f7028ea451db8ee61c5fc857f695cec9b"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "34b50f21543ff34f7d3ea56624ad4adcb18955d39c067a8f08d41953857e55a6"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ],
+    "lockfileSha256": "fb0de6c9fb9b88eb8e59d085c085470d39aec9753206b8c3d099f5fab0549f2d",
+    "invocation": {
+      "package": "@stacksjs/actions",
+      "version": "0.75.290",
+      "export": "@stacksjs/actions/release-evidence",
+      "moduleSha256": "deddfbbf90d7fda0b24768692ae5127afa8a6b60bed32a75ded72bc9483762ba",
+      "executedPublishedModule": true,
+      "selectedPackages": 95,
+      "consumer": {
+        "lockfile": "bun.lock",
+        "sha256": "fb0de6c9fb9b88eb8e59d085c085470d39aec9753206b8c3d099f5fab0549f2d",
+        "bunVersion": "1.4.4",
+        "checks": [
+          {
+            "script": "typecheck",
+            "exitCode": 0,
+            "outputSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+          },
+          {
+            "script": "lint",
+            "exitCode": 0,
+            "outputSha256": "587fb47dfe0551f5f059a2308a07904f7028ea451db8ee61c5fc857f695cec9b"
+          },
+          {
+            "script": "test",
+            "exitCode": 0,
+            "outputSha256": "34b50f21543ff34f7d3ea56624ad4adcb18955d39c067a8f08d41953857e55a6"
+          },
+          {
+            "script": "assets:verify",
+            "exitCode": 0,
+            "outputSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+          },
+          {
+            "script": "fidelity:check",
+            "exitCode": 0,
+            "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+          },
+          {
+            "script": "roadmap:check",
+            "exitCode": 0,
+            "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+          },
+          {
+            "script": "test:browser",
+            "exitCode": 0,
+            "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+          }
+        ]
+      }
+    }
+  },
+  "productionBuildExitCode": 0,
+  "browserCampaign": {
+    "steps": 58,
+    "allPassed": true,
+    "consoleErrors": [],
+    "failedRequests": [],
+    "media": {
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "e1ef352bf4f4b198d6aa8dd1443e98e5c4dd7fc164dec78a4bcc920ee17382ba",
+        "bytes": 1144258,
+        "width": 1440,
+        "height": 960
+      },
+      "captureStatus": "captured",
+      "browserExitCode": 0,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "evidenceLimit": "This receipt identifies a locally captured screenshot. It does not provide public visual inspection."
+    }
+  },
+  "controlFrames": [
+    {
+      "viewport": "1280x720",
+      "code": 0,
+      "report": {
+        "url": "http://127.0.0.1:3450/",
+        "viewport": "1280x720",
+        "steps": [
+          {
+            "action": "wait",
+            "ms": 1500,
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".main-menu button",
+            "tag": "button",
+            "text": "Settlers"
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".category-list button",
+            "tag": "button",
+            "text": "Production statistics"
+          },
+          {
+            "ok": true,
+            "action": "assert",
+            "selector": ".production-statistics h2",
+            "tag": "h2",
+            "text": "Production statistics"
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "profile": 480,
+              "viewport": "1280x720",
+              "panel": {
+                "width": 166.03125,
+                "height": 412.640625
+              },
+              "openingsContained": true,
+              "fixedControlsDuringScroll": true
+            },
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "focus",
+            "selector": ".hud-content",
+            "tag": "div",
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock includes carried goods. Good Stock Made Used"
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "keyboardScrolled": true,
+              "scrollTop": 80
+            },
+            "ok": true
+          }
+        ],
+        "final": {
+          "url": "http://127.0.0.1:3450/",
+          "title": "The Settlers III Remake | Roman settlement",
+          "focusHistory": [
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              },
+              "related": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              },
+              "related": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            }
+          ],
+          "activeElement": {
+            "tag": "div",
+            "id": null,
+            "role": "region",
+            "ariaLabel": "Settlement details",
+            "ref": null,
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock incl"
+          },
+          "bodyText": "The Settlers III ROMAN SETTLEMENT Generated landscape 0:04 Save Load Sound off Guide New settlement 38 settlers Log 8 Plank 30 Stone 26 Bread 8 Meat 8 Fish 8 Hammer 4 Shovel 2 Axe 3 Saw 2 Pickaxe 4 Scythe 2 Fishingrod 2 Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves. Generated landscape A generated landscape, not an original map Pause 1x 2x 4x Settlement dispatch Choose a building, then click open ground inside your border. Buildings Goods"
+        },
+        "screenshot": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/control-frame-JTNvgr/1280x720.png",
+        "consoleMessages": [],
+        "consoleErrors": [],
+        "failedRequests": []
+      }
+    },
+    {
+      "viewport": "1280x850",
+      "code": 0,
+      "report": {
+        "url": "http://127.0.0.1:3450/",
+        "viewport": "1280x850",
+        "steps": [
+          {
+            "action": "wait",
+            "ms": 1500,
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".main-menu button",
+            "tag": "button",
+            "text": "Settlers"
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".category-list button",
+            "tag": "button",
+            "text": "Production statistics"
+          },
+          {
+            "ok": true,
+            "action": "assert",
+            "selector": ".production-statistics h2",
+            "tag": "h2",
+            "text": "Production statistics"
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "profile": 600,
+              "viewport": "1280x850",
+              "panel": {
+                "width": 210.015625,
+                "height": 513.125
+              },
+              "openingsContained": true,
+              "fixedControlsDuringScroll": true
+            },
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "focus",
+            "selector": ".hud-content",
+            "tag": "div",
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock includes carried goods. Good Stock Made Used"
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "keyboardScrolled": true,
+              "scrollTop": 80
+            },
+            "ok": true
+          }
+        ],
+        "final": {
+          "url": "http://127.0.0.1:3450/",
+          "title": "The Settlers III Remake | Roman settlement",
+          "focusHistory": [
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              },
+              "related": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              },
+              "related": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            }
+          ],
+          "activeElement": {
+            "tag": "div",
+            "id": null,
+            "role": "region",
+            "ariaLabel": "Settlement details",
+            "ref": null,
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock incl"
+          },
+          "bodyText": "The Settlers III ROMAN SETTLEMENT Generated landscape 0:04 Save Load Sound off Guide New settlement 38 settlers Log 8 Plank 30 Stone 26 Bread 8 Meat 8 Fish 8 Hammer 4 Shovel 2 Axe 3 Saw 2 Pickaxe 4 Scythe 2 Fishingrod 2 Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves. Generated landscape A generated landscape, not an original map Pause 1x 2x 4x Settlement dispatch Choose a building, then click open ground inside your border. Buildings Goods"
+        },
+        "screenshot": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/control-frame-JTNvgr/1280x850.png",
+        "consoleMessages": [],
+        "consoleErrors": [],
+        "failedRequests": []
+      }
+    },
+    {
+      "viewport": "1440x960",
+      "code": 0,
+      "report": {
+        "url": "http://127.0.0.1:3450/",
+        "viewport": "1440x960",
+        "steps": [
+          {
+            "action": "wait",
+            "ms": 1500,
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".main-menu button",
+            "tag": "button",
+            "text": "Settlers"
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".category-list button",
+            "tag": "button",
+            "text": "Production statistics"
+          },
+          {
+            "ok": true,
+            "action": "assert",
+            "selector": ".production-statistics h2",
+            "tag": "h2",
+            "text": "Production statistics"
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "profile": 768,
+              "viewport": "1440x960",
+              "panel": {
+                "width": 232.953125,
+                "height": 586.703125
+              },
+              "openingsContained": true,
+              "fixedControlsDuringScroll": true
+            },
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "focus",
+            "selector": ".hud-content",
+            "tag": "div",
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock includes carried goods. Good Stock Made Used"
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "keyboardScrolled": true,
+              "scrollTop": 80
+            },
+            "ok": true
+          }
+        ],
+        "final": {
+          "url": "http://127.0.0.1:3450/",
+          "title": "The Settlers III Remake | Roman settlement",
+          "focusHistory": [
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              },
+              "related": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              },
+              "related": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            }
+          ],
+          "activeElement": {
+            "tag": "div",
+            "id": null,
+            "role": "region",
+            "ariaLabel": "Settlement details",
+            "ref": null,
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock incl"
+          },
+          "bodyText": "The Settlers III ROMAN SETTLEMENT Generated landscape 0:04 Save Load Sound off Guide New settlement 38 settlers Log 8 Plank 30 Stone 26 Bread 8 Meat 8 Fish 8 Hammer 4 Shovel 2 Axe 3 Saw 2 Pickaxe 4 Scythe 2 Fishingrod 2 Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves. Generated landscape A generated landscape, not an original map Pause 1x 2x 4x Settlement dispatch Choose a building, then click open ground inside your border. Buildings Goods"
+        },
+        "screenshot": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/control-frame-JTNvgr/1440x960.png",
+        "consoleMessages": [],
+        "consoleErrors": [],
+        "failedRequests": []
+      }
+    },
+    {
+      "viewport": "320x568",
+      "code": 0,
+      "report": {
+        "url": "http://127.0.0.1:3450/",
+        "viewport": "320x568",
+        "steps": [
+          {
+            "action": "wait",
+            "ms": 1500,
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".main-menu button",
+            "tag": "button",
+            "text": "Settlers"
+          },
+          {
+            "ok": true,
+            "action": "click",
+            "selector": ".category-list button",
+            "tag": "button",
+            "text": "Production statistics"
+          },
+          {
+            "ok": true,
+            "action": "assert",
+            "selector": ".production-statistics h2",
+            "tag": "h2",
+            "text": "Production statistics"
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "profile": 768,
+              "viewport": "320x568",
+              "panel": {
+                "width": 207.578125,
+                "height": 522.78125
+              },
+              "openingsContained": true,
+              "fixedControlsDuringScroll": true
+            },
+            "ok": true
+          },
+          {
+            "ok": true,
+            "action": "focus",
+            "selector": ".hud-content",
+            "tag": "div",
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock includes carried goods. Good Stock Made Used"
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "press",
+            "key": "ArrowDown",
+            "ok": true
+          },
+          {
+            "action": "evaluate",
+            "value": {
+              "keyboardScrolled": true,
+              "scrollTop": 80
+            },
+            "ok": true
+          }
+        ],
+        "final": {
+          "url": "http://127.0.0.1:3450/",
+          "title": "The Settlers III Remake | Roman settlement",
+          "focusHistory": [
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": "tab",
+                "ariaLabel": "Settlers",
+                "text": "Settlers"
+              },
+              "related": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              }
+            },
+            {
+              "event": "focusout",
+              "target": {
+                "tag": "button",
+                "role": null,
+                "ariaLabel": "Production statistics",
+                "text": "Production statistics"
+              },
+              "related": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            },
+            {
+              "event": "focusin",
+              "target": {
+                "tag": "div",
+                "role": "region",
+                "ariaLabel": "Settlement details",
+                "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and"
+              }
+            }
+          ],
+          "activeElement": {
+            "tag": "div",
+            "id": null,
+            "role": "region",
+            "ariaLabel": "Settlement details",
+            "ref": null,
+            "text": "Territory: players Settlers: all Buildings: shown Production statistics Made and used since settlement began. Stock incl"
+          },
+          "bodyText": "The Settlers III ROMAN SETTLEMENT Save Load Sound off Guide New settlement 38 Log 8 Plank 30 Stone 26 Bread 8 Meat 8 Fish 8 Hammer 4 Shovel 2 Axe 3 Saw 2 Pickaxe 4 Scythe 2 Fishingrod 2 Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves. Generated landscape A generated landscape, not an original map Pause 1x 2x 4x Settlement dispatch Choose a building, then click open ground inside your border. Buildings Goods Settlers Statistics Occupations M"
+        },
+        "screenshot": "/Users/chris/Code/the-settlers-iii-remake-release-verification/storage/framework/runtime/shots/control-frame-JTNvgr/320x568.png",
+        "consoleMessages": [],
+        "consoleErrors": [],
+        "failedRequests": []
+      }
+    }
+  ],
+  "controlFrameMedia": {
+    "schemaVersion": 1,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "captures": [
+      {
+        "viewport": "1280x720",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "4becc64e501530bb2af5db467a1cc8a1bd153c2fffb462765ca3b3e07ce38a1a",
+          "bytes": 715923,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "viewport": "1280x850",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "e805b2c39a335167f088eb3e393dd981139520af8db4460905926f1bab9756a4",
+          "bytes": 806694,
+          "width": 1280,
+          "height": 850
+        }
+      },
+      {
+        "viewport": "1440x960",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "1a3a316fa2a778db110e643ad4713786b4cd43c3b23dc37a27e6af4ef599ea0c",
+          "bytes": 939669,
+          "width": 1440,
+          "height": 960
+        }
+      },
+      {
+        "viewport": "320x568",
+        "browserExitCode": 0,
+        "screenshot": {
+          "sha256": "6e07c7f408243af3f5cc17929bbf04a2a00fbdbf4157da9eca0560b3b476d8f8",
+          "bytes": 161954,
+          "width": 320,
+          "height": 568
+        }
+      }
+    ]
+  },
+  "sharedEngine": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.329\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "119a795c1d5dc359c3531ad22f0920609498d8d58437c53df123e5dddcd1ea0f",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "863129ee325cec89462c096fa10602761e5de0ce38c2dedde933714e6ea53543",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "faed169eb4bea2e1440b7ff56df3a53d670ea5032eb264af1071093dac648beb"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "logs": [
+    {
+      "name": "game-framework-290-normal-upgrade.log",
+      "sha256": "17ac21942f3d371428edf36bd40d7af9bc6d8e41c08d6af82554f656ac732b48"
+    },
+    {
+      "name": "game-framework-290-craft-install.log",
+      "sha256": "299605a7201152552210678b47f7b04724656d282c51bdae44d548c7d42e345c"
+    },
+    {
+      "name": "game-framework-290-pantry-install.log",
+      "sha256": "f26cb89f5d599e680a0bc40c07ebe8f88c9e40ab377653c172e251961b5fd499"
+    },
+    {
+      "name": "game-framework-290-frozen-install.log",
+      "sha256": "4ff419f8e99747ce79d43c2475887b307ceb9b3e8869e20c66307cf3b7794a92"
+    },
+    {
+      "name": "game-framework-290-build.log",
+      "sha256": "9c01485451f35a9a135a81fa6eded2be3c72ac9119d65dc6554a6f1b8b7e4253"
+    },
+    {
+      "name": "game-framework-290-installed-acceptance.log",
+      "sha256": "33391034fb9ce3f3ddf219c5d7046a6b5bcfaa59d8f2c08f94450194decb7199"
+    },
+    {
+      "name": "game-framework-290-control-frame.log",
+      "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    },
+    {
+      "name": "game-framework-290-native-engine-browser.log",
+      "sha256": "8206f1a3f9b7cbd4e72c5b2bb767426600d6f93f9550c0e1f98295e1596bad69"
+    }
+  ],
+  "limits": [
+    "The headless native fixture does not verify native game presentation, frame clocks, HUD, input or application lifecycle.",
+    "Original Gold behavior, complete content, fonts, campaigns and remaining roadmap issues are incomplete.",
+    "Desktop and phone panel captures were inspected locally. The phone frame check does not establish a playable complete mobile game.",
+    "The separately pushed release-install gate fix96632b4024 is newer than this immutable290release. It has local regression evidence and is awaiting its own exact source CI and maintained patch release."
+  ]
+}

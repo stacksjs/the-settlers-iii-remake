@@ -1,9 +1,36 @@
 import { describe, expect, test } from 'bun:test'
-import { catalog } from '../../resources/game/controller'
+import { catalog, snapshot } from '../../resources/game/controller'
+import { checksum, restore, save } from '../../resources/game/engine'
 import { BUILDING_MENU, chooseMenu, initialMenu, MENUS, openMenu } from '../../resources/game/menus'
-import { order, rules, session } from '../fixtures/engine'
+import { anchors, order, place, present, rules, session, until } from '../fixtures/engine'
 
 describe('control center', () => {
+  test('production figures follow actual work, exclude starting and enemy goods, and survive a checkpoint', () => {
+    const s = session({ players: [
+      { name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { log: 20, plank: 50, stone: 50, hammer: 4, shovel: 4, saw: 2 } },
+      { name: 'Rival', civilization: 'roman', start: { x: 76, y: 76 }, goods: { gold: 77, log: 20, plank: 50, stone: 50, hammer: 4, shovel: 4, saw: 2 } },
+    ] })
+    expect(snapshot(null, null, '', 1).production).toEqual([])
+    const before = snapshot(s, null, '', 1).production
+    expect(before).toBeArray()
+    expect(before.find(g => g.key === 'plank')).toMatchObject({ stock: 50, produced: 0, consumed: 0 })
+    expect(before.find(g => g.key === 'gold')?.stock).toBe(0)
+    place(s, 'sawmill', anchors.west)
+    place(s, 'sawmill', { x: 66, y: 78 }, 2)
+    until(s, () => (s.state.ledger[1]!.produced.plank ?? 0) >= 4 && (s.state.ledger[2]!.produced.plank ?? 0) >= 4, 12000)
+    const hash = checksum(s.state), stock = present(s, 1)
+    const produced = snapshot(s, null, '', 1).production
+    expect(produced.find(g => g.key === 'plank')?.produced).toBeGreaterThanOrEqual(4)
+    expect(produced.find(g => g.key === 'plank')?.produced).toBe(s.state.ledger[1]!.produced.plank)
+    expect(produced.find(g => g.key === 'plank')?.produced).not.toBe(s.state.ledger[1]!.produced.plank! + s.state.ledger[2]!.produced.plank!)
+    expect(produced.find(g => g.key === 'log')?.consumed).toBeGreaterThan(0)
+    for (const row of produced) expect(row.stock).toBe(stock[row.key] ?? 0)
+    expect(checksum(s.state)).toBe(hash)
+    const loaded = restore(save(s), rules)
+    expect(snapshot(loaded, null, '', 1).production).toEqual(produced)
+    expect(checksum(loaded.state)).toBe(hash)
+  })
+
   test('replays the manual navigation: three main menus, their sub-menus, and the last sub-menu remembered', () => {
     let m = initialMenu()
     expect(m).toMatchObject({ main: 'buildings', sub: 'resources' })
