@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/37",
+  "baseline": "b9a5aef7a8e70ea544c11289e6c8a6ba6f958172",
+  "problem": "Workforce counts ignored carriers whose equipment was reserved but whose profession had not changed yet. This exceeded profession and crew limits and depleted the configured carrier reserve, including barracks recruitment.",
+  "reproductions": {
+    "builderLimitOne": {
+      "maximumAllowed": 1,
+      "observedBeforeFix": 2
+    },
+    "diggerLimitOne": {
+      "maximumAllowed": 1,
+      "observedBeforeFix": 3
+    },
+    "constructionCrew": {
+      "maximumAllowed": 2,
+      "observedBeforeFix": 3
+    },
+    "civilianCarrierReserve": {
+      "minimumAllowed": 11,
+      "observedBeforeFix": 10
+    },
+    "militaryCarrierReserve": {
+      "minimumAllowed": 29,
+      "observedBeforeFix": 28
+    }
+  },
+  "implementation": "Count each settler by the profession committed by its live equipment assignment, falling back to its current profession. Share carrier availability between workplace and military recruitment. Existing cancellation deletes assignments, so no extra persistent counter is introduced.",
+  "validation": {
+    "unitTests": 206,
+    "failures": 0,
+    "assertions": 22291,
+    "newPublicSessionRegressions": 5,
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "typecheck": "passed"
+  },
+  "logs": [
+    {
+      "name": "game-workforce-limits-red-both.log",
+      "sha256": "622b385388f33764b6dcc8e61e557052d3f5ac2e07f5043a246358fb55fa7f25"
+    },
+    {
+      "name": "game-workforce-military-reserve-red.log",
+      "sha256": "15d9b24bad74008ac7cebac3850d33f52eee7a2a2a7b0bc018771c963c9364b1"
+    },
+    {
+      "name": "game-workforce-digger-crew-red.log",
+      "sha256": "ff78a4301639567b6f7bd82e0e925cedd6d5c8cebd1cdfe4e03767b7a2e5b952"
+    },
+    {
+      "name": "game-workforce-five-contracts-green.log",
+      "sha256": "38aeddd95a39182fca133791a6d48ab4169ed34928dbf4ba46fc5bf6e7515ea0"
+    },
+    {
+      "name": "game-workforce-final-all-unit.log",
+      "sha256": "193ea106d44f72e985500bc1f37051e0093b4b827ed7d945eb18dcf8358c3f90"
+    },
+    {
+      "name": "game-workforce-final-lint.log",
+      "sha256": "f7aa5b0d2c1f6ff5319c63864b0a2873c81bca251c33d13abf4e9907282d2644"
+    },
+    {
+      "name": "game-workforce-final-typecheck.log",
+      "sha256": "c3339a2b7b89ce1929422de1ac91045cebc33de7e081a7f271f73b5ee5f9e8a5"
+    }
+  ],
+  "scope": "Partial S3-035 correction for configured workforce controls. Original residence timing, Gold Edition and native game presentation are not established; the issue remains open."
+}

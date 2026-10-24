@@ -7,7 +7,7 @@ import { area, DIRECTIONS, distance, neighbours } from './geometry'
 import { cancelJob, cancelJobsFor, dropCargo, moveStackGoodsToGround, slot } from './logistics'
 import { changeProfession, effects, finishers, freeTileNear, start } from './settlers'
 import { templeLost } from './religion'
-import { release } from './workforce'
+import { carriersToSpare, release } from './workforce'
 
 // Soldiers are settlers who took a weapon at a barracks. Swordsmen strike
 // adjacent enemies, pikemen reach two steps, bowmen loose arrows that land a few
@@ -50,7 +50,7 @@ function enlist(ctx: Context): void {
         // Recruits come from idle carriers and keep the carrier ratio, like any other profession.
         const people = [...state.settlers.values()].filter(s => s.owner === player.id)
         const carriers = people.filter(s => s.profession === 'carrier' && !s.program && !s.inside && !s.cargo && !s.workplace)
-        if (!carriers.length || people.filter(s => s.profession === 'carrier').length - 1 < Math.ceil(people.length * player.settings.carrierRatio / 100)) continue
+        if (!carriers.length || carriersToSpare(ctx, player.id) < 1) continue
         const door = pointAt(ctx, doorOf(ctx, b))
         const carrier = carriers.sort((a, c) => distance(a, door) - distance(c, door) || a.id - c.id)[0]!
         const job: Job = { id: nextId(ctx), kind: 'equip', owner: player.id, tool: weapon, source: stack.id, settler: carrier.id, profession, building: b.id, picked: false }

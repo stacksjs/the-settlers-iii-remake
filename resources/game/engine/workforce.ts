@@ -46,8 +46,14 @@ function toolOffers(ctx: Context, owner: number, tool: string): Stack[] {
   return [...ctx.state.stacks.values()].filter(s => s.owner === owner && s.good === tool && available(s) > 0 && (s.role === 'output' || s.role === 'storage' || s.role === 'ground'))
 }
 
-function carriersToSpare(ctx: Context, owner: number): number {
-  const people = population(ctx, owner), carriers = people.filter(s => s.profession === 'carrier').length
+/** A reserved tool commits its carrier to the new profession before pickup. */
+function assignedProfession(ctx: Context, s: Settler): string {
+  const job = s.program && (s.program.kind === 'equip' || s.program.kind === 'enlist') ? ctx.state.jobs.get(s.program.ref) : undefined
+  return job?.kind === 'equip' && job.settler === s.id ? job.profession : s.profession
+}
+
+export function carriersToSpare(ctx: Context, owner: number): number {
+  const people = population(ctx, owner), carriers = people.filter(s => assignedProfession(ctx, s) === 'carrier').length
   const player = ctx.state.players.find(p => p.id === owner)!
   return carriers - Math.ceil(people.length * player.settings.carrierRatio / 100)
 }
@@ -206,8 +212,8 @@ export function staff(ctx: Context): void {
     if (b.phase !== 'active') {
       const profession = b.phase === 'leveling' ? 'digger' : 'builder'
       if (profession === 'builder' && !materials(ctx, b)) continue
-      const crew = b.workers.filter(id => state.settlers.get(id)?.profession === profession).length
-      const total = population(ctx, b.owner).filter(s => s.profession === profession).length
+      const crew = b.workers.filter(id => { const person = state.settlers.get(id); return person && assignedProfession(ctx, person) === profession }).length
+      const total = population(ctx, b.owner).filter(s => assignedProfession(ctx, s) === profession).length
       const player = state.players.find(p => p.id === b.owner)!
       const limit = profession === 'digger' ? player.settings.diggerLimit : player.settings.builderLimit
       if (crew < SITE_CREW[profession] && (total < limit || population(ctx, b.owner).some(s => s.profession === profession && free(s)))) {
