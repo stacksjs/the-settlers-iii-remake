@@ -1,8 +1,8 @@
 import type { Session } from '../../resources/game/engine'
 import { describe, expect, test } from 'bun:test'
-import { audit, checksum, restore, save, createSession, describeMap, diagnose, economicAI, findStart, generateMap, observe, stepAI } from '../../resources/game/engine'
+import { audit, checksum, restore, save, createSession, describeMap, diagnose, economicAI, findStart, generateMap, observe, PUBLISHED_RULES, stepAI } from '../../resources/game/engine'
 import { anchors, landscape, order, rules } from '../fixtures/engine'
-import { rivalSession, RIVAL_MILITARY } from '../../resources/game/controller'
+import { RIVAL_MILITARY } from '../../resources/game/controller'
 
 type Placed = { type: string, x: number, y: number }
 const carriers = (n: number) => Array.from({ length: n }, (_, i) => ({ profession: 'carrier', x: 36 + (i % 8), y: 47 + Math.floor(i / 8) }))
@@ -23,6 +23,91 @@ const play = (s: Session, ticks: number, ai = economicAI(1, { interval: 20 }), s
 const mine = (s: Session) => s.state.results.filter(r => r.player === 1)
 
 describe('AI deadlock recovery', () => {
+  test('a surveyor explores the visible frontier after surveying the known mountains without reading hidden ore', () => {
+    const field = (hiddenGood: string) => {
+      const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [
+        { kind: 'terrain', id: 'mountain', x: 28, y: 28, radius: 3 },
+        { kind: 'resource', id: 'coal', x: 28, y: 28, radius: 3, amount: 2 },
+        { kind: 'terrain', id: 'mountain', x: 80, y: 42, radius: 4 },
+        { kind: 'resource', id: hiddenGood, x: 80, y: 42, radius: 4, amount: 3 },
+      ] })
+      const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [
+        { good: 'plank', amount: 20 }, { good: 'stone', amount: 20 }, { good: 'hammer', amount: 2 }, { good: 'saw', amount: 1 },
+      ], [...carriers(16), { profession: 'geologist', x: 28, y: 28 }], map)
+      order(s, 'specialists', { profession: 'geologist', x: 28, y: 28, count: 1 })
+      s.advance(3000)
+      expect(s.view(1).settlers.find(p => p.profession === 'geologist')?.diagnostic).toBe('duty complete')
+      expect(s.view(1).signs.some(sign => sign.good === 'coal')).toBe(true)
+      return s
+    }
+    const s = field('ironore'), other = field('goldore'), ai = economicAI(1), before = s.view(1).explored.reduce((sum, seen) => sum + seen, 0)
+    const observed = observe(s, 1), decisions = ai.decide(observed)
+    expect(observed.explored(42 * 96 + 80)).toBe(false)
+    expect(decisions).toEqual(economicAI(1).decide(observe(other, 1)))
+    const survey = decisions.find(command => command.type === 'specialists' && command.profession === 'geologist')
+    expect(survey).toBeDefined()
+    const target = survey as { x: number, y: number }
+    expect(observed.explored(target.y * 96 + target.x)).toBe(true)
+    order(s, 'specialists', { profession: 'geologist', ...target, count: 1 })
+    s.advance(800)
+    expect(s.view(1).explored.reduce((sum, seen) => sum + seen, 0)).toBeGreaterThan(before)
+    expect(audit(s.context)).toEqual([])
+  })
+
+  test('a discovered neutral iron deposit is claimed by a real pioneer and supplied to a constructed mine', () => {
+    const map = landscape([
+      { kind: 'terrain', id: 'mountain', x: 73, y: 42, radius: 5 },
+      { kind: 'resource', id: 'ironore', x: 73, y: 42, radius: 5, amount: 3 },
+    ])
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'plank', amount: 40 }, { good: 'stone', amount: 40 }, { good: 'hammer', amount: 2 }, { good: 'saw', amount: 1 },
+      { good: 'shovel', amount: 2 }, { good: 'pickaxe', amount: 2 }, { good: 'bread', amount: 16 },
+    ], [...carriers(16), { profession: 'geologist', x: 64, y: 40 }], map)
+    order(s, 'specialists', { profession: 'geologist', x: 68, y: 40, count: 1 })
+    for (let tick = 0; tick < 1000 && !s.view(1).signs.some(sign => sign.good === 'ironore'); tick++) s.advance(1)
+    const sign = s.view(1).signs.find(sign => sign.good === 'ironore')!
+    expect(sign).toBeDefined()
+    expect(s.view(1).owner[sign.tile]).toBe(0)
+    const ai = economicAI(1, { interval: 20 })
+    expect(ai.decide(observe(s, 1)).some(command => command.type === 'specialists' && command.profession === 'pioneer')).toBe(true)
+    let pioneerClaimed = false
+    const sequence = { next: 1 }
+    for (let tick = 0; tick < 16000; tick++) {
+      stepAI(s, ai, sequence); s.advance(1)
+      if (s.state.events.some(event => event.type === 'territory' && event.text === 'A pioneer claimed new land' && event.tile === sign.tile)) pioneerClaimed = true
+    }
+    expect(pioneerClaimed).toBe(true)
+    expect(s.view(1).owner[sign.tile]).toBe(1)
+    expect(s.view(1).buildings.some(b => b.type === 'iron-mine' && b.phase === 'active')).toBe(true)
+    expect(s.state.ledger[1]!.produced.ironore ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.equipped.shovel ?? 0).toBeGreaterThan(0)
+    expect(ai.results).toEqual([])
+    expect(mine(s).filter(result => !result.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60_000)
+
+  test('a surveyor explores known neutral mountains when the settlement has no mountain land', () => {
+    const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [
+      { kind: 'terrain', id: 'mountain', x: 73, y: 42, radius: 5 },
+      { kind: 'resource', id: 'ironore', x: 73, y: 42, radius: 5, amount: 3 },
+    ] })
+    const s = computer([{ type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'plank', amount: 10 }, { good: 'stone', amount: 12 }, { good: 'hammer', amount: 2 }, { good: 'saw', amount: 1 },
+    ], [...carriers(16), { profession: 'geologist', x: 64, y: 40 }], map)
+    const o = observe(s, 1), ai = economicAI(1, { interval: 20 })
+    expect(o.view.explored.some((seen, tile) => seen === 1 && o.view.owner[tile] === 0 && o.terrain(tile) === 'mountain')).toBe(true)
+    const survey = ai.decide(o).find(command => command.type === 'specialists')
+    expect(survey).toBeDefined()
+    const target = survey as { x: number, y: number }, tile = target.y * o.width + target.x
+    expect(o.view.owner[tile]).toBe(0)
+    expect(o.explored(tile)).toBe(true)
+    expect(o.terrain(tile)).toBe('mountain')
+    play(s, 3000, ai)
+    expect(s.view(1).signs.some(sign => sign.good === 'ironore' && sign.amount > 0)).toBe(true)
+    expect(ai.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60_000)
+
   test('an idle failed geologist is reassigned to a mountain outside known building footprints without equipping a second specialist', () => {
     const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [
       { kind: 'terrain', id: 'mountain', x: 15, y: 15, radius: 7 },
@@ -48,14 +133,18 @@ describe('AI deadlock recovery', () => {
     expect(audit(s.context)).toEqual([])
   }, 60_000)
 
-  test('the rival keeps its exhausted woodcutter while a forester finishes and timber production resumes after restore', () => {
-    const s = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
-    for (let tick = 0; tick < 6640; tick++) { stepAI(s, ai, sequence); s.advance(1) }
+  test('the rival keeps its exhausted woodcutter while a forester finishes and timber production resumes after restore', async () => {
+    // The recorded seed-2 checkpoint pins the actual failure independently of later AI planning changes.
+    const bytes = await Bun.file(new URL('../fixtures/ai-woodcutter-pending-forester.json', import.meta.url)).arrayBuffer()
+    expect(Bun.SHA256.hash(bytes, 'hex')).toBe('e15e9413bf7f49b038214fc8f925017e8d93ffcc1a8bf3dab8103ba56e159d36')
+    const checkpoint = JSON.parse(new TextDecoder().decode(bytes))
+    const s = restore(checkpoint, PUBLISHED_RULES), ai = economicAI(2, { military: RIVAL_MILITARY })
+    const sequence = { next: Math.max(0, ...s.state.pending.filter(command => command.player === 2).map(command => command.seq + 1), ...s.state.results.filter(result => result.player === 2).map(result => result.seq + 1)) }
     const cutter = s.view(2).buildings.find(b => b.owner === 2 && b.type === 'woodcutter' && b.shortage === 'no-resources')!
     expect(cutter).toBeDefined()
     expect(s.view(2).buildings.some(b => b.owner === 2 && b.type === 'forester' && b.phase === 'building')).toBe(true)
     const produced = s.state.ledger[2]!.produced.plank ?? 0
-    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), PUBLISHED_RULES)
     const restoredAI = economicAI(2, { military: RIVAL_MILITARY }), restoredSequence = { next: sequence.next }
     for (let tick = 0; tick < 4000; tick++) {
       stepAI(s, ai, sequence); s.advance(1)

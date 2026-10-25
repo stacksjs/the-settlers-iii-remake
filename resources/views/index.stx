@@ -3,6 +3,7 @@ import { catalog, mountGame, snapshot } from '../game/controller'
 import { controlLayout } from '../game/control-layout'
 import { chooseMenu, initialMenu, LABELS, menuImage, MENUS, openMenu } from '../game/menus'
 import type { Game } from '../game/controller'
+import { parseMapSeed } from '../game/setup'
 
 const map = useRef<HTMLCanvasElement>('island')
 const overview = useRef<HTMLCanvasElement>('overview')
@@ -19,6 +20,8 @@ const subs = derived(() => [...MENUS[menu().main]])
 const showGuide = state(false)
 function closeGuide(): void { showGuide.set(false); guideButton.current?.focus() }
 const confirmRestart = state(false)
+const seedDraft = state('')
+const seedError = state('')
 const reduceMotion = usePreferredReducedMotion()
 const desktopHud = useMediaQuery('(min-width: 761px)')
 const largeHud = useMediaQuery('(min-height: 902px)')
@@ -29,7 +32,15 @@ const options = derived(() => catalog.filter(item => item.menu === menu().sub))
 const stocked = derived(() => view().goods.filter(item => item.amount > 0))
 function choose(kind: string): void { selectedTool.set(kind); game?.choose(kind) }
 function inspect(): void { selectedTool.set(''); game?.choose(null) }
-function restart(landscape: 'generated' | 'tutorial' | 'rival'): void { void game?.restart(landscape); confirmRestart.set(false); selectedTool.set('') }
+async function restart(landscape: 'generated' | 'tutorial' | 'rival'): Promise<void> {
+  try {
+    const seed = landscape === 'tutorial' ? undefined : parseMapSeed(seedDraft())
+    seedError.set('')
+    await game?.restart(landscape, seed)
+    confirmRestart.set(false); selectedTool.set('')
+  }
+  catch (error) { seedError.set(error instanceof Error ? error.message : 'Could not read the map seed.') }
+}
 onMount(() => {
   if (!map.current) return
   try { game = mountGame(map.current, value => { view.set(value); selectedTool.set(value.tool ?? '') }, () => reduceMotion(), overview.current ?? undefined) }
@@ -77,7 +88,7 @@ onDestroy(() => game?.dispose())
       <section class="map-region" aria-label="Settlement map">
         <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag with the right button to pan and with the left to mark soldiers, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
         <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
-        <div class="map-caption"><span class="map-location">{{ view().map }}</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy and army grow to the east by the same rules' : 'A generated landscape, not an original map' }}</span></div>
+        <div class="map-caption"><span class="map-location">{{ view().map }}</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy and army grow to the east by the same rules' : 'A generated landscape, not an original map' }}</span><span class="map-seed" :if="view().seed !== null">Map seed {{ view().seed }}</span></div>
         <div class="flex gap-1 map-controls" aria-label="Simulation speed">
           <button type="button" class="map-button" @click="game?.home()" title="Center on the castle (H)" aria-label="Center on the castle"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
           <button type="button" class="map-button" :aria-pressed="view().speed === 0" @click="game?.speed(view().speed === 0 ? 1 : 0)" aria-label="Pause or resume simulation">{{ view().speed === 0 ? 'Play' : 'Pause' }}</button>
@@ -101,6 +112,10 @@ onDestroy(() => game?.dispose())
         <div class="guide-panel restart-panel" :if="confirmRestart()">
           <h2>Start a new settlement?</h2><p>This replaces the settlement saved on this device. {{ view().prototypeKept ? 'Your Riverlands prototype save stays untouched.' : '' }}</p>
           <p>The original tutorial map brings its own Roman tower, settlers and goods. Its tutorial script and rival are not played yet. A computer rival builds its own economy and army with the same commands you use, scouts your land and attacks the towers it finds. Capture all enemy castles and towers to win. Losing your last castle or tower ends the match in defeat.</p>
+          <label for="map-seed" class="block mt-4 text-sm">Map seed (optional)</label>
+          <input id="map-seed" x-model.trim="seedDraft" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Random" aria-describedby="map-seed-help map-seed-error" class="mt-2 px-3 py-2 w-full bg-transparent border border-white/20 rounded">
+          <p id="map-seed-help" class="guide-note">Reuse a seed for the same generated landscape or rival map. Leave blank for a random map.</p>
+          <p id="map-seed-error" :if="seedError()" role="alert">{{ seedError() }}</p>
           <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
         </div>
         <div class="advisor"><span class="advisor-icon i-hugeicons-quill-pen-01" aria-hidden="true"></span><div><strong>Settlement dispatch</strong><p role="status" aria-live="polite">{{ view().message }}</p></div></div>

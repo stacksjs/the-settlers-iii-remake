@@ -16,6 +16,7 @@ import { alertTarget, fromMinimap, minimapPixels, minimapSize, toMinimap } from 
 import { BUILDING_MENU } from './menus'
 import { createTroops } from './troops'
 import { RIVAL_MISSION } from './skirmish'
+import { validateMapSeed } from './setup'
 
 const rules = ROMAN_ENGINEERING
 export const PLAYER = 1
@@ -71,7 +72,7 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
@@ -87,6 +88,7 @@ export function snapshot(session: Session | null, selected: number | null, messa
     events: view.events.slice(-6).reverse().map(e => ({ text: e.text, at: alertTarget({ explored: t => view.explored[t] === 1, view, width: view.width }, e) })),
     prototypeKept: false,
     map: mapName(session),
+    seed: generatedSeed(session),
     objectives: view.mission?.objectives ?? [],
     outcome: view.mission?.outcome ?? 'playing',
     ...economy(session),
@@ -166,6 +168,12 @@ export type Game = ReturnType<typeof mountGame>
 
 export type Landscape = 'generated' | 'tutorial' | 'rival'
 export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : 'Generated landscape'
+
+function generatedSeed(session: Session): number | null {
+  const { id, digest } = session.identity.content
+  const seed = /^(generated|rival)-/.test(id) ? /^seed:(\d+)$/.exec(digest) : null
+  return seed ? Number(seed[1]) : null
+}
 const RIVAL_SIZE = 128
 const RIVAL_GUARD: Record<string, number> = { swordsman: 4, bowman: 2 }
 /** The rival's declared military difficulty. */
@@ -567,10 +575,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       report('Choose the working area on the map, or use arrow keys and Enter. Escape cancels.')
       canvas.focus()
     },
-    async restart(landscape: Landscape = 'generated') {
+    async restart(landscape: Landscape = 'generated', requestedSeed?: number) {
       if (!ready) return
-      const seed = 1 + Math.floor(Math.random() * 1_000_000)
       try {
+        const seed = requestedSeed === undefined ? 1 + Math.floor(Math.random() * 1_000_000) : validateMapSeed(requestedSeed)
         const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed)
         if (disposed) return
         adopt(next); speed = 1

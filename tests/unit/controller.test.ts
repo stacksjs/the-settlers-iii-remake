@@ -88,6 +88,7 @@ test('rival landscapes start a computer player on the far side', () => {
     expect(Math.abs(castles[0]!.x - castles[1]!.x)).toBeGreaterThanOrEqual(40)
     expect(session.state.players[1]!.controller).toBe('computer')
     expect(mapName(session)).toBe('Computer rival')
+    expect(snapshot(session, null, '', 1).seed).toBe(seed)
   }
 })
 

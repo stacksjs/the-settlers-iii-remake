@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T14:27:29.178791+00:00",
+  "base": "6583568e455be2bf8fd5d5a0b4d82192a876221d",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/72",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/74",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/76",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/191"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4",
+    "rules": "roman-engineering@0.9.0"
+  },
+  "changes": [
+    "Survey known own and neutral mountains; expand visible frontiers when minerals remain missing. Hidden ore variation yields identical public decisions.",
+    "Use actual pioneer recruitment, shovel equipment and claims toward known survey signs. Require owned positive survey evidence inside mine extraction radius before choosing a mine site.",
+    "Add a validated unsigned map seed field and retained seed caption, using normal restart and saved content identity.",
+    "Retain the historical pending-forester checkpoint with its original hash so later planner choices cannot erase the regression.",
+    "Require a production-paced full browser battle and outcome save/reload in CI. Original raster uploads remain excluded."
+  ],
+  "ordinaryBattle": {
+    "seed": 2,
+    "initialPopulation": 44,
+    "createdPlanks": 30,
+    "tick": 38341,
+    "humanOutcome": "lost",
+    "computerOutcome": "won",
+    "produced": [
+      "ironore",
+      "iron",
+      "sword"
+    ],
+    "midgameRestore": {
+      "tick": 18000,
+      "freshAI": true,
+      "finalChecksumMatches": true
+    },
+    "audit": [],
+    "rejectedEnqueues": [],
+    "traceSha256": "b9f40db4849dc11e97966f1e33624c2d7c88a1edacc85be9ddcde2e2880c52a4",
+    "testLogSha256": "97424ebbe6d9c47ed3bc6b03570944603617273e31b5af2719ca3db80cdc37c5"
+  },
+  "nativeInputBrowser": {
+    "url": "http://127.0.0.1:3457/",
+    "delivery": "Native browser controls: enter seed2, start Computer rival, choose normal4x, wait, pause/save/reload. No session injection or test clock.",
+    "observed": [
+      "Mission lost",
+      "Your Castle was captured",
+      "Map seed 2 retained after document reload",
+      "Welcome back saved-settlement restoration"
+    ],
+    "captures": [
+      {
+        "name": "native-seed2-start",
+        "accessibilitySha256": "d8967f5323f049f9879efc528949f1c4800bddb80c09d8222327f42088d16f2d",
+        "pngSha256": "ee69dd4f86b47b2b44cae8030ff8b87120fa5f4967427f2b2b3aba630986597b",
+        "pngBytes": 107651,
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "native-battle-finished",
+        "accessibilitySha256": "fed0c962c485c5ad9051591053be695c5b914cc364a3921c24efd587a5c5d47d",
+        "pngSha256": "5c644873c07f76316d20ce702d5e87dde0ca81be49ac19a17d50beb50c9aa686",
+        "pngBytes": 102271,
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "native-battle-restored",
+        "accessibilitySha256": "0ce191518c25e6ea9365ea3c342baf83a1fc7c6e47d2dea60cf32c84b08c51d5",
+        "pngSha256": "3ed78697ce35929d91633f04c16487865523f9bd1b2cd9f22c541bcba37b8715",
+        "pngBytes": 56232,
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    ]
+  },
+  "checks": {
+    "unit": {
+      "passed": 267,
+      "failed": 0,
+      "assertions": 22701,
+      "logSha256": "71fdb73d1f488591ee50e3d7ad36b0568726d37168605bfade59ac86c5b34924"
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "logSha256": "1d81b1e99b038425af6c255ea2d24a645fa61c3ad74625b942dd3d7fba11b30a"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "e6d3cb53482b5a2b16460ec3dbba392c083a376aa2ba01f8757f3e1f81c5d87b"
+    },
+    "fastBrowser": {
+      "passedSteps": 339,
+      "consoleErrors": 0,
+      "failedRequests": 0,
+      "collectionErrors": 0,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "passed": true
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "passed": true
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "passed": true
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "passed": true
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "passed": true
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "passed": true
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "passed": true
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "passed": true
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "passed": true
+        }
+      ]
+    }
+  },
+  "frameworkDefect": {
+    "issue": "https://github.com/stacksjs/stacks/issues/2992",
+    "installed308IdleScenario": "Failed after about60seconds; reproduced on a static page independently of game rendering.",
+    "redReportSha256": "3bc5e4227ab103201b9b9da694a5ff70d44a93f6857f223ac4c32d9d12384a9f",
+    "source": "acaab209fbbb0b90be37e849e149ebfa1fbdf8f0",
+    "maintainedPatchRelease": "v0.75.310",
+    "adoption": "Pending exact-source CI, publication qualification and normal installed full-match rerun. No installed-module changes."
+  },
+  "broaderMapProbe": {
+    "seeds": [
+      1,
+      3,
+      21,
+      42,
+      99
+    ],
+    "ticks": 60000,
+    "outcome": "All remained playing at the bound with clean audits and zero rejected enqueues. This is not an all-seed acceptance pass.",
+    "detailsSha256": "664c513edebd70cbd7899cf71bc747b7ab852b97843966da40efdbc0cffbfa7b",
+    "followUp": "https://github.com/stacksjs/the-settlers-iii-remake/issues/191",
+    "diagnosedSeed3": "No stone remains, no stonecutter remains, and two unfinished sites each lack a stone. The site limit blocks replacement orders."
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/ai.ts",
+      "sha256": "8ad85a8d5b429c61eb84a16672d12e47e44744c0b38f1371dbe3e230e518df25"
+    },
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "e274056bf9c8103b135ba6204c8d327fc34c4e5f930f96876d2c233a9bf06c8d"
+    },
+    {
+      "path": "resources/game/setup.ts",
+      "sha256": "30c47fdcd9993a74ceaf836cb7e71ca36d5cf6d9344743fe23559f6f8c4a3fa8"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "sha256": "842f48a473b1f445a0d0be510944ae288b0cd6ae8d6bfe4ea19f0f2db2389103"
+    },
+    {
+      "path": "tests/unit/engine-ai.test.ts",
+      "sha256": "e26e9a488a0c04985a3d1856be9da3d9f1b45b86674f55193b4d82d30ed73092"
+    },
+    {
+      "path": "tests/unit/engine-ai-recovery.test.ts",
+      "sha256": "d07b5b274e2d93d4e9519a7e0ac661fab7098b30ca20b4a9a33ee61d6d5df5a1"
+    },
+    {
+      "path": "tests/unit/setup.test.ts",
+      "sha256": "319abb0f2554a6a1498d44aead8884caf4b13dbdc607799f96b8a24ca23b534e"
+    },
+    {
+      "path": "tests/browser/skirmish.ts",
+      "sha256": "4c2f7229d512024da44212272170ab38a7559b50521a028177c0058055407f43"
+    },
+    {
+      "path": "tests/browser/rival-battle.ts",
+      "sha256": "b06323a28475a214a12e9a2c69ba019d4b2cea3e615f317ed289740e5cab7a21"
+    },
+    {
+      "path": "tests/fixtures/ai-woodcutter-pending-forester.json",
+      "sha256": "e15e9413bf7f49b038214fc8f925017e8d93ffcc1a8bf3dab8103ba56e159d36"
+    }
+  ],
+  "limits": [
+    "Engineering Roman AI policy, not measured Gold AI behavior or original timing.",
+    "One passive-player defeat is proven; human victory and every map seed are not qualified here.",
+    "Native-input browser evidence is not evidence of a native renderer, mobile or desktop game.",
+    "Do not close the skirmish, military/religious AI or complete-release roadmap from this slice."
+  ]
+}

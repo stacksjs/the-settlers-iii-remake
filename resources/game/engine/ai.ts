@@ -46,12 +46,14 @@ const home = (o: Observation): Point[] => {
 }
 /** Every owned military building, castle first: large buildings search for room around each. */
 const holdings = (o: Observation): Point[] => o.view.buildings.filter(b => b.owner === o.player && (b.type === 'castle' || b.type === 'small-tower')).map(b => ({ x: b.x, y: b.y }))
-/** Owned, explored tiles matching a test, nearest the settlement first. */
-function find(o: Observation, test: (t: number) => boolean, limit = 6): Point[] {
-  const center = home(o)[0]
+/** Known matching tiles, nearest the worker or settlement first. Neutral land is opt-in. */
+function find(o: Observation, test: (t: number) => boolean, limit = 6, options: { near?: Point, neutral?: boolean } = {}): Point[] {
+  const center = options.near ?? home(o)[0]
   if (!center) return []
   const found: Point[] = []
-  for (const t of area({ width: o.width, height: o.height }, center, 30)) if (o.view.owner[t] === o.player && test(t)) found.push({ x: t % o.width, y: Math.floor(t / o.width) })
+  for (let t = 0; t < o.width * o.height; t++) {
+    if (o.explored(t) && (o.view.owner[t] === o.player || (options.neutral && o.view.owner[t] === 0)) && test(t)) found.push({ x: t % o.width, y: Math.floor(t / o.width) })
+  }
   return found.sort((a, b) => distance(a, center) - distance(b, center) || a.y - b.y || a.x - b.x).slice(0, limit)
 }
 const signs = (o: Observation, good: string): Point[] => o.view.signs.filter(s => s.good === good && s.amount > 0 && o.view.owner[s.tile] === o.player).map(s => ({ x: s.tile % o.width, y: Math.floor(s.tile / o.width) }))
@@ -257,7 +259,7 @@ export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] 
 /**
  * An economic computer player: at most two construction sites at a time, built
  * in policy order near the resources it has seen, plus one geologist sent to
- * the nearest owned mountain. Difficulty is this declared policy and cadence.
+ * known mountains and unexplored frontiers. Difficulty is this declared policy and cadence.
  */
 export function economicAI(player: number, options: { interval?: number, maxSites?: number, military?: MilitaryPolicy } = {}): EconomicAI {
   const interval = options.interval ?? 80, maxSites = options.maxSites ?? 2
@@ -273,10 +275,11 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       for (const d of diagnosis) if (d.recovery) orders.push(d.recovery)
       const hungry = diagnosis.some(d => d.kind === 'food'), shortHanded = diagnosis.some(d => d.kind === 'population'), blockedDelivery = diagnosis.some(d => d.kind === 'delivery')
       const sites = o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').length
-      // Survey owned mountains until coal and iron are known: the first geologist is equipped with a hammer,
+      // Survey known own and neutral mountains until coal and iron are known: the first geologist uses a hammer,
       // later surveys reuse a geologist whose duty is done.
       const geologists = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'geologist')
-      const idle = geologists.some(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
+      const readyGeologist = geologists.find(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
+      const idle = readyGeologist !== undefined
       const surveyedTiles = new Set(o.view.signs.map(sign => sign.tile))
       const missing = ['coal', 'ironore'].some(good => !o.view.signs.some(sign => sign.good === good && sign.amount > 0))
       // A hammer a building is waiting for is not taken for a geologist: count unstaffed buildings whose worker uses one.
@@ -285,14 +288,27 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       if (!diagnosis.some(d => d.recovery?.type === 'dismiss') && missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? offered(o, 'hammer') > awaited : idle)) {
         const occupied = new Set(o.view.buildings.flatMap(b => footprint(o.rules.buildings.find(rule => rule.id === b.type)!, b).map(p => indexOf(o, p.x, p.y))))
         const blocked = new Set(o.rules.objects.filter(object => object.blocks).map(object => object.id))
-        const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t) && !occupied.has(t) && !blocked.has(o.object(t) ?? ''), 1)[0]
-        if (mountain) orders.push({ type: 'specialists', profession: 'geologist', ...mountain, count: 1 })
+        const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t) && !occupied.has(t) && !blocked.has(o.object(t) ?? ''), 1, { near: readyGeologist, neutral: true })[0]
+        const walkable = new Set(o.rules.terrain.filter(t => t.walkable).map(t => t.id))
+        const edge = find(o, t => walkable.has(o.terrain(t) ?? '') && !occupied.has(t) && !blocked.has(o.object(t) ?? '') && neighbours(o, t).some(next => !o.explored(next)), 1, { near: readyGeologist, neutral: true })[0]
+        // Survey nearby mountains first, then reveal new land instead of cycling through distant expired signs.
+        const target = mountain && (!readyGeologist || !edge || o.view.signs.length === 0 || distance(mountain, readyGeologist) <= o.rules.visibility.settler) ? mountain : edge
+        if (target) orders.push({ type: 'specialists', profession: 'geologist', ...target, count: 1 })
       }
       // Recovery: once goods can be stored, store materials and tools so full doorsteps do not stop production.
       if (own(o, 'storage') > 0 && stored.some(g => !o.settings.stored.includes(g))) orders.push({ type: 'settings', settings: { stored: [...new Set([...o.settings.stored, ...stored])] } })
       if (options.military) orders.push(...militaryOrders({ ...o, interval }, options.military))
       // Nothing can be built once materials are unrecoverable, so the computer orders no sites it cannot pay for.
       const capacity = recoveryCapacity(o)
+      const frontier = mineralFrontier(o, policy)
+      const pioneers = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'pioneer')
+      const readyPioneer = pioneers.some(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
+      const tool = o.rules.professions.find(p => p.id === 'pioneer')?.tool
+      const carriers = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'carrier' && !s.inside && !s.cargo && !s.busy).length
+      const surveyCrew = geologists.length === 0 && orders.some(command => command.type === 'specialists' && command.profession === 'geologist') ? 1 : 0
+      const canEquip = pioneers.length === 0 && (tool === null || (typeof tool === 'string' && offered(o, tool) > 0))
+        && carriers - surveyCrew - 1 >= Math.ceil(o.view.population * o.settings.carrierRatio / 100)
+      if (frontier && !diagnosis.some(d => d.recovery?.type === 'dismiss') && (readyPioneer || canEquip)) orders.push({ type: 'specialists', profession: 'pioneer', ...frontier, count: 1 })
       if (sites >= maxSites || !capacity.build || capacity.awaitingSmith || diagnosis.some(d => (d.kind === 'materials' || d.kind === 'population') && !d.recoverable)) return orders
       const have = (type: string): number => own(o, type)
       // Hungry mines put the fisher first, and buildings without workers put a residence first, whatever the usual order.
@@ -348,10 +364,38 @@ const NEEDS: Record<string, (o: Observation) => (t: number) => boolean> = {
   fisher: o => t => o.terrain(t) === 'water', waterworks: o => t => o.terrain(t) === 'water',
 }
 
+/** A known deposit without room for its mine is expanded toward through ordinary pioneer orders. */
+function mineralFrontier(o: Observation, policy: Want[]): Point | null {
+  const center = home(o)[0]
+  if (!center) return null
+  for (const want of policy) {
+    if (own(o, want.building) >= want.count) continue
+    const workflow = o.rules.buildings.find(rule => rule.id === want.building)?.workflow
+    if (workflow?.kind !== 'extract' || !workflow.food || placeNear(o, want.building, want.near(o))) continue
+    const known = o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && [0, o.player].includes(o.view.owner[sign.tile]!))
+      .map(sign => ({ x: sign.tile % o.width, y: Math.floor(sign.tile / o.width) }))
+      .sort((a, b) => distance(a, center) - distance(b, center) || a.y - b.y || a.x - b.x)
+    for (const target of known) {
+      const walkable = new Set(o.rules.terrain.filter(t => t.walkable).map(t => t.id))
+      const blocked = new Set(o.rules.objects.filter(object => object.blocks).map(object => object.id))
+      const occupied = new Set(o.view.buildings.flatMap(b => footprint(o.rules.buildings.find(rule => rule.id === b.type)!, b).map(p => indexOf(o, p.x, p.y))))
+      const candidates: Point[] = []
+      for (let tile = 0; tile < o.width * o.height; tile++) {
+        if (o.view.owner[tile] !== 0 || !o.explored(tile) || !walkable.has(o.terrain(tile) ?? '') || blocked.has(o.object(tile) ?? '') || occupied.has(tile)) continue
+        if (neighbours(o, tile).some(next => o.view.owner[next] === o.player)) candidates.push({ x: tile % o.width, y: Math.floor(tile / o.width) })
+      }
+      const frontier = candidates.sort((a, b) => distance(a, target) - distance(b, target) || a.y - b.y || a.x - b.x)[0]
+      if (frontier) return frontier
+    }
+  }
+  return null
+}
+
 function placeNear(o: Observation, type: string, anchors: Point[]): Point | null {
   // Harvesting and extracting buildings must have their resource within their working radius.
   const workflow = o.rules.buildings.find(b => b.id === type)?.workflow
-  const need = NEEDS[type]?.(o)
+  const deposits = workflow?.kind === 'extract' && workflow.food ? new Set(o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && o.view.owner[sign.tile] === o.player).map(sign => sign.tile)) : null
+  const need = deposits ? (tile: number) => deposits.has(tile) : NEEDS[type]?.(o)
   const radius = workflow && 'radius' in workflow ? workflow.radius : 0
   const serves = (x: number, y: number): boolean => !need || !radius || area({ width: o.width, height: o.height }, { x, y }, radius).some(t => need(t))
   for (const anchor of anchors) {

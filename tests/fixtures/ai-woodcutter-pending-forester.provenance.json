@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "fixture": "ai-woodcutter-pending-forester.json",
+  "sha256": "e15e9413bf7f49b038214fc8f925017e8d93ffcc1a8bf3dab8103ba56e159d36",
+  "source": "https://github.com/stacksjs/the-settlers-iii-remake/commit/0c8b8d3ec48eb917ea7cecc8a5a63ebaccc58be7",
+  "sourceReceipt": "https://github.com/stacksjs/the-settlers-iii-remake/blob/e33c9bfaf9ddf48b4989195298112fe3893ad652/docs/roadmap/receipts/ai-pending-forester-recovery-2026-10-25.json",
+  "capture": "Ordinary rivalSession(2), economicAI player2 with RIVAL_MILITARY, immediately before tick6640 decision. Original profile0.8.0 and checkpoint checksum retained.",
+  "reason": "Preserves the real pending-forester failure independently of later planner changes. Do not regenerate to follow a new AI timeline.",
+  "media": "Generated engineering map and simulation data. No original game raster or audio."
+}

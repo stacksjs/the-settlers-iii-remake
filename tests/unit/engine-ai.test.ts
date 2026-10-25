@@ -2,6 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { audit, checksum, createSession, economicAI, findStart, generateMap, observe, restore, save, stepAI } from '../../resources/game/engine'
 import type { Session } from '../../resources/game/engine'
 import { anchors, landscape, rules } from '../fixtures/engine'
+import { rivalSession, RIVAL_MILITARY } from '../../resources/game/controller'
 
 function world(seed: number) {
   const map = generateMap(rules, 96, 96, seed)
@@ -10,6 +11,29 @@ function world(seed: number) {
 }
 
 describe('economic AI', () => {
+  test('the normal rival discovers iron, makes weapons and defeats a passive settlement, including a mid-game restore', () => {
+    const s = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
+    expect(s.view(2).population).toBe(44)
+    expect(s.state.ledger[2]!.created.plank).toBe(30)
+    for (let tick = 0; tick < 18000; tick++) { stepAI(s, ai, sequence); s.advance(1) }
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules), freshAI = economicAI(2, { military: RIVAL_MILITARY }), copiedSequence = { next: sequence.next }
+    for (let tick = 18000; tick < 50000 && s.state.mission?.outcome[1] === 'playing'; tick++) {
+      stepAI(s, ai, sequence); s.advance(1)
+      stepAI(copy, freshAI, copiedSequence); copy.advance(1)
+      if (tick % 1000 === 0) expect(audit(s.context)).toEqual([])
+    }
+    expect(s.view(1).mission?.outcome).toBe('lost')
+    expect(s.view(2).mission?.outcome).toBe('won')
+    expect(s.state.ledger[2]!.produced.ironore ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[2]!.produced.iron ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[2]!.produced.sword ?? 0).toBeGreaterThan(0)
+    expect(s.view(2).buildings.filter(b => b.type === 'castle').every(b => b.owner === 2)).toBe(true)
+    expect(copy.checksum()).toBe(s.checksum())
+    expect(ai.results).toEqual([])
+    expect(freshAI.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 120_000)
+
   test('builds and supplies a real economy from normal start stock using only legal commands', () => {
     const s = world(21), ai = economicAI(1), seq = { next: 0 }
     const before = s.state.settlers.size

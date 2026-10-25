@@ -13,7 +13,7 @@ concurrency:
 jobs:
   game:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
       - name: Provision managed tools
@@ -48,6 +48,7 @@ jobs:
           bun tests/browser/recruitment.ts http://127.0.0.1:3450/
           bun tests/browser/working-area.ts http://127.0.0.1:3450/
           bun tests/browser/skirmish.ts http://127.0.0.1:3450/
+          bun tests/browser/rival-battle.ts http://127.0.0.1:3450/
           bun tests/browser/checkpoints.ts
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
@@ -73,6 +74,8 @@ jobs:
             storage/framework/runtime/shots/working-area-media.json
             storage/framework/runtime/shots/skirmish.json
             storage/framework/runtime/shots/skirmish-media.json
+            storage/framework/runtime/shots/rival-battle.json
+            storage/framework/runtime/shots/rival-battle-media.json
             storage/framework/runtime/shots/checkpoints.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

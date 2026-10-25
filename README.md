@@ -33,6 +33,13 @@ cursor to the nearest valid site and Enter places it. Hold Shift to keep placing
 Drag to pan, scroll to zoom. Space pauses, H centers on the castle, S saves and
 Escape cancels.
 
+Choose **New settlement**, enter an optional unsigned **Map seed**, and choose
+**Computer rival** for a Roman skirmish. Seed `2` is a verified starting map.
+The rival surveys, expands, builds an economy, makes weapons and attacks through
+the same commands as the player. Capture every enemy castle and tower to win;
+losing your last military building ends the match. The displayed seed and mission
+outcome survive save/reload. Leave the seed empty for a random map.
+
 ## The settlement
 
 - Sites are levelled by diggers and built by builders from materials carriers
@@ -88,13 +95,17 @@ bun run typecheck
 ./buddy serve --port 3450
 # In another terminal:
 bun run test:browser http://127.0.0.1:3450/
+bun tests/browser/rival-battle.ts http://127.0.0.1:3450/
 ```
 
 The engine suites check conservation every tick through construction,
 demolition in every phase, production, depletion and restore, and cover routing,
 determinism, saves, replays and player views. The browser check places a building
 with the keyboard, changes speed, pauses, saves, reloads and verifies the restored
-settlement, activates audio and checks background saves.
+settlement, activates audio and checks background saves. The rival battle check
+uses ten real minutes at the ordinary 4x speed, then verifies defeat persists
+through save/reload. It qualifies one passive-player battle, not all seeds or
+original Gold Edition balance.
 
 ## Original material
 
