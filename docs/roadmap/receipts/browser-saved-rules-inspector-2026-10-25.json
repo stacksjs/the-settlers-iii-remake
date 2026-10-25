@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T10:41:23.435775+00:00",
+  "base": "f4a350738626606f02191b80fa70e08c87b753c1",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+  "problem": "The engine restores frozen saved-game rules, but selected-building inspection read the latest global rules and invented an11-soldier garrison for a0.2.0 castle. The same mismatch described old small towers with newer infantry and bowman slots.",
+  "change": "Selected-building metadata and descriptions resolve the owning session rules. Existing current-game build catalog remains on current rules. No rules profiles, saved state, timing or balance values changed.",
+  "seam": "Public restore/save and snapshot interfaces. This catches displayed rule metadata and state mutation; it does not measure original executable fidelity.",
+  "fixtures": [
+    {
+      "path": "tests/fixtures/save-format-1.json",
+      "sha256": "5ce12f0153523e6ca2f42cbb2b435f77297525ce8a19e761c3936d9525d6b1e7",
+      "use": "Actual retained format1 checkpoint, migrated through the normal restore catalog."
+    },
+    {
+      "path": "resources/game/engine/profiles/roman-engineering-0.2.0.json",
+      "sha256": "65fbebae586063f305da42ecf67dc022dcd680585f15189f6d2498df33ea4be4",
+      "use": "Frozen historical profile. A small tower is placed through a normal command, saved and restored before inspection."
+    }
+  ],
+  "red": {
+    "result": "Legacy castle incorrectly displayed0of11soldiersinside instead of no garrison.",
+    "logSha256": "90491e3b9110cc27a5303c720830e06d2ef0094720cb6befd89c1f1bca99fe5f"
+  },
+  "green": {
+    "focusedPass": 1,
+    "assertions": 5,
+    "logSha256": "c27112920aa4dcd65fa4ad3318257e94426be4cd36813443982ff8128c8324a5",
+    "covers": [
+      "migrated old castle has no garrison",
+      "saved old small tower has no garrison",
+      "old tower description uses its own16-tile territory rule",
+      "inspection leaves the session checksum unchanged",
+      "current castle still displays its11-soldier capacity"
+    ]
+  },
+  "checks": {
+    "units": {
+      "pass": 245,
+      "fail": 0,
+      "assertions": 22513,
+      "logSha256": "5a089d5d653f03747a4abe47a55f0b5b20eb785ab11f2331aa9928b7570b65de"
+    },
+    "types": "app, tools and STX250expressions/2scriptblocks, exit0",
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "productionBuild": "buddy build views,0cached/0failed,exit0",
+    "browser": {
+      "viewport": "1440x960",
+      "steps": 19,
+      "consoleErrors": 0,
+      "failedRequests": 0,
+      "collectionErrors": 0,
+      "reportSha256": "185156a78f835d5d5aae98964996ccf04ddf60b50481314de2128923cde802f2"
+    }
+  },
+  "review": {
+    "standards": "Reviewed owning projection and retained public-interface fixtures. No framework copying, installed-module edits, new dependencies or generated-source patches.",
+    "spec": "Selected-building metadata now follows the exact restored profile. Current-game garrisons are preserved. Original rules and the separate unresolved T1 map garrison discrepancy are not inferred or changed."
+  },
+  "limits": [
+    "The legacy regression is exercised through restore and snapshot, not through browser save injection. The browser scenario verifies current-game construction, staffed production and save/reload.",
+    "Other legacy build-menu metadata and native game presentation are outside this correction. Issue86 remains open."
+  ]
+}

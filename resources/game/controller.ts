@@ -33,8 +33,8 @@ export const catalog = rules.buildings.filter(b => b.id !== 'castle').map(b => (
 export const categories = [...new Set(catalog.map(item => item.category))]
 export const goods = rules.goods
 
-function describe(id: string): string {
-  const b = rules.buildings.find(r => r.id === id)!, w = b.workflow
+function describe(id: string, profile = rules): string {
+  const b = profile.buildings.find(r => r.id === id)!, w = b.workflow
   if (b.storage) return `Stores up to ${b.storage.piles} piles of ${b.storage.capacity} goods marked for storage.`
   if (b.residents) return `Houses ${b.residents.count} new settlers, who arrive one at a time.`
   if (b.garrison) return `Claims land within ${b.territory} tiles and holds ${b.garrison.infantry} infantry and ${b.garrison.bowmen} bowmen.`
@@ -146,7 +146,7 @@ function economy(session: Session): { carried: number, needs: string[], producti
 function inspect(session: Session, id: number) {
   const b = session.state.buildings.get(id)
   if (!b || b.owner !== PLAYER) return null
-  const rule = rules.buildings.find(r => r.id === b.type)!
+  const rule = session.rules.buildings.find(r => r.id === b.type)!
   const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
   const worker = session.state.settlers.get(b.worker)
   return {
@@ -157,7 +157,7 @@ function inspect(session: Session, id: number) {
     stocks: [...session.state.stacks.values()].filter(s => s.building === b.id).map(s => ({ role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
     garrison: rule.garrison ? `${session.view(PLAYER).buildings.find(v => v.id === b.id)?.garrison ?? 0} of ${rule.garrison.infantry + rule.garrison.bowmen} soldiers inside` : null,
     workArea: 'radius' in rule.workflow ? { ...b.workArea, radius: rule.workflow.radius } : null,
-    description: describe(b.type),
+    description: describe(b.type, session.rules),
   }
 }
 export type Snapshot = ReturnType<typeof snapshot>
