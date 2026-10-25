@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: preserving the first quarry budget (2026-10-25)
+
+The [quarry-budget correction](roadmap/receipts/ai-quarry-reserve-2026-10-25.json) retains a real stonecutter budget before optional construction, including expansion towers, while no stonecutter is retained. It includes conservative unfinished-site costs and a quarry already ordered for demolition. This applies before granite is discovered, using the own-player view and public costs. The captured city later quarries real stone through ordinary exploration and construction, with matching restore, no grants and unchanged profile 0.10.0.
+
+All 299 unit tests pass, together with lint, type checks, build and 385 fresh browser steps without collected errors. The full ten-real-minute battle at ordinary 4x retains defeat through actual save/reload. Complete execution traces remain clean. Ordinary two-policy seeds 1 and 5 finish at 34,021 and 72,501 ticks; seed 2 is unfinished at 100,000 but its unchanged continuation wins at 119,001. Seed 3 now makes 66 stone, 190 iron and 61 weapons but remains unfinished at 100,000. Its subsequent scout checkpoint has 14 troops, 513 unknown tiles and no scouting order after all six fixed rays are explored; issue #200 retains that separate frontier.
+
+A proposed permanent forestry deadlock was disproved by the matched control: unmodified AI wins earlier than the manual work-area probe. Issue #199 is closed as not planned, and no forestry source change was made. A snapshot shortage or successful manual intervention alone does not prove the cause of an unfinished match. Broader random-map sustainability, full military/religious AI, human victory, Gold fidelity and native acceptance remain open. Exact pushed-main CI and its original diagnostic artifact must pass before this scoped issue closes.
+
 ## Update: building room beyond the crowded city (2026-10-25)
 
 The [city-site correction](roadmap/receipts/ai-city-sites-2026-10-25.json) retains the nearby building preference, then considers other known owned origins once in deterministic distance/tile order. It keeps the same public placement, ground, resource and harvesting-reachability checks. The captured ordinary crowded city now builds and completes a distant weaponsmith with matching save/restore and no grants. Simulation rules and engineering profile 0.10.0 are unchanged.

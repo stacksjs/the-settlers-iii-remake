@@ -341,6 +341,14 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       const stoneRule = o.rules.buildings.find(b => b.id === 'stonecutter')!
       const stoneWant = POLICY.find(w => w.building === 'stonecutter')!
       const stoneBudget = (stoneRule.cost.stone ?? 0) + o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').reduce((n, b) => n + (o.rules.buildings.find(rule => rule.id === b.type)?.cost.stone ?? 0), 0)
+      // Keep the quarry's real budget even before granite is discovered.
+      // Free piles can still be committed to existing sites, so conservatively
+      // include those costs before promising stone to optional construction.
+      const quarry = o.view.buildings.some(b => b.owner === o.player && b.type === 'stonecutter' && !demolishing.has(b.id))
+      const canFund = (type: string): boolean => {
+        const cost = o.rules.buildings.find(rule => rule.id === type)?.cost.stone ?? 0
+        return quarry || type === 'stonecutter' || cost === 0 || free(o, 'stone') >= stoneBudget + cost
+      }
       const restoreStone = free(o, 'stone') <= stoneBudget && !own(o, 'stonecutter') && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active')
         && free(o, 'plank') >= (stoneRule.cost.plank ?? 0) && find(o, t => o.object(t) === 'stone', 1, { neutral: true }).length > 0
       const pioneers = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'pioneer')
@@ -366,7 +374,10 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         if (have(want.building) >= want.count || (want.when && !want.when(o, have))) continue
         const anchors = want.near(o)
         const site = placeNear(o, want.building, anchors)
-        if (site) { orders.push({ type: 'build', building: want.building, ...site }); break }
+        if (site) {
+          if (!canFund(want.building)) continue
+          orders.push({ type: 'build', building: want.building, ...site }); break
+        }
         // Recovery: a needed resource lies outside the border, so push the border toward it with a tower.
         const need = NEEDS[want.building]
         // Unknown resources are sought by towers in a fixed rotation of directions, which also widens sight.
@@ -376,7 +387,7 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         // Neutral harvest anchors may be known before any workplace fits on
         // owned land. They still need expansion, just as undiscovered resources do.
         const target = need && !anchors.some(p => o.view.owner[indexOf(o, p.x, p.y)] === o.player) ? beyond(o, need(o))[0] ?? explore : undefined
-        if (target && have('small-tower') < 4 && !o.view.buildings.some(b => b.owner === o.player && b.type === 'small-tower' && b.phase !== 'active')) {
+        if (target && canFund('small-tower') && have('small-tower') < 4 && !o.view.buildings.some(b => b.owner === o.player && b.type === 'small-tower' && b.phase !== 'active')) {
           const tower = placeNear(o, 'small-tower', borderToward(o, target))
           if (tower) { orders.push({ type: 'build', building: 'small-tower', ...tower }); break }
         }

@@ -1,0 +1,24 @@
+{
+  "source": "ccaf4315f5301811a1848de8106136937ed937b7",
+  "bytes": 438482,
+  "sha256": "e52ac6b863a873f82c17f6b65f404f1ddfd756960869e4d726ceeef7b5593706",
+  "tick": 3120,
+  "checksum": "bfe24afa",
+  "orders": [
+    {
+      "type": "build",
+      "building": "small-tower",
+      "x": 10,
+      "y": 70
+    }
+  ],
+  "stone": 3,
+  "knownGranite": 0,
+  "audit": [],
+  "schemaVersion": 1,
+  "fixture": "ai-quarry-reserve.json",
+  "capture": "Ordinary rivalSession(3), both economicAI policies with RIVAL_MILITARY and default80tickcadence, normal goods/people, before decision3120. No world edits.",
+  "failure": "Three stones and no known granite or stonecutter; policy orders a small tower costing all three stones. Later resource discovery cannot recover the quarry budget.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/198",
+  "media": "Generated simulation only; no original raster or audio."
+}

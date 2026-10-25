@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T21:23:03.950122+00:00",
+  "base": "ccaf4315f5301811a1848de8106136937ed937b7",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/198",
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "f68961e0115211888bde3f994986a18bae765a854115d535f4f7e4243009efca",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/military.ts": "985b0bad77eafcc8d03560ead604246129ac4c9b5a24406f5cdbcbb86d62fd9b",
+    "tests/unit/ai-quarry-reserve.test.ts": "2773ffde2b2c98b0494b9317592394cc0d903511df071242c0789299775be034",
+    "tests/fixtures/ai-quarry-reserve.json": "e52ac6b863a873f82c17f6b65f404f1ddfd756960869e4d726ceeef7b5593706",
+    "tests/fixtures/ai-quarry-reserve.provenance.json": "498eb4ab1fe7dde16e609dad166b85d8f8239a7d3b37feb265d31f532a051608"
+  },
+  "physicsUnchanged": true,
+  "lockUnchanged": true,
+  "rules": {
+    "version": "0.10.0",
+    "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+  },
+  "capturedFailure": {
+    "source": "ccaf4315f5301811a1848de8106136937ed937b7",
+    "bytes": 438482,
+    "sha256": "e52ac6b863a873f82c17f6b65f404f1ddfd756960869e4d726ceeef7b5593706",
+    "tick": 3120,
+    "checksum": "bfe24afa",
+    "orders": [
+      {
+        "type": "build",
+        "building": "small-tower",
+        "x": 10,
+        "y": 70
+      }
+    ],
+    "stone": 3,
+    "knownGranite": 0,
+    "audit": [],
+    "schemaVersion": 1,
+    "fixture": "ai-quarry-reserve.json",
+    "capture": "Ordinary rivalSession(3), both economicAI policies with RIVAL_MILITARY and default80tickcadence, normal goods/people, before decision3120. No world edits.",
+    "failure": "Three stones and no known granite or stonecutter; policy orders a small tower costing all three stones. Later resource discovery cannot recover the quarry budget.",
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/198",
+    "media": "Generated simulation only; no original raster or audio."
+  },
+  "correction": "Before promising stone to optional construction or an expansion tower, retain a real stonecutter budget plus conservative full costs of unfinished sites when no stonecutter is retained. Include demolition already ordered by this decision. No hidden resources, stock grants, physics, profile or clock changes.",
+  "regressions": {
+    "path": "tests/unit/ai-quarry-reserve.test.ts",
+    "red": {
+      "pass": 0,
+      "fail": 2,
+      "scope": "Captured last-stone order and subsequent ordinary stone production both fail before the correction. The later positive expansion case was added after this retained red run."
+    },
+    "green": {
+      "pass": 3,
+      "fail": 0,
+      "assertions": 16
+    },
+    "cases": [
+      "Keep the last three stones before any granite is known, without mutating world state",
+      "Later ordinary exploration, construction and quarrying produce real stone, preserve created-goods accounting and match a restored session",
+      "Ordinary tower expansion remains permitted with enough spare stone for the quarry and unfinished sites"
+    ]
+  },
+  "checks": {
+    "unit": {
+      "pass": 299,
+      "fail": 0,
+      "assertions": 22984,
+      "files": 41,
+      "logSha256": "1fb63288925de1127ca20263583a711863b3951c284532c90b5ed69153f9c094"
+    },
+    "lint": {
+      "passed": true,
+      "logSha256": "6b968cb7ca822323add3d64892b0bbfbc1542ba518cac91f742ced4c982937c7"
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "ff21bc15bca207db8acf3bb27e6c4c632064b957cfc8aa0945dd0497dbabafaf"
+    },
+    "assets": {
+      "passed": true,
+      "logSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    "fidelity": {
+      "passed": true,
+      "logSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    "roadmap": {
+      "passed": true,
+      "logSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "530c0b5145506d2ec6e27c9c48f086040cd99804c1ba11e6fdcb383ff73fec73",
+      "distIndexSha256": "e5f5624f9457e1ac85aa8965fa736d327722841521316a0b1863f82c6360aac7"
+    }
+  },
+  "normalMatches": {
+    "setup": "Ordinary rivalSession seeds2,1,3,5; both economicAI policies with RIVAL_MILITARY/default80tickcadence, normal goods/people, no state or clock edits",
+    "executionTracing": "Every result retained at its executed tick before bounded history discards it",
+    "runs": [
+      {
+        "seed": 2,
+        "tick": 100000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "c7ce62e5",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          774,
+          638
+        ],
+        "produced": [
+          {
+            "plank": 289,
+            "log": 282,
+            "stone": 180,
+            "water": 60,
+            "grain": 75,
+            "flour": 60,
+            "bread": 45,
+            "coal": 80,
+            "ironore": 30,
+            "iron": 18,
+            "hammer": 2,
+            "shovel": 1,
+            "axe": 1,
+            "saw": 1,
+            "pickaxe": 1,
+            "scythe": 1,
+            "fishingrod": 1
+          },
+          {
+            "plank": 63,
+            "stone": 84,
+            "fish": 16,
+            "water": 26,
+            "log": 79,
+            "grain": 42,
+            "flour": 26,
+            "bread": 10,
+            "coal": 8
+          }
+        ],
+        "checkpointSha256": "6680207da83bca38d6914d68b75ccbb008ad1926ab5260aafcfbd0445b739154"
+      },
+      {
+        "seed": 1,
+        "tick": 34021,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "b1aedf7e",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          259,
+          314
+        ],
+        "produced": [
+          {
+            "plank": 67,
+            "log": 91,
+            "stone": 61,
+            "fish": 36,
+            "water": 63,
+            "grain": 49,
+            "coal": 188,
+            "flour": 48,
+            "bread": 47,
+            "ironore": 98,
+            "iron": 84,
+            "hammer": 7,
+            "shovel": 14,
+            "axe": 11,
+            "sword": 15,
+            "bow": 12,
+            "spear": 10,
+            "saw": 4,
+            "pickaxe": 2
+          },
+          {
+            "plank": 44,
+            "log": 52,
+            "ironore": 16
+          }
+        ],
+        "checkpointSha256": "c2734f764957eb447671e9d17ea8401d4f957db6999b3f83da37bcca8ca73401"
+      },
+      {
+        "seed": 3,
+        "tick": 100000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "91a463bb",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          529,
+          795
+        ],
+        "produced": [
+          {
+            "plank": 93,
+            "log": 109,
+            "coal": 388,
+            "stone": 66,
+            "fish": 80,
+            "water": 110,
+            "grain": 101,
+            "flour": 99,
+            "bread": 94,
+            "ironore": 206,
+            "iron": 190,
+            "hammer": 15,
+            "shovel": 15,
+            "axe": 15,
+            "saw": 15,
+            "pickaxe": 15,
+            "scythe": 15,
+            "fishingrod": 15,
+            "sword": 20,
+            "spear": 21,
+            "bow": 20
+          },
+          {
+            "plank": 332,
+            "log": 348,
+            "stone": 177,
+            "water": 25,
+            "grain": 41,
+            "flour": 25,
+            "bread": 9,
+            "ironore": 24
+          }
+        ],
+        "checkpointSha256": "0c1df4acff1ffeb460bd1c8f623ad06283b52ab1f25e215786496f0ae213a29a"
+      },
+      {
+        "seed": 5,
+        "tick": 72501,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "fe57e149",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          467,
+          540
+        ],
+        "produced": [
+          {
+            "log": 104,
+            "plank": 80,
+            "fish": 8,
+            "stone": 52,
+            "water": 21,
+            "ironore": 8
+          },
+          {
+            "plank": 104,
+            "log": 126,
+            "ironore": 59,
+            "stone": 84,
+            "water": 34,
+            "grain": 19,
+            "flour": 19,
+            "bread": 18,
+            "coal": 106,
+            "iron": 41,
+            "hammer": 4,
+            "shovel": 4,
+            "axe": 3,
+            "saw": 2,
+            "pickaxe": 2,
+            "scythe": 2,
+            "fishingrod": 2,
+            "sword": 6,
+            "spear": 6,
+            "bow": 6
+          }
+        ],
+        "checkpointSha256": "77f1cc9f99b9dfc75a22b9900c3d9c4fb66e17436b120f3060fbe323357a6c85"
+      }
+    ],
+    "seed2OrdinaryContinuation": {
+      "fromTick": 100000,
+      "tick": 119001,
+      "outcome": {
+        "1": "won",
+        "2": "lost"
+      },
+      "checksum": "6593733f",
+      "audit": [],
+      "allExecutedRefusals": [],
+      "executedCounts": [
+        80,
+        56
+      ],
+      "rejectedEnqueues": [
+        [],
+        []
+      ],
+      "checkpointSha256": "1981b6e63405f68bd1751b37b02942ff20b7c5f36eb5297b3339addbc8bee022",
+      "produced": [
+        {
+          "plank": 343,
+          "log": 337,
+          "stone": 214,
+          "water": 112,
+          "grain": 99,
+          "flour": 97,
+          "bread": 96,
+          "coal": 240,
+          "ironore": 142,
+          "iron": 118,
+          "hammer": 14,
+          "shovel": 15,
+          "axe": 15,
+          "saw": 15,
+          "pickaxe": 15,
+          "scythe": 14,
+          "fishingrod": 14,
+          "sword": 4,
+          "spear": 4,
+          "bow": 4
+        },
+        {
+          "plank": 65,
+          "stone": 84,
+          "fish": 16,
+          "water": 26,
+          "log": 79,
+          "grain": 42,
+          "flour": 26,
+          "bread": 10,
+          "coal": 8
+        }
+      ]
+    }
+  },
+  "remainingFrontier": {
+    "seed2": "Unfinished at the first100000tick stop, then wins at119001 with unchanged ordinary AI, checksum6593733f, zero failed executions and clean conservation. The matched control disproves the proposed permanent forestry deadlock in issue199. No forestry source change was made.",
+    "seed3": "Now produces66stone/190iron/20swords/21spears/20bows but remains unfinished100000. Issue200 retains a subsequent normal scout decision100800 with14troops/513unknown tiles/all six home rays explored and no order. No visibility grants or hidden enemy coordinates used."
+  },
+  "frameworkAdoptionReceipt": "framework-0.75.311-receipt.json",
+  "scope": "One construction-budget defect. Three sampled two-policy matches finish, including ordinary seed2 continuation; seed3 remains unfinished100000 despite real stone/metal/weapons. Changed trajectories and remaining scouting/resource gaps are retained. No claim of generally improved match completion, sustainable all-seed economies, complete military/religious AI, human victory, original Gold rules or native presentation. Exact pushed-main CI and original diagnostic artifact required before scoped issue closure.",
+  "localBrowser": {
+    "recordedAt": "2026-10-25T21:29:00.554087+00:00",
+    "totalSteps": 385,
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "1fef7458b46eab51cffa088a60f96aa44251abebea4a5478a438bae8e8ab1a77",
+        "noErrors": true,
+        "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "29e5384c688a7b4305f0a48737c3d26321d6def63192928e5fb9c47c4102144d",
+        "noErrors": true,
+        "mediaReceiptSha256": "58180415eebcca1150faf97504b7a4ca2e3dbc61a0b34952701c91fbc85fbaf3"
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "35a96e669df97193ced6f7c2a22a82634b178f7276588ee5b306ebe8d4f3d0db",
+        "noErrors": true,
+        "mediaReceiptSha256": "29618581bb03e96124cea609844879cbdda6598701c0a7f1cc24ae1b0cb97ccf"
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "12e2a9c4ad93fd4db8e3f983f6be685127e7a3fade6c2a4d77b441d28b75b946",
+        "noErrors": true,
+        "mediaReceiptSha256": "9746fb6238400affc885c07f1bf49c555c9eeacfefb890c8ed8b8547c9138e53"
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "4618205c8bd011387865dbd40c41bfaaa5a04be8e676dc01e9b310ce545aa8c9",
+        "noErrors": true,
+        "mediaReceiptSha256": "780b381e0dbf3bd9b15e6bd9a9318e3ec07fc6adeae790b8c1d6ebb987e4777b"
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "36503e98a13c68e55defe005081365bafab309a793b8abac50959442ea181cf4",
+        "noErrors": true,
+        "mediaReceiptSha256": "126e962915fdd4d49d7ad7c6d81a11b9a7786f08fcc1cc83512f68f30c2d7a8c"
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "59afc5ed1353548e6159bb8108970d0b91ac3cd834f3ff541194c9c055ebef93",
+        "noErrors": true,
+        "mediaReceiptSha256": "a7a9c6cab8e9b10a14607eeaa6649a1168bf4958dfe815bf1ea894c1ccef4240"
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "79428a347d32c3b694a26459e2a79ee064581948f0a29599cbab8604761cc961",
+        "noErrors": true,
+        "mediaReceiptSha256": "f25e2453dd24c20582c4b2e542b7772ecac0f7bb9b647262c232b459d53f2d75"
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "592f549b555f3b421a6259c4a761035776f2457809a01b143f8a4ac0fdfa4db1",
+        "noErrors": true,
+        "mediaReceiptSha256": "abe40711f61de43469acf1dfa318244ceb6c7fbca4c31360ef210b7b3622ba2b",
+        "elapsedMs": 618510.8513750001
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "7335bb2838a40e01b0155e8011fe98e5846ea4fa15b96788db20671bbc646a09",
+        "noErrors": true
+      }
+    ],
+    "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "forestryHypothesisControl": {
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/199",
+    "disposition": "closed-as-not-planned; permanent deadlock hypothesis disproved",
+    "ordinaryControl": {
+      "tick": 119001,
+      "checksum": "6593733f",
+      "player1ProducedLogs": 337,
+      "player1ProducedPlanks": 343
+    },
+    "manualWorkAreaProbe": {
+      "tick": 119841,
+      "player1ProducedLogs": 362,
+      "player1ProducedPlanks": 360
+    },
+    "conclusion": "Unmodified AI wins earlier from the identical checkpoint. Manual recovery alone did not establish a planner defect. All receipts retained; no forestry code change."
+  }
+}
