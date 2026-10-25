@@ -8,8 +8,8 @@ const driver = resolve(defaults, 'ai/skills/stacks-browse/scripts/browse.ts')
 const shots = resolve('storage/framework/runtime/shots')
 await mkdir(shots, { recursive: true })
 const directory = await mkdtemp(resolve(shots, 'recruitment-'))
-// Controls issue real session commands. The default settlement has no barracks,
-// so these orders stay waiting without altering settlers or physical goods.
+// Build a barracks through the actual map controls. No weapons exist at the
+// start, so recruitment orders wait without creating soldiers or goods.
 const queued = (count: number) => ({ action: 'evaluate', expression: `(() => {
   const row = document.querySelector('[data-profession=swordsman]');
   const cancel = row.querySelector('button[title="Cancel one waiting order"]');
@@ -23,10 +23,18 @@ const empty = { action: 'evaluate', expression: `(() => {
 })()` }
 const steps = [
   { action: 'assert', selector: '.building-choice:disabled', absent: true, timeoutMs: 10000 },
+  { action: 'click', selector: '.category-list button', text: 'Military' },
+  { action: 'click', selector: '.building-choice', text: 'Barracks' },
+  { action: 'press', key: 'Enter' },
+  { action: 'assert', selector: '[role=status]', text: 'Barracks site placed.' },
+  { action: 'click', selector: '.map-button', text: '4x' },
+  { action: 'assert', selector: '.inspector .building-status', text: 'Ready', timeoutMs: 30000 },
   { action: 'click', selector: '.map-button', text: 'Pause' },
   { action: 'click', selector: '.main-menu button', text: 'Settlers' },
   { action: 'click', selector: '.category-list button', text: 'Military' },
   { action: 'assert', selector: '.army-panel h2', text: 'Army' },
+  { action: 'assert', selector: '[data-weapon=sword]', text: 'Sword At Barracks: 0' },
+  { action: 'assert', selector: '[data-weapon=bow]', text: 'Bow At Barracks: 0' },
   empty,
   { action: 'click', selector: 'button[aria-label="Recruit a swordsman"]' },
   { action: 'click', selector: 'button[aria-label="Recruit a swordsman"]' },
@@ -42,6 +50,7 @@ const steps = [
   { action: 'click', selector: '.main-menu button', text: 'Settlers' },
   { action: 'click', selector: '.category-list button', text: 'Military' },
   queued(2),
+  { action: 'assert', selector: '[data-weapon=sword]', text: 'Sword At Barracks: 0' },
   { action: 'click', selector: 'button[aria-label="Cancel a waiting swordsman order"]' },
   queued(1),
   { action: 'click', selector: 'button[aria-label="Cancel a waiting swordsman order"]' },

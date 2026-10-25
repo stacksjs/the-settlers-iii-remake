@@ -1,7 +1,38 @@
 import { expect, test } from 'bun:test'
 import { mapName, newSession, PLAYER, RIVAL_MILITARY, rivalSession, snapshot, status } from '../../resources/game/controller'
-import { audit, economicAI, stepAI } from '../../resources/game/engine'
+import { audit, economicAI, restore, stepAI } from '../../resources/game/engine'
 import { save } from '../../resources/game/engine'
+import { anchors, order, place, rules, session as fixtureSession, until } from '../fixtures/engine'
+
+test('the recruitment panel counts delivered barracks weapons, following enlistment, restore and demolition', () => {
+  const s = fixtureSession({ players: [
+    { name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { plank: 30, stone: 30, sword: 3, bow: 2 } },
+    { name: 'Other player', civilization: 'roman', start: { x: 70, y: 70 }, goods: { plank: 30, stone: 30, sword: 7 } },
+  ] })
+  const figures = (session = s) => snapshot(session, null, '', 1).army.soldiers
+  const swords = (session = s) => figures(session).find(item => item.name === 'swordsman')!
+  expect(swords().weapon).toBe('sword')
+  expect(swords().weapons).toBe(0)
+  const otherBarracks = place(s, 'barracks', { x: 70, y: 58 }, 2)
+  until(s, () => s.state.buildings.get(otherBarracks)!.phase === 'active', 6000)
+  until(s, () => [...s.state.stacks.values()].filter(stack => stack.building === otherBarracks && stack.good === 'sword').reduce((sum, stack) => sum + stack.amount, 0) === 7, 3000)
+  expect(swords().weapons).toBe(0)
+  const barracks = place(s, 'barracks', anchors.west)
+  until(s, () => s.state.buildings.get(barracks)!.phase === 'active', 6000)
+  until(s, () => [...s.state.stacks.values()].filter(stack => stack.building === barracks && stack.good === 'sword').reduce((sum, stack) => sum + stack.amount, 0) === 3, 3000)
+  until(s, () => [...s.state.stacks.values()].filter(stack => stack.building === barracks && stack.good === 'bow').reduce((sum, stack) => sum + stack.amount, 0) === 2, 3000)
+  expect(swords().weapons).toBe(3)
+  expect(figures().find(item => item.name === 'bowman')!.weapons).toBe(2)
+  order(s, 'recruit', { profession: 'swordsman', count: 1 })
+  until(s, () => swords().count === 1, 2000)
+  expect(swords().weapons).toBe(2)
+  const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+  expect(swords(copy)).toEqual(swords())
+  order(s, 'demolish', { building: barracks })
+  expect(swords().weapons).toBe(0)
+  expect(s.view(1).goods.sword).toBe(2)
+  expect(audit(s.context)).toEqual([])
+}, 60_000)
 
 test('every generated landscape has room for the castle and its settlers', () => {
   for (let seed = 1; seed <= 60; seed++) {

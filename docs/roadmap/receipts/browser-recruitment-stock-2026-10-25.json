@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T09:38:45.529453+00:00",
+  "base": "8a1daa3cc79a0c55ae8a8e551d62d1edbf2fa2a9",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+  "change": "Recruitment rows identify their weapon and display the physical quantity delivered to owned barracks input piles. Warehouse, ground, equipped and other-player weapons are excluded.",
+  "reference": {
+    "url": "https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en/in_menu/menu.htm",
+    "section": "Recruiting Soldiers",
+    "sha256": "6823c1be372ce3c6905d09753d867ecd637e6cd2c5bfa3e26ea5fd161be516bb",
+    "supports": "The recruitment menu shows weapon quantities available at barracks.",
+    "limit": "Manual evidence; original executable timings and Gold Edition balance remain unobserved."
+  },
+  "regression": {
+    "publicInterface": "snapshot(session).army.soldiers",
+    "red": "weapon was undefined before the projection change",
+    "redLogSha256": "0066ee16144555c4cf1cb4d2d03f2a1f909329e67fb134de5cc495ab5f98fc03",
+    "green": "Public setup and command-driven construction/delivery show0 while weapons remain in storage,0 while another player has7 at a barracks,3 own swords and2 bows after delivery,2 swords after enlistment, identical figures after restore, and0 at barracks after demolition while2 swords remain on the ground.",
+    "focusedAssertions": 10
+  },
+  "checks": {
+    "runtime": "normal pinned project Bun1.4.4",
+    "units": {
+      "pass": 244,
+      "fail": 0,
+      "assertions": 22508
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": "app, tools, STX (250 expressions,2 script blocks), Buddy, all exit0",
+    "productionBuild": "buddy build views exit0",
+    "browser": [
+      {
+        "viewport": "1440x960",
+        "steps": 34,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "viewport": "320x568",
+        "steps": 34,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      }
+    ]
+  },
+  "browserScope": "Real pointer/keyboard controls build and finish a barracks, display zero starting weapons, add/reduce/clear waiting orders, save and perform a real page reload, retain remaining orders and weapon figures, and check HUD containment.",
+  "media": [
+    {
+      "viewport": "1440x960",
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "7ff17ba68f6ffb6631fe4922328100df99d4ba2dfe3d29aba3983f1562785188",
+        "bytes": 710953,
+        "width": 1440,
+        "height": 960
+      },
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    {
+      "viewport": "320x568",
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "4c9b337bc9c6ef37510c7063fd20e4235c5b835fd2528220e0adeff16d76c00e",
+        "bytes": 167160,
+        "width": 320,
+        "height": 568
+      },
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  ],
+  "review": {
+    "standards": "Game-owned shared projection and STX/ts-css markup. No game-state injection, installed-module edits, copied runtimes or new UI dependencies.",
+    "spec": "Displayed figures follow physical piles and ownership. No new recruitment rules, durations or balance values.",
+    "preflight": "Existing dense original-art HUD, palette, typography and motion retained; desktop and phone screenshots inspected and controls remain within the HUD."
+  },
+  "limits": [
+    "Positive stock/enlistment and demolition values are verified through the simulation and projection interface; the browser scenarios cover the zero-stock case and actual barracks construction.",
+    "This is partial inspection-panel work and does not close issue86 or establish native-game acceptance."
+  ]
+}

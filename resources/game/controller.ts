@@ -109,13 +109,21 @@ function controls(session: Session) {
 
 /** Soldiers by class and rank, and the barracks orders that make more. */
 function army(session: Session | null) {
-  const classes = rules.professions.filter(p => p.soldier).map(p => p.id)
-  if (!session) return { soldiers: classes.map(name => ({ name, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null, interventions: [] as { id: string, name: string, cost: number }[], priests: 0 }
+  const classes = (session?.rules ?? rules).professions.filter(p => p.soldier).map(p => ({ name: p.id, weapon: p.soldier!.weapon }))
+  if (!session) return { soldiers: classes.map(item => ({ ...item, weapons: 0, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null, interventions: [] as { id: string, name: string, cost: number }[], priests: 0 }
   const player = session.state.players[PLAYER - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+  // The manual's recruitment figures count weapons delivered to barracks,
+  // not warehouse stock, goods still being carried, or equipped soldiers.
+  const weapons = new Map<string, number>()
+  for (const stack of session.state.stacks.values()) {
+    const building = session.state.buildings.get(stack.building)
+    if (stack.owner === PLAYER && stack.role === 'input' && building?.owner === PLAYER && building.type === 'barracks')
+      weapons.set(stack.good, (weapons.get(stack.good) ?? 0) + stack.amount)
+  }
   // Profiles with religion buy ranks with manna; older saved games keep the rank setting they were made with.
   const religion = session.view(PLAYER).religion
   return {
-    soldiers: classes.map(name => ({ name, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0, rank: religion?.ranks[name] ?? player.settings.rank ?? 1 })),
+    soldiers: classes.map(({ name, weapon }) => ({ name, weapon, weapons: weapons.get(weapon) ?? 0, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0, rank: religion?.ranks[name] ?? player.settings.rank ?? 1 })),
     outside: own.filter(s => !s.inside).length,
     ranks: session.rules.military?.ranks ?? 1,
     automatic: player.settings.recruit?.automatic ?? false,
