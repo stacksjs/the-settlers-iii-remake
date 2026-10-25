@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "source": "8d8a2b70a4202ba6773a3c94d4eef850cb8c4fa3",
+  "fixture": "ai-charcoal-route.json",
+  "bytes": 469232,
+  "sha256": "f11dc4957be46e72bc9db72a30657da4f8348716cacdb0d39f9d2599655f521b",
+  "capture": "Normal two-policy rivalSession(3), default80tickcadence and RIVAL_MILITARY, ordinary start, tick200000 before manual build probe. No world, goods or clock edits.",
+  "failure": "Player2has active iron mine/24produced ironore, no coal/iron, and no planned charcoal maker. Normal200000to250000continuation still makes no coal/iron. Manual ordinary charcoal/smelter construction makes22coal/8iron by220002, with unchanged created goods and clean audit.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/202",
+  "media": "Generated simulation only; no original raster/audio."
+}

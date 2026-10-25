@@ -70,6 +70,10 @@ function find(o: Observation, test: (t: number) => boolean, limit = 6, options: 
 }
 const signs = (o: Observation, good: string): Point[] => o.view.signs.filter(s => s.good === good && s.amount > 0 && o.view.owner[s.tile] === o.player).map(s => ({ x: s.tile % o.width, y: Math.floor(s.tile / o.width) }))
 
+/** Existing and planned producers can supply a chain without naming one building type. */
+const hasProducer = (o: Observation, good: string, phase?: 'active'): boolean => o.view.buildings.some(b => b.owner === o.player && !b.suspended && (!phase || b.phase === phase)
+  && !['no-resources', 'exhausted'].includes(b.shortage ?? '') && (o.rules.buildings.find(rule => rule.id === b.type)?.outputs[good] ?? 0) > 0)
+
 /** The declared build policy, in priority order. Engineering choice, not the original AI. */
 const POLICY: Want[] = [
   { building: 'woodcutter', count: 2, near: o => find(o, t => o.object(t) === 'tree', o.width * o.height, { neutral: true, preferOwned: true }) },
@@ -82,9 +86,15 @@ const POLICY: Want[] = [
   { building: 'grain-farm', count: 1, near: holdings, when: (_o, have) => have('waterworks') > 0 },
   { building: 'mill', count: 1, near: holdings, when: (_o, have) => have('grain-farm') > 0 },
   { building: 'bakery', count: 1, near: holdings, when: (_o, have) => have('mill') > 0 },
-  { building: 'coal-mine', count: 1, near: o => signs(o, 'coal') },
+  { building: 'coal-mine', count: 1, near: o => signs(o, 'coal'), when: o => !hasProducer(o, 'coal') },
+  { building: 'charcoal-maker', count: 1, near: holdings, when: o => !hasProducer(o, 'coal')
+    && o.rules.buildings.some(b => b.id === 'charcoal-maker')
+    // Burning the bootstrap planks before ore or a coal consumer exists can
+    // prevent that mine from ever finishing. Build this route on actual demand.
+    && (hasProducer(o, 'ironore', 'active') || o.view.buildings.some(b => b.owner === o.player && !b.suspended && (o.rules.buildings.find(rule => rule.id === b.type)?.inputs.coal ?? 0) > 0))
+    && ['sawmill', 'forester'].every(type => o.view.buildings.some(b => b.owner === o.player && b.type === type && b.phase === 'active' && !b.suspended)) },
   { building: 'iron-mine', count: 1, near: o => signs(o, 'ironore') },
-  { building: 'iron-smelter', count: 1, near: holdings, when: (_o, have) => have('coal-mine') > 0 && have('iron-mine') > 0 },
+  { building: 'iron-smelter', count: 1, near: holdings, when: (o, have) => hasProducer(o, 'coal') && have('iron-mine') > 0 },
   { building: 'toolsmith', count: 1, near: holdings, when: (_o, have) => have('iron-smelter') > 0 },
   { building: 'storage', count: 1, near: holdings, when: o => o.view.buildings.some(b => b.owner === o.player && b.shortage === 'output-full') },
   { building: 'small-residence', count: 3, near: holdings, when: (o, have) => have('bakery') > 0 && (o.view.professions.carrier ?? 0) < 25 },
@@ -457,7 +467,7 @@ function resourceFrontier(o: Observation, policy: Want[]): Point | null {
   const center = home(o)[0]
   if (!center) return null
   for (const want of policy) {
-    if (own(o, want.building) >= want.count) continue
+    if (own(o, want.building) >= want.count || (want.when && !want.when(o, type => own(o, type)))) continue
     const workflow = o.rules.buildings.find(rule => rule.id === want.building)?.workflow
     const mineral = workflow?.kind === 'extract' && workflow.food ? workflow.resource : null
     const visible = NEEDS[want.building]
