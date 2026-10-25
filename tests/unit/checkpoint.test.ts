@@ -2,115 +2,180 @@ import type { CheckpointStore } from '../../resources/game/checkpoint'
 import { describe, expect, test } from 'bun:test'
 import { createCheckpoints } from '../../resources/game/checkpoint'
 
-/** An in-memory store whose writes can be delayed, refused or torn, like real device storage. */
+/** Conditional commits model the public Storage contract; scheduling and failures are controlled. */
 function memory() {
-  const data = new Map<string, string>(), log: string[] = []
-  let fail: ((key: string) => Error | null) | null = null, tear: ((key: string) => boolean) | null = null, delay = 0
+  const data = new Map<string, unknown>(), log: string[] = []
+  let failure: Error | null = null, delay = 0
+  const before = async (signal: AbortSignal) => {
+    if (delay) await Bun.sleep(delay)
+    signal.throwIfAborted()
+    if (failure) throw failure
+  }
   const store: CheckpointStore = {
-    async get(key) { await Bun.sleep(0); return data.get(key) },
-    async set(key, value, signal) {
-      if (delay) await Bun.sleep(delay)
-      if (signal.aborted) throw new DOMException('Aborted', 'AbortError')
-      const error = fail?.(key)
-      if (error) throw error
-      log.push(key)
-      data.set(key, tear?.(key) ? value.slice(0, Math.floor(value.length / 2)) : value)
+    async get(key) { await Bun.sleep(0); return structuredClone(data.get(key)) },
+    async setIfAbsent(key, value, signal) {
+      await before(signal)
+      if (data.has(key)) return false
+      data.set(key, structuredClone(value)); log.push(key)
+      return true
+    },
+    async compareAndSet(key, expected, value, signal) {
+      await before(signal)
+      if (!data.has(key) || JSON.stringify(data.get(key)) !== JSON.stringify(expected)) return false
+      data.set(key, structuredClone(value)); log.push(key)
+      return true
     },
   }
-  return { store, data, log, failWith: (f: typeof fail) => { fail = f }, tearWhen: (f: typeof tear) => { tear = f }, slow: (ms: number) => { delay = ms } }
+  return { store, data, log, failWith: (error: Error | null) => { failure = error }, slow: (ms: number) => { delay = ms } }
 }
 
 describe('checkpoints', () => {
-  test('a save reports success only after the slot is verified and the head is stored', async () => {
-    const m = memory(), c = createCheckpoints(m.store, 'game')
-    expect(await c.save('first')).toEqual({ ok: true, generation: 1 })
-    expect(m.log).toEqual(['game:a', 'game:head'])
-    expect(await c.save('second')).toEqual({ ok: true, generation: 2 })
-    expect(m.log).toEqual(['game:a', 'game:head', 'game:b', 'game:head'])
-    expect(await c.load()).toBe('second')
+  test('a session loaded before another commit cannot overwrite it with stale game state', async () => {
+    const m = memory(), first = createCheckpoints(m.store, 'game')
+    await first.save('base')
+    const second = createCheckpoints(m.store, 'game')
+    expect(await second.load()).toBe('base')
+    expect(await first.save('newer progress')).toEqual({ ok: true, generation: 2 })
+    expect(await second.save('older progress')).toMatchObject({ ok: false, reason: 'superseded' })
+    expect(await createCheckpoints(m.store, 'game').load()).toBe('newer progress')
+    expect(await second.load()).toBe('newer progress')
+    expect(await second.save('resumed progress')).toEqual({ ok: true, generation: 3 })
+    expect(await first.save('now stale too')).toMatchObject({ ok: false, reason: 'superseded' })
   })
 
-  test('queued and concurrent saves run in order and collapse to the newest state', async () => {
+  test('an older session cannot replace a checkpoint committed after its read', async () => {
+    const m = memory(), original = createCheckpoints(m.store, 'game')
+    expect(await original.save('base')).toMatchObject({ ok: true })
+    await original.flush()
+    const read = Promise.withResolvers<void>(), release = Promise.withResolvers<void>()
+    let first = true
+    const earlier = createCheckpoints({
+      ...m.store,
+      async get(key, signal) {
+        const value = await m.store.get(key, signal)
+        if (first) { first = false; read.resolve(); await release.promise }
+        return value
+      },
+    }, 'game')
+    const waiting = earlier.save('earlier')
+    await read.promise
+    const later = createCheckpoints(m.store, 'game')
+    expect(await later.save('later')).toMatchObject({ ok: true, generation: 2 })
+    release.resolve()
+    expect(await waiting).toMatchObject({ ok: false, reason: 'superseded' })
+    expect(await earlier.save('stale queued state')).toMatchObject({ ok: false, reason: 'superseded' })
+    expect(await createCheckpoints(m.store, 'game').load()).toBe('later')
+    expect(await earlier.load()).toBe('later')
+    expect(await earlier.save('resumed')).toMatchObject({ ok: true, generation: 3 })
+  })
+
+  test('success follows the actual atomic commit and retains the previous verified payload', async () => {
+    const m = memory(), c = createCheckpoints(m.store, 'game')
+    m.slow(15)
+    let acknowledged = false
+    const saving = c.save('first').then(result => { acknowledged = true; return result })
+    await Bun.sleep(2)
+    expect(acknowledged).toBe(false)
+    expect(m.data.has('game:checkpoint')).toBe(false)
+    expect(await saving).toEqual({ ok: true, generation: 1 })
+    expect(await c.save('second')).toEqual({ ok: true, generation: 2 })
+    expect(await c.load()).toBe('second')
+    const record = m.data.get('game:checkpoint') as { current: { text: string }, previous: { text: string } }
+    expect(record.current.text).toBe('second')
+    expect(record.previous.text).toBe('first')
+  })
+
+  test('concurrent creation admits one complete checkpoint and refuses the competing writer', async () => {
+    const m = memory()
+    const a = createCheckpoints(m.store, 'game'), b = createCheckpoints(m.store, 'game')
+    const results = await Promise.all([a.save('A'), b.save('B')])
+    expect(results.filter(result => result.ok)).toHaveLength(1)
+    expect(results.filter(result => !result.ok && result.reason === 'superseded')).toHaveLength(1)
+    expect(await createCheckpoints(m.store, 'game').load()).toBe(results[0].ok ? 'A' : 'B')
+  })
+
+  test('pending saves coalesce in request order', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game')
     m.slow(5)
     const results = await Promise.all([c.save('one'), c.save('two'), c.save('three'), c.save('four')])
-    // The first write was already running; the next three collapse into a single write of the newest.
-    expect(results.map(r => r.ok && r.generation)).toEqual([1, 2, 2, 2])
-    expect(m.log).toEqual(['game:a', 'game:head', 'game:b', 'game:head'])
+    expect(results.map(result => result.ok && result.generation)).toEqual([1, 2, 2, 2])
+    expect(m.log).toHaveLength(2)
     expect(await c.load()).toBe('four')
   })
 
-  test('a refused or quota-limited write keeps the previous checkpoint', async () => {
+  test('quota and rejected writes preserve the previous checkpoint and allow a later retry', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game')
     await c.save('safe')
-    m.failWith(key => (key === 'game:b' ? new Error('QuotaExceededError: quota exceeded') : null))
+    m.failWith(new Error('QuotaExceededError: quota exceeded'))
     expect(await c.save('lost')).toMatchObject({ ok: false, reason: 'storage', message: 'Device storage is full. The previous checkpoint is kept.' })
     expect(await c.load()).toBe('safe')
-    m.failWith(key => (key === 'game:head' ? new Error('denied') : null))
+    m.failWith(new Error('disk refused the replacement'))
     expect(await c.save('unconfirmed')).toMatchObject({ ok: false, reason: 'storage' })
-    // The slot was written but never confirmed by the head: the confirmed checkpoint wins.
     expect(await c.load()).toBe('safe')
     m.failWith(null)
-    expect(await c.save('later')).toMatchObject({ ok: true })
-    expect(await c.load()).toBe('later')
+    expect(await c.save('later')).toEqual({ ok: true, generation: 2 })
   })
 
-  test('a torn write is detected on read-back and recovery uses the previous checkpoint', async () => {
+  test('a damaged current payload recovers the previous verified value', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game')
-    await c.save('intact')
-    m.tearWhen(key => key === 'game:b')
-    expect(await c.save('torn')).toMatchObject({ ok: false, reason: 'verify' })
+    await c.save('intact'); await c.save('newer')
+    const record = m.data.get('game:checkpoint') as { current: { text: string } }
+    record.current.text = 'corrupted'
     expect(await c.load()).toBe('intact')
-    // Corrupting the head's own slot after the fact also falls back to the other intact slot.
-    m.tearWhen(null)
-    await c.save('newer')
-    m.data.set('game:b', '{"generation":2,"sha256":"00","text":"garbage"}')
-    expect(await c.load()).toBe('intact')
-    // Without a readable head the newest intact slot is used.
-    m.data.set('game:head', 'not json')
-    expect(await c.load()).toBe('intact')
+    expect(await c.save('recovered')).toEqual({ ok: true, generation: 3 })
+    expect(await c.load()).toBe('recovered')
   })
 
-  test('disposal during a write and while saves are queued never reports a false success', async () => {
+  test('legacy two-slot and single-key saves migrate without rewriting their source', async () => {
+    const m = memory()
+    const hash = (text: string) => Bun.SHA256.hash(text, 'hex')
+    m.data.set('game:a', JSON.stringify({ generation: 5, sha256: hash('confirmed'), text: 'confirmed' }))
+    m.data.set('game:b', JSON.stringify({ generation: 6, sha256: hash('unconfirmed'), text: 'unconfirmed' }))
+    m.data.set('game:head', JSON.stringify({ version: 1, slot: 'a', generation: 5, sha256: hash('confirmed'), bytes: 9 }))
+    const old = structuredClone([...m.data])
+    const c = createCheckpoints(m.store, 'game')
+    expect(await c.load()).toBe('confirmed')
+    expect(await c.save('migrated')).toEqual({ ok: true, generation: 6 })
+    expect([...m.data].filter(([key]) => key !== 'game:checkpoint')).toEqual(old)
+    expect(await c.load()).toBe('migrated')
+    m.data.set('old-save', 'legacy')
+    expect(await createCheckpoints(m.store, 'other', 'old-save').load()).toBe('legacy')
+  })
+
+  test('disposal rejects active and queued saves without acknowledging an aborted commit', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game')
-    await c.save('kept')
-    await c.flush()
-    m.slow(10)
-    const running = c.save('in flight'), waiting = c.save('queued')
+    await c.save('kept'); await c.flush()
+    m.slow(15)
+    const active = c.save('active'), queued = c.save('queued')
     await Bun.sleep(2)
     c.dispose()
-    expect(await waiting).toMatchObject({ ok: false, reason: 'superseded' })
-    expect(await running).toMatchObject({ ok: false, reason: 'disposed' })
+    expect(await queued).toMatchObject({ ok: false, reason: 'superseded' })
+    expect(await active).toMatchObject({ ok: false, reason: 'disposed' })
     expect(await c.save('after')).toMatchObject({ ok: false, reason: 'disposed' })
     expect(await createCheckpoints(m.store, 'game').load()).toBe('kept')
   })
 
-  test.each(['head-read', 'slot-write', 'slot-read', 'head-write'] as const)('disposal during %s stops the next storage operation even when the adapter completes', async (phase) => {
+  test.each(['read', 'commit'] as const)('disposal during %s stops further requests even if the provider finishes', async (phase) => {
     const m = memory()
-    expect(await createCheckpoints(m.store, 'game').save('kept')).toEqual({ ok: true, generation: 1 })
+    await createCheckpoints(m.store, 'game').save('kept')
     const entered = Promise.withResolvers<void>(), complete = Promise.withResolvers<void>()
     const calls: string[] = []
-    const store: CheckpointStore = {
-      async get(key) {
-        calls.push(`get:${key}`)
-        if ((phase === 'head-read' && key === 'game:head') || (phase === 'slot-read' && key === 'game:b')) {
-          entered.resolve()
-          await complete.promise
-        }
-        return m.data.get(key)
+    const c = createCheckpoints({
+      ...m.store,
+      async get(key, signal) {
+        calls.push('read')
+        const value = await m.store.get(key, signal)
+        if (phase === 'read') { entered.resolve(); await complete.promise }
+        return value
       },
-      async set(key, value) {
-        calls.push(`set:${key}`)
-        if ((phase === 'slot-write' && key === 'game:b') || (phase === 'head-write' && key === 'game:head')) {
-          entered.resolve()
-          await complete.promise
-        }
-        // A completed storage request may arrive after cancellation. The
-        // coordinator still owns whether it starts another request or succeeds.
-        m.data.set(key, value)
+      async compareAndSet(key, expected, value) {
+        calls.push('commit')
+        entered.resolve(); await complete.promise
+        // An already-entered atomic operation may finish after caller cancellation.
+        return m.store.compareAndSet(key, expected, value, new AbortController().signal)
       },
-    }
-    const c = createCheckpoints(store, 'game'), result = c.save('late')
+    }, 'game')
+    const result = c.save('late')
     await entered.promise
     c.dispose()
     const atDisposal = [...calls]
@@ -118,19 +183,21 @@ describe('checkpoints', () => {
     expect(await result).toMatchObject({ ok: false, reason: 'disposed' })
     await c.flush()
     expect(calls).toEqual(atDisposal)
-    // An already-issued head commit can complete in an adapter that ignores
-    // cancellation. It remains loadable, but must not report success after close.
-    expect(await createCheckpoints(m.store, 'game').load()).toBe(phase === 'head-write' ? 'late' : 'kept')
+    expect(await createCheckpoints(m.store, 'game').load()).toBe(phase === 'commit' ? 'late' : 'kept')
   })
 
-  test('flush waits for the write in progress, and a legacy single-key save is still found', async () => {
-    const m = memory(), c = createCheckpoints(m.store, 'game', 'old-save')
-    m.data.set('old-save', 'legacy')
-    expect(await c.load()).toBe('legacy')
-    m.slow(5)
+  test('invalid conditional responses fail closed', async () => {
+    const m = memory()
+    const c = createCheckpoints({ ...m.store, setIfAbsent: async () => undefined as unknown as boolean }, 'game')
+    expect(await c.save('lost')).toMatchObject({ ok: false, reason: 'storage' })
+    expect(await c.load()).toBeNull()
+  })
+
+  test('flush waits for the pending commit', async () => {
+    const m = memory(), c = createCheckpoints(m.store, 'game')
+    m.slow(10)
     void c.save('fresh')
     await c.flush()
-    expect(m.log.at(-1)).toBe('game:head')
     expect(await c.load()).toBe('fresh')
   })
 })

@@ -1,66 +1,97 @@
 import { sha256 } from './engine/hash'
 
-/** The storage a host provides: Craft's Storage service in browsers and native shells, a map in tests. */
+/** Craft's public atomic Storage operations. Native hosts and Web Locks own serialization. */
 export interface CheckpointStore {
   get: (key: string, signal: AbortSignal) => Promise<unknown>
-  set: (key: string, value: string, signal: AbortSignal) => Promise<void>
+  setIfAbsent: (key: string, value: unknown, signal: AbortSignal) => Promise<boolean>
+  compareAndSet: (key: string, expected: unknown, value: unknown, signal: AbortSignal) => Promise<boolean>
 }
 export interface Head { version: 1, slot: 'a' | 'b', generation: number, sha256: string, bytes: number }
+interface Payload { generation: number, sha256: string, text: string }
+interface Record { version: 2, current: Payload, previous: Payload | null }
+interface Snapshot { raw: unknown, current: Payload | null, generation: number }
 export type SaveResult = { ok: true, generation: number } | { ok: false, reason: 'storage' | 'verify' | 'disposed' | 'superseded', message: string }
 
-/**
- * Two-slot checkpoints. A save writes the slot the head does not point at, reads
- * it back, and only then moves the head, so an interrupted, refused or torn write
- * always leaves the previous checkpoint loadable. Saves run one at a time in
- * request order; requests made while a write is running collapse into one write
- * of the newest state. A save reports success only after the head is stored.
- */
+/** One conditional commit contains both the current and previous verified payload. */
 export function createCheckpoints(store: CheckpointStore, prefix: string, legacyKey?: string) {
   const lifetime = new AbortController()
-  let head: Head | null | undefined, running: Promise<void> | null = null
+  let running: Promise<void> | null = null, conflicted = false
+  let observed: Snapshot | null = null
   let queued: { text: string, waiters: ((result: SaveResult) => void)[] } | null = null
   const key = (name: string): string => `${prefix}:${name}`
   const disposed = (): SaveResult => ({ ok: false, reason: 'disposed', message: 'The game was closed while the checkpoint was being written.' })
-
-  async function readHead(): Promise<Head | null> {
-    const raw = await store.get(key('head'), lifetime.signal)
-    if (typeof raw !== 'string') return null
-    try {
-      const value = JSON.parse(raw) as Head
-      return value?.version === 1 && (value.slot === 'a' || value.slot === 'b') && Number.isSafeInteger(value.generation) && /^[0-9a-f]{64}$/.test(value.sha256) ? value : null
-    }
-    catch { return null }
+  const conflict = (): SaveResult => ({ ok: false, reason: 'superseded', message: 'Another game session changed the checkpoint. Reload this page before saving again.' })
+  const payload = (value: unknown): Payload | null => {
+    if (!value || typeof value !== 'object') return null
+    const candidate = value as Payload
+    return Number.isSafeInteger(candidate.generation) && candidate.generation >= 0 && typeof candidate.text === 'string'
+      && sha256(candidate.text) === candidate.sha256 ? { generation: candidate.generation, sha256: candidate.sha256, text: candidate.text } : null
   }
-  async function readSlot(slot: 'a' | 'b'): Promise<{ generation: number, text: string } | null> {
-    const raw = await store.get(key(slot), lifetime.signal)
-    if (typeof raw !== 'string') return null
-    try {
-      const value = JSON.parse(raw) as { generation: number, sha256: string, text: string }
-      return Number.isSafeInteger(value?.generation) && typeof value.text === 'string' && sha256(value.text) === value.sha256 ? { generation: value.generation, text: value.text } : null
+
+  /** Read-only migration from the previous two-slot protocol. */
+  async function legacy(): Promise<Payload | null> {
+    const raw = await store.get(key('head'), lifetime.signal)
+    let head: Head | null = null
+    if (typeof raw === 'string') {
+      try {
+        const value = JSON.parse(raw) as Head
+        if (value.version === 1 && (value.slot === 'a' || value.slot === 'b') && Number.isSafeInteger(value.generation) && value.generation >= 0 && /^[0-9a-f]{64}$/.test(value.sha256)) head = value
+      }
+      catch { /* An intact slot can recover an unreadable legacy head. */ }
     }
-    catch { return null }
+    const slots = await Promise.all((['a', 'b'] as const).map(async (slot) => {
+      const raw = await store.get(key(slot), lifetime.signal)
+      try { return { slot, value: typeof raw === 'string' ? payload(JSON.parse(raw)) : null } }
+      catch { return { slot, value: null } }
+    }))
+    const preferred = head && slots.find(entry => entry.slot === head.slot && entry.value?.generation === head.generation && entry.value.sha256 === head.sha256)
+    const fallback = slots.filter(entry => entry.value && (!head || entry.value.generation <= head.generation)).sort((a, b) => b.value!.generation - a.value!.generation)[0]
+    const chosen = preferred || fallback
+    if (chosen?.value) return chosen.value
+    if (legacyKey) {
+      const text = await store.get(legacyKey, lifetime.signal)
+      if (typeof text === 'string') return { generation: 0, sha256: sha256(text), text }
+    }
+    return null
+  }
+
+  async function read(): Promise<Snapshot> {
+    lifetime.signal.throwIfAborted()
+    const raw = await store.get(key('checkpoint'), lifetime.signal)
+    if (raw === null || raw === undefined) {
+      const current = await legacy()
+      return { raw: null, current, generation: current?.generation ?? 0 }
+    }
+    if (typeof raw !== 'object' || (raw as Record).version !== 2) throw new Error('The saved checkpoint format is not supported.')
+    const record = raw as Record
+    const current = payload(record.current), previous = payload(record.previous)
+    if (!current && !previous) throw new Error('The saved checkpoint failed verification.')
+    const generation = Math.max(current?.generation ?? 0, previous?.generation ?? 0, Number.isSafeInteger(record.current?.generation) && record.current.generation >= 0 ? record.current.generation : 0)
+    return { raw, current: current ?? previous, generation }
   }
 
   async function write(text: string): Promise<SaveResult> {
     if (lifetime.signal.aborted) return disposed()
+    if (conflicted) return conflict()
     try {
-      head ??= await readHead()
+      // Commit against what this session loaded or last committed. Reading a
+      // newer checkpoint here would allow older in-memory game state to win.
+      const saved = observed ?? await read()
       if (lifetime.signal.aborted) return disposed()
-      const slot = head?.slot === 'a' ? 'b' : 'a', generation = (head?.generation ?? 0) + 1, digest = sha256(text)
-      await store.set(key(slot), JSON.stringify({ generation, sha256: digest, text }), lifetime.signal)
+      observed = saved
+      const generation = saved.generation + 1
+      if (!Number.isSafeInteger(generation)) return { ok: false, reason: 'verify', message: 'The checkpoint generation is invalid. The previous checkpoint is kept.' }
+      const next: Record = { version: 2, current: { generation, sha256: sha256(text), text }, previous: saved.current }
+      const committed = saved.raw === null
+        ? await store.setIfAbsent(key('checkpoint'), next, lifetime.signal)
+        : await store.compareAndSet(key('checkpoint'), saved.raw, next, lifetime.signal)
       if (lifetime.signal.aborted) return disposed()
-      const stored = await readSlot(slot)
-      if (lifetime.signal.aborted) return disposed()
-      if (!stored || stored.generation !== generation || stored.text !== text) return { ok: false, reason: 'verify', message: 'The checkpoint did not read back intact. The previous checkpoint is kept.' }
-      const next: Head = { version: 1, slot, generation, sha256: digest, bytes: text.length }
-      await store.set(key('head'), JSON.stringify(next), lifetime.signal)
-      if (lifetime.signal.aborted) return disposed()
-      head = next
+      if (typeof committed !== 'boolean') throw new Error('Storage returned an invalid conditional commit result')
+      if (!committed) { conflicted = true; return conflict() }
+      observed = { raw: next, current: next.current, generation }
       return { ok: true, generation }
     }
     catch (error) {
-      // Whatever failed, the head still names the last complete checkpoint.
-      head = undefined
       if (lifetime.signal.aborted) return disposed()
       return { ok: false, reason: 'storage', message: error instanceof Error && /quota/i.test(error.message) ? 'Device storage is full. The previous checkpoint is kept.' : 'Device storage refused the checkpoint. The previous checkpoint is kept.' }
     }
@@ -72,9 +103,10 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
     queued = null
     running = write(job.text).then(result => { for (const done of job.waiters) done(result) }).finally(() => { running = null; drain() })
   }
+  async function flush(): Promise<void> { while (running || queued) { drain(); await running } }
 
   return {
-    /** Requests a checkpoint of serialized state. Later requests made while one is writing replace earlier queued ones. */
+    /** Coalesces pending requests; each success follows one actual atomic commit. */
     save(text: string): Promise<SaveResult> {
       if (lifetime.signal.aborted) return Promise.resolve(disposed())
       return new Promise((resolve) => {
@@ -83,21 +115,14 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
         drain()
       })
     },
-    /** The newest intact checkpoint: the head's slot, else the other slot, else the legacy single-key save. */
     async load(): Promise<string | null> {
-      const current = await readHead()
-      const slots = (await Promise.all((['a', 'b'] as const).map(async slot => ({ slot, value: await readSlot(slot) })))).filter(s => s.value)
-      const preferred = current && slots.find(s => s.slot === current.slot && s.value!.generation === current.generation && sha256(s.value!.text) === current.sha256)
-      // Without a valid head, never prefer an unconfirmed newer slot over a confirmed older one: a slot
-      // ahead of the head was written by a save that never completed.
-      const fallback = slots.filter(s => !current || s.value!.generation <= current.generation).sort((a, b) => b.value!.generation - a.value!.generation)[0]
-      const chosen = preferred ?? fallback
-      if (chosen) return chosen.value!.text
-      if (legacyKey) { const legacy = await store.get(legacyKey, lifetime.signal); return typeof legacy === 'string' ? legacy : null }
-      return null
+      await flush()
+      const saved = await read()
+      observed = saved
+      conflicted = false
+      return saved.current?.text ?? null
     },
-    /** Waits for the write in progress, if any. Used before the host suspends or closes. */
-    async flush(): Promise<void> { while (running || queued) { drain(); await running } },
+    flush,
     dispose(): void {
       lifetime.abort()
       const pending = queued

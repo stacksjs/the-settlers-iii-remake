@@ -279,9 +279,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (!checkpoints || !ready || !session) return
     const result = await checkpoints.save(JSON.stringify(save(session)))
     if (disposed) return
-    // Success is reported only once the checkpoint is verified and its head stored.
+    // Success follows the host's acknowledgement of the atomic checkpoint commit.
     if (result.ok) report('Settlement saved on this device.')
-    else if (result.reason !== 'superseded') report(`Save failed. ${result.message} Your settlement is still running.`)
+    else report(`Save failed. ${result.message} Your settlement is still running.`)
   }
   const load = async (): Promise<void> => {
     if (!ready || !checkpoints) { report('Device storage is not ready.'); return }
@@ -299,7 +299,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     platform = host
     checkpoints = createCheckpoints({
       get: (key, signal) => host.call('Storage', 'get', [key], signal),
-      set: async (key, value, signal) => { await host.call('Storage', 'set', [key, value], signal) },
+      setIfAbsent: (key, value, signal) => host.call('Storage', 'setIfAbsent', [key, value], signal) as Promise<boolean>,
+      compareAndSet: (key, expected, value, signal) => host.call('Storage', 'compareAndSet', [key, expected, value], signal) as Promise<boolean>,
     }, SAVE_PREFIX, LEGACY_SAVE_KEY)
     try {
       const saved = await checkpoints.load()
