@@ -170,8 +170,14 @@ export function diagnose(o: Observation): Diagnosis[] {
     else if (shortage === 'carriers' || shortage === 'settlers') found.push({ kind: 'population', building: b.id, detail: shortage === 'carriers' ? 'too few carriers to spare' : 'no free settlers', recovery: null, recoverable: hasPeople })
     else if (shortage === 'output-full') found.push({ kind: 'delivery', building: b.id, detail: 'doorstep full', recovery: null, recoverable: capacity.carry })
     else if ((shortage === 'no-resources' || shortage === 'exhausted') && HARVESTERS.has(b.type)) {
-      // Foresters replant around woodcutters, so a woodcutter waits while one stands.
-      const waits = b.type === 'woodcutter' && active('forester')
+      // Keep the cleared hut while a nearby forester finishes construction and
+      // replants. Demolishing it can let saplings occupy its rebuilding site.
+      const harvest = rules.get(b.type)?.workflow
+      const waits = b.type === 'woodcutter' && harvest?.kind === 'harvest' && mine.some(f => {
+        const planting = rules.get(f.type)?.workflow
+        return f.type === 'forester' && !f.suspended && planting?.kind === 'plant'
+          && distance(b.workArea, f.workArea) <= harvest.radius + planting.radius
+      })
       found.push({ kind: 'exhausted', building: b.id, detail: `${rules.get(b.type)?.name ?? b.type} has nothing left to work`, recovery: waits ? null : { type: 'demolish', building: b.id }, recoverable: true })
     }
   }

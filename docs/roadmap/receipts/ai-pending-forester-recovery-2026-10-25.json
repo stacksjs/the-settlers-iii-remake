@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T12:10:11.231348+00:00",
+  "base": "0c8b8d3ec48eb917ea7cecc8a5a63ebaccc58be7",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/73"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "problem": "In rival seed 2 at tick 6640, the AI demolished its last exhausted woodcutter while the nearby forester still had three construction work units left. Subsequent timber rebuilding failed and demolition refunds were consumed by unrelated sites.",
+  "change": "An exhausted woodcutter waits for a non-suspended owned forester whose actual working area overlaps its harvest area, including foresters still under construction. The published workflow radii determine overlap. A distant or suspended forester is not treated as a replenishment route. Ordinary engine commands, goods, jobs and construction remain authoritative.",
+  "evidenceClass": "Engineering AI recovery policy. This does not claim the original Gold AI makes the same decisions.",
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/ai.ts",
+      "sha256": "07778d2ab34cac64f28ea6495284edbe96875cd77226f6fdebecff8d85acd2dc"
+    },
+    {
+      "path": "tests/unit/engine-ai-recovery.test.ts",
+      "sha256": "9a5f941002393f2d58e577b51f3f06c2d856a69f007a74cadfe6039f86102b01"
+    }
+  ],
+  "reproduction": {
+    "seed": 2,
+    "tick": 6640,
+    "woodcutter": {
+      "id": 517,
+      "x": 70,
+      "y": 60,
+      "shortage": "no-resources"
+    },
+    "forester": {
+      "id": 560,
+      "x": 71,
+      "y": 55,
+      "phase": "building",
+      "workRemaining": 3
+    },
+    "decisionReportSha256": "a14499981a379956aecd46dc5fd3a35b53e79a91dc9e6c6c35e11b3dad4fd8aa",
+    "beforeCheckpointSha256": "e15e9413bf7f49b038214fc8f925017e8d93ffcc1a8bf3dab8103ba56e159d36"
+  },
+  "red": {
+    "logSha256": "84df0a5a4ae2350cae295cd345807c120e1b7a62af763bc981a5943bccaed397",
+    "failure": "The public rival session lost the exhausted woodcutter instead of retaining its production site while the forester finished."
+  },
+  "regression": {
+    "logSha256": "4f6f10282cc7e39fc735ddab423032fd3591378d8d50a653eb9113784e45766b",
+    "checks": [
+      "Run ordinary economic AI commands from a generated seed to the real exhausted-cutter and pending-forester state.",
+      "Restore the checkpoint before recovery and run both copies for 4000 further ticks.",
+      "Retain the active woodcutter and produce additional planks.",
+      "Reach the same restored checksum with no rejected AI submissions or conservation errors.",
+      "Through work-area commands, distinguish a distant forester from one moved into range."
+    ]
+  },
+  "longRun": {
+    "ticks": 72000,
+    "engineeringSeconds": 3600,
+    "reportSha256": "be83e42b728060d8e83f7c78dcf1b423f8ffb0b4643e2e7339490485ce943793",
+    "outcome": "playing",
+    "finalStock": {
+      "log": 16,
+      "plank": 8,
+      "stone": 40,
+      "bread": 15
+    },
+    "produced": {
+      "plank": 32,
+      "stone": 72,
+      "fish": 16,
+      "water": 24,
+      "coal": 7,
+      "log": 40,
+      "grain": 40,
+      "flour": 24,
+      "bread": 8
+    },
+    "activeWoodcutters": 1,
+    "conservationErrors": []
+  },
+  "localChecks": {
+    "unitTests": 256,
+    "unitFailures": 0,
+    "unitAssertions": 22575,
+    "unitLogSha256": "6054d3004ca6c412357cbc6e0c499617d62e6bdc12e591f710aced3e87e9b37c",
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "lintLogSha256": "5c1eac8cdd3fde2e0f40b07d7badd5741db93055a7aa1e5537267e6d5deb3170",
+    "typesErrors": 0,
+    "typesLogSha256": "870576bab3273d7bd0ac791cbb3b44ddb8996264b40f7e666c48afd65fe5b93d",
+    "productionBuildExitCode": 0,
+    "buildLogSha256": "91b0ef1e9cebf48e1bef7c88e7616c66f3606d816bb88a40020aa1595c546ea0",
+    "browserObjectiveAndCheckpointSteps": 19,
+    "browserReportSha256": "2c0214ccbb58e5e46dabf4d29eb1fe28365dff7880562e5b466c72547ab90d71",
+    "browserConsoleErrors": 0,
+    "browserFailedRequests": 0,
+    "browserCollectionErrors": 0
+  },
+  "limits": [
+    "This corrects one reproducible timber-recovery failure, not every AI deadlock.",
+    "The long run reaches stocked civilian production buffers but does not recruit an expanded army or finish a match. Expansion, mineral access and delivery capacity still need work.",
+    "The browser scenario covers objective and checkpoint delivery. The 6640-tick AI regression executes the public session interface in Bun, not a complete native-input browser battle.",
+    "Working-area overlap is a potential supply route, not proof that every tile is plantable and reachable.",
+    "Original Gold timings, difficulty behavior and whole-game parity remain unverified."
+  ]
+}

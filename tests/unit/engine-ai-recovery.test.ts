@@ -1,7 +1,8 @@
 import type { Session } from '../../resources/game/engine'
 import { describe, expect, test } from 'bun:test'
-import { audit, checksum, restore, save, createSession, diagnose, economicAI, findStart, generateMap, observe, stepAI } from '../../resources/game/engine'
-import { anchors, landscape, rules } from '../fixtures/engine'
+import { audit, checksum, restore, save, createSession, describeMap, diagnose, economicAI, findStart, generateMap, observe, stepAI } from '../../resources/game/engine'
+import { anchors, landscape, order, rules } from '../fixtures/engine'
+import { rivalSession, RIVAL_MILITARY } from '../../resources/game/controller'
 
 type Placed = { type: string, x: number, y: number }
 const carriers = (n: number) => Array.from({ length: n }, (_, i) => ({ profession: 'carrier', x: 36 + (i % 8), y: 47 + Math.floor(i / 8) }))
@@ -22,6 +23,40 @@ const play = (s: Session, ticks: number, ai = economicAI(1, { interval: 20 }), s
 const mine = (s: Session) => s.state.results.filter(r => r.player === 1)
 
 describe('AI deadlock recovery', () => {
+  test('the rival keeps its exhausted woodcutter while a forester finishes and timber production resumes after restore', () => {
+    const s = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
+    for (let tick = 0; tick < 6640; tick++) { stepAI(s, ai, sequence); s.advance(1) }
+    const cutter = s.view(2).buildings.find(b => b.owner === 2 && b.type === 'woodcutter' && b.shortage === 'no-resources')!
+    expect(cutter).toBeDefined()
+    expect(s.view(2).buildings.some(b => b.owner === 2 && b.type === 'forester' && b.phase === 'building')).toBe(true)
+    const produced = s.state.ledger[2]!.produced.plank ?? 0
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    const restoredAI = economicAI(2, { military: RIVAL_MILITARY }), restoredSequence = { next: sequence.next }
+    for (let tick = 0; tick < 4000; tick++) {
+      stepAI(s, ai, sequence); s.advance(1)
+      stepAI(copy, restoredAI, restoredSequence); copy.advance(1)
+    }
+    expect(s.view(2).buildings.some(b => b.id === cutter.id && b.phase === 'active')).toBe(true)
+    expect(s.state.ledger[2]!.produced.plank ?? 0).toBeGreaterThan(produced)
+    expect(copy.checksum()).toBe(s.checksum())
+    expect(ai.results).toEqual([])
+    expect(restoredAI.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60_000)
+
+  test('forestry recovery follows the actual working areas instead of a distant forester', () => {
+    const map = describeMap(rules, { width: 96, height: 96, base: 'grass', seed: 5, features: [] })
+    const s = computer([{ type: 'woodcutter', x: 53, y: 51 }, { type: 'forester', x: 31, y: 44 }], [{ good: 'axe', amount: 1 }], carriers(16), map)
+    s.advance(600)
+    const cutter = s.view(1).buildings.find(b => b.type === 'woodcutter')!
+    const forester = s.view(1).buildings.find(b => b.type === 'forester')!
+    expect(cutter.shortage).toBe('no-resources')
+    expect(diagnose(observe(s, 1)).find(d => d.building === cutter.id)).toMatchObject({ kind: 'exhausted', recovery: { type: 'demolish', building: cutter.id } })
+    order(s, 'work-area', { building: forester.id, x: 49, y: 44 })
+    expect(diagnose(observe(s, 1)).find(d => d.building === cutter.id)).toMatchObject({ kind: 'exhausted', recovery: null })
+    expect(audit(s.context)).toEqual([])
+  })
+
   test('a missing tool becomes an urgent order, so the tool smith makes it before anything else', () => {
     const first = (withAI: boolean): string => {
       const s = computer([{ type: 'toolsmith', x: 31, y: 44 }, { type: 'woodcutter', x: 53, y: 51 }], [{ good: 'iron', amount: 4 }, { good: 'coal', amount: 4 }, { good: 'hammer', amount: 1 }])
