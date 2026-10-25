@@ -175,6 +175,14 @@ export function placementError(ctx: Context, owner: number, type: string, x: num
     if (inside(map, px, py) && objectAt(ctx, tileOf(ctx, { x: px, y: py }))?.blocks) return 'Trees or stones block the building\'s piles.'
   }
   if (Math.max(...elevations) - Math.min(...elevations) > ctx.rules.movement.maxClimb * 4) return 'The ground is too steep.'
+  if (ctx.rules.constructionOccupancy === 'current-and-next') {
+    // Walkers vacate the resting index before a step. Their current tile and
+    // committed destination still need room until the step actually finishes.
+    const site = new Set(tiles.map(p => tileOf(ctx, p)))
+    for (const s of ctx.state.settlers.values()) {
+      if (!s.inside && (site.has(tileOf(ctx, s)) || (s.next >= 0 && site.has(s.next)))) return 'Settlers are crossing this site.'
+    }
+  }
   return null
 }
 

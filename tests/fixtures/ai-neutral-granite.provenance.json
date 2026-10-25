@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "fixture": "ai-neutral-granite.json",
+  "bytes": 466970,
+  "sha256": "9dbb0e73241491b8a897554d56ede3034c8f9dbe1130ced53ca26cc5fe0356c5",
+  "base": "85ac0f1e805edca6f6d008897089218345657f85",
+  "capture": "Ordinary rivalSession(2), economicAI for both players with RIVAL_MILITARY, default 80-tick cadence, run to tick 100000 and restored with fresh policies and sequence numbers to tick 200000. Only ordinary commands from normal starting goods and population.",
+  "workingSource": "Captured with the versioned construction correction in issue #193 before its publication. The AI source is identical to the base commit. No game state was edited.",
+  "sourceAiSha256": "6ddee99e4e15ef01c38e89d406373b9fd59c9968952872fa6fe7c6bfc18d5bd6",
+  "constructionSourceSha256": {
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "resources/game/engine/catalog.ts": "b2325f20d84345347c35dd166db80af4c1b8aea6f24db2aeb0d33a52e74c6d05"
+  },
+  "rules": {
+    "id": "roman-engineering",
+    "version": "0.10.0",
+    "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+  },
+  "checksum": "60a8248b",
+  "sourceIssue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/194",
+  "media": "Generated engineering map and simulation data. No original raster or audio."
+}

@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T18:44:38.768694+00:00",
+  "base": "85ac0f1e805edca6f6d008897089218345657f85",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/193",
+  "versions": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "problem": "A new mine can enclose a settler while walking because placement only checks the resting occupancy index. Walkers leave that index at the start of a step.",
+  "capturedFailure": {
+    "checkpointSha256": "50d21d30b27452400089a9ca0b350187b251c414d9dd2c6629f09c6531d313be",
+    "checkpointBytes": 464751,
+    "seed": 2,
+    "players": "Both ordinary economic policies from normal starting population and goods",
+    "rootTrace": {
+      "tick": 100000,
+      "cmd": {
+        "type": "specialists",
+        "profession": "geologist",
+        "x": 87,
+        "y": 77,
+        "count": 1
+      },
+      "before": {
+        "x": 87,
+        "y": 79,
+        "diagnostic": "unreachable",
+        "program": null
+      },
+      "route": {
+        "ok": false,
+        "reason": "unreachable",
+        "expanded": 1
+      },
+      "target": {
+        "tile": 9943,
+        "x": 87,
+        "y": 77,
+        "known": true,
+        "terrain": "mountain",
+        "object": null,
+        "elevation": 5,
+        "building": 0,
+        "enterable": true,
+        "step": 18
+      },
+      "neighbors": [
+        {
+          "tile": 10071,
+          "x": 87,
+          "y": 78,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        },
+        {
+          "tile": 10200,
+          "x": 88,
+          "y": 79,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        },
+        {
+          "tile": 10328,
+          "x": 88,
+          "y": 80,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        },
+        {
+          "tile": 10327,
+          "x": 87,
+          "y": 80,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        },
+        {
+          "tile": 10198,
+          "x": 86,
+          "y": 79,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        },
+        {
+          "tile": 10070,
+          "x": 86,
+          "y": 78,
+          "known": true,
+          "terrain": "mountain",
+          "object": null,
+          "elevation": 3,
+          "building": 2352,
+          "enterable": false,
+          "step": 16
+        }
+      ]
+    },
+    "repeatedFailureTicks": [
+      100001,
+      100080,
+      100200
+    ],
+    "conservationAudit": []
+  },
+  "profiles": {
+    "new": {
+      "id": "roman-engineering",
+      "version": "0.10.0",
+      "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+    },
+    "frozen": {
+      "id": "roman-engineering",
+      "version": "0.9.0",
+      "digest": "1ebde243c7408435be7c55df79d8f7bbf6ef37ce63fc338a25b98648b280c7e7",
+      "file": "resources/game/engine/profiles/roman-engineering-0.9.0.json",
+      "sha256": "6a7519ba6a7548e3dccd73fae920e8a4b5886da66c7441cf79ae3892c7d1f4da"
+    }
+  },
+  "regression": {
+    "path": "tests/unit/construction-occupancy.test.ts",
+    "red": {
+      "pass": 0,
+      "fail": 2,
+      "cause": "Both the leaving walker and the committed incoming step allowed placement"
+    },
+    "green": {
+      "pass": 6,
+      "fail": 0,
+      "assertions": 50,
+      "behavior": [
+        "Current outside tile and committed next step block a site",
+        "Public placement preview and executed build command agree",
+        "Site becomes valid after the walker clears it",
+        "Mid-step restore continues identically",
+        "Unrelated walkers do not block sites; future paths reroute normally",
+        "Frozen 0.9 save and replay preserve prior behavior",
+        "Unknown and unevidenced construction policies are rejected"
+      ]
+    }
+  },
+  "checks": {
+    "unit": {
+      "pass": 283,
+      "fail": 0,
+      "assertions": 22852,
+      "files": 37
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "typecheck": "pass",
+    "assets": "pass",
+    "fidelity": "pass",
+    "roadmap": "pass",
+    "productionBuild": "pass"
+  },
+  "longerMatch": {
+    "seed": 2,
+    "rules": "0.10.0",
+    "tick": 200000,
+    "checksum": "60a8248b",
+    "outcome": {
+      "1": "playing",
+      "2": "playing"
+    },
+    "conservationAudit": [],
+    "rejectedEnqueues": [
+      [],
+      []
+    ],
+    "checkpointSha256": "9dbb0e73241491b8a897554d56ede3034c8f9dbe1130ced53ca26cc5fe0356c5",
+    "limit": "No production increase from tick 100000 to 200000; no longer trapped, but resource planning remains incomplete",
+    "followUp": "https://github.com/stacksjs/the-settlers-iii-remake/issues/194",
+    "phase": "Historical construction-only correction before the neutral-harvest policy fix in issue #194"
+  },
+  "scopeLimit": "This is engineering construction behavior, not a Gold executable observation. The separate neutral-harvest receipt records a subsequent completed two-economy match. Human victory, Gold behavior and native game acceptance remain unverified. Existing 0.9 saves retain their own published rules.",
+  "headlessHostCheck": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.341\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "c6f5de73c0e85d98fa19e8dc40d73f0d5224801a1f2f17f7556c38091a533d07",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "cd0c6f71e165595ac82088a8fde7cb2aa0a7afab6abf4265f3a5c322ef422bd8"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.",
+    "framework": "0.75.311"
+  },
+  "sourceFilesSha256": {
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "resources/game/engine/catalog.ts": "b2325f20d84345347c35dd166db80af4c1b8aea6f24db2aeb0d33a52e74c6d05",
+    "resources/game/engine/profiles/roman-engineering-0.9.0.json": "6a7519ba6a7548e3dccd73fae920e8a4b5886da66c7441cf79ae3892c7d1f4da",
+    "tests/unit/construction-occupancy.test.ts": "7b17d271c9e8abbd3656b17fa049208007be6ad1786e9c28ee36d225aa8f906d",
+    "tests/unit/engine-core.test.ts": "fc83d6bb21e5fd2f7dff1141f7c197f7182a1cf33623e64b79b6e889661490b2"
+  }
+}

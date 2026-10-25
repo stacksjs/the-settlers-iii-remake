@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T19:20:23.735210+00:00",
+  "candidateBase": "85ac0f1e805edca6f6d008897089218345657f85",
+  "versions": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4"
+  },
+  "adoption": "Qualified exact source/release gates, 86 original NPM archives and five native archives before normal Buddy upgrade, original Pantry 127 install and frozen Bun 1.4.4 install. No installed-module edits or copied framework runtimes.",
+  "publicationReceipt": "framework-0.75.311-publication.json",
+  "installedOriginals": {
+    "receipt": "framework-0.75.311-receipt.json",
+    "plan": "framework-0.75.311-plan.json",
+    "packages": 95,
+    "verifierExport": "@stacksjs/actions/release-evidence",
+    "verifierVersion": "0.75.311",
+    "verifierModuleSha256": "deddfbbf90d7fda0b24768692ae5127afa8a6b60bed32a75ded72bc9483762ba",
+    "consumer": {
+      "lockfile": "bun.lock",
+      "sha256": "0d06a28dde98657fb014f26ae9263a7d5da49a8cb9c5dd9311fbb228ebe4cb68",
+      "bunVersion": "1.4.4",
+      "checks": [
+        {
+          "script": "typecheck",
+          "exitCode": 0,
+          "outputSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+        },
+        {
+          "script": "lint",
+          "exitCode": 0,
+          "outputSha256": "4c625734c1e7124c5e51d5114441b44c8fb565182bd0098cf076e2b220618984"
+        },
+        {
+          "script": "test",
+          "exitCode": 0,
+          "outputSha256": "b2f27c18124d1cb303a91ce00253415653f50aedbcf4741dbaac0c0e2f6ea4de"
+        },
+        {
+          "script": "assets:verify",
+          "exitCode": 0,
+          "outputSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+        },
+        {
+          "script": "fidelity:check",
+          "exitCode": 0,
+          "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+        },
+        {
+          "script": "roadmap:check",
+          "exitCode": 0,
+          "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+        },
+        {
+          "script": "test:browser",
+          "exitCode": 0,
+          "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+        }
+      ]
+    }
+  },
+  "gameSourceFilesSha256": {
+    "resources/game/engine/ai.ts": "86b9db7106dd03c7d4d6a5770465fcdc5a3a944dc8ea80ec03c82b0ff4a31c13",
+    "resources/game/engine/production.ts": "edb0113fe4de6a6d092ec4194a00e5d371d98f63f5bd0545696ea81f5f232653",
+    "resources/game/engine/routing.ts": "2c962692508d514b652b94e6076011fd6f0bd030a51a577d46b6a4c9913ed763",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce"
+  },
+  "productionBuild": {
+    "distIndexSha256": "abe00a59666d20b241436cd41c44bd4cee917308d681e638a20393f798eec0bd",
+    "passed": true,
+    "logSha256": "da5258eefb92cdca3b4348fe2bfeaffdd0349f0afca0e1a78575edc0480062ec"
+  },
+  "checks": {
+    "unit": {
+      "pass": 283,
+      "fail": 0,
+      "assertions": 22852,
+      "files": 37,
+      "logSha256": "c1e8ced613b980a4a85a689b2a6fe18d919f6afb3ed044af80939afb2a0f83f6"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "logSha256": "b6dd99804841e36afafb84c5523cb58b8bda9506ee3970655afd89dcac537c94"
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+    },
+    "assets": {
+      "passed": true,
+      "logSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    "fidelity": {
+      "passed": true,
+      "logSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    "roadmap": {
+      "passed": true,
+      "logSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    }
+  },
+  "browser": {
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": [
+          58
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "05e7c105e1f6f7ecce9fd6901a8aecf236c3ba4b1ea15a6069cc6a75c6a2e743",
+        "elapsedMs": 42617.538416
+      },
+      {
+        "suite": "control-frame",
+        "steps": [
+          18,
+          18,
+          18,
+          18
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "ef5d380766ec8f9a52db839e14de529230a31d5bf039e0cc5d94a3466f7b27e1",
+        "elapsedMs": 135908.98229200003
+      },
+      {
+        "suite": "resize",
+        "steps": [
+          5
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "6537b426efbfb02c7f15709164f8ee7695e5a702304cc58d7ee0e22e97e82f71",
+        "elapsedMs": 26302.405165999982
+      },
+      {
+        "suite": "production",
+        "steps": [
+          19
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "c409d67dad7f0299379f9e32757e2c17e17a5540a511d6a30ff172e436269d88",
+        "elapsedMs": 39238.10291700001
+      },
+      {
+        "suite": "selection",
+        "steps": [
+          33
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "170bbc41e3ada741574d8aa0f92341cd5769cd68c233dc4c4eda5e56467f470f",
+        "elapsedMs": 30724.043749999983
+      },
+      {
+        "suite": "recruitment",
+        "steps": [
+          34,
+          34
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "45ff0bf3829ad587b457f5af35ac2e1506c353d4dcedf5d6892d624055ee8f24",
+        "elapsedMs": 74417.906708
+      },
+      {
+        "suite": "working-area",
+        "steps": [
+          57
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "66e286d084ecc0dfef4c335aa8eab8c1804def2abf8e71f9df36c802e4fc6272",
+        "elapsedMs": 44389.03570800001
+      },
+      {
+        "suite": "skirmish",
+        "steps": [
+          26
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "7c95cbb42320583d96b0007ec637dec98ce392b18160e50a2a551bf3a27f3a05",
+        "elapsedMs": 27846.58025
+      },
+      {
+        "suite": "rival-battle",
+        "steps": [
+          46
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "b73de927f08fcf30b74609fb18ccf194c45e7c84b64f0a31df85d75a93a6e1f2",
+        "elapsedMs": 629453.520375
+      },
+      {
+        "suite": "checkpoints",
+        "steps": [
+          1
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "863ccc40da4af0a2a23128c55dc8ad5a513f82e2711db5eb718d394de84e3d01",
+        "elapsedMs": 22577.27166700014
+      }
+    ],
+    "totalSteps": 385,
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "driver": "Installed @stacksjs/defaults 0.75.311 standalone scenario driver. Both owned production servers restarted after normal upgrade.",
+    "chromeHelperSha256": "a86047d043f2984af1082da364c435af1cab2bb8e23ba9a3f22616ff34140737"
+  },
+  "headlessHostCheck": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.341\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "c6f5de73c0e85d98fa19e8dc40d73f0d5224801a1f2f17f7556c38091a533d07",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "cd0c6f71e165595ac82088a8fde7cb2aa0a7afab6abf4265f3a5c322ef422bd8"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "priorFailedAttempt": {
+    "stage": "control-frame first viewport",
+    "reason": "Chrome produced no DevTools port before reaching the game. Disk dropped to about 125 MB at the same time. A diagnostic launch succeeded unchanged, and the complete clean rerun was performed after regenerable cache cleanup. The exact cause of the first launch failure is not proven.",
+    "originalReportsRetained": true,
+    "borrowedMediaUsed": false
+  },
+  "scope": "385 steps establish the authored browser scenarios on this installed cohort, including one passive-player defeat at ordinary 4x with real save/reload. Separate ordinary two-computer seed-2 match reaches a winner with clean accounting. These checks do not establish native-input human victory, all seeds, full Gold rules/content or native game presentation."
+}

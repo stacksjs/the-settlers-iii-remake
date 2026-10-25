@@ -43,7 +43,8 @@ outcome survive save/reload. Leave the seed empty for a random map.
 ## The settlement
 
 - Sites are levelled by diggers and built by builders from materials carriers
-  deliver one at a time. Construction deliveries come before storage.
+  deliver one at a time. A new site waits for crossing settlers to clear its
+  footprint. Construction deliveries come before storage.
 - Workers need a tool: woodcutters an axe, stonecutters and miners a pick,
   sawyers a saw, farmers a scythe, fishermen a rod. A workplace without its tool
   says so instead of hiring a phantom worker.
@@ -59,9 +60,10 @@ outcome survive save/reload. Leave the seed empty for a random map.
   material on the ground.
 
 Settlements save on this device every 30 seconds and when the page is hidden.
-Saves are versioned envelopes validated as untrusted input. A save made with
-different rules is refused rather than reinterpreted, and the earlier Riverlands
-prototype save is kept untouched under its own key.
+Saves are versioned envelopes validated as untrusted input. Each save restores
+with its exact published rule profile. Earlier profiles remain frozen in the
+catalog; unknown or altered identities are refused rather than reinterpreted.
+The earlier Riverlands prototype save is kept untouched under its own key.
 
 ## Implementation
 

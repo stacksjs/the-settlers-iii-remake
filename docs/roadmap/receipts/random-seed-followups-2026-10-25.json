@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T19:01:26.395124+00:00",
+  "base": "85ac0f1e805edca6f6d008897089218345657f85",
+  "phase": "Same issues-193-194 candidate as ai-neutral-harvest-2026-10-25.json, engineering 0.10.0",
+  "setup": "Ordinary rivalSession seeds 1, 3, 5 with economicAI and RIVAL_MILITARY for both sides, default 80-tick cadence, normal goods and people. No state edits, material grants or special clocks.",
+  "relatedIssues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/74",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/76"
+  ],
+  "runs": [
+    {
+      "seed": 1,
+      "tick": 80000,
+      "outcome": {
+        "1": "playing",
+        "2": "playing"
+      },
+      "checksum": "4fe10cac",
+      "conservationAudit": [],
+      "rejectedEnqueues": [
+        [],
+        []
+      ],
+      "retainedExecutedRefusals": {
+        "Each garrison keeps its last soldier.": 5
+      },
+      "produced": [
+        {
+          "plank": 70,
+          "log": 94,
+          "stone": 50,
+          "fish": 53,
+          "water": 87,
+          "grain": 103,
+          "coal": 240,
+          "flour": 87,
+          "bread": 71,
+          "ironore": 136,
+          "iron": 120,
+          "hammer": 14,
+          "shovel": 15,
+          "axe": 15,
+          "saw": 15,
+          "pickaxe": 15,
+          "scythe": 15,
+          "fishingrod": 15
+        },
+        {
+          "plank": 34,
+          "log": 50
+        }
+      ],
+      "checkpointSha256": "ce9de4d492853e9b09c74cd316a462f6e61a765b4ca9467465dd8ad8dae94d60"
+    },
+    {
+      "seed": 3,
+      "tick": 80000,
+      "outcome": {
+        "1": "playing",
+        "2": "playing"
+      },
+      "checksum": "7a6c799c",
+      "conservationAudit": [],
+      "rejectedEnqueues": [
+        [],
+        []
+      ],
+      "retainedExecutedRefusals": {},
+      "produced": [
+        {
+          "plank": 31,
+          "log": 39,
+          "coal": 24
+        },
+        {
+          "plank": 305,
+          "log": 321,
+          "stone": 166,
+          "water": 33,
+          "grain": 49,
+          "flour": 25,
+          "bread": 9,
+          "ironore": 24
+        }
+      ],
+      "checkpointSha256": "9f9ebff2486ef8f02121fe3f0e7e7e52a4098f61cf216c3863512741b096b342"
+    },
+    {
+      "seed": 5,
+      "tick": 80000,
+      "outcome": {
+        "1": "playing",
+        "2": "playing"
+      },
+      "checksum": "564a1da9",
+      "conservationAudit": [],
+      "rejectedEnqueues": [
+        [],
+        []
+      ],
+      "retainedExecutedRefusals": {
+        "Each garrison keeps its last soldier.": 102
+      },
+      "produced": [
+        {
+          "log": 139,
+          "plank": 115,
+          "fish": 16,
+          "stone": 83,
+          "water": 45,
+          "grain": 21,
+          "ironore": 89,
+          "flour": 21,
+          "bread": 21,
+          "coal": 173,
+          "iron": 75,
+          "hammer": 10,
+          "shovel": 8,
+          "axe": 11,
+          "saw": 6,
+          "pickaxe": 1,
+          "scythe": 1,
+          "fishingrod": 1,
+          "bow": 12,
+          "sword": 9,
+          "spear": 14
+        },
+        {
+          "plank": 153,
+          "log": 188,
+          "stone": 116,
+          "ironore": 83,
+          "grain": 64,
+          "water": 48,
+          "flour": 48,
+          "bread": 32,
+          "coal": 198,
+          "iron": 83,
+          "hammer": 10,
+          "shovel": 11,
+          "axe": 11,
+          "saw": 4,
+          "pickaxe": 2,
+          "scythe": 2,
+          "fishingrod": 2,
+          "spear": 14,
+          "bow": 14,
+          "sword": 13
+        }
+      ],
+      "checkpointSha256": "11284f20aa4d66894890723fdd57d7e15123cecd0b34fcbc0c1d00305529c62e"
+    }
+  ],
+  "scope": "Exploratory results, not a passing completion gate. All three matches are unfinished at tick 80000. Clean accounting is distinct from a completed, sustainable or balanced match. The complete seed-2 result does not establish all-seed acceptance. Public military-policy last-guard regression has been reproduced separately; the engine final-guard rule stays unchanged.",
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "86b9db7106dd03c7d4d6a5770465fcdc5a3a944dc8ea80ec03c82b0ff4a31c13",
+    "resources/game/engine/production.ts": "edb0113fe4de6a6d092ec4194a00e5d371d98f63f5bd0545696ea81f5f232653",
+    "resources/game/engine/routing.ts": "2c962692508d514b652b94e6076011fd6f0bd030a51a577d46b6a4c9913ed763",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce"
+  }
+}

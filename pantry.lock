@@ -5,12 +5,12 @@
     "": {
       "name": "the-settlers-iii-remake",
       "dependencies": {
-        "@stacksjs/actions": "0.75.310",
-        "@stacksjs/env": "0.75.310",
-        "@stacksjs/path": "0.75.310",
+        "@stacksjs/actions": "0.75.311",
+        "@stacksjs/env": "0.75.311",
+        "@stacksjs/path": "0.75.311",
         "@stacksjs/stx": "0.2.691",
         "craft-native": "0.0.341",
-        "stacks": "0.75.310",
+        "stacks": "0.75.311",
         "ts-pantry": "0.11.127"
       },
       "devDependencies": {

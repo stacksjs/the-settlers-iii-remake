@@ -4,6 +4,7 @@ import type { RulesProfile } from './rules'
 import type { Command, CommandResult, PlayerSettings } from './state'
 import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
 import { footprint } from './context'
+import { harvestableSite } from './production'
 
 // A computer player is a client like any other: it reads what its player may
 // know and submits ordinary commands. It never touches simulation state, so it
@@ -22,6 +23,8 @@ export interface Observation {
   terrain: (tile: number) => string | null
   object: (tile: number) => string | null
   placement: (type: string, x: number, y: number) => string | null
+  /** Whether a worker at a legal proposed site can reach a known own or neutral harvest target. */
+  harvestable: (type: string, x: number, y: number) => boolean
 }
 
 export function observe(session: Session, player: number): Observation {
@@ -33,6 +36,7 @@ export function observe(session: Session, player: number): Observation {
     // Objects on explored tiles are what the player last saw there; the engine keeps no separate memory yet.
     object: t => (explored(t) && map.object[t] ? rules.objects[map.object[t]! - 1]!.id : null),
     placement: (type, x, y) => session.placement(player, type, x, y),
+    harvestable: (type, x, y) => harvestableSite(session.context, player, type, x, y, explored),
   }
 }
 
@@ -47,21 +51,22 @@ const home = (o: Observation): Point[] => {
 /** Every owned military building, castle first: large buildings search for room around each. */
 const holdings = (o: Observation): Point[] => o.view.buildings.filter(b => b.owner === o.player && (b.type === 'castle' || b.type === 'small-tower')).map(b => ({ x: b.x, y: b.y }))
 /** Known matching tiles, nearest the worker or settlement first. Neutral land is opt-in. */
-function find(o: Observation, test: (t: number) => boolean, limit = 6, options: { near?: Point, neutral?: boolean } = {}): Point[] {
+function find(o: Observation, test: (t: number) => boolean, limit = 6, options: { near?: Point, neutral?: boolean, preferOwned?: boolean } = {}): Point[] {
   const center = options.near ?? home(o)[0]
   if (!center) return []
   const found: Point[] = []
   for (let t = 0; t < o.width * o.height; t++) {
     if (o.explored(t) && (o.view.owner[t] === o.player || (options.neutral && o.view.owner[t] === 0)) && test(t)) found.push({ x: t % o.width, y: Math.floor(t / o.width) })
   }
-  return found.sort((a, b) => distance(a, center) - distance(b, center) || a.y - b.y || a.x - b.x).slice(0, limit)
+  const ownership = (p: Point): number => Number(o.view.owner[indexOf(o, p.x, p.y)] !== o.player)
+  return found.sort((a, b) => (options.preferOwned ? ownership(a) - ownership(b) : 0) || distance(a, center) - distance(b, center) || a.y - b.y || a.x - b.x).slice(0, limit)
 }
 const signs = (o: Observation, good: string): Point[] => o.view.signs.filter(s => s.good === good && s.amount > 0 && o.view.owner[s.tile] === o.player).map(s => ({ x: s.tile % o.width, y: Math.floor(s.tile / o.width) }))
 
 /** The declared build policy, in priority order. Engineering choice, not the original AI. */
 const POLICY: Want[] = [
-  { building: 'woodcutter', count: 2, near: o => find(o, t => o.object(t) === 'tree') },
-  { building: 'stonecutter', count: 1, near: o => find(o, t => o.object(t) === 'stone') },
+  { building: 'woodcutter', count: 2, near: o => find(o, t => o.object(t) === 'tree', o.width * o.height, { neutral: true, preferOwned: true }) },
+  { building: 'stonecutter', count: 1, near: o => find(o, t => o.object(t) === 'stone', o.width * o.height, { neutral: true, preferOwned: true }) },
   { building: 'sawmill', count: 1, near: home },
   { building: 'forester', count: 1, near: o => find(o, t => o.object(t) === 'tree'), when: (_o, have) => have('woodcutter') > 0 },
   { building: 'small-residence', count: 1, near: home, when: (o, have) => have('sawmill') > 0 && (o.view.professions.carrier ?? 0) < 20 },
@@ -349,7 +354,9 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         const center = home(o)[0]
         const rotation = [[1, 0], [1, 1], [0, 1], [-1, 0], [-1, -1], [0, -1]][have('small-tower') % 6]!
         const explore = center ? { x: Math.max(0, Math.min(o.width - 1, center.x + rotation[0]! * 30)), y: Math.max(0, Math.min(o.height - 1, center.y + rotation[1]! * 30)) } : undefined
-        const target = !anchors.length && need ? beyond(o, need(o))[0] ?? explore : undefined
+        // Neutral harvest anchors may be known before any workplace fits on
+        // owned land. They still need expansion, just as undiscovered resources do.
+        const target = need && !anchors.some(p => o.view.owner[indexOf(o, p.x, p.y)] === o.player) ? beyond(o, need(o))[0] ?? explore : undefined
         if (target && have('small-tower') < 4 && !o.view.buildings.some(b => b.owner === o.player && b.type === 'small-tower' && b.phase !== 'active')) {
           const tower = placeNear(o, 'small-tower', borderToward(o, target))
           if (tower) { orders.push({ type: 'build', building: 'small-tower', ...tower }); break }
@@ -428,7 +435,8 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
   const deposits = workflow?.kind === 'extract' && workflow.food ? new Set(o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && o.view.owner[sign.tile] === o.player).map(sign => sign.tile)) : null
   const need = deposits ? (tile: number) => deposits.has(tile) : NEEDS[type]?.(o)
   const radius = workflow && 'radius' in workflow ? workflow.radius : 0
-  const serves = (x: number, y: number): boolean => !need || !radius || area({ width: o.width, height: o.height }, { x, y }, radius).some(t => need(t))
+  const serves = (x: number, y: number): boolean => (!need || !radius || area({ width: o.width, height: o.height }, { x, y }, radius).some(t => need(t)))
+    && (workflow?.kind !== 'harvest' || o.harvestable(type, x, y))
   for (const anchor of anchors) {
     for (let r = 0; r <= 14; r++) {
       for (let dy = -r; dy <= r; dy++) {

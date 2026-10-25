@@ -1,0 +1,582 @@
+{
+  "schemaVersion": 1,
+  "tag": "v0.75.311",
+  "source": "b16dc6eb65cbccc919b0836b9091b747448c4818",
+  "recordedAt": "2026-10-25T18:38:47.272141+00:00",
+  "workflows": [
+    {
+      "runId": 40217823569,
+      "conclusion": "success",
+      "requiredJobs": [
+        "scaffold-smoke",
+        "test (core-2)",
+        "Release evidence (ubuntu-latest)",
+        "Release evidence (macos-latest)",
+        "lint",
+        "test (auth-3)",
+        "Release evidence (windows-latest)",
+        "typecheck",
+        "test (auth-4)",
+        "test (auth-2)",
+        "test (core-1)",
+        "deployment-target",
+        "test (buddy)",
+        "artifact-freshness",
+        "test (auth-1)",
+        "compile",
+        "deploy"
+      ],
+      "conditionalJobs": {
+        "dependency-locks": "skipped",
+        "publish-commit": "skipped"
+      }
+    },
+    {
+      "runId": 40217823753,
+      "conclusion": "success",
+      "requiredJobs": [
+        "wait for earlier releases",
+        "accept exact release source CI",
+        "release gate",
+        "npm",
+        "homebrew"
+      ],
+      "conditionalJobs": {}
+    }
+  ],
+  "originalNpmArchives": {
+    "source": "b16dc6eb65cbccc919b0836b9091b747448c4818",
+    "version": "0.75.311",
+    "packages": [
+      {
+        "name": "@stacksjs/action-runner",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/actions",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/ai",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/alias",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/analytics",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/api",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/arrays",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/audio",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/auth",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/browser",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/browser-extension",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/buddy",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/build",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/cache",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/calendar-api",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/charts",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/chat",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/cli",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/cloud",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/cms",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/collections",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/commerce",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/composables",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/config",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/cron",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/database",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/datetime",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/defaults",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/desktop-build",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/dns",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/docs",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/email",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/enums",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/env",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/error-handling",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/events",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/faker",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/feature-flags",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/features",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/forms",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/git",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/github",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/health",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/http",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/i18n",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/image",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/lint",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/logging",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/mobile",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/model-meta",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/newsletter",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/notifications",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/objects",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/orm",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/pagination",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/path",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/payments",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/push",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/query-builder",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/queue",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/realtime",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/registry",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/repl",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/router",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/scheduler",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/search-engine",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/security",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/server",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/shell",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/sites",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/skills",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/slug",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/sms",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/socials",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/storage",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/strings",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/testing",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/tinker",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/tunnel",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/types",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/ui",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/utils",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/validation",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/video",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "@stacksjs/whois",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      },
+      {
+        "name": "stacks",
+        "version": "0.75.311",
+        "originalBytesVerified": true
+      }
+    ]
+  },
+  "publisherReceiptSha256": "07a932a14ba1eb9564ae6cbfa5c2ef07754d624b4169001767d0267e98d00b02",
+  "publisherLogSha256": "2551bee94e4f28065fb53a053f2df63264915a186cfc90d198d58221e4201fc6",
+  "originalNativeArchives": {
+    "tag": "v0.75.311",
+    "source": "b16dc6eb65cbccc919b0836b9091b747448c4818",
+    "manifestSha256": "76d26f414324e632f59d1fbbbc53e48bb8326fe709bb3e009b489d741fd18423",
+    "archives": [
+      {
+        "name": "buddy-linux-x64.zip",
+        "size": 57842236,
+        "sha256": "bdb0429ed6c65d8cf44658a0178629fa1714a21d3fc482d365c30fd70e5c0df8",
+        "matchedOriginalManifestAndGithubDigest": true
+      },
+      {
+        "name": "buddy-darwin-x64.zip",
+        "size": 49501005,
+        "sha256": "ed7d3f7a4a69b3fd7faed897b6641e9d3d66260b22762f94698123a874b65a31",
+        "matchedOriginalManifestAndGithubDigest": true
+      },
+      {
+        "name": "buddy-linux-arm64.zip",
+        "size": 57707348,
+        "sha256": "c7b506fd6cbf835082ae98db850ed2132ccbe6a0b4ebf8f7f05494dace6e558e",
+        "matchedOriginalManifestAndGithubDigest": true
+      },
+      {
+        "name": "buddy-darwin-arm64.zip",
+        "size": 47048199,
+        "sha256": "4fad08cbb04ee4cf80f95492e0502934998616e5fc63e6d9301c085b8c1108a6",
+        "matchedOriginalManifestAndGithubDigest": true
+      },
+      {
+        "name": "buddy-windows-x64.zip",
+        "size": 60771958,
+        "sha256": "dd4a1ce7e4ae3b16f24db04dd2a24129e0408962cd64ea7cc09f50dc0ed5611e",
+        "matchedOriginalManifestAndGithubDigest": true
+      }
+    ]
+  },
+  "nativeArchiveStructure": [
+    {
+      "archive": "buddy-darwin-arm64.zip",
+      "entry": "buddy-darwin-arm64",
+      "zipCrc": "all entries verified",
+      "machine": 16777228,
+      "binarySha256": "faceb7121370ee04cc4b354e9343a00919b968dc7b9039eb4524ec114a282e17"
+    },
+    {
+      "archive": "buddy-darwin-x64.zip",
+      "entry": "buddy-darwin-x64",
+      "zipCrc": "all entries verified",
+      "machine": 16777223,
+      "binarySha256": "c1917df9f6de5d9c2cbd9d71c24e4e0f9e4a9eaa1650b0c809d151a1e7efb9a7"
+    },
+    {
+      "archive": "buddy-linux-arm64.zip",
+      "entry": "buddy-linux-arm64",
+      "zipCrc": "all entries verified",
+      "machine": 183,
+      "binarySha256": "6aa4e89e2316d60e0b21a463619291e5de9245364e35abfff3a072f69ab3cdf3"
+    },
+    {
+      "archive": "buddy-linux-x64.zip",
+      "entry": "buddy-linux-x64",
+      "zipCrc": "all entries verified",
+      "machine": 62,
+      "binarySha256": "39676fb35418463c80ec72257002786fc89cb4d11f8834ab3368b2156dec9139"
+    },
+    {
+      "archive": "buddy-windows-x64.zip",
+      "entry": "buddy-windows-x64.exe",
+      "zipCrc": "all entries verified",
+      "machine": 34404,
+      "binarySha256": "08eed1c3f7a1e48c0d8a6264c7c739bc48a8141def23ff1e08e72df3658f1c00"
+    }
+  ],
+  "nativeHostExecution": {
+    "code": 0,
+    "stdout": "buddy/0.75.311 stacks/0.75.311 darwin-arm64 bun-v1.4.4\n",
+    "stderr": "",
+    "binarySha256": "faceb7121370ee04cc4b354e9343a00919b968dc7b9039eb4524ec114a282e17"
+  },
+  "publishedBrowserSource": {
+    "source": "b16dc6eb65cbccc919b0836b9091b747448c4818",
+    "version": "0.75.311",
+    "defaultsHelperExactSourceBytes": true,
+    "defaultsHelperSha256": "a86047d043f2984af1082da364c435af1cab2bb8e23ba9a3f22616ff34140737",
+    "testingJavaScriptSha256": "e47c0d2517a22ef75478cc5b9eb8b8f1c85d347b9286b2d2889c26f6fa292a96",
+    "testingDeclarationSha256": "7e77f3022ed0a637879d5140b94008f21171f9f01d1b368356236afff1f1a188",
+    "testingContainsSigningAndCacheValidation": true,
+    "declarationsHaveNoPrivateImports": true
+  },
+  "maintainedRelease": {
+    "command": "bun run release:patch",
+    "exitCode": 0,
+    "fix": "e7e0770c47450738ecf5c3da5f584347a7f763ef",
+    "logSha256": "5514a12dc8c2c3cc892b73642ca7753497f7e4177367c51c270051e724aeb798"
+  },
+  "scope": "Upstream publication qualification. Normal installed-consumer and complete game browser acceptance are the next gates."
+}

@@ -67,6 +67,8 @@ export interface RulesProfile {
   survey: { radius: number, work: number, signTicks: number }
   /** Absent in earlier profiles, whose duty loop chose the nearest tile even when blocked. */
   specialistRouting?: 'reachable'
+  /** Earlier profiles only checked the resting occupancy index when placing a site. */
+  constructionOccupancy?: 'current-and-next'
   /** Absent in profiles published before soldiers existed. */
   military?: {
     searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number
@@ -200,11 +202,12 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   }
   if (rules.logistics.carrierCapacity !== 1) problems.push('Only single-good carrier loads are supported')
   if (rules.specialistRouting !== undefined && rules.specialistRouting !== 'reachable') problems.push('Unknown specialist routing policy')
+  if (rules.constructionOccupancy !== undefined && rules.constructionOccupancy !== 'current-and-next') problems.push('Unknown construction occupancy policy')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -268,7 +271,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.9.0',
+  version: '0.10.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -352,6 +355,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   visibility: { settler: 5, interval: 10 },
   survey: { radius: 3, work: 30, signTicks: 6000 },
   specialistRouting: 'reachable',
+  constructionOccupancy: 'current-and-next',
   military: {
     searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
     wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
@@ -372,6 +376,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   },
   evidence: {
     'specialistRouting': E(sources.spec, 'Automatic specialist duties choose the nearest reachable candidate through the normal movement router. This is engineering recovery behavior, not a Gold executable observation.'),
+    'constructionOccupancy': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/193', 'Construction rejects outside settlers on the footprint or already stepping onto it. This prevents physical enclosure during movement; original Gold construction behavior remains unobserved.'),
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
     'tools': M(sources.jobs, 'Tool requirements: builders hammer, diggers shovel, woodcutter axe, stonecutter and miner pick, farmer scythe, fisherman rod, smiths hammer.', 'S3-031'),

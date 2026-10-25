@@ -1,0 +1,754 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T18:48:03.938757+00:00",
+  "base": "85ac0f1e805edca6f6d008897089218345657f85",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/194",
+  "problem": "Known neutral blocking granite cannot itself be claimed by pioneers. The policy excluded it even when a stonecutter could reach owned adjacent land, leaving both normal economies stalled.",
+  "correction": [
+    "Consider known neutral trees and stones, preferring owned targets.",
+    "Query the actual worker router from a prospective owned workplace, treating its new footprint as blocked and restricting the route to explored land.",
+    "Keep territory expansion when neutral resources are known but no owned workplace fits.",
+    "No material grants, unit relocation, private state edits or alternate simulation clocks."
+  ],
+  "fixture": {
+    "schemaVersion": 1,
+    "fixture": "ai-neutral-granite.json",
+    "bytes": 466970,
+    "sha256": "9dbb0e73241491b8a897554d56ede3034c8f9dbe1130ced53ca26cc5fe0356c5",
+    "base": "85ac0f1e805edca6f6d008897089218345657f85",
+    "capture": "Ordinary rivalSession(2), economicAI for both players with RIVAL_MILITARY, default 80-tick cadence, run to tick 100000 and restored with fresh policies and sequence numbers to tick 200000. Only ordinary commands from normal starting goods and population.",
+    "workingSource": "Captured with the versioned construction correction in issue #193 before its publication. The AI source is identical to the base commit. No game state was edited.",
+    "sourceAiSha256": "6ddee99e4e15ef01c38e89d406373b9fd59c9968952872fa6fe7c6bfc18d5bd6",
+    "constructionSourceSha256": {
+      "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+      "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+      "resources/game/engine/catalog.ts": "b2325f20d84345347c35dd166db80af4c1b8aea6f24db2aeb0d33a52e74c6d05"
+    },
+    "rules": {
+      "id": "roman-engineering",
+      "version": "0.10.0",
+      "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+    },
+    "checksum": "60a8248b",
+    "sourceIssue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/194",
+    "media": "Generated engineering map and simulation data. No original raster or audio."
+  },
+  "regressions": {
+    "file": "tests/unit/ai-neutral-harvest.test.ts",
+    "pass": 5,
+    "fail": 0,
+    "cases": [
+      "Captured tick-200000 settlement resumes stone production with a matching fresh-policy save restore and unchanged created-goods ledger",
+      "Known neutral granite is reachable from owned adjacent land",
+      "Water-isolated granite is excluded",
+      "Enemy-only and unexplored granite are excluded",
+      "Known neutral forest without an owned workplace still triggers expansion"
+    ]
+  },
+  "freshMatch": {
+    "setup": "rivalSession(2), ordinary economicAI for both sides, RIVAL_MILITARY, default 80-tick cadence, normal 44 people and 30 planks per side",
+    "rules": "0.10.0",
+    "tick": 45321,
+    "outcome": {
+      "1": "lost",
+      "2": "won"
+    },
+    "checksum": "26b13881",
+    "conservationAudit": [],
+    "rejectedEnqueues": [
+      [],
+      []
+    ],
+    "samples": [
+      {
+        "tick": 0,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "players": [
+          {
+            "player": 1,
+            "population": 44,
+            "produced": {},
+            "diagnosis": [],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              }
+            ]
+          },
+          {
+            "player": 2,
+            "population": 44,
+            "produced": {},
+            "diagnosis": [],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              }
+            ]
+          }
+        ],
+        "audit": []
+      },
+      {
+        "tick": 20000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "players": [
+          {
+            "player": 1,
+            "population": 44,
+            "produced": {
+              "plank": 68,
+              "log": 61,
+              "stone": 72,
+              "water": 25,
+              "grain": 16,
+              "flour": 15,
+              "bread": 9,
+              "coal": 9
+            },
+            "diagnosis": [
+              {
+                "kind": "exhausted",
+                "building": 149,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "exhausted",
+                "building": 186,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 302,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 524,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              }
+            ],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "sawmill",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              },
+              {
+                "type": "forester",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "waterworks",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "grain-farm",
+                "phase": "active",
+                "shortage": "no-space"
+              },
+              {
+                "type": "storage",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "mill",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "bakery",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "coal-mine",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "building",
+                "shortage": null
+              },
+              {
+                "type": "fisher",
+                "phase": "building",
+                "shortage": null
+              }
+            ]
+          },
+          {
+            "player": 2,
+            "population": 57,
+            "produced": {
+              "plank": 51,
+              "stone": 71,
+              "fish": 8,
+              "water": 24,
+              "log": 54,
+              "grain": 18,
+              "flour": 18,
+              "bread": 8
+            },
+            "diagnosis": [
+              {
+                "kind": "delivery",
+                "building": 130,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 333,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "exhausted",
+                "building": 781,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 816,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 880,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 1002,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "exhausted",
+                "building": 1287,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              }
+            ],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "sawmill",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "fisher",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "mill",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              },
+              {
+                "type": "stonecutter",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "storage",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "forester",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "waterworks",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "grain-farm",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "bakery",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              }
+            ]
+          }
+        ],
+        "audit": []
+      },
+      {
+        "tick": 40000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "players": [
+          {
+            "player": 1,
+            "population": 53,
+            "produced": {
+              "plank": 126,
+              "log": 120,
+              "stone": 105,
+              "water": 28,
+              "grain": 35,
+              "flour": 28,
+              "bread": 12,
+              "coal": 32
+            },
+            "diagnosis": [
+              {
+                "kind": "exhausted",
+                "building": 149,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 302,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 485,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 524,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 1523,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 1783,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              }
+            ],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "sawmill",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "forester",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "waterworks",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "grain-farm",
+                "phase": "active",
+                "shortage": "no-space"
+              },
+              {
+                "type": "storage",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "mill",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "bakery",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "coal-mine",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "stonecutter",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "fisher",
+                "phase": "building",
+                "shortage": null
+              }
+            ]
+          },
+          {
+            "player": 2,
+            "population": 57,
+            "produced": {
+              "plank": 75,
+              "stone": 83,
+              "fish": 16,
+              "water": 37,
+              "log": 94,
+              "grain": 50,
+              "flour": 37,
+              "bread": 21,
+              "ironore": 23,
+              "coal": 34,
+              "iron": 9,
+              "hammer": 2,
+              "spear": 1,
+              "axe": 1,
+              "sword": 1,
+              "shovel": 1,
+              "bow": 1
+            },
+            "diagnosis": [
+              {
+                "kind": "delivery",
+                "building": 130,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 333,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 448,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "exhausted",
+                "building": 781,
+                "detail": "Woodcutter's hut has nothing left to work",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 1002,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              },
+              {
+                "kind": "delivery",
+                "building": 1287,
+                "detail": "doorstep full",
+                "recovery": null,
+                "recoverable": true
+              }
+            ],
+            "buildings": [
+              {
+                "type": "castle",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "sawmill",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-tower",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "fisher",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "mill",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "no-resources"
+              },
+              {
+                "type": "stonecutter",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "storage",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "forester",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "waterworks",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "grain-farm",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "bakery",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "small-residence",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "woodcutter",
+                "phase": "active",
+                "shortage": "output-full"
+              },
+              {
+                "type": "iron-mine",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "coal-mine",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "iron-smelter",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "toolsmith",
+                "phase": "active",
+                "shortage": "inputs"
+              },
+              {
+                "type": "weaponsmith",
+                "phase": "active",
+                "shortage": null
+              },
+              {
+                "type": "barracks",
+                "phase": "active",
+                "shortage": null
+              }
+            ]
+          }
+        ],
+        "audit": []
+      }
+    ],
+    "checkpointSha256": "34f31c5eac9095af51658794c63a9a572e58efde7fdd9ea9ecb9972b5c7d89db",
+    "executedRefusal": "The retained final command history includes a tick-45120 move-soldiers refusal: Each garrison keeps its last soldier. This separate military planning defect remains open under #74.",
+    "scope": "One completed command-driven engineering match. No native-input human victory, original Gold AI or all-seed acceptance."
+  },
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "86b9db7106dd03c7d4d6a5770465fcdc5a3a944dc8ea80ec03c82b0ff4a31c13",
+    "resources/game/engine/production.ts": "edb0113fe4de6a6d092ec4194a00e5d371d98f63f5bd0545696ea81f5f232653",
+    "resources/game/engine/routing.ts": "2c962692508d514b652b94e6076011fd6f0bd030a51a577d46b6a4c9913ed763",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "tests/unit/ai-neutral-harvest.test.ts": "00e4e86c4984a924b81b0daf1a79ad0c936c05e1702b348b443b20681991c1c5"
+  }
+}

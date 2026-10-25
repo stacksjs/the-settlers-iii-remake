@@ -8,6 +8,8 @@ export interface RouteOptions {
   territory?: number
   /** Tiles treated as blocked for this search, such as occupied tiles near a jam. */
   avoid?: ReadonlySet<number>
+  /** Restrict a prospective route to known tiles without exposing unexplored terrain. */
+  allowed?: (tile: number) => boolean
   /** Accept any tile adjacent to the goal when the goal itself is blocked (trees, stones). */
   adjacent?: boolean
   limit?: number
@@ -32,8 +34,10 @@ export function route(ctx: Context, from: number, goal: number, options: RouteOp
   const map = ctx.state.map, size = map.width * map.height
   if (!Number.isInteger(from) || !Number.isInteger(goal) || from < 0 || goal < 0 || from >= size || goal >= size) return { ok: false, reason: 'invalid', expanded: 0 }
   const limit = options.limit ?? ctx.rules.movement.searchLimit, territory = options.territory ?? 0
-  const goals = new Set<number>(options.adjacent ? neighbours(map, goal).filter(t => t === from || enterable(ctx, t, territory)) : [goal])
-  if (options.adjacent && passable(ctx, goal)) goals.add(goal)
+  const allowed = (tile: number): boolean => options.allowed?.(tile) ?? true
+  if (!allowed(from)) return { ok: false, reason: 'unreachable', expanded: 0 }
+  const goals = new Set<number>(options.adjacent ? neighbours(map, goal).filter(t => allowed(t) && (t === from || enterable(ctx, t, territory))) : [goal])
+  if (options.adjacent && passable(ctx, goal) && allowed(goal)) goals.add(goal)
   if (goals.has(from)) return { ok: true, path: [], cost: 0, expanded: 0 }
   const target = pointOf(map, goal), minimum = ctx.rules.movement.ticksPerStep
   const g = new Map<number, number>([[from, 0]]), parent = new Map<number, number>()
@@ -71,7 +75,7 @@ export function route(ctx: Context, from: number, goal: number, options: RouteOp
     }
     if (++expanded > limit) return { ok: false, reason: 'search-limit', expanded }
     for (const next of neighbours(map, tile)) {
-      if (options.avoid?.has(next) || !(goals.has(next) ? enterable(ctx, next, territory, next) : enterable(ctx, next, territory))) continue
+      if (!allowed(next) || options.avoid?.has(next) || !(goals.has(next) ? enterable(ctx, next, territory, next) : enterable(ctx, next, territory))) continue
       const step = stepCost(ctx, tile, next)
       if (step === Infinity) continue
       const total = cost + step

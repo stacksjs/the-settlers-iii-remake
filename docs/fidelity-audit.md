@@ -4,6 +4,26 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: installed Stacks 0.75.311 and complete browser verification (2026-10-25)
+
+The game now normally installs Stacks 0.75.311 with STX 0.2.691, Craft 0.0.341, Pantry 0.11.127 and Bun 1.4.4. The [publication receipt](roadmap/receipts/framework-0.75.311-publication.json) verifies exact upstream source/release gates, all 86 original npm archives and five native archives. The [installed receipt](roadmap/receipts/framework-0.75.311-receipt.json) verifies all 95 selected original installed package trees and seven consumer checks after normal Buddy upgrade, Pantry install and frozen Bun install.
+
+The [browser acceptance receipt](roadmap/receipts/framework-0.75.311-browser-acceptance.json) records 283 passing unit tests and 385 successful steps across ten fresh browser suites, with no console errors, failed requests or collection errors. A full ten-real-minute rival battle at ordinary 4x reaches defeat, saves and restores the same outcome after an actual reload. The unchanged five-tick engine/save/replay fixture also matches across Bun, Chrome and the original Craft executable. Those native CLI results do not establish native presentation or controls.
+
+The Stacks source correction signs every real framework version in prepared macOS Chrome, verifies the complete copy and preserves live cache generations. An initial local browser launch without a DevTools port is retained separately; disk space had fallen to about 125 MB. An unchanged diagnostic launch succeeded and the entire fresh suite passed after regenerable-cache cleanup. The exact cause of that first launch failure is not proven. No flags, deadlines or installed modules were changed to make the game pass.
+
+## Update: moving settlers and construction (2026-10-25)
+
+The [construction occupancy correction](roadmap/receipts/construction-occupancy-0.10.0-2026-10-25.json) prevents a site from enclosing a walking settler. Placement now checks both the current tile and a step already in progress, in addition to resting occupancy. New settlements use engineering profile 0.10.0; the frozen 0.9.0 profile keeps earlier saves and replays deterministic. This fixes the captured mine enclosure without relocating workers or granting goods. It is an engineering correction, not an original Gold observation.
+
+The construction-only candidate still stalled at 200,000 ticks: neither side produced more goods between ticks 100,000 and 200,000. That checkpoint is retained as the neutral-granite regression fixture. The subsequent resource-planning correction is recorded below.
+
+## Update: neutral resources and a completed rival economy match (2026-10-25)
+
+The [neutral-harvest correction](roadmap/receipts/ai-neutral-harvest-2026-10-25.json) lets the computer plan a workplace for known neutral granite or trees when its worker can reach owned adjacent land. The forecast uses the same router as production and only explored land. It keeps expansion when no workplace fits. The captured tick-200000 settlement resumes stone production through ordinary commands, with matching checksums after save/restore and no created-goods change.
+
+A fresh seed-2 match between two ordinary economic policies now ends at tick 45,321: player 2 wins, checksum `26b13881`, with clean conservation and no rejected enqueue submissions. The winner physically produces 56 iron ore, 44 iron, three swords, five spears and nine bows. The final command history still contains an executed scouting refusal for a garrison's last guard; military policy issue #74 remains open. This completed engineering match does not establish native-input human victory, every map seed or original Gold rules and difficulty. The [additional seed record](roadmap/receipts/random-seed-followups-2026-10-25.json) retains unfinished ordinary matches on seeds 1, 3 and 5 at 80,000 ticks, all with clean accounting. Seeds 1 and 5 retain executed scouting refusals. Those results keep the broader military-policy and skirmish issues open.
+
 ## Update: published framework and actual recruitment playthrough (2026-10-25)
 
 The game now normally installs Stacks 0.75.308, STX 0.2.691, Craft 0.0.341 and Pantry 0.11.127. The [published-module receipt](roadmap/receipts/framework-0.75.308-receipt.json) verifies the exact source and release gates, all 95 selected original package archives against installed files, the pinned Bun 1.4.4 runtime and seven consumer checks. The [browser acceptance receipt](roadmap/receipts/framework-0.75.308-browser-acceptance.json) records the production build, desktop and phone scenarios, and startup/isolation tests executed through the installed published testing package.
