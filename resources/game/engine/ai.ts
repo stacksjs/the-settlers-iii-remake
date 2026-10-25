@@ -474,6 +474,21 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
       }
     }
   }
+  if (!anchors.length) return null
+  // Once the nearby city fills, known owned ground can still have room.
+  // Enumerate it once instead of extending the nested ring loops across the
+  // whole map. Nearby choices above keep their established preference.
+  const distant: (Point & { rank: number })[] = []
+  for (let tile = 0; tile < o.width * o.height; tile++) {
+    if (checked.has(tile) || !o.explored(tile) || o.view.owner[tile] !== o.player) continue
+    if (building?.ground && !building.ground.includes(o.terrain(tile) ?? '')) continue
+    const x = tile % o.width, y = Math.floor(tile / o.width)
+    let rank = Infinity
+    for (const anchor of anchors) rank = Math.min(rank, Math.max(Math.abs(x - anchor.x), Math.abs(y - anchor.y)))
+    distant.push({ x, y, rank })
+  }
+  distant.sort((a, b) => a.rank - b.rank || a.y - b.y || a.x - b.x)
+  for (const { x, y } of distant) if (!o.placement(type, x, y) && serves(x, y)) return { x, y }
   return null
 }
 

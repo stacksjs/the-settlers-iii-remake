@@ -1,0 +1,392 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T21:06:13.673464+00:00",
+  "base": "d834053a5815c85faf6bbe707ca08d45974e50e9",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/197",
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "7e071a7c9ca3cb8bc6be2abc14cb7850d92f071c991407921bfe5d7bf62b0700",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "tests/unit/ai-city-sites.test.ts": "8112c1fc05440ef09e2cd3a5bd0a38322ec00e7cd2f7c398bdf8fe0e710ebbe7",
+    "tests/fixtures/ai-crowded-city.json": "df17db79400b75d55924cd2a1769832d5ccc6548faadfd6946777ae68760edc0",
+    "tests/fixtures/ai-crowded-city.provenance.json": "f024f22449562903a1e1d2cb2d8d2dc98ba8ea9ea9b13ddf92d88267d4b1c8dd"
+  },
+  "physicsUnchanged": true,
+  "lockUnchanged": true,
+  "rules": {
+    "version": "0.10.0",
+    "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+  },
+  "capturedFailure": {
+    "schemaVersion": 1,
+    "source": "d834053a5815c85faf6bbe707ca08d45974e50e9",
+    "fixture": "ai-crowded-city.json",
+    "bytes": 456649,
+    "sha256": "df17db79400b75d55924cd2a1769832d5ccc6548faadfd6946777ae68760edc0",
+    "capture": "Ordinary seed1 rivalSession with both economicAI policies and RIVAL_MILITARY at default80tickcadence, tick80000 before the manual build probe. Normal goods/population, no state edits.",
+    "failure": "Eight legal weaponsmith origins beyond every14tile holding window; policy omits the order. Public build54,70 completes normally, but input supply remains unresolved.",
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/197",
+    "media": "Generated simulation; no original raster or audio."
+  },
+  "correction": "Keep the established nearby search first. If it finds no site, enumerate previously unchecked known owned origins once, rank by minimum Chebyshev distance to anchors then y/x, and retain the same ground, placement, resource and worker-reachability checks. No simulation rules or profile identity changes.",
+  "regressions": {
+    "path": "tests/unit/ai-city-sites.test.ts",
+    "retainedRed": {
+      "pass": 2,
+      "fail": 1,
+      "filtered": 1,
+      "scope": "Construction case excluded from this retained old-source invocation. The first captured-city missing order fails."
+    },
+    "green": {
+      "pass": 4,
+      "fail": 0,
+      "assertions": 18
+    },
+    "cases": [
+      "Captured crowded city orders a legal distant weaponsmith without mutating the world",
+      "Ordinary AI construction completes, retains created-goods accounting and matches a restored session",
+      "Prior nearby initial choice is unchanged",
+      "A stricter client observation withholds known origins or ownership; actual simulation is unchanged"
+    ]
+  },
+  "checks": {
+    "unit": {
+      "pass": 296,
+      "fail": 0,
+      "assertions": 22968,
+      "files": 40,
+      "logSha256": "2b4dbd86d3158a3da8d4854f925ee0c11fe6778a52fd4e9b294bb4072bb47048"
+    },
+    "lint": {
+      "passed": true,
+      "logSha256": "738ee6dd4911b15b2b69cc5ee925a3c733beb8859c25f31993f736e700ef82b7"
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+    },
+    "assets": {
+      "passed": true,
+      "logSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    "fidelity": {
+      "passed": true,
+      "logSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    "roadmap": {
+      "passed": true,
+      "logSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "e2f64353b7220be416d8a9e0a53758642f8f2fc23b3f8dd97770420737271f14",
+      "distIndexSha256": "c14faa754616b9707c37d63e1d8b0648db82705db48c1868ebd19c29ac0d4ff9"
+    }
+  },
+  "normalMatches": {
+    "setup": "Ordinary rivalSession seeds2,1,3,5, both economicAI policies with RIVAL_MILITARY, default80tickcadence, normal starts, no state edits or special clocks",
+    "executionTracing": "Every command result collected at its executed tick before bounded history discards it.",
+    "runs": [
+      {
+        "seed": 2,
+        "tick": 55581,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "8d573503",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          560,
+          456
+        ],
+        "produced": [
+          {
+            "plank": 164,
+            "log": 160,
+            "stone": 120,
+            "water": 35,
+            "grain": 49,
+            "flour": 35,
+            "bread": 19,
+            "coal": 32
+          },
+          {
+            "plank": 69,
+            "stone": 84,
+            "fish": 17,
+            "water": 52,
+            "log": 92,
+            "grain": 50,
+            "flour": 50,
+            "bread": 41,
+            "coal": 73,
+            "ironore": 36,
+            "iron": 23,
+            "hammer": 3,
+            "shovel": 1,
+            "bow": 2,
+            "spear": 6,
+            "axe": 5,
+            "sword": 2,
+            "saw": 2
+          }
+        ],
+        "checkpointSha256": "370fe051cd10a95c8d508876a93539d4e103e9aafd60593590448a6db355f8b8"
+      },
+      {
+        "seed": 1,
+        "tick": 31841,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "2c03bbfc",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          251,
+          299
+        ],
+        "produced": [
+          {
+            "plank": 67,
+            "log": 84,
+            "stone": 61,
+            "fish": 33,
+            "water": 59,
+            "grain": 46,
+            "coal": 168,
+            "flour": 44,
+            "bread": 43,
+            "ironore": 88,
+            "iron": 76,
+            "hammer": 7,
+            "shovel": 10,
+            "axe": 12,
+            "sword": 12,
+            "bow": 10,
+            "spear": 11,
+            "saw": 4,
+            "pickaxe": 1
+          },
+          {
+            "plank": 34,
+            "log": 50
+          }
+        ],
+        "checkpointSha256": "2f64464e7b600163b1d70880dc7eefaf12e905eb21ba25fb4037ae132834709a"
+      },
+      {
+        "seed": 3,
+        "tick": 100000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "0d1d8b95",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          470,
+          833
+        ],
+        "produced": [
+          {
+            "plank": 31,
+            "log": 39,
+            "coal": 24
+          },
+          {
+            "plank": 335,
+            "log": 351,
+            "stone": 180,
+            "water": 33,
+            "grain": 49,
+            "flour": 25,
+            "bread": 9,
+            "ironore": 24
+          }
+        ],
+        "checkpointSha256": "5df3299302faa8cccfd227fe28a8e12a95d9aaadb4ab1a8d29dc27aa650d4572"
+      },
+      {
+        "seed": 5,
+        "tick": 52601,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "230f8fff",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          474,
+          439
+        ],
+        "produced": [
+          {
+            "log": 120,
+            "plank": 87,
+            "fish": 8,
+            "stone": 50,
+            "water": 32,
+            "grain": 25,
+            "flour": 24,
+            "bread": 8
+          },
+          {
+            "plank": 106,
+            "log": 157,
+            "stone": 96,
+            "water": 54,
+            "grain": 38,
+            "flour": 38,
+            "bread": 38,
+            "coal": 85,
+            "ironore": 45,
+            "iron": 32,
+            "hammer": 4,
+            "shovel": 5,
+            "axe": 2,
+            "saw": 1,
+            "pickaxe": 1,
+            "scythe": 1,
+            "sword": 5,
+            "bow": 6,
+            "spear": 3
+          }
+        ],
+        "checkpointSha256": "b245a564c89891376ceed02f8ecb31858c4aa8c68efc3fdb0868c42af4a6cc85"
+      }
+    ]
+  },
+  "passiveRivalTimingDiagnostic": {
+    "tick": 39801,
+    "outcome": {
+      "1": "lost",
+      "2": "won"
+    },
+    "checksum": "c6eea47c",
+    "audit": [],
+    "allExecutedRefusals": [],
+    "produced": {
+      "plank": 87,
+      "stone": 84,
+      "fish": 34,
+      "water": 63,
+      "coal": 158,
+      "log": 103,
+      "grain": 51,
+      "flour": 50,
+      "bread": 49,
+      "ironore": 83,
+      "iron": 71,
+      "hammer": 7,
+      "shovel": 8,
+      "bow": 8,
+      "spear": 13,
+      "axe": 13,
+      "sword": 10,
+      "saw": 4
+    },
+    "scope": "Ordinary passive-player seeded match using the same default rival policy/cadence, no clock or world edits. Command-driven timing diagnostic, not real-time browser acceptance."
+  },
+  "frameworkAdoptionReceipt": "framework-0.75.311-receipt.json",
+  "scope": "One AI city-placement defect. Three sampled two-policy matches finish; seed3 remains unfinished at100000. Broader sustainable economies, military/religious AI, human victory, original Gold behavior and native presentation remain open. Exact pushed-main CI and its original385step diagnostic artifact are required before issue closure.",
+  "localBrowser": {
+    "recordedAt": "2026-10-25T21:08:32.827624+00:00",
+    "totalSteps": 385,
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "bda91d325b7abddc5ee3995bea922d7730063c7c4c78834d4b5e99e46556d8d4",
+        "noErrors": true,
+        "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "2dd8abc9c36f009be48cdc6c5c81ee79e8e047c3af7ee59ca2f65301c9e4128b",
+        "noErrors": true,
+        "mediaReceiptSha256": "f85c4ac871291eaeb1054aa478dfb254090fd92bcb77d280ed27b5b151c1ce2c"
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "a7212f4281d84856d98ca99f466f6cb41c1da672a5af82f44d2e60ec2237df11",
+        "noErrors": true,
+        "mediaReceiptSha256": "d6b8430aac579d4d7dd9b0281a338b27d722d50e4beab6dc6327dd7199ac5e5b"
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "b08da1ccdb575ea302d55d47e8307f7b0ae337c96c8783694e61f2abfe0db544",
+        "noErrors": true,
+        "mediaReceiptSha256": "b73120ac3539c9c7bed0ee88027cbcf4215bad927b35401b6400edbb5dbcb941"
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "3072a37d97ad8164832e91604358cc582e82d47b0cd7775f5d91595578c44156",
+        "noErrors": true,
+        "mediaReceiptSha256": "378d54652f13b6910a3fb78905a3da51d9238f6111b80335da9e65b8195f62b3"
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "8101603c118f8fa1bd9988184dbcc4830bcf415af1acb1942f95a1ff3a077711",
+        "noErrors": true,
+        "mediaReceiptSha256": "41899bfc6326ca386693757f02ca746d1b13a9c090463dc5e1ebb5aa45e20842"
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "ac65d0133251fdf2aa25fafa22b0dfc3b9834f7256bded0f82faebbb22253957",
+        "noErrors": true,
+        "mediaReceiptSha256": "cd255ae53b82c224245718bf0a65200371c0cb0e517ca251600938ace60895f7"
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "81e11c7e596ca1cdd84f9f2fa8022c63be2688b2260928f27fb966eaa14488ce",
+        "noErrors": true,
+        "mediaReceiptSha256": "c4a244a02a0fe28a5ad5395a8fa25c3a8129b02d4500f4af4cd0592249b77704"
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "e404ab100a1d03cc3e6a2fc553f74999461991a4b22ee2fcd1b4235fc2e5dbfd",
+        "noErrors": true,
+        "mediaReceiptSha256": "42ed6f45ab78024fc3c322302cf50cc7474a85a26fa9bfc2a8fbbcffbac79f21",
+        "elapsedMs": 616113.897
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "ee2b2b2499084ba818300662227bcbc191182fdcd3a32574704a9d2b81c31ece",
+        "noErrors": true
+      }
+    ],
+    "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  }
+}

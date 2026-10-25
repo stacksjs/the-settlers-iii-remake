@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: building room beyond the crowded city (2026-10-25)
+
+The [city-site correction](roadmap/receipts/ai-city-sites-2026-10-25.json) retains the nearby building preference, then considers other known owned origins once in deterministic distance/tile order. It keeps the same public placement, ground, resource and harvesting-reachability checks. The captured ordinary crowded city now builds and completes a distant weaponsmith with matching save/restore and no grants. Simulation rules and engineering profile 0.10.0 are unchanged.
+
+All 296 unit tests pass, along with lint, type checks, the production build and 385 fresh browser steps without console, request or collection errors. The full ten-real-minute battle at normal 4x reaches defeat and retains the outcome through actual save/reload. Complete command tracing on ordinary two-policy seeds 1, 2 and 5 now reaches victory at ticks 31,841, 55,581 and 52,601 respectively, with clean accounting and zero failed executions. Seed 3 remains unfinished at 100,000 ticks. The passive-player timing diagnostic is separate from real-time browser acceptance.
+
+This fixes a city-planning limit. Broader sustainable random-map economies, military/religious AI, human victory, original Gold rules and native game presentation remain open. Exact pushed-main CI and its original diagnostic artifact must pass before the scoped issue closes. Earlier receipts retain the prior unfinished results as dated evidence.
+
 ## Update: one recovery action for a shared demolition (2026-10-25)
 
 The [recovery-action correction](roadmap/receipts/ai-recovery-actions-2026-10-25.json) keeps both exhausted-workplace and building-material diagnoses while submitting one demolition when they select the same building. Distinct building recoveries and other action kinds keep their order. The captured seed-5 tick-9360 case now executes once, conserves goods and matches after restore, with engine ownership/refund rules and profile 0.10.0 unchanged.

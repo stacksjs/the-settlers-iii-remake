@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "source": "d834053a5815c85faf6bbe707ca08d45974e50e9",
+  "fixture": "ai-crowded-city.json",
+  "bytes": 456649,
+  "sha256": "df17db79400b75d55924cd2a1769832d5ccc6548faadfd6946777ae68760edc0",
+  "capture": "Ordinary seed1 rivalSession with both economicAI policies and RIVAL_MILITARY at default80tickcadence, tick80000 before the manual build probe. Normal goods/population, no state edits.",
+  "failure": "Eight legal weaponsmith origins beyond every14tile holding window; policy omits the order. Public build54,70 completes normally, but input supply remains unresolved.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/197",
+  "media": "Generated simulation; no original raster or audio."
+}
