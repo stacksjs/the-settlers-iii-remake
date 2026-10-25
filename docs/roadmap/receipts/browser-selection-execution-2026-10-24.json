@@ -1,0 +1,53 @@
+{
+  "source": "ac7b8b9613437cb53efc8ff92c2309be43ae5531",
+  "sourceCI": 40164827948,
+  "sourceCIConclusion": "success",
+  "artifactId": 12588026987,
+  "originalArchiveSha256": "bdebc59615c5d1fe10ec7c4eb36816ee4363bd10c20336bfff409ed60d30d38f",
+  "zipCrcPassed": true,
+  "reports": [
+    {
+      "name": "shots/campaign.json",
+      "index": 0,
+      "steps": 58,
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "name": "shots/resize.json",
+      "index": 0,
+      "steps": 5,
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "name": "shots/production.json",
+      "index": 0,
+      "steps": 19,
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "name": "shots/selection.json",
+      "index": 0,
+      "steps": 33,
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "name": "shots/checkpoints.json",
+      "index": 0,
+      "steps": 1,
+      "consoleErrors": 0,
+      "failedRequests": 0
+    }
+  ],
+  "recordedAt": "2026-10-25T05:42:26.330196+00:00",
+  "mainCI": 40165565794,
+  "mainCIConclusion": "success",
+  "mainSource": "ac7b8b9613437cb53efc8ff92c2309be43ae5531",
+  "publishedAs": "Chris <chris@stacksjs.com> without coauthors; normal fast-forward push",
+  "limits": [
+    "CI retains non-media diagnostics and raster identities. Original-media captures remain local pending redistribution evidence."
+  ]
+}

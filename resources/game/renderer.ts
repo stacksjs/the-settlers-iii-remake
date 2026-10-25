@@ -150,7 +150,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       if (options.selected !== b.id && b.phase !== 'leveling') continue
       const rule = rules.buildings.find(r => r.id === b.type)!, selected = options.selected === b.id
       if (b.owner === options.player || rule.footprint.some(([dx, dy]) => viewer.visible[(b.y + dy) * map.width + b.x + dx])) outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
-      if (selected && 'radius' in rule.workflow) ring(session, b.workArea, rule.workflow.radius)
+      if (selected && 'radius' in rule.workflow) ring(session, options.tool === `work-area:${b.id}` && options.cursor ? options.cursor : b.workArea, rule.workflow.radius)
     }
     marked = options.marked ?? null
     for (const item of items) paint(item, options.player)

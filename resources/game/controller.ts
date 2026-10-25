@@ -148,6 +148,7 @@ function inspect(session: Session, id: number) {
     worker: worker ? `${worker.profession} #${worker.id}` : rule.worker ? 'none' : 'not needed',
     stocks: [...session.state.stacks.values()].filter(s => s.building === b.id).map(s => ({ role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
     garrison: rule.garrison ? `${session.view(PLAYER).buildings.find(v => v.id === b.id)?.garrison ?? 0} of ${rule.garrison.infantry + rule.garrison.bowmen} soldiers inside` : null,
+    workArea: 'radius' in rule.workflow ? { ...b.workArea, radius: rule.workflow.radius } : null,
     description: describe(b.type),
   }
 }
@@ -324,6 +325,12 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
 
   const act = (): void => {
     if (!cursor || !session) return
+    if (tool?.startsWith('work-area:')) {
+      const error = send('work-area', { building: Number(tool.slice(10)), x: cursor.x, y: cursor.y })
+      if (!error) tool = null
+      report(error ?? 'Working area moved. The worker finishes the current trip before using the new area.')
+      return
+    }
     if (tool?.startsWith('spell:')) {
       // The nearest free priest answers; a busy priest keeps his current order.
       const spell = tool.slice(6), at = cursor
@@ -468,7 +475,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (event.key === 'Escape') { tool = null; selected = null; thief = null; troops.clear() }
     if (event.key.toLowerCase() === 'h') center()
     if (event.key.toLowerCase() === 's') void persist()
-    canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${tool ? `Press Enter to place ${rules.buildings.find(b => b.id === tool)?.name ?? `a ${tool}`}.` : 'Press Enter to inspect.'}`)
+    canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${tool?.startsWith('work-area:') ? 'Press Enter to set the working area. Escape cancels.' : tool ? `Press Enter to place ${rules.buildings.find(b => b.id === tool)?.name ?? `a ${tool}`}.` : 'Press Enter to inspect.'}`)
     emit()
   })
   const resize = new ResizeObserver(() => { renderer.resize() }); resize.observe(canvas)
@@ -532,6 +539,15 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     goto(x: number, y: number) { if (!session) return; const { map } = session.state; renderer.home({ x, y }, map.elevation[y * map.width + x]); cursor = { x, y }; drawOverview() },
     home: center,
     save: persist, load,
+    workArea() {
+      if (!ready || !session || !selected) return
+      const building = session.state.buildings.get(selected), area = inspect(session, selected)?.workArea
+      if (!building || !area) return
+      tool = `work-area:${building.id}`; cursor = { x: area.x, y: area.y }; thief = null; troops.clear()
+      report('Choose the working area on the map, or use arrow keys and Enter. Escape cancels.')
+      canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. Press Enter to set the working area. Escape cancels.`)
+      canvas.focus()
+    },
     async restart(landscape: Landscape = 'generated') {
       if (!ready) return
       const seed = 1 + Math.floor(Math.random() * 1_000_000)

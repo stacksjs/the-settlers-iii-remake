@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T05:48:07.059175+00:00",
+  "baseSource": "ac7b8b9613437cb53efc8ff92c2309be43ae5531",
+  "scope": "Expose the existing simulation work-area command in the browser building inspector, with map preview, keyboard selection and truthful failure behavior.",
+  "originalFailure": {
+    "failedStep": 8,
+    "symptom": "A real staffed woodcutter had no Set working area control.",
+    "reportSha256": "225c9e24be3b46b3f100246a12f4e1147b78a7d7c4fa0d2a36880a90feb067d4"
+  },
+  "implementationFiles": [
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "7abbc309b4595f395ea61fadd424e7953f52ed941c80f168b094501e8d663b4b"
+    },
+    {
+      "path": "resources/game/renderer.ts",
+      "sha256": "98d19b5e6e1378892c40ddc833a3bfc267f808d3576ca281004959f97fd5c9dc"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "sha256": "cffe34aa952dd9053d8f775ff79800dc63236b4a6f3c6961e3773536c7fa91e1"
+    },
+    {
+      "path": "tests/browser/working-area.ts",
+      "sha256": "d1d0b09a1df96c220365d0b424ecf1ed88efef201cd03650bb3acf2793280063"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "b662773f001d3c6b544b3bf39759f14929d6427025ffcadbb42abc85fdae9160"
+    }
+  ],
+  "browser": {
+    "steps": 36,
+    "checks": [
+      "real woodcutter construction and worker assignment",
+      "keyboard focus on the map",
+      "move area one tile",
+      "Escape leaves area unchanged",
+      "distant area refused without changing it",
+      "acknowledged save/load and keyboard reinspection retain the area",
+      "building work pauses and resumes"
+    ],
+    "areaReadings": [
+      {
+        "phase": "before",
+        "workingArea": {
+          "x": 34,
+          "y": 61,
+          "radius": 7
+        }
+      },
+      {
+        "phase": "moved",
+        "workingArea": {
+          "x": 35,
+          "y": 61,
+          "radius": 7
+        }
+      },
+      {
+        "phase": "cancelled",
+        "workingArea": {
+          "x": 35,
+          "y": 61,
+          "radius": 7
+        }
+      },
+      {
+        "phase": "rejected",
+        "workingArea": {
+          "x": 35,
+          "y": 61,
+          "radius": 7
+        }
+      },
+      {
+        "phase": "restored",
+        "workingArea": {
+          "x": 35,
+          "y": 61,
+          "radius": 7
+        }
+      }
+    ],
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "reportSha256": "3630daa2235c84b4a54aff7f211b8805ad57311fdf91bd4e738318677e5f3da6",
+    "screenshot": {
+      "sha256": "0b91e1c212852ab5653fa00e34eb4398a251c021ef5539d9b0340c806395f5f8",
+      "bytes": 647104,
+      "width": 1440,
+      "height": 960
+    },
+    "personalVisualInspection": "PASS: inspected the actual final 1440x960 browser capture.",
+    "inputDelivery": "Native driver input plus DOM buttons and keyboard events for bounded save/load acknowledgement and map reselection.",
+    "diagnosticLaunch": "Existing BROWSE_BROWSER option points to a task-owned wrapper that executes the installed Google Chrome with unchanged driver arguments plus --enable-logging=stderr. No installed or product code was patched.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "checks": [
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "logSha256": "cac434a0dadd70b03959f20a32fb1ee56e76bb345363461e75f964e64ccadb2b"
+    },
+    {
+      "name": "types",
+      "exitCode": 0,
+      "logSha256": "fa5c710f4761560aff3b40bb08ee787f4e896941ffafdb04aee261e7863e83ed"
+    },
+    {
+      "name": "final-tool-types",
+      "exitCode": 0,
+      "logSha256": "6bff23649ffc1315fbe28aca53455888eb1c6c0dd6ab0bc8e0c7113e0c29c8d1"
+    },
+    {
+      "name": "buddy-types",
+      "exitCode": 0,
+      "logSha256": "486d320518b495a040513666911c2814ff4e629b34dc745b5c6340221fc9ec74"
+    },
+    {
+      "name": "initial-build-retry",
+      "exitCode": 0,
+      "logSha256": "bfbddc5ca29c12a665f8e57da69f0c08f19a8cca45b3c78e66c8ae395468e150"
+    },
+    {
+      "name": "final-diagnostic",
+      "exitCode": 0,
+      "logSha256": "285eea1d039465138b6f360caf7d4b4d5622ef4b463edf67db8cc8e8659beb59"
+    },
+    {
+      "name": "timeout-investigation",
+      "exitCode": 0,
+      "logSha256": "33c8f30e1ff81632f336c7c386d9f8a32f8c9ba16625fbf127298672bb9926bd"
+    },
+    {
+      "name": "final-tests",
+      "exitCode": 0,
+      "logSha256": "77567b297a17ac1b405f0522a577c462945fea19d22ed2dc881f9435dbe16667"
+    }
+  ],
+  "earlierFailures": {
+    "unitSuite": "239 pass,3 wall-clock timeouts, retained as failures. The three affected files passed unchanged in isolation:27tests336assertions. A complete unchanged rerun passed242tests22471assertions. No timeout or assertion was weakened.",
+    "browser": "Two normal driver attempts lost CDP and returned no JSON. The connection-loss cause remains unverified. Diagnostic Chrome runs passed all36steps. Hosted normal-driver acceptance is required before main integration.",
+    "build": "One production build failed ENOSPC. It remains a failure; the subsequent unchanged build completed successfully after cleanup."
+  },
+  "review": {
+    "standardsFindings": [],
+    "specFindings": [],
+    "designPreflight": "Existing original-art control panel retained. New controls follow existing stx/ts-css, focus, contrast and spacing conventions. No raw DOM template script, new motion, icons, assets or user-visible separator dashes. Marketing layout checks are outside this dense game inspector."
+  },
+  "limits": [
+    "The displayed radius and existing distance limit are declared engineering rules, not original Gold Edition measurements.",
+    "No engine rule, worker, resource total or save schema was replaced. Original work-area rules and timing remain observation acceptance.",
+    "Native UI, touch and physical pointer-capture acceptance remain separate.",
+    "Default local Chrome transport occasionally disconnects and loses the driver report. Owning-source diagnostic tracking: stacksjs/stacks#2987. This does not count as a successful run."
+  ],
+  "wholeApplicationTests": {
+    "passed": 242,
+    "failed": 0,
+    "assertions": 22471,
+    "normalBudgetsUnchanged": true
+  }
+}

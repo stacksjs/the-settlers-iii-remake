@@ -202,6 +202,10 @@ onDestroy(() => game?.dispose())
           <progress :value="view().selected?.progress" max="1" aria-label="Construction or work progress"></progress>
           <p class="worker-line">Worker: {{ view().selected?.worker }}</p>
           <p class="worker-line" :if="view().selected?.garrison">Garrison: {{ view().selected?.garrison }}</p>
+          <div :if="view().selected?.workArea">
+            <p class="working-area">Working area: tile {{ view().selected?.workArea?.x }}, {{ view().selected?.workArea?.y }}. Radius {{ view().selected?.workArea?.radius }}.</p>
+            <button type="button" class="text-button" :aria-pressed="selectedTool() === 'work-area:' + view().selected?.id" @click="game?.workArea()">Set working area</button>
+          </div>
           <ul class="stock-list" :if="view().selected?.stocks.length"><li :for="stock in view().selected?.stocks"><span>{{ stock.role }} {{ stock.good }}</span><strong>{{ stock.amount }}/{{ stock.capacity }}</strong></li></ul>
           <div class="flex gap-3 mt-2" :if="!view().selected?.castle"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.suspended ? 'Resume work' : 'Pause work' }}</button><button type="button" class="text-button" @click="game?.demolish()">Tear down</button></div>
         </section>
