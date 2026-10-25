@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T11:11:19.302203+00:00",
+  "base": "64dd8b04506e0b6b2c577590315b852b121d2568",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/52"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "execution": "Fresh generated landscape on a separate normal Buddy origin. Native CUA clicks and keys only. Ordinary 38 settlers and starting goods, no state injection, private browser state reads, extra materials or demolition refunds.",
+  "clock": {
+    "saved": "36:15",
+    "restoredAndPaused": "36:26",
+    "unit": "in-game minutes:seconds; this is not an original executable timing observation"
+  },
+  "buildings": [
+    {
+      "type": "castle",
+      "tile": [
+        45,
+        45
+      ]
+    },
+    {
+      "type": "woodcutter",
+      "tile": [
+        50,
+        39
+      ],
+      "workingArea": [
+        44,
+        44
+      ]
+    },
+    {
+      "type": "forester",
+      "tile": [
+        39,
+        51
+      ],
+      "workingArea": [
+        44,
+        44
+      ]
+    },
+    {
+      "type": "stonecutter",
+      "tile": [
+        54,
+        36
+      ],
+      "workingArea": [
+        57,
+        48
+      ]
+    },
+    {
+      "type": "sawmill",
+      "tile": [
+        53,
+        50
+      ]
+    },
+    {
+      "type": "farm",
+      "tile": [
+        27,
+        43
+      ]
+    },
+    {
+      "type": "waterworks",
+      "tile": [
+        35,
+        55
+      ],
+      "workingArea": [
+        48,
+        58
+      ]
+    },
+    {
+      "type": "mill",
+      "tile": [
+        35,
+        35
+      ]
+    },
+    {
+      "type": "bakery",
+      "tile": [
+        33,
+        39
+      ]
+    }
+  ],
+  "observations": [
+    "Woodcutter and forester were staffed, and their working areas were aligned. Gathering produced physical logs; output filled and production stopped at its limit.",
+    "The stonecutter produced from visible granite after its area was set there.",
+    "An ordinary shovel-equipped pioneer claimed new western land. The grain farm was placed in a western clearing after avoiding occupied footprints and territory boundaries.",
+    "The complete farm, mill, waterworks and bakery chain produced new bread. Waterworks drew from the visible southern lake.",
+    "Sawmill and bakery reached full output buffers. Marking planks and bread for storage through Goods > Transport let carriers clear the buffers, after which timber processing and bread production resumed.",
+    "Cumulative planks made rose from 8, explainable by the 8 starting logs, to 28. New timber therefore supplied another 20 planks. No new logs were granted.",
+    "The ordinary save and a real page reload retained all seven resource ledgers. Logging produced one additional log during the restored run before it was paused."
+  ],
+  "startingGoods": {
+    "log": 8,
+    "plank": 30,
+    "stone": 26,
+    "grain": 0,
+    "flour": 0,
+    "water": 0,
+    "bread": 8
+  },
+  "savedLedger": {
+    "log": {
+      "stock": 13,
+      "made": 33,
+      "used": 28
+    },
+    "plank": {
+      "stock": 32,
+      "made": 28,
+      "used": 26
+    },
+    "stone": {
+      "stock": 8,
+      "made": 10,
+      "used": 28
+    },
+    "grain": {
+      "stock": 1,
+      "made": 34,
+      "used": 33
+    },
+    "flour": {
+      "stock": 9,
+      "made": 33,
+      "used": 24
+    },
+    "water": {
+      "stock": 16,
+      "made": 40,
+      "used": 24
+    },
+    "bread": {
+      "stock": 32,
+      "made": 24,
+      "used": 0
+    }
+  },
+  "restoredLedger": {
+    "log": {
+      "stock": 14,
+      "made": 34,
+      "used": 28
+    },
+    "plank": {
+      "stock": 32,
+      "made": 28,
+      "used": 26
+    },
+    "stone": {
+      "stock": 8,
+      "made": 10,
+      "used": 28
+    },
+    "grain": {
+      "stock": 1,
+      "made": 34,
+      "used": 33
+    },
+    "flour": {
+      "stock": 9,
+      "made": 33,
+      "used": 24
+    },
+    "water": {
+      "stock": 16,
+      "made": 40,
+      "used": 24
+    },
+    "bread": {
+      "stock": 32,
+      "made": 24,
+      "used": 0
+    }
+  },
+  "conservation": "For each recorded good, starting + made - used equals physical stock before and after reload. Equipment goods are outside this comparison.",
+  "evidence": [
+    {
+      "kind": "saved accessibility tree",
+      "sha256": "c4741648f25e89713edc11a4ac96d0b938da6c7ff25c30a6a4bbcae128bcc0b8",
+      "bytes": 9383
+    },
+    {
+      "kind": "restored accessibility tree",
+      "sha256": "f713472af2c282383777827ed3ef45483e6ebcde298d207568604884fa3de9e7",
+      "bytes": 9106
+    }
+  ],
+  "media": [
+    {
+      "kind": "browser-economy-before-reload-2026-10-25.jpg",
+      "sha256": "92eaa953f2b5a0b57d29ce75fbe1bbf1379ba6c13268f315eb76ae4f2a7fc7d7",
+      "bytes": 164814,
+      "width": 1280,
+      "height": 720,
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    {
+      "kind": "browser-economy-restored-2026-10-25.jpg",
+      "sha256": "fa8175c802c3e67fc0f90052e818b00106458ce023e4f887a885f95ccc07acdd",
+      "bytes": 166978,
+      "width": 1280,
+      "height": 720,
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  ],
+  "limits": [
+    "This is one desktop execution of the Roman engineering profile, not original Gold Edition behavior, balance or durations.",
+    "It proves continued base-resource and bread production, bounded backpressure and transport recovery over the recorded interval. It does not establish an indefinitely sustainable whole economy, miner feeding, every food chain, all civilizations or native game presentation.",
+    "No console or network diagnostics are claimed for this manual CUA execution; automated browser diagnostics are retained separately."
+  ],
+  "controlCorrection": "The bounded keyboard search exposed here was fixed at the owning game source and verified through a public engine regression plus actual residence construction beyond the old cap. See browser-map-controls-2026-10-25.json."
+}

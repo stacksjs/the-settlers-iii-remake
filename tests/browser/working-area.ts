@@ -16,9 +16,15 @@ const reading = (phase: string) => `(() => {
   if (!match) throw new Error('The inspector did not display its actual working area');
   return { phase: '${phase}', workingArea: { x: Number(match[1]), y: Number(match[2]), radius: Number(match[3]) } };
 })()`
+const mapMode = (instruction: string) => ({ action: 'evaluate', expression: `(() => {
+  const label = document.querySelector('.island-map').getAttribute('aria-label');
+  if (!label.includes(${JSON.stringify(instruction)})) throw new Error('The map announces a stale command: ' + label);
+  return { mapInstruction: label };
+})()` })
 const steps = [
   { action: 'assert', selector: '.building-choice:disabled', absent: true, timeoutMs: 10000 },
   { action: 'click', selector: '.building-choice', text: "Woodcutter's hut" },
+  mapMode("Press Enter to place Woodcutter's hut."),
   { action: 'press', key: 'Enter' },
   { action: 'assert', selector: '[role=status]', text: "Woodcutter's hut site placed." },
   { action: 'click', selector: '.map-button', text: '4x' },
@@ -26,6 +32,7 @@ const steps = [
   { action: 'click', selector: '.map-button', text: 'Pause' },
   { action: 'click', selector: '.inspector button', text: 'Set working area' },
   { action: 'assert', selector: '.island-map', focused: true },
+  mapMode('Press Enter to set the working area. Escape cancels.'),
   { action: 'evaluate', expression: reading('before') },
   { action: 'press', key: 'ArrowRight' },
   { action: 'press', key: 'Enter' },
@@ -34,6 +41,7 @@ const steps = [
   { action: 'click', selector: '.inspector button', text: 'Set working area' },
   { action: 'press', key: 'ArrowRight' },
   { action: 'press', key: 'Escape' },
+  mapMode('Press Enter to inspect.'),
   { action: 'press', key: 'ArrowLeft' },
   { action: 'press', key: 'ArrowLeft' },
   { action: 'press', key: 'Enter' },
@@ -82,6 +90,24 @@ const steps = [
   { action: 'assert', selector: '.inspector .building-status', text: 'Work paused' },
   { action: 'click', selector: '.inspector button', text: 'Resume work' },
   { action: 'assert', selector: '.inspector button', text: 'Pause work' },
+  { action: 'click', selector: '.inspector button', text: 'Set working area' },
+  mapMode('Press Enter to set the working area. Escape cancels.'),
+  { action: 'click', selector: '.island-map' },
+  { action: 'assert', selector: '[role=status]', text: 'Working area moved.' },
+  mapMode('Press Enter to inspect.'),
+  { action: 'click', selector: '.main-menu button', text: 'Settlers' },
+  { action: 'click', selector: '.category-list button', text: 'Occupations' },
+  { action: 'click', selector: '.specialists button', text: 'Pioneer' },
+  mapMode('Press Enter to send a pioneer. Escape cancels.'),
+  { action: 'press', key: 'Escape' },
+  { action: 'click', selector: '.specialists button', text: 'Geologist' },
+  mapMode('Press Enter to send a geologist. Escape cancels.'),
+  { action: 'press', key: 'Escape' },
+  { action: 'click', selector: '.category-list button', text: 'Military' },
+  { action: 'click', selector: '.specialists button', text: 'Send soldiers' },
+  mapMode('Press Enter to send soldiers. Escape cancels.'),
+  { action: 'press', key: 'Escape' },
+  mapMode('Press Enter to inspect.'),
 ]
 const child = Bun.spawn([
   process.execPath, driver, 'scenario', url, '--viewport', '1440x960', '--out', capture,

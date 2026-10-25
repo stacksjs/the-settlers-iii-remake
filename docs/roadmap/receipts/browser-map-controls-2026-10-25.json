@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T11:26:09.066583+00:00",
+  "base": "64dd8b04506e0b6b2c577590315b852b121d2568",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/90",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/86"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "40a3c8597a1b8f525bdec506deedddf36d42dd1dfc22a4d5ac11bbc5a20b7e8e"
+    },
+    {
+      "path": "resources/game/engine/index.ts",
+      "sha256": "3760a7bdb2d32d8a29a1d1b58dede6d30927e686fb8d151fde2d5de2d2c2d67e"
+    },
+    {
+      "path": "resources/game/engine/placement.ts",
+      "sha256": "bbe456dcafa1287b3a9e3d2464c50c811e359bc38b87a7b9d7d9efc584952132"
+    },
+    {
+      "path": "tests/browser/working-area.ts",
+      "sha256": "7829ed1879a59eeafe78308832249e438a4710eb192a29943b9527cfbc21619b"
+    },
+    {
+      "path": "tests/unit/placement.test.ts",
+      "sha256": "b9d66fcc1509ff9bbe97628ebe84ea18882b57f2b8721448535ea7497d95cbfa"
+    }
+  ],
+  "mapInstructions": {
+    "problem": "The accessible canvas instruction was updated on keydown and entry into working-area mode, but not on building selection, pointer completion or restored-game adoption. A completed pointer action continued announcing the old command. Specialist and troop tools were described as building placement.",
+    "change": "The existing view-emission path derives the instruction from the current cursor and tool. The canvas attribute is only written when its value changes. Build names use the owning session profile. Dedicated text describes working areas, specialists, troop orders and interventions.",
+    "red": {
+      "logSha256": "3bb7b007693310d1e60379fb9fff96add7c123d8b7ed57af1c9565e49a397665",
+      "reportSha256": "0f9d7b2932ab36a0e28a0d9ada6cc0c06b47aadebc87e30248d5f4956822d310",
+      "failure": "A real click selected Woodcutter's hut, but the map still announced the generic old instruction instead of the selected building command."
+    },
+    "nativePointerGreen": {
+      "sha256": "786ad32d745487931e5e28d33b9695e17204775394d7304e63d5c107eb8ad1e0",
+      "result": "After selecting the stonecutter working area and clicking granite, the action succeeded, the tool cleared and the map immediately announced Tile 57, 48: inspect. No extra key was sent to refresh the label."
+    },
+    "testSetupCorrection": "The first added pointer action changed the origin assumed by the existing cancellation/reselection sequence. It was moved after that sequence, retaining every existing assertion. The failed setup execution is retained separately."
+  },
+  "keyboardPlacement": {
+    "problem": "The keyboard building selector scanned only square radii 0 through 13. In the played settlement it failed to select a valid farther site and left the cursor on an occupied building.",
+    "change": "Shared findBuildingSite scans square rings over the bounded map, in the prior row/column order, checking each tile at most once. It only considers owned origins and delegates complete footprint, terrain, resource, clearance and reservation checks to the existing Session.placement contract. An exhausted search now reports that no valid site exists.",
+    "red": {
+      "logSha256": "c3654a0128059765c4bcc69bcc2488857ab362c45154d31876db22d62c03ccd9",
+      "result": "The extracted original bounded algorithm returned null for the known permitted woodcutter site 58,41, radius 18 from 40,40, and failed corner searches."
+    },
+    "publicRegression": {
+      "file": "tests/unit/placement.test.ts",
+      "tests": 3,
+      "assertions": 10,
+      "covers": [
+        "site at square radius18 is found and accepted by an ordinary build command",
+        "search does not change the session checksum",
+        "both map corners preserve deterministic square-ring ordering",
+        "unsuitable or unowned land yields no site"
+      ]
+    },
+    "nativeGreen": {
+      "castle": [
+        45,
+        45
+      ],
+      "automaticallySelectedSite": [
+        59,
+        59
+      ],
+      "squareRadius": 14,
+      "manualCursorMovementAfterChoosing": false,
+      "result": "Selecting Small residence chose tile 59,59 immediately. Enter placed it, workers completed it, and population increased from 38 to 44 through normal arrivals.",
+      "selectedSha256": "d8fd789281af13841bf35319eda878434ae29100e26786b3db9548664c696ba9",
+      "completedSha256": "e9b9c49780683497a23788d7e68d19d918208cd59b619399ffb42a9a981d6f10",
+      "completedImage": {
+        "sha256": "bd08410943f1ee28316277712bde1306d685512b6b48c08ad50fa55ec6a1c665",
+        "bytes": 169139,
+        "width": 1280,
+        "height": 720,
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    }
+  },
+  "checks": {
+    "units": {
+      "pass": 248,
+      "fail": 0,
+      "assertions": 22523,
+      "logSha256": "80e1226255d1be36268130e1babdfb3d8a6e94e833594e95b8f639e5c8c2f008"
+    },
+    "types": "app, tools and STX (250 expressions, 2 script blocks), exit0",
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "productionBuild": "buddy build views, exit0",
+    "browser": [
+      {
+        "name": "campaign",
+        "sha256": "d251a2f45ec163cf7cee03ef84d51c618fed5d21fb2a89d859628b27272ccdea",
+        "profiles": [
+          {
+            "viewport": "1440x960",
+            "steps": 58,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "control-frame",
+        "sha256": "00d9982ccc382829dc9ee42c43c8f276d60530ebc53bb915b7cfeeb31c0c13a2",
+        "profiles": [
+          {
+            "viewport": "1280x720",
+            "steps": 18,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          },
+          {
+            "viewport": "1280x850",
+            "steps": 18,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          },
+          {
+            "viewport": "1440x960",
+            "steps": 18,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          },
+          {
+            "viewport": "320x568",
+            "steps": 18,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "resize",
+        "sha256": "5d9d408a29de5cdd11de3c637bf7309d2cb19da233d3312599025ef2d239284a",
+        "profiles": [
+          {
+            "viewport": "1280x850",
+            "steps": 5,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "production",
+        "sha256": "853bcdad5a85d41d602e7f802bacd58aac60b6fa40c0a4a63f771ecabc6ccaf0",
+        "profiles": [
+          {
+            "viewport": "1440x960",
+            "steps": 19,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "selection",
+        "sha256": "c1dcb079829ea5d1670205d7043786020474aee8da6e8181edf43190fe85190c",
+        "profiles": [
+          {
+            "viewport": "1280x850",
+            "steps": 33,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "recruitment",
+        "sha256": "8c96e9e0482e8a0f94defef6841f2023708bd537507522695a100b5f77d4edf9",
+        "profiles": [
+          {
+            "viewport": "1440x960",
+            "steps": 34,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          },
+          {
+            "viewport": "320x568",
+            "steps": 34,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "working-area",
+        "sha256": "bbcf650e10fbcb5e27582f53295ceaa4a435d9ddc03cfd3dbcf9880a9bdaa9a8",
+        "profiles": [
+          {
+            "viewport": "1440x960",
+            "steps": 57,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      },
+      {
+        "name": "checkpoints",
+        "sha256": "9405cb3e70520e3cdb7a4a557f31bc5668fcf8f719364cea95cb960cccb0af0d",
+        "profiles": [
+          {
+            "viewport": "1280x900",
+            "steps": 1,
+            "consoleErrors": 0,
+            "failedRequests": 0,
+            "collectionErrors": 0
+          }
+        ]
+      }
+    ],
+    "browserSuccessfulSteps": 313
+  },
+  "review": {
+    "standards": "Source-owned game controller and shared engine helper, explicit imports, existing placement validation, bounded search with no state mutation. No framework/runtime copying, installed-module edits, dependencies or generated native patches.",
+    "spec": "Map instruction follows actual commands and transitions. Keyboard selection covers legal owned sites beyond the former cap while retaining the previous square-ring/tie order. No rule profiles, original timings or balance values changed.",
+    "scope": "Standards and spec reviewed separately and sequentially, honoring the independent-chat instruction."
+  },
+  "limits": [
+    "Native CUA means real browser input, not a native Craft game host.",
+    "The automated map case uses native browser clicks/keys for pointer completion and modes; pre-existing DOM key/button segments remain for bounded rejection and save/reselection checks.",
+    "Intervention instruction wording has no completed priest-casting browser scenario in this receipt.",
+    "These controls and economy evidence do not establish original Gold Edition fidelity, all touch workflows, localization or native game acceptance. Issues 90 and 86 remain open."
+  ]
+}

@@ -7,7 +7,7 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, DEFAULT_START, economicAI, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
+import { createSession, DEFAULT_START, economicAI, findBuildingSite, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 import { scene } from './scene'
@@ -209,7 +209,22 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   let troops = createTroops(() => session, PLAYER), band: { x0: number, y0: number, x1: number, y1: number } | null = null
   let thief: number | null = null
   let minimap: MinimapOptions = { ...DEFAULT_MINIMAP }, sinceMinimap = 0
-  const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length); value.prototypeKept = prototypeKept; value.minimap = minimap; update(value) }
+  const mapInstruction = (): string => {
+    if (tool?.startsWith('work-area:')) return 'Press Enter to set the working area. Escape cancels.'
+    if (tool === 'pioneer' || tool === 'geologist') return `Press Enter to send a ${tool}. Escape cancels.`
+    if (tool === 'march') return 'Press Enter to send soldiers. Escape cancels.'
+    if (tool?.startsWith('spell:')) return 'Press Enter to use the intervention here. Escape cancels.'
+    if (tool) return `Press Enter to place ${session?.rules.buildings.find(b => b.id === tool)?.name ?? tool}.`
+    return 'Press Enter to inspect.'
+  }
+  const emit = (): void => {
+    if (cursor) {
+      const label = `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${mapInstruction()}`
+      if (canvas.getAttribute('aria-label') !== label) canvas.setAttribute('aria-label', label)
+    }
+    const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length)
+    value.prototypeKept = prototypeKept; value.minimap = minimap; update(value)
+  }
   /** Draws the overview map from the player's observation and frames the part of the land on screen. */
   const drawOverview = (): void => {
     const target = overview?.getContext('2d')
@@ -483,7 +498,6 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (event.key === 'Escape') { tool = null; selected = null; thief = null; troops.clear() }
     if (event.key.toLowerCase() === 'h') center()
     if (event.key.toLowerCase() === 's') void persist()
-    canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${tool?.startsWith('work-area:') ? 'Press Enter to set the working area. Escape cancels.' : tool ? `Press Enter to place ${rules.buildings.find(b => b.id === tool)?.name ?? `a ${tool}`}.` : 'Press Enter to inspect.'}`)
     emit()
   })
   const resize = new ResizeObserver(() => { renderer.resize() }); resize.observe(canvas)
@@ -516,12 +530,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       tool = kind
       if (kind && session.context.building.has(kind)) {
         // Keyboard players start from the nearest valid site to the castle.
-        const c = castle()!
-        for (let r = 0; r < 14 && c; r++) {
-          const found = [...Array.from({ length: (2 * r + 1) ** 2 }).keys()].map(i => ({ x: c.x - r + (i % (2 * r + 1)), y: c.y - r + Math.floor(i / (2 * r + 1)) })).find(p => !session!.placement(PLAYER, kind, p.x, p.y))
-          if (found) { cursor = found; break }
-        }
-        report(`${describe(kind)} Choose open ground inside your border.`)
+        const c = castle(), found = c ? findBuildingSite(session, PLAYER, kind, c) : null
+        if (found) cursor = found
+        report(found ? `${describe(kind, session.rules)} Choose open ground inside your border.` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
       }
       else if (kind === 'march') report('Click open ground to send your soldiers there, or an enemy tower or castle to attack it.')
       else if (kind?.startsWith('spell:')) report('Click where the intervention should fall. A priest walks within reach first, except for the Magic Eye.')
@@ -553,7 +564,6 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!building || !area) return
       tool = `work-area:${building.id}`; cursor = { x: area.x, y: area.y }; thief = null; troops.clear()
       report('Choose the working area on the map, or use arrow keys and Enter. Escape cancels.')
-      canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. Press Enter to set the working area. Escape cancels.`)
       canvas.focus()
     },
     async restart(landscape: Landscape = 'generated') {
