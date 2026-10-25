@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T15:49:57.742599+00:00",
+  "source": "808e064b3d3ebeb3d73c8957ba617c7513c3cca6",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/192",
+  "problem": "Local catalog rendering rewrote entire files and removed five authored progress sections. Remote publishing already used bounded generated sections.",
+  "fix": "Use bounded sections for local drafts and index. Migrate only exact known legacy prefixes, preserve authored text outside closing markers, and refuse unknown edited legacy boundaries without changing files.",
+  "tests": {
+    "passed": 9,
+    "failed": 0,
+    "assertions": 32,
+    "logSha256": "b614e34dcd2ca29bcf32178b1695dabfc1ad8ef6ee149d00e1496b2da17a11d4",
+    "actualCliFilesPreserved": 108,
+    "actualCliReceiptSha256": "e7f3122e11651c7c3ac91b1b9a949a38386b6331d456bf2225486ab800146840",
+    "alsoPreservedThroughInstalledConsumerVerifier": true
+  },
+  "sourceFiles": [
+    {
+      "path": "scripts/roadmap.ts",
+      "sha256": "0029b338c00f9cf6df93d7e61ec17b1ecdde96c79226c0c3dcb085fd327a7f30"
+    },
+    {
+      "path": "tests/unit/roadmap.test.ts",
+      "sha256": "ca9e3e78006fbcb2e84e09f5d4ca787341b1c185042e1b9b532e3b0f3a9c5261"
+    }
+  ],
+  "red": {
+    "observedLostNotesPatchSha256": "3bcdef906636e9c966fa134c6d6e7e066690a1cf8eaf52b256a3786311a3a685",
+    "actualFilesystemFailureLogSha256": "efc005f33fe3634f5dc44bc7b95a1f1a8893fa26b8daf9406c58761efc57b0b7"
+  },
+  "recoveredDrafts": [
+    "S3-037",
+    "S3-038",
+    "S3-071",
+    "S3-074",
+    "S3-092"
+  ],
+  "limits": "Corrects tracking-document retention, not game feature criteria or remote issue state."
+}

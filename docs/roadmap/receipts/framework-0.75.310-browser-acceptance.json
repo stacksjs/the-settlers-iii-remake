@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T15:49:57.690776+00:00",
+  "candidateBase": "808e064b3d3ebeb3d73c8957ba617c7513c3cca6",
+  "versions": {
+    "stacks": "0.75.310",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4"
+  },
+  "adoption": "Qualified original source/release gates and86NPM/five native archives before normal Buddy upgrade, original Pantry127 install and frozen Bun144 install. No installed-module edits or copied framework runtimes.",
+  "publicationReceipt": "framework-0.75.310-publication.json",
+  "installedOriginals": {
+    "receipt": "framework-0.75.310-receipt.json",
+    "plan": "framework-0.75.310-plan.json",
+    "packages": 95,
+    "verifierExport": "@stacksjs/actions/release-evidence",
+    "verifierVersion": "0.75.310",
+    "verifierModuleSha256": "deddfbbf90d7fda0b24768692ae5127afa8a6b60bed32a75ded72bc9483762ba",
+    "checks": [
+      {
+        "script": "typecheck",
+        "exitCode": 0,
+        "outputSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+      },
+      {
+        "script": "lint",
+        "exitCode": 0,
+        "outputSha256": "62ab6ac7275b069ff24e9517c14278cba25be5be47f61f61ee744cefdff8293b"
+      },
+      {
+        "script": "test",
+        "exitCode": 0,
+        "outputSha256": "2df3b2968f302fcff41870f85442037e4c74820a0ef6ee813de54350b3c63aab"
+      },
+      {
+        "script": "assets:verify",
+        "exitCode": 0,
+        "outputSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+      },
+      {
+        "script": "fidelity:check",
+        "exitCode": 0,
+        "outputSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+      },
+      {
+        "script": "roadmap:check",
+        "exitCode": 0,
+        "outputSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+      },
+      {
+        "script": "test:browser",
+        "exitCode": 0,
+        "outputSha256": "464c7010fba83497f90a65af0605d85b5d9c08f8f335cd1adda9464809f05735"
+      }
+    ],
+    "lockfileSha256": "196a0bd3ccbc3b97a58b59c6900f1df4e92693c310558334388bd7cbf50e19db"
+  },
+  "productionBuild": {
+    "passed": true,
+    "logSha256": "af1d4f06db0fba2e6e28bce1bbc84796702609164058a605f9620904928cd7cd"
+  },
+  "browser": {
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": [
+          58
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "ca95b7c3cced2d2ae481e7256dbd4b9c37e785ddb0967b0c50a78b2fc0c656b4"
+      },
+      {
+        "suite": "control-frame",
+        "steps": [
+          18,
+          18,
+          18,
+          18
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "74692224027dd9472cb8d4b084561d3c5c93c422b8590a3598e2bc87fff87689"
+      },
+      {
+        "suite": "resize",
+        "steps": [
+          5
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "d7399a201c98d8074647735c024622aaefaa5339d3b99d1bd34812e58393d6f7"
+      },
+      {
+        "suite": "production",
+        "steps": [
+          19
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "58e0021873d185ce052729ce42745bfdbb12c03cb1f148a75bf5f841a587b15d"
+      },
+      {
+        "suite": "selection",
+        "steps": [
+          33
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "85d1c88db3174871d4851dbd8abb7a22d176c953b52fa4f627abc10100232530"
+      },
+      {
+        "suite": "recruitment",
+        "steps": [
+          34,
+          34
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "36a3b00fea0fa0892327db1e3516f2f3400321c7a6dc20cc2858a9c5160dd18f"
+      },
+      {
+        "suite": "working-area",
+        "steps": [
+          57
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "3bd338735aaa9b4bc740e54cdbf33d2351a32622b5cbb80634debbe451b99f2c"
+      },
+      {
+        "suite": "skirmish",
+        "steps": [
+          26
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "eb7c930fc1acabefdbed53502ad0c22827d5f4f1a42d2636dfb585817d4a887b"
+      },
+      {
+        "suite": "checkpoints",
+        "steps": [
+          1
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "ee8db2d3f42fe0c7a0d2e258715758d57a855be60efd3ea7f4aab16e000aecc2"
+      },
+      {
+        "suite": "rival-battle",
+        "steps": [
+          46
+        ],
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0,
+        "reportSha256": "0fe0c34e4fe0dfc21bcd84d398de4b5902062fa76443893b0fc9af6e78acb37d"
+      }
+    ],
+    "successfulSteps": 385,
+    "battleSamples": [
+      {
+        "realMinutes": 1,
+        "time": "4:01",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 2,
+        "time": "8:03",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 3,
+        "time": "12:03",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 4,
+        "time": "16:05",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 5,
+        "time": "20:06",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 6,
+        "time": "23:22",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 7,
+        "time": "27:22",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "44"
+      },
+      {
+        "realMinutes": 8,
+        "time": "31:24",
+        "seed": "Map seed 2",
+        "outcome": "playing",
+        "population": "40"
+      },
+      {
+        "realMinutes": 9,
+        "time": "35:24",
+        "seed": "Map seed 2",
+        "outcome": "lost",
+        "population": "38"
+      },
+      {
+        "realMinutes": 10,
+        "time": "39:25",
+        "seed": "Map seed 2",
+        "outcome": "lost",
+        "population": "38"
+      }
+    ],
+    "battleMedia": {
+      "schemaVersion": 1,
+      "elapsedMs": 612341.66625,
+      "screenshot": {
+        "sha256": "f745263e8af06e31c09771dd64b44634c0cb3a099535ed3cf01414673c5d6fee",
+        "bytes": 733778,
+        "width": 1440,
+        "height": 960
+      },
+      "inputDelivery": "Maintained browser driver, normal map-seed field and 4x control, ten real minutes, ordinary save and document reload.",
+      "evidenceLimit": "One passive-player defeat in the Roman engineering profile. It does not establish human victory, original Gold rules or every map seed.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  },
+  "normalSimulation": {
+    "source": "c5b0f55",
+    "rules": {
+      "id": "roman-engineering",
+      "version": "0.9.0",
+      "digest": "1ebde243c7408435be7c55df79d8f7bbf6ef37ce63fc338a25b98648b280c7e7"
+    },
+    "seed": 2,
+    "tick": 38441,
+    "outcome": {
+      "1": "lost",
+      "2": "won"
+    },
+    "produced": {
+      "plank": 97,
+      "stone": 96,
+      "fish": 27,
+      "water": 61,
+      "coal": 134,
+      "log": 121,
+      "grain": 47,
+      "flour": 47,
+      "bread": 46,
+      "ironore": 72,
+      "iron": 60,
+      "hammer": 6,
+      "shovel": 5,
+      "bow": 7,
+      "spear": 11,
+      "axe": 10,
+      "sword": 7,
+      "saw": 5,
+      "pickaxe": 1
+    },
+    "audit": [],
+    "rejectedEnqueues": [],
+    "checksum": "a1774841"
+  },
+  "nativeInputBrowser": {
+    "applicationSource": "c5b0f55",
+    "frameworkProcess": "Existing qualified308 QA server during normal310 upgrade. Separate installed310 driver acceptance is recorded above.",
+    "delivery": "Real setup field seed2, Computer rival, ordinary4x, waiting, pause/save and real document reload.",
+    "observed": [
+      "Mission lost",
+      "Your Castle was captured",
+      "Map seed2 and loss retained after reload",
+      "Welcome back. Your settlement has been restored."
+    ],
+    "captures": [
+      {
+        "name": "stone-native-progress",
+        "accessibilitySha256": "f5da728a0fe10e88b9c1061dcb949ba28ec5907f5337481430c89a2ee038ba5d",
+        "screenshot": {
+          "format": "jpeg",
+          "sha256": "ee69dd4f86b47b2b44cae8030ff8b87120fa5f4967427f2b2b3aba630986597b",
+          "bytes": 107651,
+          "width": 664,
+          "height": 823
+        },
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "stone-native-finished",
+        "accessibilitySha256": "f97b30e62af901a590232c368c64e4b1b2db730c947e163ee424455ff6779961",
+        "screenshot": {
+          "format": "jpeg",
+          "sha256": "2b514b92e19593f0642b5a65879c98a9d2e3b1cdf43ae128d00e63251be7343f",
+          "bytes": 104972,
+          "width": 665,
+          "height": 824
+        },
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "stone-native-restored",
+        "accessibilitySha256": "b6c9b1c150a2a9107af864f6756abbd0adb6a13ea97dfbd3b3c79da98354d4c2",
+        "screenshot": {
+          "format": "jpeg",
+          "sha256": "1bc14a738d54c2baf95e44044b9deb26f2cb52746285fba661f065dc865155eb",
+          "bytes": 106014,
+          "width": 665,
+          "height": 824
+        },
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    ]
+  },
+  "roadmapPreservation": {
+    "files": 108,
+    "byteIdenticalAfterActualCliAndInstalledVerifier": true,
+    "receipt": "roadmap-local-progress-preservation-2026-10-25.json"
+  },
+  "interruptedRuns": "The goal turn interruption stopped the first ten-minute process and corrected recorder run before final records. Empty logs are retained; both missing handles/processes were verified before complete fresh runs. Interrupted runs are not accepted as completed tests.",
+  "recorderCorrection": "The first published verifier completed all seven checks, then an owned recorder used a doubled output directory. That path was fixed and the full published verifier and checks reran to exit0.",
+  "nativeCaptureCorrection": "Native CUA captures are JPEG and now use matching .jpg filenames with unchanged bytes and hashes. Maintained browser-driver captures are actual PNG.",
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/ai.ts",
+      "sha256": "6ddee99e4e15ef01c38e89d406373b9fd59c9968952872fa6fe7c6bfc18d5bd6"
+    },
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "e274056bf9c8103b135ba6204c8d327fc34c4e5f930f96876d2c233a9bf06c8d"
+    },
+    {
+      "path": "resources/game/setup.ts",
+      "sha256": "30c47fdcd9993a74ceaf836cb7e71ca36d5cf6d9344743fe23559f6f8c4a3fa8"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "sha256": "842f48a473b1f445a0d0be510944ae288b0cd6ae8d6bfe4ea19f0f2db2389103"
+    },
+    {
+      "path": "tests/browser/rival-battle.ts",
+      "sha256": "b06323a28475a214a12e9a2c69ba019d4b2cea3e615f317ed289740e5cab7a21"
+    },
+    {
+      "path": "scripts/roadmap.ts",
+      "sha256": "0029b338c00f9cf6df93d7e61ec17b1ecdde96c79226c0c3dcb085fd327a7f30"
+    },
+    {
+      "path": "package.json",
+      "sha256": "8b22271b052b86f52e1021266f6de730788620ce7a6cd871869e6521846cf0dd"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "196a0bd3ccbc3b97a58b59c6900f1df4e92693c310558334388bd7cbf50e19db"
+    },
+    {
+      "path": "pantry.lock",
+      "sha256": "ae25f13ea58c919d4d6c873077f76cca6ffb3f4e3376eff1b2a5cc127ddaee35"
+    }
+  ],
+  "limits": [
+    "One passive-player Roman engineering battle, selected UI controls and restoration. Human victory and all map seeds remain unqualified.",
+    "Original Gold rules/timings and complete factions/campaigns are not established by this evidence.",
+    "Native archive qualification and native-input browser use do not establish a complete native desktop or mobile game."
+  ]
+}

@@ -59,23 +59,26 @@
       {
         "name": "native-seed2-start",
         "accessibilitySha256": "d8967f5323f049f9879efc528949f1c4800bddb80c09d8222327f42088d16f2d",
-        "pngSha256": "ee69dd4f86b47b2b44cae8030ff8b87120fa5f4967427f2b2b3aba630986597b",
-        "pngBytes": 107651,
-        "rasterPublication": "withheld-pending-redistribution-evidence"
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "captureSha256": "ee69dd4f86b47b2b44cae8030ff8b87120fa5f4967427f2b2b3aba630986597b",
+        "captureBytes": 107651,
+        "format": "jpeg"
       },
       {
         "name": "native-battle-finished",
         "accessibilitySha256": "fed0c962c485c5ad9051591053be695c5b914cc364a3921c24efd587a5c5d47d",
-        "pngSha256": "5c644873c07f76316d20ce702d5e87dde0ca81be49ac19a17d50beb50c9aa686",
-        "pngBytes": 102271,
-        "rasterPublication": "withheld-pending-redistribution-evidence"
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "captureSha256": "5c644873c07f76316d20ce702d5e87dde0ca81be49ac19a17d50beb50c9aa686",
+        "captureBytes": 102271,
+        "format": "jpeg"
       },
       {
         "name": "native-battle-restored",
         "accessibilitySha256": "0ce191518c25e6ea9365ea3c342baf83a1fc7c6e47d2dea60cf32c84b08c51d5",
-        "pngSha256": "3ed78697ce35929d91633f04c16487865523f9bd1b2cd9f22c541bcba37b8715",
-        "pngBytes": 56232,
-        "rasterPublication": "withheld-pending-redistribution-evidence"
+        "rasterPublication": "withheld-pending-redistribution-evidence",
+        "captureSha256": "3ed78697ce35929d91633f04c16487865523f9bd1b2cd9f22c541bcba37b8715",
+        "captureBytes": 56232,
+        "format": "jpeg"
       }
     ]
   },
@@ -222,5 +225,6 @@
     "One passive-player defeat is proven; human victory and every map seed are not qualified here.",
     "Native-input browser evidence is not evidence of a native renderer, mobile or desktop game.",
     "Do not close the skirmish, military/religious AI or complete-release roadmap from this slice."
-  ]
+  ],
+  "captureFormatCorrection": "Native CUA capture bytes were JPEG and were initially saved with .png labels. They were renamed .jpg with the same bytes and hashes; no pixel conversion or generated image was used."
 }

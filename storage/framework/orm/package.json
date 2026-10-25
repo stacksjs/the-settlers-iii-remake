@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "@stacksjs/bun-router": "^0.1.24",
-    "@stacksjs/cache": "0.75.308",
-    "@stacksjs/database": "0.75.308",
-    "@stacksjs/error-handling": "0.75.308"
+    "@stacksjs/cache": "0.75.310",
+    "@stacksjs/database": "0.75.310",
+    "@stacksjs/error-handling": "0.75.310"
   },
   "devDependencies": {
     "better-dx": "^0.2.24"
