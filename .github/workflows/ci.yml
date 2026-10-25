@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Provision managed tools
-        uses: pantry-pm/pantry/packages/action@91ded221f8de3badd9fc5ab1d4072d561c1eb1d4
+        uses: pantry-pm/pantry/packages/action@c83f6d9c8fa2d7a3345b3f9661a0c34750502cb5
         with:
-          version: '0.11.126'
+          version: '0.11.127'
           install: 'false'
           packages: bun.com@1.4.4 git-scm.org@2.53.0 sqlite.org@3.54.1
       - run: bun install --frozen-lockfile

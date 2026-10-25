@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T09:13:19.251427+00:00",
+  "versions": {
+    "stacks": "0.75.305",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4"
+  },
+  "publicVerifier": "framework-0.75.305-receipt.json",
+  "normalInstallAndFrozenInstall": "passed",
+  "productionBuild": "buddy build views, exit 0",
+  "browser": [
+    {
+      "name": "campaign",
+      "reportSha256": "2ab9e1a0f4ec41bf9af8976614ecadf9c99e605d48df7a714282610ba2c5e6bd",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 58,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "control-frame",
+      "reportSha256": "4a3df5f6fbd7169f61b390c7317587e4285e5c68221eb0eb6fe57b204f064872",
+      "profiles": [
+        {
+          "viewport": "1280x720",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "1280x850",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "1440x960",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "320x568",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "resize",
+      "reportSha256": "15c1bd06bd478ef32e28c63352fe9bd2eb7476dda7aec05af47a18d3b19bb309",
+      "profiles": [
+        {
+          "viewport": "1280x850",
+          "steps": 5,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "reportSha256": "b33f6ed877a5ec7a5f30a43126fcc2f9cbc2642b042ba93fcd01ae9f372e9f42",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 19,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "selection",
+      "reportSha256": "24ae48338c653122ee352a52d809f276568c8a585e0180c16a2256f0fc506420",
+      "profiles": [
+        {
+          "viewport": "1280x850",
+          "steps": 33,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "recruitment",
+      "reportSha256": "9f52b1cc8d22af3772988704992adacdb5297102df8daa9873b4466acec2623e",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 25,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "320x568",
+          "steps": 25,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "working-area",
+      "reportSha256": "8f4f90d322f91be52ef894481ee7342e8cd442df6eeaae3dfab3bace7b4bcdce",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 36,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "checkpoints",
+      "reportSha256": "a943ce8dcc5af67c1d8a4e9cc708ff09cfb31d68845fb27d79474c3f6b78f266",
+      "profiles": [
+        {
+          "viewport": "1280x900",
+          "steps": 1,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    }
+  ],
+  "selectionInput": "Native driver Digit1 and Escape; map selection still uses browser DOM PointerEvents. The Group 1 is empty assertion is retained.",
+  "limits": [
+    "Browser checks do not establish true native game acceptance.",
+    "No original executable behavior or Gold Edition parity is inferred.",
+    "Stacks 0.75.306 has been triggered but is not qualified or installed."
+  ]
+}

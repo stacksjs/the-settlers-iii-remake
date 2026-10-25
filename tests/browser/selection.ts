@@ -13,8 +13,8 @@ const capture = resolve(await mkdtemp(resolve(shots, 'selection-')), 'selection.
 // sprite centre is (-40, +13) from the centred castle at 100% zoom. Assert the
 // actual selection message before testing cancellation, so a missed hit fails.
 // PointerEvents enter the real browser DOM listeners; the driver supplies the
-// initial native mouse click and Escape key. Numbered recall uses a DOM
-// KeyboardEvent with the browser's physical code. This does not test pointer capture.
+// initial native mouse click, Escape and numbered recall keys. This does not
+// test pointer capture.
 const pointer = (x: number, y: number, button = 0) => `(() => {
   const canvas = document.querySelector('.island-map'), rect = canvas.getBoundingClientRect();
   const point = { pointerId: 1, pointerType: 'mouse', isPrimary: true, bubbles: true,
@@ -39,7 +39,7 @@ const steps = [
   { action: 'assert', selector: '[role=status]', text: 'Mark soldiers first' },
   { action: 'evaluate', expression: pointer(-40, 13) },
   { action: 'assert', selector: '[role=status]', text: 'Thief marked.' },
-  { action: 'evaluate', expression: "document.querySelector('.island-map').dispatchEvent(new KeyboardEvent('keydown', { key: '1', code: 'Digit1', bubbles: true })); true" },
+  { action: 'press', key: '1' },
   { action: 'assert', selector: '[role=status]', text: 'Group 1 is empty.' },
   { action: 'evaluate', expression: pointer(120, -80, 2) },
   { action: 'assert', selector: '[role=status]', text: 'Mark soldiers first' },
@@ -81,7 +81,7 @@ if (bytes.length < 24 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1
 await writeFile(resolve(shots, 'selection-media.json'), `${JSON.stringify({
   schemaVersion: 1,
   screenshot: { sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), bytes: bytes.length, width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) },
-  inputDelivery: 'Browser DOM PointerEvents, DOM Digit1 KeyboardEvent and native driver Escape; pointer capture is outside this check.',
+  inputDelivery: 'Browser DOM PointerEvents and native driver Digit1 and Escape; pointer capture is outside this check.',
   rasterPublication: 'withheld-pending-redistribution-evidence',
 }, null, 2)}\n`)
 console.log('Escape, troop group recall, save/load and rectangle selection clear the marked thief before the next map command.')
