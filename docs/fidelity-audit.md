@@ -4,6 +4,12 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: one recovery action for a shared demolition (2026-10-25)
+
+The [recovery-action correction](roadmap/receipts/ai-recovery-actions-2026-10-25.json) keeps both exhausted-workplace and building-material diagnoses while submitting one demolition when they select the same building. Distinct building recoveries and other action kinds keep their order. The captured seed-5 tick-9360 case now executes once, conserves goods and matches after restore, with engine ownership/refund rules and profile 0.10.0 unchanged.
+
+All 292 unit tests pass, and the rebuilt app passes the local 58-step campaign including real save/reload. Full per-tick command tracing now records zero failed executions on ordinary seeds 2, 1, 3 and 5, with clean accounting. Seed 2 finishes; the other three remain unfinished at 80,000 ticks, so valid commands do not establish sustainable random-map play. The unchanged main CI retains the complete 385-step browser gate for the exact pushed commit. Original Gold behavior, human victory and native game presentation remain unqualified.
+
 ## Update: legal military orders and full execution tracing (2026-10-25)
 
 The [movable-troop correction](roadmap/receipts/ai-movable-troops-2026-10-25.json) derives eligible troops from the allowed own-player view and keeps one deterministic guard in every military garrison. Scouting, attack and defense wait when all soldiers must stay inside. Ready outside troops retain their preference. The engine's ownership, guard and refund rules and engineering profile 0.10.0 are unchanged. Six focused command/restore regressions pass, along with the 289-test suite, type checks, the production build and all 385 fresh browser steps. The subsequent typing cleanup passes its 31-test focus suite and emits identical game JavaScript.

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "fixture": "ai-duplicate-demolition.json",
+  "bytes": 463346,
+  "sha256": "0084ea74c1fe13fcbbab475e7863555a86d313c78358783ddd69cf8839f4e2cf",
+  "source": "f4624f26385ef2235ead57616528ef1747e2f528",
+  "capture": "Ordinary rivalSession(5), both economicAI policies with RIVAL_MILITARY and default 80-tick cadence, normal starts, advanced to tick9360 before the next decision. No direct world, stock, profession, terrain, rules or population edits.",
+  "failure": "Player2 exhausted-fisher and stone-material diagnoses both order demolition of building1156. Sequence76 succeeds; sequence77 fails ownership.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/196",
+  "media": "Generated simulation state; no original raster or audio."
+}

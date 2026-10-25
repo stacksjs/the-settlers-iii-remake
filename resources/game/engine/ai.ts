@@ -99,7 +99,7 @@ export interface Diagnosis {
   kind: 'tool' | 'food' | 'population' | 'delivery' | 'exhausted' | 'materials'
   material?: 'plank' | 'stone'
   building: number, detail: string
-  recovery: Order | null
+  recovery: { type: 'demolish', building: number } | { type: 'urgent-tool', tool: string } | { type: 'dismiss', profession: string, count: number } | null
   recoverable: boolean
 }
 
@@ -299,7 +299,18 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       // Deadlock recovery comes first: each diagnosis gives at most one ordinary command.
       const diagnosis = diagnose(o)
       ai.diagnosis = diagnosis
-      for (const d of diagnosis) if (d.recovery) orders.push(d.recovery)
+      const demolishing = new Set<number>()
+      for (const d of diagnosis) {
+        const recovery = d.recovery
+        if (!recovery) continue
+        // Multiple shortages can be solved by the same real refund. Keep
+        // every diagnosis, but tear each building down only once per batch.
+        if (recovery.type === 'demolish') {
+          if (demolishing.has(recovery.building)) continue
+          demolishing.add(recovery.building)
+        }
+        orders.push(recovery)
+      }
       const hungry = diagnosis.some(d => d.kind === 'food'), shortHanded = diagnosis.some(d => d.kind === 'population'), blockedDelivery = diagnosis.some(d => d.kind === 'delivery')
       const sites = o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').length
       // Survey known own and neutral mountains until coal and iron are known: the first geologist uses a hammer,
