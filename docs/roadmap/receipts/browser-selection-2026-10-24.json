@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T05:14:02.564193+00:00",
+  "baseSource": "a12d51e3cbeddd169feb732ba184164a20410687",
+  "scope": "Clear a marked thief when Escape, troop recall, restored session or rectangle selection replaces the current selection.",
+  "originalFailures": [
+    {
+      "case": "original",
+      "failedStep": 13,
+      "lastStatus": "x Settlement dispatch Your thief is on his way. Buildings Goods Settlers Statistics Occupations Mili",
+      "reportSha256": "46de325e82946b1d648a8e77847f33eef8751274861f5fe4ce20f5c9cd88a094"
+    },
+    {
+      "case": "group-dom",
+      "failedStep": 18,
+      "lastStatus": "x Settlement dispatch Your thief is on his way. Buildings Goods Settlers Statistics Occupations Mili",
+      "reportSha256": "18f6fc4f8b710666f60ae552e45724956e42c6a98146e2659ba2732b527afecc"
+    },
+    {
+      "case": "load",
+      "failedStep": 26,
+      "lastStatus": "x Settlement dispatch Your thief is on his way. Buildings Goods Settlers Statistics Occupations Mili",
+      "reportSha256": "e22279b233c798e033ae960f196cf154106e3e00fee55278eb2ad859af268b7b"
+    },
+    {
+      "case": "band",
+      "failedStep": 32,
+      "lastStatus": "x Settlement dispatch Your thief is on his way. Buildings Goods Settlers Statistics Occupations Mili",
+      "reportSha256": "dac0ee75bc1dc8a3ed0631c9b235f396a9c56556e53599c06c01ebaafe613a6d"
+    }
+  ],
+  "implementationFiles": [
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "9dd7431c7d77dbd5a3b8bcc39e92bd8a3256453d1770530c638562c30588d87f"
+    },
+    {
+      "path": "tests/browser/selection.ts",
+      "sha256": "67a1e3523db89b3f260ba12bc41bd243176eba8081dd5bff1b7335221923e338"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "4996819a7a1012c29326e9fdd573c93b3a988e6d3a707c16e87d19bd1f2e9fa7"
+    }
+  ],
+  "browser": {
+    "steps": 33,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "reportSha256": "d5253cd4237dd8cb792d9af1d464181bd7a87e57311571457f6d61c72dd7daf6",
+    "screenshot": {
+      "sha256": "8d3340eedded2e6f5d0840c376e64f930efff773c38db065df52235c67c40ec3",
+      "bytes": 552559,
+      "width": 1280,
+      "height": 850
+    },
+    "personalVisualInspection": "PASS: inspected the actual final 1280x850 selection capture.",
+    "inputDelivery": "Browser DOM PointerEvents, DOM Digit1 KeyboardEvent and native driver Escape. Pointer capture and physical drag hardware are outside this check.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "checks": [
+    {
+      "name": "final-lint",
+      "exitCode": 0,
+      "logSha256": "7615d717dbeb8f4386f1b2038d4eca3243e444a3a1475f8be759d22eb5cfbe18"
+    },
+    {
+      "name": "final-types",
+      "exitCode": 0,
+      "logSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+    },
+    {
+      "name": "buddy-types",
+      "exitCode": 0,
+      "logSha256": "d1e6947a875c91b2e51b8a2025031673d0dbe3a9e5b9b5b282f54723cd5514f8"
+    },
+    {
+      "name": "tests",
+      "exitCode": 0,
+      "logSha256": "e3019c8eef0025b2be869015a68dceaf43b83ed820a22d1661ab2b804def3e92"
+    },
+    {
+      "name": "final-build",
+      "exitCode": 0,
+      "logSha256": "52b8a3b8c02333e73cdea2f4fe92dea99dd16ab3dea477893ad51f9ed69675c8"
+    },
+    {
+      "name": "verified-green",
+      "exitCode": 0,
+      "logSha256": "15a6976623d1259949e45a441cf8ecfaad63a7dd0ebf10e27e0b79e385cddb40"
+    },
+    {
+      "name": "production",
+      "exitCode": 0,
+      "logSha256": "3763b0e7eee5f2de2f40548d73f8069731bb9526913100a4cf37867a9bae8fa8"
+    }
+  ],
+  "wholeApplicationTests": {
+    "passed": 242,
+    "failed": 0,
+    "assertions": 22471
+  },
+  "review": {
+    "standardsFindings": [],
+    "specFindings": []
+  },
+  "limits": [
+    "This verifies browser selection replacement, not original Gold Edition timings or specialist balance.",
+    "The installed Stacks driver emits an incorrect physical digit code. Its owning-source correction is b6654a346ceb4aa802bd2690d29059a88a684950; release and normal adoption are tracked separately.",
+    "Two adjacent full campaign attempts lost their CDP connection and returned no scenario report. Those attempts remain failures; exact hosted CI must pass before main integration."
+  ]
+}

@@ -44,6 +44,7 @@ jobs:
           bun tests/browser/control-frame.ts http://127.0.0.1:3450/
           bun tests/browser/resize.ts http://127.0.0.1:3450/
           bun tests/browser/production.ts http://127.0.0.1:3450/
+          bun tests/browser/selection.ts http://127.0.0.1:3450/
           bun tests/browser/checkpoints.ts
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
@@ -61,6 +62,8 @@ jobs:
             storage/framework/runtime/shots/resize-media.json
             storage/framework/runtime/shots/production.json
             storage/framework/runtime/shots/production-media.json
+            storage/framework/runtime/shots/selection.json
+            storage/framework/runtime/shots/selection-media.json
             storage/framework/runtime/shots/checkpoints.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

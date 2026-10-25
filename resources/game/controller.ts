@@ -198,6 +198,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
   // Marked soldiers and numbered groups are interface state; only the orders they produce enter the simulation.
   let troops = createTroops(() => session, PLAYER), band: { x0: number, y0: number, x1: number, y1: number } | null = null
+  let thief: number | null = null
   let minimap: MinimapOptions = { ...DEFAULT_MINIMAP }, sinceMinimap = 0
   const emit = (): void => { const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length); value.prototypeKept = prototypeKept; value.minimap = minimap; update(value) }
   /** Draws the overview map from the player's observation and frames the part of the land on screen. */
@@ -251,7 +252,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   }
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
   const adopt = (next: Session): void => {
-    session?.dispose(); session = next; selected = null; tool = null; accumulator = 0
+    session?.dispose(); session = next; selected = null; tool = null; thief = null; accumulator = 0
     troops = createTroops(() => session, PLAYER)
     const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
     seq = nextSeq(PLAYER)
@@ -369,7 +370,6 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   /** Own soldiers on the map with their canvas positions, as the scene draws them. */
   const soldiersOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.rank && i.owner === PLAYER).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
   const thievesOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.owner === PLAYER && session!.state.settlers.get(i.entity)?.thief).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
-  let thief: number | null = null
   const local = (event: MouseEvent): Point => { const rect = canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
   const soldierAt = (point: Point, people = soldiersOnScreen()): number | null => {
     const z = renderer.camera.zoom
@@ -400,6 +400,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   on('pointerup', event => {
     const ready_ = ready && assetsReady && !!session
     if (pointer && band && ready_) {
+      thief = null
       const { x0, y0, x1, y1 } = band, z = renderer.camera.zoom
       const inside = soldiersOnScreen().filter(({ at }) => at.x >= Math.min(x0, x1) && at.x <= Math.max(x0, x1) && at.y - 14 * z >= Math.min(y0, y1) && at.y - 14 * z <= Math.max(y0, y1)).map(s => s.id)
       troops.band(inside, modifiers(event))
@@ -457,13 +458,14 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     const digit = /^Digit([1-9])$/.exec(event.code)
     if (digit && ready) {
       event.preventDefault()
+      if (!event.altKey) thief = null
       const n = Number(digit[1]), center = troops.key(n, modifiers(event))
       if (event.altKey) report(`Group ${n} holds ${troops.selected().length} soldiers. Press ${n} to mark them, twice to find them.`)
       else if (center) renderer.home(center, map.elevation[center.y * map.width + center.x])
       else report(troops.selected().length ? `Group ${n}: ${troops.selected().length} soldiers marked.` : `Group ${n} is empty. Mark soldiers and press Alt+${n}.`)
     }
     if (event.key === ' ') speed = speed === 0 ? 1 : 0
-    if (event.key === 'Escape') { tool = null; selected = null; troops.clear() }
+    if (event.key === 'Escape') { tool = null; selected = null; thief = null; troops.clear() }
     if (event.key.toLowerCase() === 'h') center()
     if (event.key.toLowerCase() === 's') void persist()
     canvas.setAttribute('aria-label', `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${tool ? `Press Enter to place ${rules.buildings.find(b => b.id === tool)?.name ?? `a ${tool}`}.` : 'Press Enter to inspect.'}`)
