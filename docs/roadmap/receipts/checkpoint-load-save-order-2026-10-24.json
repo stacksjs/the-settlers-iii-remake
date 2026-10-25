@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T02:41:29.041819+00:00",
+  "baseSource": "32a8cc8ba4dbdc5c8fc4c2c94b021d17672f3ff9",
+  "scope": "Order application checkpoint loads and saves through one public coordinator queue. Native game lifecycle acceptance remains open.",
+  "originalFailure": {
+    "testsPassed": 21,
+    "testsFailed": 1,
+    "assertion": "A save acknowledged while an earlier load was still pending.",
+    "logSha256": "9313a3948ce69c2580792401c2928e7134aa842f71694f19a45c2278083dcfeb"
+  },
+  "implementationFiles": [
+    {
+      "path": "resources/game/checkpoint.ts",
+      "sha256": "7686904788e2f096b47cc12f9cb11001a21789ff460b820ddeaf7cca139f83f9"
+    },
+    {
+      "path": "tests/unit/checkpoint.test.ts",
+      "sha256": "27b1861e7a523c23dcfb1910e147423e3179c6e2bb8a1ab517c7dd9aafe8c200"
+    },
+    {
+      "path": "tests/browser/checkpoints.ts",
+      "sha256": "beaea0723c903cd6a0bb598f30aef882f699a9adb78090e28adeecb63874fb47"
+    }
+  ],
+  "checkpointTests": {
+    "passed": 24,
+    "failed": 0,
+    "assertions": 92
+  },
+  "wholeApplicationTests": {
+    "passed": 242,
+    "failed": 0,
+    "assertions": 22471
+  },
+  "checks": {
+    "lint": {
+      "exitCode": 0,
+      "logSha256": "50050d5f80e0a9a21fa79fa684a11b2db95ee9b37b0a52917dfd5a538bd287f3"
+    },
+    "types": {
+      "exitCode": 0,
+      "logSha256": "863b8b67761c68716424be9eefd016901a4cea8e8e403ee5baef103ebbd9a130"
+    },
+    "tests": {
+      "exitCode": 0,
+      "logSha256": "69442d833302001a5e46fb8f5a3b9e1ce1fd332ce172dcb07a3f1fd5e7420818"
+    },
+    "build": {
+      "exitCode": 0,
+      "logSha256": "bef43c2e14c2e8104075b55c1d17689bffbf17bd2681dabf7bce3b26f4499b58"
+    },
+    "real-browser": {
+      "exitCode": 0,
+      "logSha256": "f30c4e1d2b69d40aebac8c5c2188e2609f65d9ec7d7b9669d2e8619ec8535ec5"
+    },
+    "production-campaign": {
+      "exitCode": 0,
+      "logSha256": "ed7a94fea9770606011836f98eed9ccb26a9d3dee19218ebff1b61f4b14fb9db"
+    },
+    "final-lint": {
+      "exitCode": 0,
+      "logSha256": "0e3359ceff1f90608e5b370ba791f7814a2969a71998a15424911f52ede5200b"
+    },
+    "complete-types": {
+      "exitCode": 0,
+      "logSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+    }
+  },
+  "browser": {
+    "realContexts": 2,
+    "browserWebLocks": true,
+    "competingCreation": true,
+    "staleSessionRefused": true,
+    "reloadResumes": true,
+    "loadSaveOrderPreserved": true,
+    "disposedSaveRefused": true,
+    "freshDocumentRestores": true,
+    "finalGeneration": 5
+  },
+  "browserConsoleErrors": 0,
+  "browserFailedRequests": 0,
+  "productionCampaign": {
+    "stepsPassed": 58,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "screenshot": {
+      "sha256": "eadfce00b7c7e59dd01012cd2d24188071db2fbcd92940eef9bb6197805ac2a4",
+      "bytes": 920107,
+      "width": 1440,
+      "height": 960
+    },
+    "personalVisualInspection": "PASS: inspected the actual new 1440x960 production capture.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "review": {
+    "standardsFindings": [],
+    "specFindings": [],
+    "testGapsForThisCorrection": []
+  },
+  "limits": [
+    "This proves application coordinator ordering and real browser storage behavior.",
+    "Native platform fixtures and their release qualification remain separate.",
+    "No full Gold Edition parity claim."
+  ]
+}

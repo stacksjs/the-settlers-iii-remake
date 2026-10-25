@@ -30,6 +30,76 @@ function memory() {
 }
 
 describe('checkpoints', () => {
+  test('save coalescing preserves a load between earlier and later progress', async () => {
+    const m = memory(), c = createCheckpoints(m.store, 'game')
+    m.slow(5)
+    const first = c.save('one'), second = c.save('two')
+    const loading = c.load()
+    const third = c.save('three'), fourth = c.save('four')
+    expect(await loading).toBe('two')
+    expect(await Promise.all([first, second, third, fourth])).toEqual([
+      { ok: true, generation: 1 }, { ok: true, generation: 2 },
+      { ok: true, generation: 3 }, { ok: true, generation: 3 },
+    ])
+    expect(await c.load()).toBe('four')
+    expect(m.log).toHaveLength(3)
+  })
+
+  test('disposal rejects queued loads without starting their storage reads', async () => {
+    const m = memory(), read = Promise.withResolvers<void>(), release = Promise.withResolvers<void>()
+    let reads = 0
+    const c = createCheckpoints({
+      ...m.store,
+      async get(key, signal) {
+        reads++
+        const value = await m.store.get(key, signal)
+        read.resolve(); await release.promise
+        return value
+      },
+    }, 'game')
+    const active = c.load().then(() => false, error => error.name === 'AbortError')
+    await read.promise
+    const queued = c.load().then(() => false, error => error.name === 'AbortError')
+    const saving = c.save('closed progress')
+    c.dispose()
+    expect(await queued).toBe(true)
+    expect(await saving).toMatchObject({ ok: false, reason: 'superseded' })
+    expect(reads).toBe(1)
+    release.resolve()
+    expect(await active).toBe(true)
+    await c.flush()
+    expect(reads).toBe(1)
+    expect(m.log).toEqual([])
+  })
+
+  test('a save requested during a load waits for the loaded session before committing', async () => {
+    const m = memory(), read = Promise.withResolvers<void>(), release = Promise.withResolvers<void>()
+    let pause = false
+    const c = createCheckpoints({
+      ...m.store,
+      async get(key, signal) {
+        const value = await m.store.get(key, signal)
+        if (pause) { pause = false; read.resolve(); await release.promise }
+        return value
+      },
+    }, 'game')
+    await c.save('base'); await c.flush()
+    pause = true
+    const loading = c.load()
+    await read.promise
+    let acknowledged = false
+    const saving = c.save('later progress').then(result => { acknowledged = true; return result })
+    try {
+      await Bun.sleep(0)
+      expect(acknowledged).toBe(false)
+    }
+    finally { release.resolve() }
+    expect(await loading).toBe('base')
+    expect(await saving).toEqual({ ok: true, generation: 2 })
+    expect(await c.save('third progress')).toEqual({ ok: true, generation: 3 })
+    expect(await createCheckpoints(m.store, 'game').load()).toBe('third progress')
+  })
+
   test('a session loaded before another commit cannot overwrite it with stale game state', async () => {
     const m = memory(), first = createCheckpoints(m.store, 'game')
     await first.save('base')

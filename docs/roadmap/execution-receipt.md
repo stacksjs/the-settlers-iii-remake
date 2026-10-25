@@ -20,6 +20,8 @@ The supplied remake repository and public demo remain the available implementati
 
 The [atomic session receipt](receipts/checkpoint-atomic-sessions-2026-10-24.json) records the source correction at `10c5681e`: conflicting contexts cannot both acknowledge the same checkpoint, stale loaded game state cannot overwrite newer progress, and disposal stops subsequent migration reads. All 21 checkpoint tests passed with 77 assertions. Two real browser contexts exercised the unchanged installed Craft browser storage provider with native Web Locks and localStorage. The production campaign retained all 58 steps. Both exact-source and main-branch hosted CI passed. This supersedes the earlier two-slot coordinator implementation while retaining its original evidence. Native game lifecycle acceptance remains open.
 
+The later [load/save ordering receipt](receipts/checkpoint-load-save-order-2026-10-24.json) adds one shared queue for checkpoint reads and writes. A delayed load can no longer rewind an acknowledged save base, and saves coalesce only between load boundaries. All 24 checkpoint cases, all 242 application tests, the real two-context browser test through generation 5, and the 58-step production campaign passed. Disposal rejects queued reads without starting storage work. Native game lifecycle acceptance remains open.
+
 ## Historical roadmap snapshot
 
 [Master issue #4](https://github.com/stacksjs/the-settlers-iii-remake/issues/4) links 12 epics and 107 implementation slots. The existing [Stacks desktop distribution issue #2059](https://github.com/stacksjs/stacks/issues/2059) is adopted for S3-101. Its authored content is preserved. Actual identities, labels, milestones, parent relationships, and blocking edges are recorded in [github.json](github.json).

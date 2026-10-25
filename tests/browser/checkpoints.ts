@@ -66,15 +66,22 @@ try {
     assert(resumed.ok && resumed.generation === 3, 'Reloaded session must be able to continue');
     const nowStale = await winner.checkpoints.save('also stale');
     assert(!nowStale.ok && nowStale.reason === 'superseded', 'Previous writer must also detect its stale base');
+    const loading = older.checkpoints.load();
+    const saving = older.checkpoints.save('progress after reload');
+    assert(await loading === 'resumed progress', 'An earlier load must finish before a later save commits');
+    const afterReload = await saving;
+    assert(afterReload.ok && afterReload.generation === 4, 'A save queued during reload must use its loaded session');
+    const continued = await older.checkpoints.save('continued progress');
+    assert(continued.ok && continued.generation === 5, 'The delayed load must not rewind the last acknowledged save base');
     a.close(); b.close();
     const closed = await a.checkpoints.save('closed');
     assert(!closed.ok && closed.reason === 'disposed', 'Closed context must refuse a new save');
     const id = creation[0].ok ? 'first' : 'second';
     await new Promise(resolve => { frame(id).onload = resolve; frame(id).contentWindow.location.reload(); });
     const restored = await ready(id);
-    assert(await restored.checkpoints.load() === 'resumed progress', 'New document must restore the last acknowledged commit');
+    assert(await restored.checkpoints.load() === 'continued progress', 'New document must restore the last acknowledged commit');
     restored.close();
-    return { realContexts: 2, browserWebLocks: true, competingCreation: true, staleSessionRefused: true, reloadResumes: true, disposedSaveRefused: true, freshDocumentRestores: true, finalGeneration: 3 };
+    return { realContexts: 2, browserWebLocks: true, competingCreation: true, staleSessionRefused: true, reloadResumes: true, loadSaveOrderPreserved: true, disposedSaveRefused: true, freshDocumentRestores: true, finalGeneration: 5 };
   })()`
   const child = Bun.spawn([process.execPath, driver, 'scenario', server.url.href,
     '--step', JSON.stringify({ action: 'evaluate', expression }),

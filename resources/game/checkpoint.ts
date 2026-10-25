@@ -11,13 +11,15 @@ interface Payload { generation: number, sha256: string, text: string }
 interface Record { version: 2, current: Payload, previous: Payload | null }
 interface Snapshot { raw: unknown, current: Payload | null, generation: number }
 export type SaveResult = { ok: true, generation: number } | { ok: false, reason: 'storage' | 'verify' | 'disposed' | 'superseded', message: string }
+interface SaveJob { kind: 'save', text: string, waiters: ((result: SaveResult) => void)[] }
+interface LoadJob { kind: 'load', resolve: (text: string | null) => void, reject: (error: unknown) => void }
 
 /** One conditional commit contains both the current and previous verified payload. */
 export function createCheckpoints(store: CheckpointStore, prefix: string, legacyKey?: string) {
   const lifetime = new AbortController()
   let running: Promise<void> | null = null, conflicted = false
   let observed: Snapshot | null = null
-  let queued: { text: string, waiters: ((result: SaveResult) => void)[] } | null = null
+  const queue: (SaveJob | LoadJob)[] = []
   const key = (name: string): string => `${prefix}:${name}`
   async function readValue(name: string): Promise<unknown> {
     lifetime.signal.throwIfAborted()
@@ -103,37 +105,54 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
   }
 
   function drain(): void {
-    if (running || !queued) return
-    const job = queued
-    queued = null
-    running = write(job.text).then(result => { for (const done of job.waiters) done(result) }).finally(() => { running = null; drain() })
+    if (running || !queue.length) return
+    const job = queue.shift()!
+    const execute = async (): Promise<void> => {
+      if (job.kind === 'save') {
+        const result = await write(job.text)
+        for (const done of job.waiters) done(result)
+      }
+      else {
+        try {
+          const saved = await read()
+          lifetime.signal.throwIfAborted()
+          observed = saved
+          conflicted = false
+          job.resolve(saved.current?.text ?? null)
+        }
+        catch (error) { job.reject(error) }
+      }
+    }
+    running = execute().finally(() => { running = null; drain() })
   }
-  async function flush(): Promise<void> { while (running || queued) { drain(); await running } }
+  async function flush(): Promise<void> { while (running || queue.length) { drain(); await running } }
 
   return {
     /** Coalesces pending requests; each success follows one actual atomic commit. */
     save(text: string): Promise<SaveResult> {
       if (lifetime.signal.aborted) return Promise.resolve(disposed())
       return new Promise((resolve) => {
-        if (queued) { queued.text = text; queued.waiters.push(resolve) }
-        else queued = { text, waiters: [resolve] }
+        const pending = queue.at(-1)
+        if (pending?.kind === 'save') { pending.text = text; pending.waiters.push(resolve) }
+        else queue.push({ kind: 'save', text, waiters: [resolve] })
         drain()
       })
     },
-    async load(): Promise<string | null> {
-      await flush()
-      const saved = await read()
-      lifetime.signal.throwIfAborted()
-      observed = saved
-      conflicted = false
-      return saved.current?.text ?? null
+    /** Loads form an ordering boundary, so later saves cannot rewind their session base. */
+    load(): Promise<string | null> {
+      if (lifetime.signal.aborted) return Promise.reject(lifetime.signal.reason)
+      return new Promise((resolve, reject) => {
+        queue.push({ kind: 'load', resolve, reject })
+        drain()
+      })
     },
     flush,
     dispose(): void {
       lifetime.abort()
-      const pending = queued
-      queued = null
-      for (const done of pending?.waiters ?? []) done({ ok: false, reason: 'superseded', message: 'The game was closed before the checkpoint was written.' })
+      for (const pending of queue.splice(0)) {
+        if (pending.kind === 'load') pending.reject(lifetime.signal.reason)
+        else for (const done of pending.waiters) done({ ok: false, reason: 'superseded', message: 'The game was closed before the checkpoint was written.' })
+      }
     },
   }
 }
