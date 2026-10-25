@@ -23,6 +23,31 @@ const play = (s: Session, ticks: number, ai = economicAI(1, { interval: 20 }), s
 const mine = (s: Session) => s.state.results.filter(r => r.player === 1)
 
 describe('AI deadlock recovery', () => {
+  test('an idle failed geologist is reassigned to a mountain outside known building footprints without equipping a second specialist', () => {
+    const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [
+      { kind: 'terrain', id: 'mountain', x: 15, y: 15, radius: 7 },
+      { kind: 'resource', id: 'coal', x: 15, y: 15, radius: 7, amount: 2 },
+    ] })
+    const s = computer([{ type: 'coal-mine', x: 22, y: 22 }, { type: 'sawmill', x: 31, y: 44 }], [
+      { good: 'plank', amount: 10 }, { good: 'stone', amount: 12 }, { good: 'hammer', amount: 2 }, { good: 'saw', amount: 1 },
+    ], [...carriers(16), { profession: 'geologist', x: 30, y: 40 }], map)
+    order(s, 'specialists', { profession: 'geologist', x: 22, y: 22, count: 1 })
+    const geologist = s.view(1).settlers.find(p => p.profession === 'geologist')!
+    expect(geologist.diagnostic).toBe('unreachable')
+    expect(geologist.busy).toBe(false)
+    const ai = economicAI(1, { interval: 20 })
+    const survey = ai.decide(observe(s, 1)).find(command => command.type === 'specialists')
+    expect(survey).toBeDefined()
+    const next = survey as { x: number, y: number }
+    const rule = rules.buildings.find(b => b.id === 'coal-mine')!
+    expect(rule.footprint.some(([dx, dy]) => next.x === 22 + dx && next.y === 22 + dy)).toBe(false)
+    play(s, 4000, ai, { next: 1 })
+    expect(s.view(1).signs.length).toBeGreaterThan(0)
+    expect(s.view(1).settlers.filter(p => p.profession === 'geologist').map(p => p.id)).toEqual([geologist.id])
+    expect(ai.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60_000)
+
   test('the rival keeps its exhausted woodcutter while a forester finishes and timber production resumes after restore', () => {
     const s = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
     for (let tick = 0; tick < 6640; tick++) { stepAI(s, ai, sequence); s.advance(1) }

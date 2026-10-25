@@ -43,7 +43,7 @@ export type Verification = { ok: true, ticks: number, checksum: string } | { ok:
  * Transition diagnostics use the starting tick; final snapshot diagnostics use
  * the end tick. Malformed recording data is rejected before simulation.
  */
-export function verify(replay: Replay, rules: RulesProfile): Verification {
+export function verify(replay: Replay, rules: RulesProfile | readonly RulesProfile[]): Verification {
   if (replay?.format !== REPLAY_FORMAT || ![1, 2].includes(replay.version) || !Array.isArray(replay.checksums)
     || (replay.version === 1 ? !Array.isArray(replay.commands) : !Array.isArray(replay.submissions))) throw new TypeError('Not a replay')
   const session = restore(replay.start, rules)

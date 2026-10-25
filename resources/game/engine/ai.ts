@@ -3,6 +3,7 @@ import type { PlayerView, Session } from './session'
 import type { RulesProfile } from './rules'
 import type { Command, CommandResult, PlayerSettings } from './state'
 import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
+import { footprint } from './context'
 
 // A computer player is a client like any other: it reads what its player may
 // know and submits ordinary commands. It never touches simulation state, so it
@@ -275,14 +276,16 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       // Survey owned mountains until coal and iron are known: the first geologist is equipped with a hammer,
       // later surveys reuse a geologist whose duty is done.
       const geologists = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'geologist')
-      const idle = geologists.some(s => s.diagnostic === 'duty complete')
+      const idle = geologists.some(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
       const surveyedTiles = new Set(o.view.signs.map(sign => sign.tile))
       const missing = ['coal', 'ironore'].some(good => !o.view.signs.some(sign => sign.good === good && sign.amount > 0))
       // A hammer a building is waiting for is not taken for a geologist: count unstaffed buildings whose worker uses one.
       const tools = new Map(o.rules.professions.map(p => [p.id, p.tool])), workers = new Map(o.rules.buildings.map(b => [b.id, b.worker]))
       const awaited = o.view.buildings.filter(b => b.owner === o.player && !b.worker && (b.phase !== 'active' || tools.get(workers.get(b.type) ?? '') === 'hammer')).length
       if (!diagnosis.some(d => d.recovery?.type === 'dismiss') && missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? offered(o, 'hammer') > awaited : idle)) {
-        const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t), 1)[0]
+        const occupied = new Set(o.view.buildings.flatMap(b => footprint(o.rules.buildings.find(rule => rule.id === b.type)!, b).map(p => indexOf(o, p.x, p.y))))
+        const blocked = new Set(o.rules.objects.filter(object => object.blocks).map(object => object.id))
+        const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t) && !occupied.has(t) && !blocked.has(o.object(t) ?? ''), 1)[0]
         if (mountain) orders.push({ type: 'specialists', profession: 'geologist', ...mountain, count: 1 })
       }
       // Recovery: once goods can be stored, store materials and tools so full doorsteps do not stop production.

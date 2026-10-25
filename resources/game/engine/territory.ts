@@ -5,6 +5,7 @@ import { area, distance, neighbours } from './geometry'
 import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, start } from './settlers'
 import { completions, population } from './workforce'
+import { enterable, route } from './routing'
 
 /** Claims land for a military building. Tiles already owned by another player are never taken here; capture belongs to combat. */
 export function claim(ctx: Context, b: Building): void {
@@ -125,7 +126,8 @@ finishers.set('duty', (ctx, s, program, ok) => {
   const player = ctx.state.players.find(p => p.id === s.owner)!
   const surveyed = new Set(player.signs.filter(sign => sign.until > ctx.state.tick).map(sign => sign.tile))
   const next = area(map, center, radius).filter(t => s.profession === 'geologist' ? terrainAt(ctx, t).id === 'mountain' && !surveyed.has(t) : borders(ctx, s.owner, t))
-    .sort((a, b) => distance(pointAt(ctx, a), s) - distance(pointAt(ctx, b), s) || a - b)[0]
+    .sort((a, b) => distance(pointAt(ctx, a), s) - distance(pointAt(ctx, b), s) || a - b)
+    .find(t => ctx.rules.specialistRouting !== 'reachable' || (enterable(ctx, t, 0, t) && route(ctx, tileOf(ctx, s), t).ok))
   if (next === undefined) { s.diagnostic = 'duty complete'; return }
   start(ctx, s, 'duty', program.ref, [{ op: 'go', tile: next }, { op: 'work', ticks: s.profession === 'geologist' ? ctx.rules.survey.work : ctx.rules.territory.pioneerWork }, { op: 'do', effect: s.profession === 'geologist' ? 'survey' : 'pioneer', args: { center: program.ref } }])
 })

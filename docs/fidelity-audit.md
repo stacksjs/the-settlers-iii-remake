@@ -16,6 +16,8 @@ New computer-rival games now carry a [two-player elimination mission](roadmap/re
 
 The [pending-forester recovery correction](roadmap/receipts/ai-pending-forester-recovery-2026-10-25.json) keeps an exhausted woodcutter while a nearby forester finishes construction. In seeded rival play, demolishing that hut had stranded the timber chain. The public-session regression retains production across a mid-recovery restore with matching checksums; a longer 72,000-tick run retains the woodcutter and stocked timber without conservation errors. This fixes one AI failure. The longer run still does not establish army growth, mineral access, a completed rival match or original difficulty behavior.
 
+The [specialist routing correction](roadmap/receipts/specialist-routing-0.9.0-2026-10-25.json) introduces engineering profile 0.9.0. Geologists and pioneers choose reachable next duty tiles through normal movement rules; the AI reassigns idle failed surveyors and avoids known building footprints. The captured rival failure had selected a tile inside a coal mine. Tests retain the frozen 0.8 profile and its prior behavior, while the immutable older replay keeps its original checksum through the published catalog. A longer 72,000-tick run retains survey signs and increases coal production, but still does not prove iron, weapons, army growth or a finished rival battle.
+
 These checks confirm the implemented Roman engineering profile. They do not establish original executable timings, Gold Edition balance, complete campaigns, all civilizations or native game acceptance. The open inspection-panel and original-observation issues retain those limits.
 
 ## Update: published framework adoption and production figures (2026-10-24)

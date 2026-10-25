@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test'
 import type { Replay } from '../../resources/game/engine'
 import legacy from '../fixtures/replay-format-1.json'
-import { record, verify } from '../../resources/game/engine'
+import { PUBLISHED_RULES, record, verify } from '../../resources/game/engine'
 import { rules, session } from '../fixtures/engine'
 
 test('a future command replays from when it was submitted, including its pending queue', () => {
@@ -84,7 +84,7 @@ test('a zero tick recording can retain newly queued future commands', () => {
 })
 
 test('reads the immutable format1 artifact captured from the previous recorder', () => {
-  expect(verify(structuredClone(legacy) as Replay, rules)).toEqual({ ok: true, ticks: 5, checksum: '6b98801a' })
+  expect(verify(structuredClone(legacy) as Replay, PUBLISHED_RULES)).toEqual({ ok: true, ticks: 5, checksum: '6b98801a' })
 })
 
 test('the recorder refuses fractional advances without advancing the session', () => {

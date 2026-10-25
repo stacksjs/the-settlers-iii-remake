@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T12:34:50.803107+00:00",
+  "base": "e33c9bfaf9ddf48b4989195298112fe3893ad652",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/39",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/40",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/73",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/94"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "problem": "In ordinary rival seed 2 at tick 3884, geologist 87 stood at 85,75. The automatic duty loop chose mountain tile 85,76 inside mine 316. Routing correctly rejected it, but the AI ignored the failed, unbusy specialist. By tick36000 its survey signs expired and it made no further orders.",
+  "rootTrace": {
+    "sha256": "d2fef7b237977048e38445c62d641ab70eda52de9236bf8cbbdedc78275bc91e",
+    "failure": {
+      "tick": 3884,
+      "settler": {
+        "id": 87,
+        "x": 85,
+        "y": 75,
+        "program": {
+          "kind": "duty",
+          "ref": 9685,
+          "steps": [
+            {
+              "op": "go",
+              "tile": 9813
+            },
+            {
+              "op": "work",
+              "ticks": 30
+            },
+            {
+              "op": "do",
+              "effect": "survey",
+              "args": {
+                "center": 9685
+              }
+            }
+          ],
+          "pc": 0
+        }
+      },
+      "goal": {
+        "tile": 9813,
+        "x": 85,
+        "y": 76,
+        "object": 0,
+        "terrain": "mountain",
+        "building": 316,
+        "protected": 0
+      },
+      "next": {
+        "x": 85,
+        "y": 75,
+        "busy": false,
+        "diagnostic": "unreachable"
+      }
+    }
+  },
+  "changes": [
+    "Versioned reachable-target policy uses normal enterability and routing for automatic specialist duties, including pioneers.",
+    "AI reuses a failed, idle geologist and excludes known building footprints and observed blocking objects from survey target candidates. It never reads concealed deposits or buildings.",
+    "Rules profile0.9 adds an explicit engineering policy. Profile0.8 is frozen with its prior data digest and nearest-target behavior.",
+    "Replay verification accepts the same published profile catalog as checkpoint restoration. The immutable historical replay fixture and its expected checksum are unchanged."
+  ],
+  "profiles": {
+    "current": {
+      "version": "0.9.0",
+      "digest": "1ebde243c7408435be7c55df79d8f7bbf6ef37ce63fc338a25b98648b280c7e7",
+      "evidenceClass": "E: engineering recovery policy, not Gold executable behavior"
+    },
+    "preserved": {
+      "version": "0.8.0",
+      "digest": "79d6f868c4b56d86fb54a65e739116bce25242d9d9e39225a1f871f53268de21",
+      "archiveSha256": "61449a48d38dba298502ff36a34e4b82a595d66cd918f8631b20fc54fe652785"
+    },
+    "catalogDigestsChecked": 8
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/ai.ts",
+      "sha256": "c11908f48fa68fdb469581f7aa8a5299aec44d4f6b9c2d1e5a112e1c17154943"
+    },
+    {
+      "path": "resources/game/engine/catalog.ts",
+      "sha256": "1d1e450705901fecc55625ad7b9a7ad3ffc1b191e88e661f6034a16a33ed4003"
+    },
+    {
+      "path": "resources/game/engine/replay.ts",
+      "sha256": "251f9a6a4610a2d69b78b9382b2a404518ad312a309aab3b6639cf7aa65d8d5a"
+    },
+    {
+      "path": "resources/game/engine/rules.ts",
+      "sha256": "00e5000bb6196011a6b241f127112c04fb9546f9b437fda40fa61567d4987132"
+    },
+    {
+      "path": "resources/game/engine/territory.ts",
+      "sha256": "50185dd9ca71588a222d660be1695208de64df07a4373f8562c74f0d5313c2c7"
+    },
+    {
+      "path": "resources/game/engine/profiles/roman-engineering-0.8.0.json",
+      "sha256": "61449a48d38dba298502ff36a34e4b82a595d66cd918f8631b20fc54fe652785"
+    },
+    {
+      "path": "tests/unit/engine-ai-recovery.test.ts",
+      "sha256": "5e9ce1270360f6af3d84dba7cbd42013f331c555bc0c71581170d53a71af42c6"
+    },
+    {
+      "path": "tests/unit/engine-core.test.ts",
+      "sha256": "00c1e64f9ed43230f29252cece02b4511508269bf9491d67ac305d99b4b08a66"
+    },
+    {
+      "path": "tests/unit/engine-replay.test.ts",
+      "sha256": "26563f4c1a85d13e69987ddbda8d31d7140570c4e8e2fc20972709f3b8b0b21b"
+    },
+    {
+      "path": "tests/unit/specialist-routing.test.ts",
+      "sha256": "76543805ef7cfec5f99262cc5f74312e56269ecfdc51410cc68fee234775ec85"
+    }
+  ],
+  "regressions": {
+    "routingRedLogSha256": "59a252d95d1f8402c5c9c818ae233ad54a5cb0aa68ffcc5882361d1231752620",
+    "routingFailure": "A public geologist command around a mine ended unreachable instead of completing its reachable survey.",
+    "aiRedLogSha256": "578d5c4ba12fc625b5f9b5dec8d8469a6314f17ffa408849d67e0de5e865142d",
+    "aiFailure": "The AI issued no new survey order for an idle, unbusy failed geologist.",
+    "checks": [
+      "Survey reachable mountain around an active mine, skip its footprint, and finish after mid-duty restore with matching checksums.",
+      "Skip a disconnected peak and continue surveying reachable mountain.",
+      "Skip an unreachable water border and continue pioneer land claims.",
+      "Retain published0.8 routing across restore.",
+      "Reject unknown or unevidenced routing policies.",
+      "Reassign the existing failed geologist outside known building footprints, produce survey signs and keep the same specialist id.",
+      "Verify the immutable format1 replay through the published catalog at unchanged checksum6b98801a."
+    ]
+  },
+  "localChecks": {
+    "unitTests": 262,
+    "failures": 0,
+    "assertions": 22612,
+    "unitLogSha256": "6abefbfa7d384e961188b68f547fbea0702f42b44065b3120977f563ee29349a",
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "lintLogSha256": "1e3d882679974f3d194a3dbd15a07c6f62db327da5999c1a1f5d304946c2852a",
+    "typeErrors": 0,
+    "typeLogSha256": "870576bab3273d7bd0ac791cbb3b44ddb8996264b40f7e666c48afd65fe5b93d",
+    "productionBuildExitCode": 0,
+    "buildLogSha256": "965af22faf7dd98a621a366193a56cc63bb56067d7942449328099c6c468be0c",
+    "browserSteps": 332,
+    "browserReports": [
+      {
+        "name": "campaign",
+        "steps": 58,
+        "sha256": "f74de9bfed3df07ea3b72464be76465f644b20560ce607460942951b12cb04ef"
+      },
+      {
+        "name": "control-frame",
+        "steps": 72,
+        "sha256": "9e049895dc1b1aeb50e8b2167c53fe3c0edfdbc3ad2fd84bd72589ff720abe3e"
+      },
+      {
+        "name": "resize",
+        "steps": 5,
+        "sha256": "c8af4ac481d027f50fc63a6e198e6eefc3604d22e940cc7ee6c184bbfa4440ea"
+      },
+      {
+        "name": "production",
+        "steps": 19,
+        "sha256": "29129d62cb95ad143dfd1ef09fc9d4cbdaab1422a2a2d3be3a7b949a40012c96"
+      },
+      {
+        "name": "selection",
+        "steps": 33,
+        "sha256": "aecf5bd55095a2bc692fbea88b7a5252afae59066a4d74167daa1f292625ecf8"
+      },
+      {
+        "name": "recruitment",
+        "steps": 68,
+        "sha256": "e18c66eff79e6e90500863ef35e886429a0ed1b5e2756900a0119d18f323f6f3"
+      },
+      {
+        "name": "working-area",
+        "steps": 57,
+        "sha256": "7286276925632661f208a00e2386ae01454b305a6b99f0b6c2093de4356a1ae3"
+      },
+      {
+        "name": "skirmish",
+        "steps": 19,
+        "sha256": "3c100ddbce14902c799e68d9e3be7bf71cb46010e6b33ae266dd880710bc5c98"
+      },
+      {
+        "name": "checkpoints",
+        "steps": 1,
+        "sha256": "7c93105b3b1a58a8a8195aab378960697194b9dc66b36f0cbd84f70138c8f4d1"
+      }
+    ],
+    "browserConsoleErrors": 0,
+    "browserFailedRequests": 0,
+    "browserCollectionErrors": 0
+  },
+  "longRun": {
+    "seed": 2,
+    "ticks": 72000,
+    "outcome": "playing",
+    "reportSha256": "fc7b55b71756ec68020561c062ec3c5ab3445da50a50348beb60446a01748ff3",
+    "surveySignCounts": [
+      {
+        "tick": 6000,
+        "signs": 84
+      },
+      {
+        "tick": 12000,
+        "signs": 96
+      },
+      {
+        "tick": 18000,
+        "signs": 87
+      },
+      {
+        "tick": 24000,
+        "signs": 99
+      },
+      {
+        "tick": 30000,
+        "signs": 94
+      },
+      {
+        "tick": 36000,
+        "signs": 99
+      },
+      {
+        "tick": 42000,
+        "signs": 95
+      },
+      {
+        "tick": 48000,
+        "signs": 94
+      },
+      {
+        "tick": 54000,
+        "signs": 93
+      },
+      {
+        "tick": 60000,
+        "signs": 98
+      },
+      {
+        "tick": 66000,
+        "signs": 94
+      },
+      {
+        "tick": 72000,
+        "signs": 94
+      }
+    ],
+    "produced": {
+      "plank": 43,
+      "stone": 64,
+      "fish": 16,
+      "water": 26,
+      "coal": 16,
+      "grain": 42,
+      "log": 51,
+      "flour": 26,
+      "bread": 10
+    },
+    "conservationErrors": []
+  },
+  "sharedRuntimeFixture": {
+    "receiptSha256": "dc4be00f4afd1be90382560ad9718798ac2bb0577f284d995c1fa68fa1d833f8",
+    "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+    "bundledEngineSha256": "aac7e75bfe7d0ccc90eff75882130ad7595ab967a160a299244124247818f5e3",
+    "tick": 5,
+    "checksum": "c331a944",
+    "matchedBunCraftAndBrowser": true,
+    "consoleErrors": [],
+    "failedRequests": [],
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "limits": [
+    "Engineering navigation and AI policy, not original Gold timings or difficulty.",
+    "Legacy0.8 checkpoints retain their former automatic specialist behavior; new games use0.9.",
+    "The long rival run retains survey signs and increases coal production, but still does not establish iron, weapons, expanded army or a completed battle.",
+    "The shared-runtime receipt covers the existing five-tick fixture, not specialist routing, native rendering, persistent frames or native game acceptance.",
+    "Browser suites exercise the maintained production UI, not a full long-running rival battle. Original-media rasters remain local."
+  ]
+}
