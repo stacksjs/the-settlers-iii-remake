@@ -62,6 +62,33 @@ for (const [width, height, profile] of [[1280, 720, 480], [1280, 850, 600], [144
       if (document.activeElement !== content || content.scrollTop === 0) throw new Error('Focused production figures cannot be scrolled with the keyboard');
       return { keyboardScrolled: true, scrollTop: content.scrollTop };
     })()` }),
+    '--step', JSON.stringify({ action: 'click', selector: 'header button', text: 'Guide' }),
+    '--step', JSON.stringify({ action: 'assert', selector: '.guide-panel h2', text: 'Every good is carried.' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: `(() => {
+      const panel = document.querySelector('.guide-panel'), box = panel.getBoundingClientRect();
+      const map = document.querySelector('.map-region').getBoundingClientRect();
+      if (box.top < map.top || box.bottom > map.bottom || box.left < map.left || box.right > map.right) throw new Error('Gameplay guide extends outside the map and clips its controls');
+      if (!['auto', 'scroll'].includes(getComputedStyle(panel).overflowY)) throw new Error('Gameplay guide has no scroll container');
+      return { guideContained: true, guideHeight: box.height, mapHeight: map.height };
+    })()` }),
+    '--step', JSON.stringify({ action: 'focus', selector: '.guide-panel' }),
+    '--step', JSON.stringify({ action: 'press', key: 'End' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: `(async () => {
+      const panel = document.querySelector('.guide-panel'), start = performance.now();
+      const needsScroll = panel.scrollHeight > panel.clientHeight;
+      while (needsScroll && panel.scrollTop + panel.clientHeight < panel.scrollHeight - 2 && performance.now() - start < 1000) await new Promise(resolve => requestAnimationFrame(resolve));
+      const button = panel.querySelector('button'), box = panel.getBoundingClientRect(), close = button.getBoundingClientRect();
+      if (document.activeElement !== panel || close.top < box.top || close.bottom > box.bottom) throw new Error('Keyboard guide scrolling did not reveal its close button');
+      if (needsScroll && panel.scrollTop === 0) throw new Error('Gameplay guide did not scroll with the keyboard');
+      const x = close.left + close.width / 2, y = close.top + close.height / 2;
+      // On a phone, the whole game can scroll vertically. Within the current
+      // viewport, also prove the visible button receives pointer input.
+      if (y < innerHeight && document.elementFromPoint(x, y) !== button) throw new Error('Gameplay guide close button is covered');
+      return { keyboardGuideScrolled: true, scrollTop: panel.scrollTop, closeButtonContained: true };
+    })()` }),
+    '--step', JSON.stringify({ action: 'click', selector: '.guide-panel button', text: 'Back to the settlement' }),
+    '--step', JSON.stringify({ action: 'assert', selector: '.guide-panel', absent: true }),
+    '--step', JSON.stringify({ action: 'assert', selector: 'header button', text: 'Guide', focused: true }),
   ], { stdout: 'pipe', stderr: 'pipe' })
   const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
   let report: unknown = { stdout, stderr }

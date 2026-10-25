@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T07:42:52.150441+00:00",
+  "base": "e73277f681e524c6a094472c89dcefdd278ac941",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/90",
+  "problem": "On desktop-height viewports the guide extended below its map and clipped controls, with no scroll container or keyboard focus target.",
+  "red": {
+    "viewport": "1280x720",
+    "failedStep": 12,
+    "error": "Gameplay guide extends outside the map and clips its controls",
+    "reportSha256": "ebbf2504004754949b403edc77984717726353224d9c54df57f8f8330175a82e"
+  },
+  "change": "Constrain the guide height to its map, allow vertical scrolling, expose a named keyboard-focusable region and restore focus to Guide after closing.",
+  "browser": [
+    {
+      "viewport": "1280x720",
+      "steps": 18,
+      "observations": [
+        {
+          "guideContained": true,
+          "guideHeight": 476,
+          "mapHeight": 586
+        },
+        {
+          "keyboardGuideScrolled": true,
+          "scrollTop": 309,
+          "closeButtonContained": true
+        }
+      ],
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "viewport": "1280x850",
+      "steps": 18,
+      "observations": [
+        {
+          "guideContained": true,
+          "guideHeight": 606,
+          "mapHeight": 716
+        },
+        {
+          "keyboardGuideScrolled": true,
+          "scrollTop": 179,
+          "closeButtonContained": true
+        }
+      ],
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "viewport": "1440x960",
+      "steps": 18,
+      "observations": [
+        {
+          "guideContained": true,
+          "guideHeight": 716,
+          "mapHeight": 826
+        },
+        {
+          "keyboardGuideScrolled": true,
+          "scrollTop": 69,
+          "closeButtonContained": true
+        }
+      ],
+      "consoleErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "viewport": "320x568",
+      "steps": 18,
+      "observations": [
+        {
+          "guideContained": true,
+          "guideHeight": 340,
+          "mapHeight": 420
+        },
+        {
+          "keyboardGuideScrolled": true,
+          "scrollTop": 726,
+          "closeButtonContained": true
+        }
+      ],
+      "consoleErrors": 0,
+      "failedRequests": 0
+    }
+  ],
+  "captures": [
+    {
+      "viewport": "1280x720",
+      "browserExitCode": 0,
+      "screenshot": {
+        "sha256": "28f421477c1bc06e78a8d6177c62af83ca55b20075a9b477c0533880226996c5",
+        "bytes": 485409,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "viewport": "1280x850",
+      "browserExitCode": 0,
+      "screenshot": {
+        "sha256": "f0b0c54bffd62ced6324901ed5ff51c6a9c38208ab0a567aa8b4ce9ad5fdfa6c",
+        "bytes": 505020,
+        "width": 1280,
+        "height": 850
+      }
+    },
+    {
+      "viewport": "1440x960",
+      "browserExitCode": 0,
+      "screenshot": {
+        "sha256": "b82621b071ed853ce70da158c156ec767e90759b805a175614376fd128c06ae6",
+        "bytes": 679161,
+        "width": 1440,
+        "height": 960
+      }
+    },
+    {
+      "viewport": "320x568",
+      "browserExitCode": 0,
+      "screenshot": {
+        "sha256": "99ccad60db419d2430bb01825399298bce56a6888baa7adab348b51864815f8f",
+        "bytes": 203057,
+        "width": 320,
+        "height": 568
+      }
+    }
+  ],
+  "checks": {
+    "unitTests": {
+      "passed": 242,
+      "failed": 0,
+      "assertions": 22471
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "applicationToolsAndSTXTypecheck": {
+      "exitCode": 0,
+      "scriptBlocks": 2,
+      "expressions": 243
+    },
+    "productionBuild": {
+      "exitCode": 0,
+      "pages": 1
+    },
+    "buddyTypecheck": {
+      "exitCode": 0
+    }
+  },
+  "preflight": {
+    "scope": "Preserve the dense original-frame game UI. Marketing/hero checks are out of scope per stacks-design-taste Section13.",
+    "design": "Existing type, colour, spacing and motion preserved. No new images, icons, animation or dependencies.",
+    "accessibility": "Native End key reveals the close button; normal close returns focus to Guide on desktop and phone profiles.",
+    "standards": "STX ref and signal delivery verified through production build, no template DOM globals or new em dashes.",
+    "review": "Standards and requested behavior reviewed separately on this diff; no remaining findings."
+  },
+  "limits": [
+    "Browser guide usability only. No new original rules, original campaign completion or native game acceptance claimed.",
+    "Original-media screenshots stay local pending redistribution evidence. Only capture identities are committed."
+  ]
+}
