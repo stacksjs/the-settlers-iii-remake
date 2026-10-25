@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T04:07:28.765Z",
+  "baseSource": "18aa81f89c7e718c763203c57171e4d2a5d07558",
+  "scope": "Real browser sawmill construction, staffed production, bounded output, displayed accounting and save/reload.",
+  "profile": {
+    "id": "roman-engineering",
+    "version": "0.7.0",
+    "fidelity": "engineering",
+    "originalNumericQualification": false
+  },
+  "implementationFiles": [
+    {
+      "path": "tests/browser/production.ts",
+      "sha256": "2ffa1a30b7872ab8bc0cd76d310df2b0503a034f4dbae90d2aebb767f2628ba5"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "ed7483bf432db054e77ddaf4e2ba218275961a2e646996073548564e4fd6339f"
+    }
+  ],
+  "browser": {
+    "stepsPassed": 19,
+    "accounting": {
+      "plank": {
+        "stock": 35,
+        "produced": 8,
+        "consumed": 3
+      },
+      "log": {
+        "stock": 0,
+        "produced": 0,
+        "consumed": 8
+      },
+      "stone": {
+        "stock": 22,
+        "produced": 0,
+        "consumed": 4
+      },
+      "realWorkerAndBackpressure": true
+    },
+    "restored": {
+      "produced": 8,
+      "stock": 35,
+      "productionSurvivesReload": true
+    },
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "screenshot": {
+      "sha256": "33d2a7f54d2c91fe8b6226a8ca9da0bf9ca9b6e2b13da157a12dac632cae7259",
+      "bytes": 623904,
+      "width": 1440,
+      "height": 960
+    },
+    "personalVisualInspection": "PASS: inspected the actual final 1440x960 production capture.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "checks": [
+    {
+      "name": "final-green",
+      "exitCode": 0,
+      "logSha256": "3763b0e7eee5f2de2f40548d73f8069731bb9526913100a4cf37867a9bae8fa8"
+    },
+    {
+      "name": "final-lint",
+      "exitCode": 0,
+      "logSha256": "7ca4b3f4ed9186005727288c8d3b0885b6fcf4d10857f26eda5c879abf407310"
+    },
+    {
+      "name": "final-types",
+      "exitCode": 0,
+      "logSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+    }
+  ],
+  "earlierAttempt": {
+    "outcome": "Chrome page-target attachment failed before any gameplay step; unchanged retry passed.",
+    "logSha256": "1bdec12be9904f52c373b20e504e38f97bd21f023a6ba1b6fd97fd833a5cfb22"
+  },
+  "review": {
+    "standardsFindings": [],
+    "specFindings": []
+  },
+  "limits": [
+    "This runs one physically supplied production chain from engineering start stock.",
+    "It does not establish a sustainable full Roman economy or original timing and balance.",
+    "Native gameplay, localization and Gold Edition acceptance remain separate."
+  ]
+}
