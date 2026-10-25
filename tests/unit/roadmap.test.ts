@@ -1,6 +1,9 @@
 import { describe, expect, test } from 'bun:test'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { tickets } from '../../docs/roadmap/catalog'
-import { mergeGeneratedBody, nativeRelationship, validateCatalog } from '../../scripts/roadmap'
+import { mergeGeneratedBody, nativeRelationship, validateCatalog, writeLocalDraft } from '../../scripts/roadmap'
 
 describe('Gold Edition issue graph', () => {
   test('contains exactly the approved unique implementation slots with a valid acyclic graph', () => {
@@ -45,4 +48,54 @@ describe('Gold Edition issue graph', () => {
     expect(updated).not.toContain('First version')
     expect(() => mergeGeneratedBody('<!-- settlers-gold:S3-101 -->\nUnterminated', 'S3-101', 'New')).toThrow('unterminated')
   })
+})
+
+
+test('local rendering preserves authored progress while updating a generated draft', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'settlers-roadmap-draft-'))
+  const path = join(dir, 'S3-071.md'), key = 'S3-071'
+  const initial = '<!-- settlers-gold:S3-071 -->\n# Generated acceptance\nFirst criteria.\n'
+  try {
+    await Bun.write(path, `${initial}\n## Authored progress\nThe retained fixture resumed stone production.\n`)
+    await writeLocalDraft(path, key, initial)
+    const migrated = await Bun.file(path).text()
+    expect(migrated).toContain('## Authored progress\nThe retained fixture resumed stone production.')
+    expect(migrated).toContain('<!-- /settlers-gold:S3-071 -->')
+    await writeLocalDraft(path, key, initial.replace('First criteria.', 'Updated criteria.'))
+    const updated = await Bun.file(path).text()
+    expect(updated).toContain('Updated criteria.')
+    expect(updated).not.toContain('First criteria.')
+    expect(updated).toContain('## Authored progress\nThe retained fixture resumed stone production.')
+    await writeLocalDraft(path, key, initial.replace('First criteria.', 'Updated criteria.'))
+    expect(await Bun.file(path).text()).toBe(updated)
+  }
+  finally { await rm(dir, { recursive: true, force: true }) }
+})
+
+test('local rendering refuses an unknown legacy boundary without modifying the draft', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'settlers-roadmap-legacy-')), path = join(dir, 'draft.md')
+  const existing = '<!-- settlers-gold:S3-071 -->\nEdited acceptance and human notes without a closing marker.\n'
+  try {
+    await Bun.write(path, existing)
+    await expect(writeLocalDraft(path, 'S3-071', '<!-- settlers-gold:S3-071 -->\nDifferent criteria.')).rejects.toThrow('legacy draft')
+    expect(await Bun.file(path).text()).toBe(existing)
+  }
+  finally { await rm(dir, { recursive: true, force: true }) }
+})
+
+
+test('the unmarked legacy index gains one bounded section and retains its authored notes', async () => {
+  const dir = await mkdtemp(join(tmpdir(), 'settlers-roadmap-index-')), path = join(dir, 'README.md')
+  const body = '# Roadmap index\nGenerated graph.\n', generated = `<!-- settlers-gold:S3-INDEX -->\n${body}`
+  try {
+    await Bun.write(path, `${body}\n## Review notes\nThe browser milestone remains open.\n`)
+    await writeLocalDraft(path, 'S3-INDEX', generated)
+    const migrated = await Bun.file(path).text()
+    expect(migrated.match(/<!-- settlers-gold:S3-INDEX -->/g)).toHaveLength(1)
+    expect(migrated).toContain('<!-- /settlers-gold:S3-INDEX -->')
+    expect(migrated).toContain('## Review notes\nThe browser milestone remains open.')
+    await writeLocalDraft(path, 'S3-INDEX', generated)
+    expect(await Bun.file(path).text()).toBe(migrated)
+  }
+  finally { await rm(dir, { recursive: true, force: true }) }
 })

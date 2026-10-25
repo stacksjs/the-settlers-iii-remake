@@ -22,6 +22,28 @@ export function mergeGeneratedBody(existing: string, key: string, generated: str
   return `${existing.slice(0, start)}${block}${existing.slice(end + endMarker(key).length).replace(/^\n/, '')}`
 }
 
+/** Write the locally managed draft used by catalog rendering. */
+export async function writeLocalDraft(path: string, key: string, generated: string): Promise<void> {
+  if (!generated.startsWith(`${marker(key)}\n`)) throw new Error(`Missing generated marker: ${key}`)
+  const file = Bun.file(path), original = await file.exists() ? await file.text() : ''
+  let existing = original
+  const prefix = generated.trimEnd(), start = existing.indexOf(marker(key))
+  if (start >= 0 && existing.indexOf(endMarker(key), start) < 0) {
+    // Older local drafts had no closing marker. Migrate only the exact known
+    // generated prefix, so authored progress is never guessed or discarded.
+    const suffix = existing.slice(prefix.length)
+    if (start !== 0 || !existing.startsWith(prefix) || (suffix && !suffix.startsWith('\n'))) throw new Error(`Cannot safely migrate legacy draft: ${key}`)
+    existing = `${prefix}\n${endMarker(key)}${suffix}`
+  }
+  else if (start < 0) {
+    // The original local index had no markers at all.
+    const body = prefix.slice(marker(key).length + 1), suffix = existing.slice(body.length)
+    if (existing.startsWith(body) && (!suffix || suffix.startsWith('\n'))) existing = `${prefix}\n${endMarker(key)}${suffix}`
+  }
+  const updated = mergeGeneratedBody(existing, key, generated)
+  if (updated !== original) await Bun.write(path, updated)
+}
+
 export function validateCatalog(items: Ticket[] = tickets): void {
   if (items.length !== 107 || epics.length !== 12) throw new Error('Expected 107 implementation issues and 12 epics')
   const byKey = new Map(items.map(ticket => [ticket.key, ticket]))
@@ -173,9 +195,9 @@ function masterBody(registry: Registry): string {
 
 async function render(registry: Registry): Promise<void> {
   await mkdir(resolve(root, 'docs/roadmap/issues'), { recursive: true })
-  for (const ticket of tickets) await Bun.write(resolve(root, `docs/roadmap/issues/${ticket.key}.md`), bodyFor(ticket, registry))
+  for (const ticket of tickets) await writeLocalDraft(resolve(root, `docs/roadmap/issues/${ticket.key}.md`), ticket.key, bodyFor(ticket, registry))
   const table = tickets.map(ticket => `| [${ticket.key}](${registry.tickets[ticket.key]?.url ?? `issues/${ticket.key}.md`}) | ${ticket.repository} | ${ticket.title} | ${ticket.blockers.join(', ') || 'None'} |`).join('\n')
-  await Bun.write(resolve(root, 'docs/roadmap/README.md'), `# Settlers III Gold Edition roadmap\n\n${registry.master ? `Master issue: ${registry.master.url}` : 'Publishing has not completed yet.'}\n\nThe approved scope is recorded in [specification.md](specification.md). Source ownership and release rules are in [upstream-workflow.md](upstream-workflow.md). Each implementation issue has a durable [draft](issues/) and a stable identifier. The JSON registry records actual GitHub URLs, database IDs, relationship results, and issue states; the catalog records behavior, acceptance, tests, and dependencies.\n\n## Epics\n\n${epics.map((epic, i) => `- ${registry.epics[String(i + 1)]?.url ?? `S3-E${i + 1}`} - ${epic.title}`).join('\n')}\n\n## Implementation graph\n\n| Stable ID | Source owner | Deliverable | Blocked by |\n|---|---|---|---|\n${table}\n\n## Publish and verify\n\nRun \`bun scripts/roadmap.ts --check\` to validate and render local drafts. Run \`bun scripts/roadmap.ts --publish\` to reconcile the authorized GitHub graph. Run \`bun scripts/roadmap.ts --verify\` to read back issues and verify relationships. Publishing resumes from stable remote markers and preserves adopted issue content. It never closes implementation issues.\n`)
+  await writeLocalDraft(resolve(root, 'docs/roadmap/README.md'), 'S3-INDEX', `${marker('S3-INDEX')}\n# Settlers III Gold Edition roadmap\n\n${registry.master ? `Master issue: ${registry.master.url}` : 'Publishing has not completed yet.'}\n\nThe approved scope is recorded in [specification.md](specification.md). Source ownership and release rules are in [upstream-workflow.md](upstream-workflow.md). Each implementation issue has a durable [draft](issues/) and a stable identifier. The JSON registry records actual GitHub URLs, database IDs, relationship results, and issue states; the catalog records behavior, acceptance, tests, and dependencies.\n\n## Epics\n\n${epics.map((epic, i) => `- ${registry.epics[String(i + 1)]?.url ?? `S3-E${i + 1}`} - ${epic.title}`).join('\n')}\n\n## Implementation graph\n\n| Stable ID | Source owner | Deliverable | Blocked by |\n|---|---|---|---|\n${table}\n\n## Publish and verify\n\nRun \`bun scripts/roadmap.ts --check\` to validate and render local drafts. Run \`bun scripts/roadmap.ts --publish\` to reconcile the authorized GitHub graph. Run \`bun scripts/roadmap.ts --verify\` to read back issues and verify relationships. Publishing resumes from stable remote markers and preserves adopted issue content. It never closes implementation issues.\n`)
 }
 
 async function listIssues(repository: string, known: Entry[] = []): Promise<RemoteIssue[]> {

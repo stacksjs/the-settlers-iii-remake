@@ -1,3 +1,4 @@
+<!-- settlers-gold:S3-INDEX -->
 # Settlers III Gold Edition roadmap
 
 Master issue: https://github.com/stacksjs/the-settlers-iii-remake/issues/4
@@ -134,3 +135,12 @@ The approved scope is recorded in [specification.md](specification.md). Source o
 ## Publish and verify
 
 Run `bun scripts/roadmap.ts --check` to validate and render local drafts. Run `bun scripts/roadmap.ts --publish` to reconcile the authorized GitHub graph. Run `bun scripts/roadmap.ts --verify` to read back issues and verify relationships. Publishing resumes from stable remote markers and preserves adopted issue content. It never closes implementation issues.
+<!-- /settlers-gold:S3-INDEX -->
+
+## Authored progress notes
+
+Keep progress and execution links outside the `settlers-gold` closing marker.
+Local rendering and GitHub publishing replace the bounded generated section and
+preserve the surrounding notes. A legacy local draft is migrated only when its
+unbounded generated prefix exactly matches the catalog. A changed legacy block
+is refused for review rather than guessing where authored text begins.
