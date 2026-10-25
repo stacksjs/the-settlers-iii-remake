@@ -7,6 +7,7 @@ import { epics, gameRepository, relatedIssues, reuseIssues, tickets } from '../d
 interface RemoteIssue { id: number, number: number, html_url: string, state: string, state_reason?: string | null, title: string, body: string | null, labels: { name: string }[], milestone: { number: number, title: string } | null, pull_request?: unknown }
 interface Entry { repository: string, number: number, id: number, url: string, state: string, stateReason?: string | null, title: string, labels: string[], milestone: number | null, reused?: boolean, nativeParent?: boolean, nativeBlockers?: string[], relationshipLimits?: string[] }
 interface Registry { version: 1, master?: Entry, epics: Record<string, Entry>, tickets: Record<string, Entry> }
+interface RemoteRelationships { fullDatabaseId: string, parent?: { fullDatabaseId: string } | null, blockedBy?: { nodes: { url: string }[], pageInfo: { hasNextPage: boolean } } }
 const root = resolve(import.meta.dir, '..')
 const registryPath = resolve(root, 'docs/roadmap/github.json')
 const marker = (key: string): string => `<!-- settlers-gold:${key} -->`
@@ -249,7 +250,8 @@ async function pages<T>(path: string): Promise<T[]> {
 
 async function updateGenerated(item: Entry, key: string, body: string): Promise<void> {
   const remote = await api<RemoteIssue>(`repos/${item.repository}/issues/${item.number}`)
-  await api(`repos/${item.repository}/issues/${item.number}`, 'PATCH', { body: mergeGeneratedBody(remote.body ?? '', key, body) })
+  const next = mergeGeneratedBody(remote.body ?? '', key, body)
+  if (remote.body !== next) await api(`repos/${item.repository}/issues/${item.number}`, 'PATCH', { body: next })
 }
 
 export async function nativeRelationship<T>(operation: () => Promise<T>, recordRestriction: (reason: string) => void): Promise<T | undefined> {
@@ -265,7 +267,7 @@ function recordRelationshipLimit(child: Entry, description: string, reason: stri
   child.relationshipLimits = [...new Set([...(child.relationshipLimits ?? []), `${description}: ${reason}`])]
 }
 
-async function linkParent(child: Entry, parent: Entry): Promise<void> {
+async function linkParent(child: Entry, parent: Entry, children: Map<string, Set<number>>): Promise<void> {
   if (child.reused) {
     try {
       const existing = await api<RemoteIssue>(`repos/${child.repository}/issues/${child.number}/parent`)
@@ -284,11 +286,16 @@ async function linkParent(child: Entry, parent: Entry): Promise<void> {
     }
   }
   const path = `repos/${parent.repository}/issues/${parent.number}/sub_issues`
-  const listed = await nativeRelationship(() => api<RemoteIssue[]>(`${path}?per_page=100`), reason => recordRelationshipLimit(child, 'Native parent unavailable', reason))
-  if (!listed) { child.nativeParent = false; return }
-  if (listed.some(issue => issue.id === child.id)) { child.nativeParent = true; return }
+  let linked = children.get(path)
+  if (!linked) {
+    const listed = await nativeRelationship(() => pages<RemoteIssue>(path), reason => recordRelationshipLimit(child, 'Native parent unavailable', reason))
+    if (!listed) { child.nativeParent = false; return }
+    linked = new Set(listed.map(issue => issue.id))
+    children.set(path, linked)
+  }
+  if (linked.has(child.id)) { child.nativeParent = true; return }
   child.nativeParent = false
-  await nativeRelationship(async () => { await api(path, 'POST', { sub_issue_id: child.id }); child.nativeParent = true }, reason => recordRelationshipLimit(child, 'Native parent rejected by GitHub', reason))
+  await nativeRelationship(async () => { await api(path, 'POST', { sub_issue_id: child.id }); linked.add(child.id); child.nativeParent = true }, reason => recordRelationshipLimit(child, 'Native parent rejected by GitHub', reason))
 }
 
 async function linkBlockers(child: Entry, blockers: Entry[]): Promise<void> {
@@ -335,14 +342,17 @@ async function publish(registry: Registry): Promise<void> {
     await persist(registry)
     console.log(`${ticket.key}: ${registry.tickets[ticket.key]!.url}`)
   }
+  // One paginated child listing per parent in this reconciliation. Successful
+  // attachments update it; a later invocation always reads fresh remote state.
+  const children = new Map<string, Set<number>>()
   for (const [key, epic] of Object.entries(registry.epics)) {
     await updateGenerated(epic, `S3-E${key.padStart(2, '0')}`, epicBody(Number(key), registry))
-    await linkParent(epic, registry.master)
+    await linkParent(epic, registry.master, children)
     await persist(registry)
   }
   for (const ticket of tickets) {
     const current = registry.tickets[ticket.key]!
-    await linkParent(current, registry.epics[String(ticket.epic)]!)
+    await linkParent(current, registry.epics[String(ticket.epic)]!, children)
     await linkBlockers(current, ticket.blockers.map(key => registry.tickets[key]!))
     await persist(registry)
     console.log(`Linked ${ticket.key}`)
@@ -356,8 +366,39 @@ async function verify(registry: Registry): Promise<void> {
   for (const ticket of tickets) if (!registry.tickets[ticket.key]) throw new Error(`Missing catalog entry: ${ticket.key}`)
   const entries = [registry.master, ...Object.values(registry.epics), ...Object.values(registry.tickets)]
   if (new Set(entries.map(item => item.id)).size !== 120 || new Set(entries.map(item => item.url)).size !== 120) throw new Error('Registry contains duplicate remote issues')
+  const issues = new Map<string, Map<number, RemoteIssue>>()
+  for (const repository of new Set(entries.map(item => item.repository))) {
+    const listed = await listIssues(repository, entries.filter(item => item.repository === repository))
+    issues.set(repository, new Map(listed.map(issue => [issue.number, issue])))
+  }
+  // GitHub's public Issue.parent and Issue.blockedBy fields read every native
+  // relationship in one query per repository, without a process per edge.
+  const relationships = new Map<number, { parent: { id: number } | null, blockers: { html_url: string }[] }>()
+  for (const repository of issues.keys()) {
+    const selected = entries.filter(item => item.repository === repository && (item.nativeParent || item.nativeBlockers?.length))
+    if (!selected.length) continue
+    const [owner, name] = repository.split('/')
+    const fields = selected.map(item => `issue${item.number}:issue(number:${item.number}){fullDatabaseId ${item.nativeParent ? 'parent{fullDatabaseId}' : ''} ${item.nativeBlockers?.length ? 'blockedBy(first:100){nodes{url} pageInfo{hasNextPage}}' : ''}}`).join('\n')
+    const query = `{repository(owner:${JSON.stringify(owner)},name:${JSON.stringify(name)}){${fields}}}`
+    const result = await api<{ data?: { repository: Record<string, RemoteRelationships | null> | null }, errors?: { message: string }[] }>('graphql', 'POST', { query })
+    if (result.errors?.length || !result.data?.repository) throw new Error(`Native relationship read failed for ${repository}: ${result.errors?.map(error => error.message).join('; ') ?? 'missing repository'}`)
+    for (const item of selected) {
+      const remote = result.data.repository[`issue${item.number}`]
+      if (!remote || Number(remote.fullDatabaseId) !== item.id) throw new Error(`Incomplete native relationship response: ${item.url}`)
+      if (item.nativeParent && remote.parent === undefined) throw new Error(`Missing native parent response: ${item.url}`)
+      if (remote.parent && !Number.isSafeInteger(Number(remote.parent.fullDatabaseId))) throw new Error(`Invalid native parent identity: ${item.url}`)
+      let blockers: { html_url: string }[] = []
+      if (item.nativeBlockers?.length) {
+        if (!Array.isArray(remote.blockedBy?.nodes) || typeof remote.blockedBy.pageInfo?.hasNextPage !== 'boolean' || remote.blockedBy.nodes.some(node => typeof node.url !== 'string')) throw new Error(`Missing native blocker response: ${item.url}`)
+        blockers = remote.blockedBy.pageInfo.hasNextPage
+          ? await pages<RemoteIssue>(`repos/${repository}/issues/${item.number}/dependencies/blocked_by`)
+          : remote.blockedBy.nodes.map(node => ({ html_url: node.url }))
+      }
+      relationships.set(item.id, { parent: remote.parent ? { id: Number(remote.parent.fullDatabaseId) } : null, blockers })
+    }
+  }
   for (const [key, item] of [['S3-MASTER', registry.master], ...Object.entries(registry.epics).map(([index, item]) => [`S3-E${index.padStart(2, '0')}`, item]), ...Object.entries(registry.tickets)] as [string, Entry][]) {
-    const remote = await api<RemoteIssue>(`repos/${item.repository}/issues/${item.number}`)
+    const remote = issues.get(item.repository)!.get(item.number)!
     if (remote.id !== item.id || !remote.body?.includes(marker(key))) throw new Error(`Issue identity mismatch: ${key}`)
     if (remote.title !== item.title) throw new Error(`Incorrect title: ${key}`)
     if ((remote.milestone?.number ?? null) !== item.milestone) throw new Error(`Incorrect milestone: ${key}`)
@@ -381,14 +422,14 @@ async function verify(registry: Registry): Promise<void> {
       if (remote.labels.some(label => label.name === 'ready-for-agent') !== shouldBeReady) throw new Error(`Incorrect frontier label: ${key}`)
       if (!item.nativeParent && !item.relationshipLimits?.length) throw new Error(`Unaccounted native parent: ${key}`)
       if (item.nativeBlockers?.length) {
-        const actual = await api<RemoteIssue[]>(`repos/${item.repository}/issues/${item.number}/dependencies/blocked_by?per_page=100`)
+        const actual = relationships.get(item.id)!.blockers
         for (const blocker of item.nativeBlockers) if (!actual.some(issue => issue.html_url === blocker)) throw new Error(`Missing native blocker: ${key}`)
       }
     }
     if (item.nativeParent) {
-      const parent = await api<RemoteIssue>(`repos/${item.repository}/issues/${item.number}/parent`)
+      const parent = relationships.get(item.id)!.parent
       const expected = ticket ? registry.epics[String(ticket.epic)]! : registry.master
-      if (parent.id !== expected.id) throw new Error(`Incorrect native parent: ${key}`)
+      if (parent?.id !== expected.id) throw new Error(`Incorrect native parent: ${key}`)
     }
     console.log(`Verified ${key}`)
   }

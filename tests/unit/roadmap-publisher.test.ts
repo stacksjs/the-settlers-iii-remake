@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test'
 import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { createRoadmapGitHubFixture } from '../fixtures/roadmap/gh'
 
 interface Issue { id: number, number: number, html_url: string, title: string, body: string, state: string, state_reason?: string | null, labels: { name: string }[], milestone: { number: number, title: string } | null }
 interface Remote { repositories: Record<string, { issues: Issue[] }>, parents: Record<string, number>, blockers: Record<string, number[]> }
@@ -12,15 +13,30 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
   const root = resolve(import.meta.dir, '../..')
   const directory = mkdtempSync(join(tmpdir(), 'settlers-roadmap-publisher-'))
   const statePath = join(directory, 'remote.json')
+  const tracePath = join(directory, 'requests.jsonl')
   const game = 'stacksjs/the-settlers-iii-remake'
   const stacks = 'stacksjs/stacks'
   const originalTitle = 'Existing desktop distribution work'
   const originalBody = 'Authored acceptance and signing notes. Preserve these.'
+  let fixture: ReturnType<typeof createRoadmapGitHubFixture> | undefined
   try {
     for (const subdirectory of ['scripts', 'docs/roadmap', 'bin']) mkdirSync(join(directory, subdirectory), { recursive: true })
     for (const relative of ['scripts/roadmap.ts', 'docs/roadmap/catalog.ts', 'docs/roadmap/campaigns.ts']) copyFileSync(join(root, relative), join(directory, relative))
     const gh = join(directory, 'bin/gh')
-    writeFileSync(gh, `#!${process.execPath}\n${readFileSync(join(root, 'tests/fixtures/roadmap/gh.ts'), 'utf8')}`)
+    fixture = createRoadmapGitHubFixture(statePath, tracePath)
+    // The real publisher still spawns a CLI, sends stdin and handles exit codes.
+    // A persistent local API avoids starting a new Bun runtime per response.
+    writeFileSync(gh, `#!/bin/sh
+if [ "$1" != api ] || [ "$2" != --method ]; then exit 2; fi
+if [ "$5" = --input ]; then
+  fixture_output=$(/usr/bin/curl --silent --show-error --fail-with-body --write-out '%{stderr}HTTP %{http_code}\\n' --request "$3" --data-binary @- '${fixture.url.href}'"$4")
+else
+  fixture_output=$(/usr/bin/curl --silent --show-error --fail-with-body --write-out '%{stderr}HTTP %{http_code}\\n' --request "$3" '${fixture.url.href}'"$4")
+fi
+fixture_status=$?
+if [ "$fixture_status" -ne 0 ]; then printf '%s\\n' "$fixture_output" >&2; exit "$fixture_status"; fi
+printf '%s\\n' "$fixture_output"
+`)
     chmodSync(gh, 0o700)
     writeFileSync(statePath, JSON.stringify({
       nextId: 10000, interrupted: false,
@@ -37,15 +53,18 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     }))
     const remote = (): Remote => JSON.parse(readFileSync(statePath, 'utf8')) as Remote
     const registry = (): Registry => JSON.parse(readFileSync(join(directory, 'docs/roadmap/github.json'), 'utf8')) as Registry
-    async function run(mode: '--publish' | '--verify'): Promise<{ code: number, output: string }> {
+    writeFileSync(tracePath, '')
+    async function run(mode: '--publish' | '--verify'): Promise<{ code: number, output: string, requests: { method: string, path: string }[] }> {
+      const before = readFileSync(tracePath, 'utf8').length
       const child = Bun.spawn([process.execPath, '--no-env-file', join(directory, 'scripts/roadmap.ts'), mode], {
         cwd: directory,
         // Only the fixture executable is reachable. No installed gh or real token is inherited.
-        env: { PATH: join(directory, 'bin'), ROADMAP_FAKE_STATE: statePath },
+        env: { PATH: join(directory, 'bin'), ROADMAP_FAKE_STATE: statePath, ROADMAP_FAKE_TRACE: tracePath },
         stdout: 'pipe', stderr: 'pipe',
       })
       const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
-      return { code, output: `${stdout}\n${stderr}` }
+      const requests = readFileSync(tracePath, 'utf8').slice(before).trim().split('\n').filter(Boolean).map(line => JSON.parse(line) as { method: string, path: string })
+      return { code, output: `${stdout}\n${stderr}`, requests }
     }
     const first = await run('--publish')
     expect(first.code).not.toBe(0)
@@ -86,9 +105,19 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     expect(repeated.code, repeated.output).toBe(0)
     expect(JSON.parse(readFileSync(statePath, 'utf8'))).toEqual(JSON.parse(beforeRepeat))
     expect(registry()).toEqual(published)
+    expect(repeated.requests.filter(request => request.method === 'PATCH')).toHaveLength(0)
+    const deniedParent = `/repos${new URL(published.epics['2']!.url).pathname}/sub_issues`
+    // Successful parent collections are read once per reconciliation. The
+    // denied parent still produces a separate truthful diagnostic per child.
+    const parentReads = repeated.requests.filter(request => request.method === 'GET' && request.path.endsWith('/sub_issues'))
+    const successfulParentPaths = parentReads.map(request => request.path).filter(path => path !== deniedParent)
+    expect(new Set(successfulParentPaths).size).toBe(successfulParentPaths.length)
     const verified = await run('--verify')
     expect(verified.code, verified.output).toBe(0)
     expect(verified.output).toContain('Verified 120 tracking entries')
+    // Fresh paginated repository listings contain every issue field. Reading
+    // all 120 again is an avoidable request and process per tracked issue.
+    expect(verified.requests.filter(request => request.method === 'GET' && /\/issues\/\d+$/.test(request.path))).toHaveLength(0)
 
     const afterAudit = remote()
     const audit = afterAudit.repositories[game]!.issues.find(issue => issue.id === published.tickets['S3-008']!.id)!
@@ -172,6 +201,7 @@ test('roadmap publisher recovers a lost create response, preserves adopted work,
     expect(registry().tickets['S3-025']!.id).toBe(current.tickets['S3-025']!.id)
   }
   finally {
+    fixture?.stop(true)
     rmSync(directory, { recursive: true, force: true })
   }
 }, 180_000)
