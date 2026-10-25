@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T19:53:06.993768+00:00",
+  "base": "08d4eff3b50eb295e68324c2b453551cf829defb",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/195",
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "c12d3f6c58e44dc8cb420e613150e31d34dd4f2dee4adbb6f6f3a42b6a59bb51",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/military.ts": "985b0bad77eafcc8d03560ead604246129ac4c9b5a24406f5cdbcbb86d62fd9b",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "tests/unit/ai-movable-troops.test.ts": "4deb63c6b91ec8fee8bdeafe22b300f2471ba611a8585b45cc6db7e6242216c1",
+    "tests/unit/engine-ai-recovery.test.ts": "c9f042cc7d1aede33549695cffde835448aff3658359fe18fc67f91b1f076495"
+  },
+  "rules": {
+    "version": "0.10.0",
+    "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b",
+    "unchangedFromBase": true
+  },
+  "engineGuardRuleUnchanged": true,
+  "correction": [
+    "Derive movable troops from the allowed own-player view.",
+    "Keep the greatest-ID troop in each military garrison, matching an ID-ordered group command, and exclude troops inside other workplaces.",
+    "Retain ready-outside preference and existing attack threshold/cadence.",
+    "Select eligible troops for scout, attack and defense; wait when all are required guards.",
+    "Retain the required command name in the order type, remove the enqueue cast, and check dynamic numeric test fields."
+  ],
+  "regressions": {
+    "file": "tests/unit/ai-movable-troops.test.ts",
+    "red": {
+      "pass": 1,
+      "fail": 5
+    },
+    "green": {
+      "pass": 6,
+      "fail": 0,
+      "assertions": 78
+    },
+    "cases": [
+      "Usable second garrison supplies a scout",
+      "Only-guard garrisons remain inside",
+      "Ready outside troop remains preferred",
+      "Restored policy and subsequent state match",
+      "Attack selects eligible troops or waits",
+      "Defense selects eligible troops or keeps guards"
+    ]
+  },
+  "checks": {
+    "unit": {
+      "pass": 289,
+      "fail": 0,
+      "assertions": 22930,
+      "files": 38,
+      "logSha256": "7ac751b84b2f432a96861a4aeee2cbc9056a5d36494efbdf8af5b17740a8c498",
+      "phase": "Functional guard-policy run before subsequent type-only contract and checked-field test cleanup"
+    },
+    "typedCleanupFocus": {
+      "pass": 31,
+      "fail": 0,
+      "assertions": 395,
+      "logSha256": "c8a01075a333e99a22242a04f57eda2bf305593c79ae66ed7051191829350e5f"
+    },
+    "typeOnlyJavaScript": {
+      "equal": true,
+      "sha256": "f9aa6d3732138db4ff515d881f471ff8b0d95dd8cb4b3371bfa45d72e5de24b9",
+      "note": "Required order-name typing and removal of the enqueue cast emit identical JavaScript to the 289-test guard-policy run. Updated checked numeric test fields separately pass the full31-test recovery/military focus suite."
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+    },
+    "lint": {
+      "passed": true,
+      "logSha256": "f47a124f5864b3cdda24311639d93c7320e9005695b893380fb08a14b2fa3022"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "b6b110d7a93d7bf181b5650644aa7e0fb82c780e3de374e04ff426a1aba16fd1",
+      "distIndexSha256": "1bdfd0398743ffb671d7da14f64bf9178077b2c26448d2637bfa2c7e8d163593"
+    },
+    "assets": {
+      "passed": true,
+      "logSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    "fidelity": {
+      "passed": true,
+      "logSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    "roadmap": {
+      "passed": true,
+      "logSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    }
+  },
+  "normalMatches": {
+    "setup": "Ordinary rivalSession(seed), economicAI and RIVAL_MILITARY for both players at default 80-tick cadence, with normal goods/population and no state edits or special clocks.",
+    "executionTracing": "Collect every command result after its execution tick, before bounded history discards it. Count failed executions separately from enqueue submissions.",
+    "runs": [
+      {
+        "seed": 2,
+        "tick": 45321,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "8c15b1eb",
+        "conservationAudit": [],
+        "executedCommandCounts": [
+          542,
+          408
+        ],
+        "allExecutedRefusals": [],
+        "militaryExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "produced": [
+          {
+            "plank": 140,
+            "log": 136,
+            "stone": 109,
+            "water": 28,
+            "grain": 41,
+            "flour": 28,
+            "bread": 12,
+            "coal": 32
+          },
+          {
+            "plank": 75,
+            "stone": 84,
+            "fish": 16,
+            "water": 44,
+            "log": 99,
+            "grain": 58,
+            "flour": 44,
+            "bread": 28,
+            "ironore": 56,
+            "coal": 106,
+            "iron": 44,
+            "hammer": 8,
+            "spear": 5,
+            "axe": 3,
+            "sword": 3,
+            "shovel": 6,
+            "bow": 9,
+            "saw": 1,
+            "pickaxe": 1
+          }
+        ],
+        "checkpointSha256": "5ffbb4cbb1e7eba910acf4ef1ded726a64d5a75cfd96f9e358851d6cb01dffdf"
+      },
+      {
+        "seed": 1,
+        "tick": 80000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "b0895459",
+        "conservationAudit": [],
+        "executedCommandCounts": [
+          686,
+          458
+        ],
+        "allExecutedRefusals": [],
+        "militaryExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "produced": [
+          {
+            "plank": 70,
+            "log": 94,
+            "stone": 50,
+            "fish": 53,
+            "water": 87,
+            "grain": 103,
+            "coal": 240,
+            "flour": 87,
+            "bread": 71,
+            "ironore": 136,
+            "iron": 120,
+            "hammer": 14,
+            "shovel": 15,
+            "axe": 15,
+            "saw": 15,
+            "pickaxe": 15,
+            "scythe": 15,
+            "fishingrod": 15
+          },
+          {
+            "plank": 34,
+            "log": 50
+          }
+        ],
+        "checkpointSha256": "46a185da421e38119f4958161a108a8848025b8560530575d09bb61c9b528bf4"
+      },
+      {
+        "seed": 3,
+        "tick": 80000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "c07ff107",
+        "conservationAudit": [],
+        "executedCommandCounts": [
+          439,
+          769
+        ],
+        "allExecutedRefusals": [],
+        "militaryExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "produced": [
+          {
+            "plank": 31,
+            "log": 39,
+            "coal": 24
+          },
+          {
+            "plank": 305,
+            "log": 321,
+            "stone": 166,
+            "water": 33,
+            "grain": 49,
+            "flour": 25,
+            "bread": 9,
+            "ironore": 24
+          }
+        ],
+        "checkpointSha256": "5d8f8f35a79b18c033a906909812570e84baf48734b93cd08fd87b1e28867820"
+      },
+      {
+        "seed": 5,
+        "tick": 80000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "b16d1bfc",
+        "conservationAudit": [],
+        "executedCommandCounts": [
+          568,
+          467
+        ],
+        "allExecutedRefusals": [
+          {
+            "tick": 9360,
+            "player": 2,
+            "seq": 77,
+            "type": "demolish",
+            "ok": false,
+            "reason": "That building is not yours."
+          }
+        ],
+        "militaryExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "produced": [
+          {
+            "log": 139,
+            "plank": 115,
+            "fish": 16,
+            "stone": 83,
+            "water": 45,
+            "grain": 21,
+            "ironore": 89,
+            "flour": 21,
+            "bread": 21,
+            "coal": 173,
+            "iron": 75,
+            "hammer": 10,
+            "shovel": 8,
+            "axe": 11,
+            "saw": 6,
+            "pickaxe": 1,
+            "scythe": 1,
+            "fishingrod": 1,
+            "bow": 12,
+            "sword": 9,
+            "spear": 14
+          },
+          {
+            "plank": 153,
+            "log": 188,
+            "stone": 116,
+            "ironore": 83,
+            "grain": 64,
+            "water": 48,
+            "flour": 48,
+            "bread": 32,
+            "coal": 198,
+            "iron": 83,
+            "hammer": 10,
+            "shovel": 11,
+            "axe": 11,
+            "saw": 4,
+            "pickaxe": 2,
+            "scythe": 2,
+            "fishingrod": 2,
+            "spear": 14,
+            "bow": 14,
+            "sword": 13
+          }
+        ],
+        "checkpointSha256": "94e7c5b9a4702350e0e8297f0aee662e3bed63157cfd46b16fa9c4ab650645b2"
+      }
+    ]
+  },
+  "frameworkAdoptionReceipt": "framework-0.75.311-receipt.json",
+  "lockfileSha256": "0d06a28dde98657fb014f26ae9263a7d5da49a8cb9c5dd9311fbb228ebe4cb68",
+  "remainingFollowUp": {
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/196",
+    "seed": 5,
+    "tick": 9360,
+    "type": "demolish",
+    "reason": "That building is not yours.",
+    "cause": "Exhausted-fisher and stone-material diagnoses both emit demolition of building 1156 in one decision. Full trace has one refused demolition; final bounded history had none. This is separate from the corrected military selection."
+  },
+  "scope": "Legal troop selection against engineering rules. Seed 2 finishes; seeds 1, 3 and 5 remain unfinished at 80000. Zero military refusals on all four traces, but seed 5 has one early non-military demolition refusal. Broader military/religious AI, all-seed sustainability, human victory, original Gold behavior and native game presentation remain unqualified.",
+  "browser": {
+    "totalSteps": 385,
+    "suites": [
+      {
+        "name": "campaign",
+        "steps": [
+          58
+        ],
+        "elapsedMs": 63063.694916,
+        "reportSha256": "e13f99141683dcc097d36f3dfb2538d5419976c1d4ee3dc790606268d1c97d1e",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "control-frame",
+        "steps": [
+          18,
+          18,
+          18,
+          18
+        ],
+        "elapsedMs": 186898.364458,
+        "reportSha256": "29e7cab74d9c4a42fc200d72febe2af4bafd75aee15c7a7c5b0a0736858ea6ca",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "resize",
+        "steps": [
+          5
+        ],
+        "elapsedMs": 34268.581000000006,
+        "reportSha256": "999826046899b96104459f27038ec1d0858167cd10aed4f0edafb41241074696",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "production",
+        "steps": [
+          19
+        ],
+        "elapsedMs": 63917.28070900001,
+        "reportSha256": "0f0b052368a00fca670a05923d8a7bc3337b33a2f1b5f65c9543c8deeeea3ddd",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "selection",
+        "steps": [
+          33
+        ],
+        "elapsedMs": 35309.10666599998,
+        "reportSha256": "32e9755660ec2b5f8f084677d920b90de8a916a28f1e6c23714a19da5870e85b",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "recruitment",
+        "steps": [
+          34,
+          34
+        ],
+        "elapsedMs": 72410.75487499998,
+        "reportSha256": "379d6b82a2cdc6f4d5b5c62a36240fa9e4529bab86d8f2c983ee85bfeba97b9d",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "working-area",
+        "steps": [
+          57
+        ],
+        "elapsedMs": 40122.559542,
+        "reportSha256": "ff0dff86400e16c7b9b59e8de907b7e382309c6c7cd1c50fb4c9a63513519378",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "skirmish",
+        "steps": [
+          26
+        ],
+        "elapsedMs": 28138.326082999993,
+        "reportSha256": "fbc7c910879b98b47f8e8b76b60ef08c63029dba4bc4d693457455d94a9e4417",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "rival-battle",
+        "steps": [
+          46
+        ],
+        "elapsedMs": 631150.8489999999,
+        "reportSha256": "5ca7d90535926c6efad19c7430203584ca6609f3427fb520df585316841a0982",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "checkpoints",
+        "steps": [
+          1
+        ],
+        "elapsedMs": 26198.027000000002,
+        "reportSha256": "91d59f217e1fd122348bd827df6a767e747ef7461573d70940b943d3d8ab3460",
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      }
+    ],
+    "inputScope": "Authored browser scenarios, including ordinary 4x passive-player defeat, save and actual reload. It does not establish native-input human victory.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  }
+}

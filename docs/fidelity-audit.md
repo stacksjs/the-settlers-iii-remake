@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: legal military orders and full execution tracing (2026-10-25)
+
+The [movable-troop correction](roadmap/receipts/ai-movable-troops-2026-10-25.json) derives eligible troops from the allowed own-player view and keeps one deterministic guard in every military garrison. Scouting, attack and defense wait when all soldiers must stay inside. Ready outside troops retain their preference. The engine's ownership, guard and refund rules and engineering profile 0.10.0 are unchanged. Six focused command/restore regressions pass, along with the 289-test suite, type checks, the production build and all 385 fresh browser steps. The subsequent typing cleanup passes its 31-test focus suite and emits identical game JavaScript.
+
+Complete per-tick command tracing records zero military refusals on ordinary two-policy seeds 2, 1, 3 and 5. Seed 2 still ends at tick 45,321 with player 2 winning, checksum `8c15b1eb`, and clean accounting. Seeds 1, 3 and 5 remain unfinished at 80,000 ticks. Seed 5 retains one early non-military refusal: two diagnoses order demolition of the same fishing hut. [Issue #196](https://github.com/stacksjs/the-settlers-iii-remake/issues/196) retains that captured checkpoint and failing regressions. It had already disappeared from bounded final command history, so a clean final history is not treated as proof that every command succeeded.
+
+This corrects engineering troop selection. Full military/religious AI, sustainable random-map play, human victory, original Gold behavior and native game presentation remain open. The earlier receipts below retain the pre-correction results as dated evidence.
+
 ## Update: installed Stacks 0.75.311 and complete browser verification (2026-10-25)
 
 The game now normally installs Stacks 0.75.311 with STX 0.2.691, Craft 0.0.341, Pantry 0.11.127 and Bun 1.4.4. The [publication receipt](roadmap/receipts/framework-0.75.311-publication.json) verifies exact upstream source/release gates, all 86 original npm archives and five native archives. The [installed receipt](roadmap/receipts/framework-0.75.311-receipt.json) verifies all 95 selected original installed package trees and seven consumer checks after normal Buddy upgrade, Pantry install and frozen Bun install.

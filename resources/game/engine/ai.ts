@@ -40,7 +40,7 @@ export function observe(session: Session, player: number): Observation {
   }
 }
 
-type Order = Omit<Command, 'tick' | 'player' | 'seq'>
+type Order = Pick<Command, 'type'> & Record<string, unknown>
 interface Want { building: string, count: number, near: (o: Observation) => Point[], when?: (o: Observation, have: (type: string) => number) => boolean }
 
 const own = (o: Observation, type: string): number => o.view.buildings.filter(b => b.owner === o.player && b.type === type).length
@@ -250,21 +250,29 @@ export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] 
   if (own(o, 'barracks') > 0 && !o.settings.recruit?.automatic) orders.push({ type: 'settings', settings: { recruitAutomatic: true } })
   const mine = view.settlers.filter(s => s.owner === o.player && s.rank !== undefined)
   if (!mine.length) return orders
-  const outside = mine.filter(s => !s.inside), ready = outside.filter(s => s.action !== 'walking')
+  // Leave the same last troop that an ID-ordered group command would keep.
+  // A soldier inside another workplace, such as a healer's hut, cannot leave
+  // through the military garrison command either.
+  const garrisons = new Set(view.buildings.filter(b => b.owner === o.player && b.garrison !== undefined).map(b => b.id))
+  const guards = new Map<number, number>()
+  for (const s of mine) if (s.inside && garrisons.has(s.inside)) guards.set(s.inside, Math.max(guards.get(s.inside) ?? 0, s.id))
+  const movable = mine.filter(s => !s.inside || (guards.has(s.inside) && guards.get(s.inside) !== s.id))
+  if (!movable.length) return orders
+  const outside = movable.filter(s => !s.inside), ready = outside.filter(s => s.action !== 'walking')
   const center = home(o)[0] ?? { x: mine[0]!.x, y: mine[0]!.y }
   // Defence: enemy soldiers seen on its own land are met where they stand.
   const intruders = view.settlers.filter(s => s.owner !== o.player && s.rank !== undefined && !s.inside && view.owner[at(s)] === o.player)
     .sort((a, b) => distance(a, center) - distance(b, center) || a.id - b.id)
   // Soldiers standing ready go first; otherwise garrisons send all but their last soldier.
-  if (intruders.length) { orders.push({ type: 'move-soldiers', soldiers: (ready.length ? ready : mine).map(s => s.id), x: intruders[0]!.x, y: intruders[0]!.y }); return orders }
+  if (intruders.length) { orders.push({ type: 'move-soldiers', soldiers: (ready.length ? ready : movable).map(s => s.id), x: intruders[0]!.x, y: intruders[0]!.y }); return orders }
   // Attack: only buildings the player currently sees are in its view at all.
   const rules = new Map(o.rules.buildings.map(b => [b.id, b]))
   const targets = view.buildings.filter(b => b.owner !== o.player && b.phase === 'active' && rules.get(b.type)?.garrison)
     .sort((a, b) => distance(a, center) - distance(b, center) || a.id - b.id)
-  if (targets.length && mine.length >= policy.attackAt) { orders.push({ type: 'attack', soldiers: mine.map(s => s.id), building: targets[0]!.id }); return orders }
+  if (targets.length && mine.length >= policy.attackAt) { orders.push({ type: 'attack', soldiers: movable.map(s => s.id), building: targets[0]!.id }); return orders }
   // Scouting: one soldier walks toward the nearest unexplored land in a direction that turns with time.
   if (!targets.length && view.tick % policy.scoutEvery < (o.interval ?? 1)) {
-    const scout = (ready.length ? ready : mine).sort((a, b) => a.id - b.id)[0]!
+    const scout = (ready.length ? ready : movable).sort((a, b) => a.id - b.id)[0]!
     const [dx, dy] = DIRECTIONS[Math.floor(view.tick / policy.scoutEvery) % 6]!
     for (let step = 1; step < Math.max(o.width, o.height); step++) {
       const x = center.x + dx * step, y = center.y + dy * step
@@ -462,7 +470,7 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
 export function stepAI(session: Session, ai: EconomicAI, sequence: { next: number }): void {
   if (session.state.tick % ai.interval !== 0) return
   for (const order of ai.decide(observe(session, ai.player))) {
-    const rejected = session.enqueue({ ...order, tick: session.state.tick, player: ai.player, seq: sequence.next++ } as Command)
+    const rejected = session.enqueue({ ...order, tick: session.state.tick, player: ai.player, seq: sequence.next++ })
     if (rejected) ai.results.push(rejected)
   }
 }

@@ -22,6 +22,13 @@ const play = (s: Session, ticks: number, ai = economicAI(1, { interval: 20 }), s
 }
 const mine = (s: Session) => s.state.results.filter(r => r.player === 1)
 
+/** Check dynamic command fields before using them as scenario coordinates or entity IDs. */
+function numericField(order: Record<string, unknown> | null | undefined, key: string): number {
+  const value = order?.[key]
+  if (typeof value !== 'number' || !Number.isFinite(value)) throw new Error(`Expected numeric AI order field: ${key}`)
+  return value
+}
+
 describe('AI deadlock recovery', () => {
   test('the captured normal seed-3 deadlock restores stone production and finishes both waiting sites', async () => {
     const bytes = await Bun.file(new URL('../fixtures/ai-seed3-stone-bootstrap.json', import.meta.url)).arrayBuffer()
@@ -93,7 +100,7 @@ describe('AI deadlock recovery', () => {
     expect(decisions).toEqual(economicAI(1).decide(observe(other, 1)))
     const survey = decisions.find(command => command.type === 'specialists' && command.profession === 'geologist')
     expect(survey).toBeDefined()
-    const target = survey as { x: number, y: number }
+    const target = { x: numericField(survey, 'x'), y: numericField(survey, 'y') }
     expect(observed.explored(target.y * 96 + target.x)).toBe(true)
     order(s, 'specialists', { profession: 'geologist', ...target, count: 1 })
     s.advance(800)
@@ -145,7 +152,7 @@ describe('AI deadlock recovery', () => {
     expect(o.view.explored.some((seen, tile) => seen === 1 && o.view.owner[tile] === 0 && o.terrain(tile) === 'mountain')).toBe(true)
     const survey = ai.decide(o).find(command => command.type === 'specialists')
     expect(survey).toBeDefined()
-    const target = survey as { x: number, y: number }, tile = target.y * o.width + target.x
+    const target = { x: numericField(survey, 'x'), y: numericField(survey, 'y') }, tile = target.y * o.width + target.x
     expect(o.view.owner[tile]).toBe(0)
     expect(o.explored(tile)).toBe(true)
     expect(o.terrain(tile)).toBe('mountain')
@@ -170,7 +177,7 @@ describe('AI deadlock recovery', () => {
     const ai = economicAI(1, { interval: 20 })
     const survey = ai.decide(observe(s, 1)).find(command => command.type === 'specialists')
     expect(survey).toBeDefined()
-    const next = survey as { x: number, y: number }
+    const next = { x: numericField(survey, 'x'), y: numericField(survey, 'y') }
     const rule = rules.buildings.find(b => b.id === 'coal-mine')!
     expect(rule.footprint.some(([dx, dy]) => next.x === 22 + dx && next.y === 22 + dy)).toBe(false)
     play(s, 4000, ai, { next: 1 })
@@ -318,7 +325,7 @@ describe('AI deadlock recovery', () => {
     const s = computer([{ type: 'woodcutter', x: 49, y: 51 }, { type: 'medium-residence', x: 31, y: 44 }, { type: 'small-residence', x: 36, y: 54 }], [{ good: 'stone', amount: 8 }, { good: 'axe', amount: 1 }, { good: 'saw', amount: 1 }, { good: 'hammer', amount: 2 }, { good: 'shovel', amount: 2 }])
     const d = diagnose(observe(s, 1)).find(d => d.kind === 'materials')!
     expect(d).toMatchObject({ recoverable: true, recovery: { type: 'demolish' } })
-    expect(s.state.buildings.get((d.recovery as { building: number }).building)!.type).toBe('medium-residence')
+    expect(s.state.buildings.get(numericField(d.recovery, 'building'))!.type).toBe('medium-residence')
     const ai = play(s, 6000)
     expect([...s.state.buildings.values()].some(b => b.type === 'sawmill' && b.phase === 'active')).toBe(true)
     expect(s.state.ledger[1]!.produced.plank ?? 0).toBeGreaterThan(0)
