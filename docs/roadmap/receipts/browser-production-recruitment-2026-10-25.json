@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T10:29:44.202544+00:00",
+  "gameSource": "54e2642f01bbca1b3eda21828498c96eb2c32a8c",
+  "versions": {
+    "stacks": "0.75.305",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/53"
+  ],
+  "input": "Native browser accessibility clicks and keyboard input, through CUA on an isolated Buddy origin. No game-state injection, private object reads or fixture stocks.",
+  "scenario": "Fresh generated landscape with the ordinary 38 settlers and starting goods.",
+  "observations": [
+    {
+      "stage": "Mining",
+      "result": "Built an iron mine at tile33,51. Miners physically consumed delivered food and produced ironore. A coal mine at37,59 had no deposit and retained the initial food supplies; its demolition returned the food for delivery to the working mine."
+    },
+    {
+      "stage": "Metal and weapon production",
+      "result": "Built an iron smelting works, weapon smith, sawmill and charcoal hut. Ordered one sword through Tools and weapons. Sawmill converted the starting logs to planks; charcoal, iron and sword production completed through normal workers and carriers."
+    },
+    {
+      "stage": "Construction recovery",
+      "result": "Dismantled the first barracks and completed charcoal hut and smelter to recover construction material. The replacement barracks at58,44 completed with the recovered stone."
+    },
+    {
+      "stage": "Positive stock",
+      "result": "Barracks inspector showed Input Sword1/8. Military row showed Sword At Barracks:1, with0 swordsmen."
+    },
+    {
+      "stage": "Recruitment",
+      "result": "Clicked Recruit a swordsman once. Its waiting order resolved, barracks sword stock became0 and the swordsman count became1. The chronicle recorded a rank1 swordsman joining the army."
+    },
+    {
+      "stage": "Persistence",
+      "result": "Saved at48:34 and performed an actual page reload. Restored statistics showed Swordsman1; Military showed Sword At Barracks:0 and1 swordsman. No waiting order remained."
+    }
+  ],
+  "retainedEvidence": {
+    "accessibility": {
+      "sha256": "a7729bae257052ed06664787adf00104ef1be8f6f26b9a8f609e84011cc4098e",
+      "bytes": 6975
+    },
+    "screenshot": {
+      "sha256": "dbd6015b48036ea128b26084538b7d92a31b31b29bea9b59e7c19385004af16b",
+      "bytes": 144173,
+      "width": 1280,
+      "height": 720,
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  },
+  "limits": [
+    "Single desktop browser playthrough; no phone or native host acceptance is inferred.",
+    "This confirms the implemented Roman engineering profile, not original Gold Edition rules, timings, balance or map fidelity.",
+    "No console or network diagnostic claim is made for this CUA playthrough. Automated browser diagnostics are recorded separately.",
+    "The production chain used finite starting resources and demolition refunds. This does not establish long-term settlement sustainability or close issue86. Issue53 was already closed before this playthrough."
+  ]
+}

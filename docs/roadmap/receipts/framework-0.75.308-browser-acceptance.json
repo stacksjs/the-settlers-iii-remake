@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T10:36:50.706716+00:00",
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4"
+  },
+  "publicVerifier": "framework-0.75.308-receipt.json",
+  "normalInstall": "buddy upgrade --version 0.75.308, normal Pantry install and frozen Bun install all exit0",
+  "managedManifests": "The normal upgrade reconciled25 stale framework dependency declarations in5 support manifests.",
+  "productionBuild": "buddy build views, exit0",
+  "server": "Separate Buddy process using installed Stacks0.75.308 on loopback3452; all complete browser reports reference that process, except the independently served checkpoint fixture.",
+  "browser": [
+    {
+      "name": "campaign",
+      "reportSha256": "a2410df0df5d3b35670af1b3f818fa5db8b159a4b359775ccf6348024a916dd2",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 58,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "control-frame",
+      "reportSha256": "67940186acc006d46d58f15274778cefe44cd6261d37ebc065c0ff529c0bee5d",
+      "profiles": [
+        {
+          "viewport": "1280x720",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "1280x850",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "1440x960",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "320x568",
+          "steps": 18,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "resize",
+      "reportSha256": "c8c89116c63b55a3638171e864e7554d8466db9351389415765341edee817a36",
+      "profiles": [
+        {
+          "viewport": "1280x850",
+          "steps": 5,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "reportSha256": "87eea6b08689d1af0985709638333af75b80fbacdbc36e22bc3fd5b315ca4e71",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 19,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "selection",
+      "reportSha256": "6f8cfbca13da0125b0870ad34fd859a959a26b9219cfe0d45332f878f8ad8d88",
+      "profiles": [
+        {
+          "viewport": "1280x850",
+          "steps": 33,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "recruitment",
+      "reportSha256": "4115581bbf586f3470ccec8e1e2b222de17dcb829832aac0a949a9316f7bb173",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 34,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        },
+        {
+          "viewport": "320x568",
+          "steps": 34,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "working-area",
+      "reportSha256": "2448df4539cc3372b51b8a62a36e115690837f54d8ba406dad498483080b3b11",
+      "profiles": [
+        {
+          "viewport": "1440x960",
+          "steps": 36,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    },
+    {
+      "name": "checkpoints",
+      "reportSha256": "54ef2658b19d92384910149fc1da83d39ee55dac4f636d086ba156c330c364f6",
+      "profiles": [
+        {
+          "viewport": "1280x900",
+          "steps": 1,
+          "consoleErrors": 0,
+          "failedRequests": 0,
+          "collectionErrors": 0
+        }
+      ]
+    }
+  ],
+  "browserSteps": 292,
+  "installedBrowserRegression": {
+    "publicExport": "@stacksjs/testing/browser",
+    "version": "0.75.308",
+    "pass": 14,
+    "fail": 0,
+    "assertions": 82,
+    "logSha256": "4219afc439ba4d4ca131ba3851248ab53338eb2b878ebfbc6bb79392038df451",
+    "tests": "Maintained browser-startup and browser-shared suites; only imports redirected to the installed published export. No runtime copied or modified.",
+    "coverage": [
+      "per-caller startup deadline",
+      "phase-specific protocol failure evidence",
+      "process/context ownership and cleanup",
+      "real Chrome cookie/storage isolation"
+    ]
+  },
+  "selectionInput": "Native driver Digit1 and Escape; map selection still uses browser DOM PointerEvents. Group1 empty assertion retained.",
+  "nativeInputPlaythrough": "browser-production-recruitment-2026-10-25.json",
+  "finalLint": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "limits": [
+    "Browser acceptance does not establish true native game acceptance.",
+    "No original executable behavior or Gold Edition parity is inferred.",
+    "The intermittent cold Linux startup issue2986 remains open. The per-caller deadline bug is fixed; a later green run does not establish the cold-start root cause."
+  ]
+}

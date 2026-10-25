@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: published framework and actual recruitment playthrough (2026-10-25)
+
+The game now normally installs Stacks 0.75.308, STX 0.2.691, Craft 0.0.341 and Pantry 0.11.127. The [published-module receipt](roadmap/receipts/framework-0.75.308-receipt.json) verifies the exact source and release gates, all 95 selected original package archives against installed files, the pinned Bun 1.4.4 runtime and seven consumer checks. The [browser acceptance receipt](roadmap/receipts/framework-0.75.308-browser-acceptance.json) records the production build, desktop and phone scenarios, and startup/isolation tests executed through the installed published testing package.
+
+The military panel now shows the physical sword, spear and bow quantities delivered to owned barracks. A [fresh browser playthrough](roadmap/receipts/browser-production-recruitment-2026-10-25.json) used native clicks and keyboard input to build a mine, smelter, smith, sawmill, charcoal hut and barracks, produce and deliver a sword, recruit one swordsman and retain it through a real save and reload. It used ordinary starting resources and demolition refunds, so it does not establish a sustainable settlement. The [stock projection regression](roadmap/receipts/browser-recruitment-stock-2026-10-25.json) separately covers ownership, delivery, enlistment, restore and demolition.
+
+These checks confirm the implemented Roman engineering profile. They do not establish original executable timings, Gold Edition balance, complete campaigns, all civilizations or native game acceptance. The open inspection-panel and original-observation issues retain those limits.
+
 ## Update: published framework adoption and production figures (2026-10-24)
 
 The latest tested browser work adds the fourth Settlers submenu using its original active/inactive art. It shows all 26 goods with stock, cumulative production and cumulative consumption from the actual player ledger. Starting goods and rival production are excluded from production totals; save/restore retains the figures. These labelled cumulative figures do not claim the original Gold layout, chart or sampling interval. The [production receipt](roadmap/receipts/production-statistics-2026-10-24.json) records the checks and limits.
