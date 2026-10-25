@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T03:50:02.019Z",
+  "baseSource": "1c8787168af667cc4b3551783c410733ff41b6c7",
+  "scope": "Keep the browser settlement centred during visible canvas resizes and hide/show transitions.",
+  "originalFailures": [
+    {
+      "stage": "original renderer",
+      "changedChannels": 26538,
+      "viewport": "920x500",
+      "reportSha256": "14c69ef8c8f57d420c27dfd4fab5103212e776d448c5f247bd2fb122b1715a17"
+    },
+    {
+      "stage": "hidden map after initial resize correction",
+      "changedChannels": 27631,
+      "viewport": "640x420",
+      "reportSha256": "33204e17f1da89b25e5245fdca9aa228e005e5ec10fc63d1d104d6dc2b2e925c"
+    }
+  ],
+  "implementationFiles": [
+    {
+      "path": "resources/game/renderer.ts",
+      "sha256": "4abafc02e8b902f52c5afa3d7779424ea5e46b52cf987ead24570af07814ae13"
+    },
+    {
+      "path": "tests/browser/resize.ts",
+      "sha256": "7a0e5fd8f6217e60b1e7acc59f3934f6a6f619b247ac717f916213c75e4886c5"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "69b1e9b3108d1460e7f58eddbd755d9c7dd88c3bf4b6bebb5e269e45c6528bce"
+    }
+  ],
+  "browser": {
+    "realCanvasResizeObserver": true,
+    "hiddenMapRestored": true,
+    "checks": [
+      {
+        "width": 920,
+        "height": 500,
+        "identicalCentreChannels": 36864
+      },
+      {
+        "width": 640,
+        "height": 420,
+        "identicalCentreChannels": 36864
+      },
+      {
+        "width": 1280,
+        "height": 716,
+        "identicalCentreChannels": 36864
+      }
+    ],
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "screenshot": {
+      "sha256": "18caedd90563d1f3c26717ec5e1aa75f390812d83a24cacd4804ddbfeb496145",
+      "bytes": 612487,
+      "width": 1280,
+      "height": 850
+    },
+    "personalVisualInspection": "PASS: inspected the actual 1280x850 final browser capture.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "checks": [
+    {
+      "name": "final-lint",
+      "exitCode": 0,
+      "logSha256": "8ebba2e307eefb5ca318338a26c59cdaa1aeb148ed9051ceda92a0c2eca1bafd"
+    },
+    {
+      "name": "final-types",
+      "exitCode": 0,
+      "logSha256": "0166a75f65a0a56b82b1a4b3bf3e0d152d6bef88e981132a16d816c5304579f7"
+    },
+    {
+      "name": "buddy-types",
+      "exitCode": 0,
+      "logSha256": "0ce0ae0a2a4ffebf3434e30d937def733eb6e55cb1d35f7e6a0ae05108e29f07"
+    },
+    {
+      "name": "tests",
+      "exitCode": 0,
+      "logSha256": "b4588fe37c1aaa1cac45e6ef32009f25d396fea7f1a99d2285c2a3351bf2bfd9"
+    },
+    {
+      "name": "final-build",
+      "exitCode": 0,
+      "logSha256": "dc5797858d969e7565b2ae12f0bbc8cae0b0769d7e411aed6cfad5a2ce1ae354"
+    },
+    {
+      "name": "final-green",
+      "exitCode": 0,
+      "logSha256": "5fa2c2d249e2cb4cd6bc5ae7dbbaa53aec299752d61556179a0416b4c7cb47ed"
+    },
+    {
+      "name": "campaign",
+      "exitCode": 0,
+      "logSha256": "ed7a94fea9770606011836f98eed9ccb26a9d3dee19218ebff1b61f4b14fb9db"
+    }
+  ],
+  "wholeApplicationTests": {
+    "passed": 242,
+    "failed": 0,
+    "assertions": 22471
+  },
+  "review": {
+    "standardsFindings": [],
+    "specFindings": [],
+    "remainingAcceptance": "This is the browser resize slice of S3-088. Localization, complete touch controls and native acceptance remain open."
+  },
+  "limits": [
+    "The regression checks actual Canvas 2D pixels and ResizeObserver delivery in Chrome.",
+    "It does not establish Gold Edition timing, art or native presentation parity."
+  ]
+}

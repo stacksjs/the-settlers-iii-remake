@@ -102,6 +102,12 @@ export function createRenderer(canvas: HTMLCanvasElement) {
 
   function resize(): void {
     const rect = canvas.getBoundingClientRect()
+    // A hidden map has no view centre. Retain its last visible geometry until it returns.
+    if (rect.width <= 0 || rect.height <= 0) return
+    // Keep the world point at the centre of the player's view through layout changes.
+    if (width > 0 && height > 0) {
+      camera.x += (rect.width - width) / 2; camera.y += (rect.height - height) / 2
+    }
     width = rect.width; height = rect.height; pixelRatio = Math.min(2, devicePixelRatio || 1)
     canvas.width = Math.round(width * pixelRatio); canvas.height = Math.round(height * pixelRatio)
     ctx!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)

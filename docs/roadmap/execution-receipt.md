@@ -22,6 +22,10 @@ The [atomic session receipt](receipts/checkpoint-atomic-sessions-2026-10-24.json
 
 The later [load/save ordering receipt](receipts/checkpoint-load-save-order-2026-10-24.json) adds one shared queue for checkpoint reads and writes. A delayed load can no longer rewind an acknowledged save base, and saves coalesce only between load boundaries. All 24 checkpoint cases, all 242 application tests, the real two-context browser test through generation 5, and the 58-step production campaign passed. Disposal rejects queued reads without starting storage work. Native game lifecycle acceptance remains open.
 
+## Browser resize evidence
+
+The [browser resize receipt](receipts/browser-resize-2026-10-24.json) records two real-browser failing reproductions and the renderer correction. Resizing preserves the world point at the centre of the view, and hiding the canvas retains its last visible geometry. The running production game passed three size transitions and a hide/show cycle with all 36,864 sampled centre channels identical at every visible size. The original-media capture was inspected locally. The regression now runs in CI alongside the production campaign. This advances the browser portion of S3-088; localization, complete touch controls and native acceptance remain open.
+
 ## Historical roadmap snapshot
 
 [Master issue #4](https://github.com/stacksjs/the-settlers-iii-remake/issues/4) links 12 epics and 107 implementation slots. The existing [Stacks desktop distribution issue #2059](https://github.com/stacksjs/stacks/issues/2059) is adopted for S3-101. Its authored content is preserved. Actual identities, labels, milestones, parent relationships, and blocking edges are recorded in [github.json](github.json).
