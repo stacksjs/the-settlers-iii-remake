@@ -538,10 +538,11 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!ready || !session) return
       tool = kind
       if (kind && session.context.building.has(kind)) {
-        // Keyboard players start from the nearest valid site to the castle.
+        // Prefer a working harvest site, retaining legal ground as a fallback.
         const c = castle(), found = c ? findBuildingSite(session, PLAYER, kind, c) : null
         if (found) cursor = found
-        report(found ? `${describe(kind, session.rules)} Choose open ground inside your border.` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
+        const harvest = session.context.building.get(kind)!.workflow.kind === 'harvest'
+        report(found ? `${describe(kind, session.rules)} ${harvest && !observe(session, PLAYER).harvestable(kind, found.x, found.y) ? 'This site has no known reachable resources in its working area. Explore or choose another site.' : 'Choose open ground inside your border.'}` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
       }
       else if (kind === 'march') report('Click open ground to send your soldiers there, or an enemy tower or castle to attack it.')
       else if (kind?.startsWith('spell:')) report('Click where the intervention should fall. A priest walks within reach first, except for the Magic Eye.')

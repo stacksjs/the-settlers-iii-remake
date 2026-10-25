@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T23:23:55.126487+00:00",
+  "base": "b0d1df3b4af53bd9b874d4e63b086afc667af968",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/203",
+  "sourceFilesSha256": {
+    "resources/game/controller.ts": "97219fdc53ddd2786c8b8bc355f23122ff608aebdafb934a63ce97ebdc1d8951",
+    "resources/game/engine/placement.ts": "6e79b30ea0377c9fdc04a3eea8b727f9ba37cf3107a4e0fcfe1076a7408a7339",
+    "resources/game/engine/ai.ts": "ec8f281e288c4f9459b7c9db65dfe9bc6c8b9f464e3d17f588d6094023ec2afb",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/rules.ts": "787c6b77322b6f77aaf4b01e5a57640974c873295e4d681be8e378940f1d0ffe",
+    "tests/unit/harvest-placement.test.ts": "6a9ba7aa236c0af48de45557f4a240476e86d1280fafcf007f4709d5bcc0a5e5",
+    "tests/unit/ai-charcoal-route.test.ts": "b9ce047a35f22c4ea865b9c945d32a6b9c0ff29b8a80eeb4c8385c462886de82",
+    "tests/fixtures/ai-charcoal-bootstrap.json": "97e50b87298a7c5c16e297831795b1877addac6bc929b6b7a2a2c325b259c028",
+    "tests/fixtures/ai-charcoal-bootstrap.provenance.json": "e51af02ffa01613726f4c863367e9b5398c4913d6a1a5f7bc3833cf0a71f6139",
+    "bun.lock": "0d06a28dde98657fb014f26ae9263a7d5da49a8cb9c5dd9311fbb228ebe4cb68",
+    "pantry.lock": "2002ab498cd3a71ffa7be05e21c734657360b5130f7e96252979dcc6ab8e0e86"
+  },
+  "physicsRulesAndInstalledLocksUnchanged": true,
+  "rules": {
+    "version": "0.11.0",
+    "digest": "f1ce0705bbe9a53bf880e7c1d38036404c56e1d7256517123d3dd1e38aee0e78"
+  },
+  "problem": "Normal seed1 keyboard construction suggested a legal woodcutter site40,56 without known reachable trees, despite usable known sites. Seed1 initially has no known granite, so its barren quarry fallback is not a missed productive-site defect.",
+  "correction": "Prefer the nearest legal site with known reachable harvest resources through the existing production router. Preserve nearest legal ordering as fallback and unrestricted legal manual placement. Explain no known reachable resources at the fallback. No new placement rule or resource grant.",
+  "regressions": {
+    "paths": [
+      "tests/unit/harvest-placement.test.ts",
+      "tests/unit/placement.test.ts"
+    ],
+    "correctedOldSourceRed": {
+      "pass": 5,
+      "fail": 1,
+      "assertions": 28
+    },
+    "focusedGreen": {
+      "pass": 6,
+      "fail": 0,
+      "assertions": 36
+    },
+    "scope": "Ordinary seed1 wood and seed2 stone construction/production, unchanged created stock, successful commands, clean audit and matching restored checksums. Existing distant clearing, map-corner ordering and absent-site cases pass.",
+    "rejectedExpectation": "The initial seed1 quarry-positive expectation was invalid because no granite was known. Retained as negative fallback coverage instead."
+  },
+  "charcoalRegressionMaintenance": {
+    "fixture": {
+      "schemaVersion": 1,
+      "source": "b0d1df3b4af53bd9b874d4e63b086afc667af968",
+      "fixture": "ai-charcoal-bootstrap.json",
+      "bytes": 447471,
+      "sha256": "97e50b87298a7c5c16e297831795b1877addac6bc929b6b7a2a2c325b259c028",
+      "capture": "Normal rivalSession(2), player2 policy only, default80tickcadence and RIVAL_MILITARY, tick10080 before its next decision. This is the exact tick of the retained premature-charcoal red. No world, goods or clock edits.",
+      "failure": "The initial producer implementation without demand guard ordered charcoal at this decision without active ironore or a coal consumer. Retain this point as a direct public decision regression rather than replaying a 20000tick simulation inside a default5second unit budget.",
+      "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/202",
+      "checksum": "f7aed9a5",
+      "audit": [],
+      "media": "Generated simulation only; no original raster/audio."
+    },
+    "initialFullUnit": {
+      "pass": 317,
+      "fail": 1,
+      "assertions": 23113,
+      "reason": "The unchanged20k negative case timed out6719ms against its5000ms budget during concurrent live browser work. No assertion failure."
+    },
+    "unchangedFocusedRetryMs": 4974.42,
+    "capturedDecision": {
+      "pass": 1,
+      "fail": 0,
+      "assertions": 6,
+      "elapsedMs": 95.53,
+      "demandGuardRemovalMutator": {
+        "pass": 0,
+        "fail": 1,
+        "assertions": 4
+      }
+    },
+    "fullFormerWindowIntegration": {
+      "source": "b0d1df3b4af53bd9b874d4e63b086afc667af968",
+      "seed": 2,
+      "policyPlayers": [
+        2
+      ],
+      "ticks": 20000,
+      "decisions": 250,
+      "coalOrders": 0,
+      "checksum": "7efe9e03",
+      "failedCommands": 0,
+      "audit": [],
+      "createdGoodsUnchanged": true,
+      "elapsedMs": 4872.220291,
+      "scope": "The former full20000tick negative unit window retained as an ordinary integration trace, without a fake clock or any production deadline changes. Exact first-failure point is covered directly by the captured unit fixture."
+    },
+    "limit": "The direct captured decision replaces the timing-sensitive negative unit replay. Actual24k production/restore, passive50k battle/120s and real10minute4x browser battle retain their existing budgets."
+  },
+  "checks": {
+    "unit": {
+      "pass": 318,
+      "fail": 0,
+      "assertions": 23118,
+      "files": 45,
+      "seconds": 240.85
+    },
+    "lint": "0 errors and warnings",
+    "typecheck": "app/tools/views pass",
+    "assets": "pass",
+    "fidelity": "pass",
+    "roadmap": "pass",
+    "productionBuild": "pass",
+    "browser": {
+      "recordedAt": "2026-10-25T23:23:19.035062+00:00",
+      "totalSteps": 385,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "0c4c13806b6126652d27b5a8176857a03ddfdde5e70ec37f762f4878b4399876",
+          "noErrors": true,
+          "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "1ad4156124bd3b56accad9170ab3d7a59bbf147a0385db895703ebb8e2c9cc60",
+          "noErrors": true,
+          "mediaReceiptSha256": "ae683c2673d43619237214f5e2432287acc8ccce1cf0abf3e2875c3e8aa4139a"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "66dd9f1ab323a2233e2d47cbb9fd8e6f24e62d5baa18e9b440fbf26ba7c96cd5",
+          "noErrors": true,
+          "mediaReceiptSha256": "7ee85b845a653fb6037ad7b3a97ac9e4feefae6491d3af783912756e73249585"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "eade2308edebd8bd4492365b0fcfded46d80ddc3e820a114888f0126437ef86f",
+          "noErrors": true,
+          "mediaReceiptSha256": "883c777b4e1f98319da2ab8d78a129866df07b2e4aa681f4692613d1395b80d5"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "187ae8c53d710ab3597774720f37adce076a612182c5678832930e7d37fcdc1e",
+          "noErrors": true,
+          "mediaReceiptSha256": "8ac6a62596b81891f81f6d6399d82eda2d64e8ee135d8317f6c16f64968c8122"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "63689b1c935adaceec0d54dcf70ed6eae643903b0219d55e2466d1f5c6a95614",
+          "noErrors": true,
+          "mediaReceiptSha256": "274b19a8b4c7224320bc42a9c1e7f6c91d856c9fffc117ab0c81e342ffd08d5a"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "ef0f6f2a3ad24d0db0cf07627f231b78dabb3e8c39c7f813c08f23fe8a79ff64",
+          "noErrors": true,
+          "mediaReceiptSha256": "a9ca35ac5d772446e769052d8b558eaf22f55e3818ec7a4e8be91f0d726cb499"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "5b898608c9ecd76a75e1c6c5972d5c4867bcdfa512bb76f2de5b261a1392a3a9",
+          "noErrors": true,
+          "mediaReceiptSha256": "b9949c74df0fccdbf153fc19546a51d0741233e6bf9de2b2d9311257cba5d53e"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "92e04a8305c3ff5c618e9a926d09e1939999d523cd73e1a7b2fabad82fc0e336",
+          "noErrors": true,
+          "mediaReceiptSha256": "06ed24c639278f3e8af52f1f564a0d6ca075392100db09127c7c0344f4fba690",
+          "elapsedMs": 615500.0748749999
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "cf14f7346472de2b1f92d82ff24ae8b1e21eeae1bd2f4e3fc0625039041bcaec",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  },
+  "nativeBrowserInput": {
+    "method": "CUA native clicks and keyboard through ordinary setup/build/work-area/speed/pause/save controls. No session/save/clock injection.",
+    "observations": [
+      "Seed1 suggested woodcutter25,61 completes and produces1log without manually repairing the work area. It later exhausts the local tree; this is not sustained forestry proof.",
+      "Seed1 quarry fallback visibly warns about no known reachable resources.",
+      "Separate seed2 manual timber/quarry/forester/sawmill/barracks settlement paused/saved15:43. No human victory."
+    ],
+    "captures": [
+      {
+        "name": "native-no-granite-warning.jpg",
+        "format": "JPEG",
+        "bytes": 142503,
+        "sha256": "9c29adba74d73c346c40d6360b287980d9834b7f400db4c166c7918cc36dc456",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "7f78e7f8bb208e6b70e7dfa021a33392cac2541265f4c4200f805faa2c6577de"
+      },
+      {
+        "name": "native-seed1-produced-log.jpg",
+        "format": "JPEG",
+        "bytes": 138596,
+        "sha256": "6d7cd9f994206c12dc3ad2e8be6379896990e03e64b32126c42ab6e0c47c8321",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "663de8b2dc7ff66e67219ca222cc9c83624b35f88b8dbf62be950ed979a868b0"
+      },
+      {
+        "name": "native-seed1-suggestion.jpg",
+        "format": "JPEG",
+        "bytes": 139486,
+        "sha256": "632719641e6e9bc21e42a2812a8972367038b4732d4f25c389cf6dbe85a9809d",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "33e873192ad9ea02fc07e876700810c7115c252eaa3cf6b57efc375b3b4e6445"
+      }
+    ],
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "previousMainQualification": {
+    "recordedAt": "2026-10-25T23:20:07.111957+00:00",
+    "commit": "b0d1df3b4af53bd9b874d4e63b086afc667af968",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40242723177",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12618051922,
+      "bytes": 19646,
+      "sha256": "a5a9df03b47549820dcac09d0c7defcfb69649b48b63a0da9c82cd415fc9e4fc",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "7b3ecc5cd60156cdbc2d059bba3babac9aa5b4357232dc264e2b3e4319e17112",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "bdf83e64d51a02169a55949d8ee382380c7d7d6fd690b66b3df9127512194626",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "b4140af19723d79dba17ea8e1d8f3a4b8f560ec7988e08739cfb64605b56769d",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "d257d445675355f61322ade2e7090240d7d60ba7e7970f3fee3b5cb733962b0b",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "30fec40f2b0819ad3b985af6d7b768f84c2c5ae2544bded2e3b3fc39aaae8ebb",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "6ed792cb979dd51cafc73874a204905b05b0764c294693315500c46a535205b7",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "0c96ff8f5f4fa7e2c050ca91b377de3a26b80d8b35550bc8c36bbd6c2a241b62",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "de84723ef39813a8018033627bb099ef3c948903048639a49c8cbcc64bff8139",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "5bf0283f4e19c62da5ca48346e0289c178a623fedce262e61eda3c033c58abfb",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "8270b8aea8480250726226ab41be76e3f412d8f6f5c2cb6acd9b7d94e537f1d0",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 385,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "framework": "Qualified published Stacks0.75.311/STX0.2.691/Craft0.0.341/Pantry0.11.127/Bun1.4.4 unchanged. No new framework defect or release for this app-only correction.",
+  "scopeLimits": [
+    "Exact pushed-main CI and original artifact must be verified before203closes.",
+    "No all-seed, indefinite sustainability, human victory, native presentation or original Gold parity claim. Broader73/74/76/4 remain open.",
+    "Pinned reference remake/public demo only; no original executable measurements."
+  ]
+}

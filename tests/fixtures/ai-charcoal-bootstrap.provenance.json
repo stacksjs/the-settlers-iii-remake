@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "source": "b0d1df3b4af53bd9b874d4e63b086afc667af968",
+  "fixture": "ai-charcoal-bootstrap.json",
+  "bytes": 447471,
+  "sha256": "97e50b87298a7c5c16e297831795b1877addac6bc929b6b7a2a2c325b259c028",
+  "capture": "Normal rivalSession(2), player2 policy only, default80tickcadence and RIVAL_MILITARY, tick10080 before its next decision. This is the exact tick of the retained premature-charcoal red. No world, goods or clock edits.",
+  "failure": "The initial producer implementation without demand guard ordered charcoal at this decision without active ironore or a coal consumer. Retain this point as a direct public decision regression rather than replaying a 20000tick simulation inside a default5second unit budget.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/202",
+  "checksum": "f7aed9a5",
+  "audit": [],
+  "media": "Generated simulation only; no original raster/audio."
+}

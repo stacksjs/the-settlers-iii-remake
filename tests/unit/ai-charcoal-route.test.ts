@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { audit, economicAI, observe, PUBLISHED_RULES, restore, save, stepAI } from '../../resources/game/engine'
-import { rivalSession, RIVAL_MILITARY } from '../../resources/game/controller'
+import { RIVAL_MILITARY } from '../../resources/game/controller'
 
 // Public policy/session commands prove an actual alternative coal chain.
 // They do not establish original AI priorities or a completed seeded match.
@@ -64,17 +64,14 @@ test('a client catalog without the optional charcoal building cannot plan it', a
   expect(s.checksum()).toBe(before)
 })
 
-test('charcoal construction waits for an ore producer or an actual coal consumer', () => {
-  const s = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
-  for (let tick = 0; tick < 20000; tick++) {
-    if (s.state.tick % ai.interval === 0) {
-      const o = observe(s, 2), orders = ai.decide(o)
-      if (orders.some(c => c.type === 'build' && c.building === 'charcoal-maker')) {
-        const needed = o.view.buildings.some(b => b.owner === 2 && !b.suspended && ((b.phase === 'active' && (o.rules.buildings.find(r => r.id === b.type)?.outputs.ironore ?? 0) > 0) || (o.rules.buildings.find(r => r.id === b.type)?.inputs.coal ?? 0) > 0))
-        expect({ tick: s.state.tick, needsCoal: needed }).toMatchObject({ needsCoal: true })
-      }
-    }
-    stepAI(s, ai, sequence); s.advance(1)
-  }
+test('the captured bootstrap decision waits for an ore producer or an actual coal consumer', async () => {
+  const bytes = await Bun.file(new URL('../fixtures/ai-charcoal-bootstrap.json', import.meta.url)).arrayBuffer()
+  const provenance = await Bun.file(new URL('../fixtures/ai-charcoal-bootstrap.provenance.json', import.meta.url)).json()
+  expect(Bun.SHA256.hash(bytes, 'hex')).toBe(provenance.sha256)
+  const s = restore(JSON.parse(new TextDecoder().decode(bytes)), PUBLISHED_RULES), before = s.checksum(), o = observe(s, 2)
+  expect(s.state.tick).toBe(10080)
+  expect(o.view.buildings.some(b => b.owner === 2 && !b.suspended && ((b.phase === 'active' && (o.rules.buildings.find(r => r.id === b.type)?.outputs.ironore ?? 0) > 0) || (o.rules.buildings.find(r => r.id === b.type)?.inputs.coal ?? 0) > 0))).toBe(false)
+  expect(economicAI(2, { military: RIVAL_MILITARY }).decide(o).some(c => c.type === 'build' && c.building === 'charcoal-maker')).toBe(false)
+  expect(s.checksum()).toBe(before)
   expect(audit(s.context)).toEqual([])
 })
