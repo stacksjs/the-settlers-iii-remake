@@ -55,7 +55,6 @@
     "test:coverage": "./buddy test:coverage",
     "test:types": "./buddy test:types",
     "bud": "./buddy",
-    "stx": "./buddy",
     "probe:integrations": "./buddy integrations:probe",
     "assets:import": "bun scripts/import-assets.ts",
     "prebuild": "bun run assets:import",
