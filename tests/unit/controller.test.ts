@@ -91,6 +91,30 @@ test('rival landscapes start a computer player on the far side', () => {
   }
 })
 
+test('a new rival match ends when its last completed military building is lost and keeps the result after restore', () => {
+  const session = rivalSession(2)
+  expect(snapshot(session, null, '', 1).objectives).toEqual([{ id: 'eliminate-rival', text: 'Capture every enemy castle and tower. Keep at least one of your own.', status: 'open' }])
+  const castle = [...session.state.buildings.values()].find(b => b.owner === PLAYER && b.type === 'castle')!
+  order(session, 'demolish', { building: castle.id })
+  session.advance(20)
+  expect(session.view(1).mission?.outcome).toBe('lost')
+  expect(session.view(2).mission?.outcome).toBe('won')
+  expect(snapshot(session, null, '', 1).objectives[0]?.status).toBe('failed')
+  const copy = restore(JSON.parse(JSON.stringify(save(session))), PUBLISHED_RULES)
+  expect(copy.checksum()).toBe(session.checksum())
+  expect(snapshot(copy, null, '', 1).outcome).toBe('lost')
+  expect(audit(session.context)).toEqual([])
+})
+
+test('a rival checkpoint from before elimination remains a free settlement', () => {
+  const legacy = createSession({ rules, map: landscape(), seed: 2, players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: { x: 80, y: 40 } }], content: { id: 'rival-128', digest: 'seed:2' } })
+  const copy = restore(JSON.parse(JSON.stringify(save(legacy))), PUBLISHED_RULES)
+  expect(copy.view(1).mission).toBeNull()
+  expect(snapshot(copy, null, '', 1).outcome).toBe('playing')
+  expect(snapshot(copy, null, '', 1).objectives).toEqual([])
+  expect(copy.checksum()).toBe(legacy.checksum())
+})
+
 test('the computer rival guards its castle and scouts with ordinary, accepted commands', () => {
   const session = rivalSession(2), ai = economicAI(2, { military: RIVAL_MILITARY }), sequence = { next: 0 }
   const guard = [...session.state.settlers.values()].filter(p => p.owner === 2 && p.soldier)

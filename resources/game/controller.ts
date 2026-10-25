@@ -15,6 +15,7 @@ import type { MinimapOptions } from './minimap'
 import { alertTarget, fromMinimap, minimapPixels, minimapSize, toMinimap } from './minimap'
 import { BUILDING_MENU } from './menus'
 import { createTroops } from './troops'
+import { RIVAL_MISSION } from './skirmish'
 
 const rules = ROMAN_ENGINEERING
 export const PLAYER = 1
@@ -177,7 +178,7 @@ export function rivalSession(seed: number): Session {
   if (!west || !east || Math.abs(west.x - east.x) < 40) throw new Error('This landscape has no room for two settlements. Start another one.')
   // Both sides start with a small guard so the rival can scout and fight from the outset (unverified start, S3-074).
   const settlers = { ...DEFAULT_START.settlers, ...RIVAL_GUARD }
-  return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start: west, settlers }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: east, settlers }], content: { id: `rival-${RIVAL_SIZE}`, digest: `seed:${seed}` } })
+  return createSession({ rules, map, seed, mission: RIVAL_MISSION, players: [{ name: 'Rome', civilization: 'roman', start: west, settlers }, { name: 'Computer', civilization: 'roman', controller: 'computer', start: east, settlers }], content: { id: `rival-${RIVAL_SIZE}-elimination-v1`, digest: `seed:${seed}` } })
 }
 
 /** A Roman start on the Amazons demo's original T1 tutorial map. Its missions and AI are not yet played. */

@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T11:56:01.251391+00:00",
+  "base": "ed194896a7128a0f2a4027bde69f558ddd2cbdfb",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/76"
+  ],
+  "versions": {
+    "stacks": "0.75.308",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "bun": "1.4.4"
+  },
+  "problem": "Computer-rival starts had no mission, so eliminating the last enemy military building never produced a win or loss.",
+  "change": "New two-player Roman rival starts use the maintained mission DSL. Only completed castles and towers prevent elimination. Simultaneous elimination gives both players a loss. Objectives and terminal outcomes are retained by the existing checkpoint format. The browser uses its existing objective panel and announces changes politely.",
+  "reference": {
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "classification": "E: remake implementation evidence, not a Gold executable observation",
+    "files": [
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/loading/WinLoseHandler.java",
+        "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/loading/WinLoseHandler.java",
+        "sha256": "0de00bdc76e045ec7331b09945822c41d5720236ee0292aec83a9d922daa251a",
+        "bytes": 3147
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/loading/original/OriginalMultiPlayerWinLoseHandler.java",
+        "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/loading/original/OriginalMultiPlayerWinLoseHandler.java",
+        "sha256": "994b86c9c967c90f9149657d75ffb3a9896a07a07bb10ce3147d53749899fd9c",
+        "bytes": 2440
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/data/BuildingCounts.java",
+        "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/data/BuildingCounts.java",
+        "sha256": "4e14cca47a7c641f01c47032a182f90ca28852ef56bf05835b938b95a64ae0b3",
+        "bytes": 3106
+      }
+    ]
+  },
+  "referenceFindings": [
+    "WinLoseHandler.isPlayerDead counts TOWER, BIG_TOWER and CASTLE through BuildingCounts.buildings.",
+    "BuildingCounts keeps finished buildings separate from buildingsUnderConstruction.",
+    "OriginalMultiPlayerWinLoseHandler first defeats dead players, then awards the sole surviving team; no surviving team means no winner."
+  ],
+  "sourceFiles": [
+    {
+      "path": "resources/game/skirmish.ts",
+      "sha256": "9a13ccc68362cddd7b78623425a6d53ffb3f26700aca88aa341c604ebed8caee"
+    },
+    {
+      "path": "resources/game/controller.ts",
+      "sha256": "bd183f6357ea7e15b68135797fbeba7a63268d765147c048d3fa823a46e2aa45"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "sha256": "50e509b85715571d58c57dc4eb78734e3af09f4f35fed61d0d49d0b33c767f14"
+    },
+    {
+      "path": "tests/unit/skirmish.test.ts",
+      "sha256": "aa63f53c8ffd47bfd5b2e76a47ca5552590b5b6462dc921e2498af53b37a757b"
+    },
+    {
+      "path": "tests/unit/controller.test.ts",
+      "sha256": "6e149771a3f03b1fb6dbaf81e3d38a8f43a4c40493544d4531263d09a2496ea7"
+    },
+    {
+      "path": "tests/browser/skirmish.ts",
+      "sha256": "ad168cb27649bdc878d8bd3dbb8154d915802053cd9b7fd9db92cdc3756a872c"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "d5a7ffeac0c019740507ff4831662ccf17d9d1a36b872d096928e8e6a43a5652"
+    }
+  ],
+  "red": {
+    "logSha256": "53af54c16c96aefdd731f920862b4929fe03ec37082c09284a96caefee46ed6f",
+    "failure": "The public new-rival snapshot returned no objective."
+  },
+  "publicSessionChecks": [
+    "Capture the final enemy castle for either player through move-soldiers and attack commands.",
+    "Restore during an attack and reach the identical outcome and checksum.",
+    "Keep playing with a surviving completed tower after castle demolition.",
+    "Lose with only an unfinished tower.",
+    "Give neither player victory when both are eliminated on the same cadence.",
+    "Retain terminal outcomes across save/restore.",
+    "Restore an earlier rival checkpoint without adding a new mission."
+  ],
+  "localChecks": {
+    "unitTests": 254,
+    "unitFailures": 0,
+    "unitAssertions": 22562,
+    "unitLogSha256": "aff1f6e601a08cba93eabcca803bcc07841d6c49fecfa9fbf9794dee68035367",
+    "lintErrors": 0,
+    "lintWarnings": 0,
+    "lintLogSha256": "17e8d3898f4a6ee157f3ffb39e4064d7f4aa11555beabf6834d12c6c765304ec",
+    "typesErrors": 0,
+    "typesLogSha256": "870576bab3273d7bd0ac791cbb3b44ddb8996264b40f7e666c48afd65fe5b93d",
+    "productionBuildExitCode": 0,
+    "buildLogSha256": "a501d80b622b1ce2bb07bd2015b54259a0e4afc8e9b631ecfec6f18f18d7f5f7",
+    "browserSteps": 332,
+    "browserReports": [
+      {
+        "name": "campaign",
+        "sha256": "223f1c4319bd20e97208f715e27aff0c806ef12c5c9af83025099f25419dbfb8",
+        "steps": 58,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "control-frame",
+        "sha256": "714427415027e42b99efe40337f16f447389f8aa3353738e33ad6445bc5846c1",
+        "steps": 72,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "resize",
+        "sha256": "97e8f85846aa2109e98a91c42e0348659e0ec00a18448a3de1089c54cae6d021",
+        "steps": 5,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "production",
+        "sha256": "a1511a23db5b3d8cc9b0a2aaeee6969fc9692ee001874a5e9473bb4cd34ab04b",
+        "steps": 19,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "selection",
+        "sha256": "93599f675f4131f735cb1645c68dfc555d3266bb840ef5db7ae381325b9b2b47",
+        "steps": 33,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "recruitment",
+        "sha256": "805bfac4b9d52ebea7f2a410ec15dbd3940ba2adc13e516c349968a918a13b81",
+        "steps": 68,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "working-area",
+        "sha256": "396d4d9bd1b8b79bc4d749d822afa79f00733f6aea52bd0543724373b8ad9ac4",
+        "steps": 57,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "skirmish",
+        "sha256": "d0b3cd778e6c929dbae30198758bc4af7166215c3deb1379ea76891318907a33",
+        "steps": 19,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      },
+      {
+        "name": "checkpoints",
+        "sha256": "d96eb047aa7aef84a0c444cbf27431c474293b15bb3ac9e9d8ac1e6efa89cc75",
+        "steps": 1,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "collectionErrors": 0
+      }
+    ]
+  },
+  "nativeBrowserInput": {
+    "origin": "http://127.0.0.1:3455/",
+    "delivery": "Native IAB accessibility clicks and real document reload",
+    "observed": "Started a new rival game, displayed its open objective, saved, reloaded and inspected the readable objective inside the original control panel.",
+    "stateSha256": "574d33eb713d0143acb75b772dc0db9a3e260ff5bb29bcdfabb3f9c49d23d041",
+    "screenshotSha256": "5b9ee894a3ba3bcc943b2fe88c4d3237cfc969fa9aad0d9ce708d9bd1080cd4b",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "compatibility": "The new content identity is rival-128-elimination-v1. Free settlements and original tutorial starts do not acquire this mission. Earlier rival checkpoints restore their existing definitions unchanged.",
+  "limits": [
+    "Remake engineering evidence, not an original Gold executable observation.",
+    "The browser checks objective and save/reload delivery. Full browser combat to a match conclusion is not established by this receipt.",
+    "Factions, teams, difficulty, configurable victory modes, postgame map reveal and original timing remain unverified or incomplete.",
+    "The existing simulation permits continued play after a terminal mission outcome. This slice does not add a postgame freeze.",
+    "No native game rendering, signing, store delivery or whole-game parity claim."
+  ]
+}
