@@ -81,7 +81,7 @@ test('the control panel reports the simulation it is given', () => {
 })
 
 test('rival landscapes start a computer player on the far side', () => {
-  for (const seed of [1, 2, 3, 4, 5]) {
+  for (const seed of [0, 1, 2, 3, 4, 5, 0xFFFFFFFF]) {
     const session = rivalSession(seed)
     const castles = [...session.state.buildings.values()].filter(b => b.type === 'castle')
     expect(castles.map(b => b.owner)).toEqual([1, 2])
@@ -89,6 +89,9 @@ test('rival landscapes start a computer player on the far side', () => {
     expect(session.state.players[1]!.controller).toBe('computer')
     expect(mapName(session)).toBe('Computer rival')
     expect(snapshot(session, null, '', 1).seed).toBe(seed)
+    const copy = restore(JSON.parse(JSON.stringify(save(session))), PUBLISHED_RULES)
+    expect(snapshot(copy, null, '', 1).seed).toBe(seed)
+    expect(copy.checksum()).toBe(session.checksum())
   }
 })
 
