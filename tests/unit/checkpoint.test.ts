@@ -193,6 +193,28 @@ describe('checkpoints', () => {
     expect(await c.load()).toBeNull()
   })
 
+  test.each((['save', 'load'] as const).flatMap(operation => ['checkpoint', 'head', 'a', 'legacy'].map(phase => [operation, phase] as const)))('disposal during an empty %s at %s starts no further reads or writes', async (operation, phase) => {
+    const m = memory(), entered = Promise.withResolvers<void>(), complete = Promise.withResolvers<void>()
+    const calls: string[] = []
+    const c = createCheckpoints({
+      ...m.store,
+      async get(key, signal) {
+        calls.push(key)
+        const value = await m.store.get(key, signal)
+        if (key === (phase === 'legacy' ? 'legacy' : `game:${phase}`)) { entered.resolve(); await complete.promise }
+        return value
+      },
+    }, 'game', 'legacy')
+    const pending = operation === 'save' ? c.save('closed') : c.load()
+    await entered.promise
+    const beforeDisposal = [...calls]
+    c.dispose(); complete.resolve()
+    if (operation === 'save') expect(await pending).toMatchObject({ ok: false, reason: 'disposed' })
+    else await expect(pending).rejects.toThrow()
+    expect(calls).toEqual(beforeDisposal)
+    expect(m.log).toHaveLength(0)
+  })
+
   test('flush waits for the pending commit', async () => {
     const m = memory(), c = createCheckpoints(m.store, 'game')
     m.slow(10)

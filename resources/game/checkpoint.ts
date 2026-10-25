@@ -19,6 +19,12 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
   let observed: Snapshot | null = null
   let queued: { text: string, waiters: ((result: SaveResult) => void)[] } | null = null
   const key = (name: string): string => `${prefix}:${name}`
+  async function readValue(name: string): Promise<unknown> {
+    lifetime.signal.throwIfAborted()
+    const value = await store.get(name, lifetime.signal)
+    lifetime.signal.throwIfAborted()
+    return value
+  }
   const disposed = (): SaveResult => ({ ok: false, reason: 'disposed', message: 'The game was closed while the checkpoint was being written.' })
   const conflict = (): SaveResult => ({ ok: false, reason: 'superseded', message: 'Another game session changed the checkpoint. Reload this page before saving again.' })
   const payload = (value: unknown): Payload | null => {
@@ -30,7 +36,7 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
 
   /** Read-only migration from the previous two-slot protocol. */
   async function legacy(): Promise<Payload | null> {
-    const raw = await store.get(key('head'), lifetime.signal)
+    const raw = await readValue(key('head'))
     let head: Head | null = null
     if (typeof raw === 'string') {
       try {
@@ -40,7 +46,7 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
       catch { /* An intact slot can recover an unreadable legacy head. */ }
     }
     const slots = await Promise.all((['a', 'b'] as const).map(async (slot) => {
-      const raw = await store.get(key(slot), lifetime.signal)
+      const raw = await readValue(key(slot))
       try { return { slot, value: typeof raw === 'string' ? payload(JSON.parse(raw)) : null } }
       catch { return { slot, value: null } }
     }))
@@ -49,15 +55,14 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
     const chosen = preferred || fallback
     if (chosen?.value) return chosen.value
     if (legacyKey) {
-      const text = await store.get(legacyKey, lifetime.signal)
+      const text = await readValue(legacyKey)
       if (typeof text === 'string') return { generation: 0, sha256: sha256(text), text }
     }
     return null
   }
 
   async function read(): Promise<Snapshot> {
-    lifetime.signal.throwIfAborted()
-    const raw = await store.get(key('checkpoint'), lifetime.signal)
+    const raw = await readValue(key('checkpoint'))
     if (raw === null || raw === undefined) {
       const current = await legacy()
       return { raw: null, current, generation: current?.generation ?? 0 }
@@ -118,6 +123,7 @@ export function createCheckpoints(store: CheckpointStore, prefix: string, legacy
     async load(): Promise<string | null> {
       await flush()
       const saved = await read()
+      lifetime.signal.throwIfAborted()
       observed = saved
       conflicted = false
       return saved.current?.text ?? null
