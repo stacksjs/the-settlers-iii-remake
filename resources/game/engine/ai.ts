@@ -5,6 +5,7 @@ import type { Command, CommandResult, PlayerSettings } from './state'
 import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
 import { footprint } from './context'
 import { harvestableSite } from './production'
+import { reachableTiles } from './routing'
 
 // A computer player is a client like any other: it reads what its player may
 // know and submits ordinary commands. It never touches simulation state, so it
@@ -25,6 +26,8 @@ export interface Observation {
   placement: (type: string, x: number, y: number) => string | null
   /** Whether a worker at a legal proposed site can reach a known own or neutral harvest target. */
   harvestable: (type: string, x: number, y: number) => boolean
+  /** Known tiles reachable by an own soldier through ordinary movement rules. */
+  reachable: (soldier: number) => ReadonlySet<number>
 }
 
 export function observe(session: Session, player: number): Observation {
@@ -37,6 +40,10 @@ export function observe(session: Session, player: number): Observation {
     object: t => (explored(t) && map.object[t] ? rules.objects[map.object[t]! - 1]!.id : null),
     placement: (type, x, y) => session.placement(player, type, x, y),
     harvestable: (type, x, y) => harvestableSite(session.context, player, type, x, y, explored),
+    reachable: id => {
+      const soldier = view.settlers.find(s => s.id === id && s.owner === player && s.rank !== undefined)
+      return soldier ? reachableTiles(session.context, indexOf(map, soldier.x, soldier.y), { allowed: explored }) : new Set<number>()
+    },
   }
 }
 
@@ -273,11 +280,31 @@ export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] 
   // Scouting: one soldier walks toward the nearest unexplored land in a direction that turns with time.
   if (!targets.length && view.tick % policy.scoutEvery < (o.interval ?? 1)) {
     const scout = (ready.length ? ready : movable).sort((a, b) => a.id - b.id)[0]!
-    const [dx, dy] = DIRECTIONS[Math.floor(view.tick / policy.scoutEvery) % 6]!
-    for (let step = 1; step < Math.max(o.width, o.height); step++) {
-      const x = center.x + dx * step, y = center.y + dy * step
-      if (x < 0 || y < 0 || x >= o.width || y >= o.height) break
-      if (!o.explored(indexOf(o, x, y))) { orders.push({ type: 'move-soldiers', soldiers: [scout.id], x, y }); break }
+    const unknownOnRay = ([dx, dy]: readonly [number, number]): Point | null => {
+      for (let step = 1; step < Math.max(o.width, o.height); step++) {
+        const x = center.x + dx * step, y = center.y + dy * step
+        if (x < 0 || y < 0 || x >= o.width || y >= o.height) break
+        if (!o.explored(indexOf(o, x, y))) return { x, y }
+      }
+      return null
+    }
+    const ray = unknownOnRay(DIRECTIONS[Math.floor(view.tick / policy.scoutEvery) % 6]!)
+    if (ray) orders.push({ type: 'move-soldiers', soldiers: [scout.id], ...ray })
+    else if (DIRECTIONS.every(direction => unknownOnRay(direction) === null)) {
+      // Fixed rays leave off-axis areas unseen. Visit a known reachable edge
+      // instead, without inspecting the terrain or enemies beyond that edge.
+      const frontier: (Point & { tile: number })[] = []
+      for (let tile = 0; tile < o.width * o.height; tile++) if (o.explored(tile) && neighbours(o, tile).some(next => !o.explored(next))) frontier.push({ tile, x: tile % o.width, y: Math.floor(tile / o.width) })
+      const readyIds = new Set(ready.map(s => s.id))
+      const scouts = movable.slice().sort((a, b) => Number(!readyIds.has(a.id)) - Number(!readyIds.has(b.id)) || a.id - b.id)
+      const checked: ReadonlySet<number>[] = []
+      for (const candidate of scouts) {
+        if (!frontier.length || checked.some(region => region.has(at(candidate)))) continue
+        const region = o.reachable(candidate.id)
+        const target = frontier.filter(p => region.has(p.tile)).sort((a, b) => distance(a, candidate) - distance(b, candidate) || a.tile - b.tile)[0]
+        if (target) { orders.push({ type: 'move-soldiers', soldiers: [candidate.id], x: target.x, y: target.y }); break }
+        checked.push(region)
+      }
     }
   }
   return orders

@@ -2,7 +2,7 @@ import type { Context } from './context'
 import type { Op, Program, Settler } from './state'
 import { ledger, nextId, occupy, passable, pointAt, tileOf, vacate } from './context'
 import { directionBetween, neighbours, pointOf } from './geometry'
-import { enterable, route, stepCost } from './routing'
+import { enterable, reachableTiles, route, stepCost } from './routing'
 
 export type Effect = (ctx: Context, s: Settler, args: Record<string, number | string>) => boolean
 export type Finish = (ctx: Context, s: Settler, program: Program, ok: boolean, reason: string | null) => void
@@ -16,11 +16,11 @@ export const finishers = new Map<string, Finish>()
 // one, so resting crowds never stack and placement can see who stands where.
 
 /** Nearest free passable tile around a point, searched breadth-first for a stable result. */
-export function freeTileNear(ctx: Context, tile: number, owner = 0, limit = 400): number | null {
+export function freeTileNear(ctx: Context, tile: number, owner = 0, limit = 400, allowed?: ReadonlySet<number>): number | null {
   const seen = new Set([tile]), queue = [tile]
   for (let i = 0; i < queue.length && i < limit; i++) {
     const at = queue[i]!
-    if (passable(ctx, at) && ctx.index.settlerAt[at] === 0 && (!owner || ctx.state.map.owner[at] === owner || ctx.state.map.owner[at] === 0)) return at
+    if ((!allowed || allowed.has(at)) && passable(ctx, at) && ctx.index.settlerAt[at] === 0 && (!owner || ctx.state.map.owner[at] === owner || ctx.state.map.owner[at] === 0)) return at
     for (const next of neighbours(ctx.state.map, at)) if (!seen.has(next)) { seen.add(next); queue.push(next) }
   }
   return null
@@ -98,7 +98,9 @@ function rest(ctx: Context, s: Settler): void {
   const tile = tileOf(ctx, s), holder = ctx.index.settlerAt[tile]!
   if (holder === s.id) return
   if (holder === 0 && passable(ctx, tile)) { occupy(ctx, s, tile); return }
-  const free = freeTileNear(ctx, tile, civilian(ctx, s) ? s.owner : 0)
+  const owner = civilian(ctx, s) ? s.owner : 0
+  const allowed = ctx.rules.restingRouting === 'reachable' ? reachableTiles(ctx, tile, { territory: owner }) : undefined
+  const free = freeTileNear(ctx, tile, owner, 400, allowed)
   if (free !== null) start(ctx, s, 'settle', 0, [{ op: 'go', tile: free }])
 }
 

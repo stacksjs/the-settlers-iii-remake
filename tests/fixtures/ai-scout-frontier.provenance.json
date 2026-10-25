@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "source": "340ddc2a561354a9df8c2c246745e7e957b08ddb",
+  "fixture": "ai-scout-frontier.json",
+  "bytes": 477108,
+  "sha256": "9e8ed94c579a73d9db5391a75bf70c9fe9dfe0509736f8795bc3cc2d3511a33f",
+  "capture": "Ordinary two-policy seed3 at100000, continued through both normal AI policies/default80tickcadence to100800 before its next scouting decision. No world or clock edits.",
+  "failure": "14troops and513unknown tiles, but all six rays through home are explored and AI emits no order.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/200",
+  "media": "Generated simulation only; no original raster/audio."
+}

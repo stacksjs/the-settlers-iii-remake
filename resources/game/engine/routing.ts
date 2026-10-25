@@ -29,6 +29,23 @@ export function enterable(ctx: Context, tile: number, territory = 0, goal = -1):
   return tile === goal && terrainAt(ctx, tile).walkable && ctx.index.buildingAt[tile] === 0 && !(ctx.objects[ctx.state.map.object[tile]! - 1]?.blocks)
 }
 
+/** One bounded component pass through the router's ordinary traversable edges. */
+export function reachableTiles(ctx: Context, from: number, options: Pick<RouteOptions, 'territory' | 'avoid' | 'allowed'> = {}): ReadonlySet<number> {
+  const map = ctx.state.map, allowed = (tile: number): boolean => options.allowed?.(tile) ?? true
+  const found = new Set<number>()
+  if (!Number.isInteger(from) || from < 0 || from >= map.width * map.height || !allowed(from)) return found
+  const queue = [from]
+  found.add(from)
+  for (let i = 0; i < queue.length; i++) {
+    const tile = queue[i]!
+    for (const next of neighbours(map, tile)) {
+      if (found.has(next) || !allowed(next) || options.avoid?.has(next) || !enterable(ctx, next, options.territory) || !Number.isFinite(stepCost(ctx, tile, next))) continue
+      found.add(next); queue.push(next)
+    }
+  }
+  return found
+}
+
 /** Deterministic bounded A*. Ties break on estimated remaining cost, then tile index. */
 export function route(ctx: Context, from: number, goal: number, options: RouteOptions = {}): Route {
   const map = ctx.state.map, size = map.width * map.height

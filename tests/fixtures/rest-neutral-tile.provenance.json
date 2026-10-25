@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "base": "340ddc2a561354a9df8c2c246745e7e957b08ddb",
+  "candidateSource": {
+    "resources/game/engine/ai.ts": "5826ae11a11c77661f7b46961f9754c51490a7986fe2314dfa75a68741285f98",
+    "resources/game/engine/routing.ts": "241179c8195533adfb3a7d10617ad4c11fb7a5ea31a16ed253f3a278d4ed5a73",
+    "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "tests/unit/ai-scout-frontier.test.ts": "7a95bd1537c1b7a20abff6d001f0a580c0380fbda4f9b72c79a66f8c3e09bda6",
+    "tests/fixtures/ai-scout-frontier.json": "9e8ed94c579a73d9db5391a75bf70c9fe9dfe0509736f8795bc3cc2d3511a33f",
+    "tests/fixtures/ai-scout-frontier.provenance.json": "24dfe95adc0ed175a0e2446489c9df342fa6940b8dfedfd7ab7d5f241581af63"
+  },
+  "fixtureSha256": "5b210f1372fd0b14d5a4f8e976d6a862c4e4bf66916ad5cfabd191becec5f0df",
+  "fixtureBytes": 453606,
+  "capture": "Normal passive-player rivalSession(2), economicAI2withscout-frontier candidate/default80tickcadence, normal starts/no world or clock edits, tick26000",
+  "failure": "12carrier settle programs aim at neutral free tiles while normal civilian router requires owned destinations. Each reports unreachable/2409expanded and immediately selects the same target again.",
+  "profile": "0.10.0",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/201",
+  "frozenProfile": {
+    "identity": {
+      "id": "roman-engineering",
+      "version": "0.10.0",
+      "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+    },
+    "frozenFileSha256": "b88296bb5d3616ad4f0700bbe246d2e9fc7fd673870fbf4b136cb871f1b39a1d",
+    "before": "eab2856b",
+    "tick": 26001,
+    "after": "f5184e9d",
+    "audit": []
+  },
+  "media": "Generated simulation only; no original raster/audio."
+}

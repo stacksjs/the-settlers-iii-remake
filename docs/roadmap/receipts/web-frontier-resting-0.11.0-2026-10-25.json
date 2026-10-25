@@ -1,0 +1,721 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T22:13:48.250792+00:00",
+  "base": "340ddc2a561354a9df8c2c246745e7e957b08ddb",
+  "issues": [
+    200,
+    201
+  ],
+  "rules": {
+    "version": "0.11.0",
+    "digest": "f1ce0705bbe9a53bf880e7c1d38036404c56e1d7256517123d3dd1e38aee0e78"
+  },
+  "sourceFilesSha256": {
+    "resources/game/engine/ai.ts": "90d8bbb094dc22aa0802089ee25b13925f164cc0662b0e9c58347562fedd07ba",
+    "resources/game/engine/routing.ts": "241179c8195533adfb3a7d10617ad4c11fb7a5ea31a16ed253f3a278d4ed5a73",
+    "resources/game/engine/settlers.ts": "2e524ffa445726c696d8a7d7965d504fbd4d34379ec96872b300d318ddfb4e4a",
+    "resources/game/engine/rules.ts": "787c6b77322b6f77aaf4b01e5a57640974c873295e4d681be8e378940f1d0ffe",
+    "resources/game/engine/catalog.ts": "84b9fe11a58fe3e0136caf9909050a241843c6c7cba37d081478694450ccb069",
+    "resources/game/engine/profiles/roman-engineering-0.10.0.json": "b88296bb5d3616ad4f0700bbe246d2e9fc7fd673870fbf4b136cb871f1b39a1d",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "tests/unit/ai-scout-frontier.test.ts": "58507a3282fd6eeb280ce1a97cb3bb12561771d1bdb0445ab812dbddd4aacde3",
+    "tests/unit/resting-routing.test.ts": "bd3b98ec9c0beaaa205d0813bff081e23637ca3cebfb587c04b30cfc9c4a93ee",
+    "tests/unit/engine-core.test.ts": "fa4c8a9eee9ee00f0465b6993a74dda116a0c27b3c1883d2ea2ffeee355962d6",
+    "tests/fixtures/ai-scout-frontier.json": "9e8ed94c579a73d9db5391a75bf70c9fe9dfe0509736f8795bc3cc2d3511a33f",
+    "tests/fixtures/ai-scout-frontier.provenance.json": "24dfe95adc0ed175a0e2446489c9df342fa6940b8dfedfd7ab7d5f241581af63",
+    "tests/fixtures/rest-neutral-tile.json": "5b210f1372fd0b14d5a4f8e976d6a862c4e4bf66916ad5cfabd191becec5f0df",
+    "tests/fixtures/rest-neutral-tile.provenance.json": "b92649272d2b0975550325e8c2801c687aabecbd6b44c2df9afe82d8671cea4f"
+  },
+  "lockUnchanged": true,
+  "simulationChange": "New profile0.11.0 changes only resting destination selection. The exact published0.10.0 profile remains playable and keeps old saves/replays unchanged. Scouting is client policy, and its knowledge/routing queries do not mutate state.",
+  "frozenProfile": {
+    "identity": {
+      "id": "roman-engineering",
+      "version": "0.10.0",
+      "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+    },
+    "frozenFileSha256": "b88296bb5d3616ad4f0700bbe246d2e9fc7fd673870fbf4b136cb871f1b39a1d",
+    "before": "eab2856b",
+    "tick": 26001,
+    "after": "f5184e9d",
+    "audit": []
+  },
+  "scouting": {
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/200",
+    "fixture": {
+      "schemaVersion": 1,
+      "source": "340ddc2a561354a9df8c2c246745e7e957b08ddb",
+      "fixture": "ai-scout-frontier.json",
+      "bytes": 477108,
+      "sha256": "9e8ed94c579a73d9db5391a75bf70c9fe9dfe0509736f8795bc3cc2d3511a33f",
+      "capture": "Ordinary two-policy seed3 at100000, continued through both normal AI policies/default80tickcadence to100800 before its next scouting decision. No world or clock edits.",
+      "failure": "14troops and513unknown tiles, but all six rays through home are explored and AI emits no order.",
+      "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/200",
+      "media": "Generated simulation only; no original raster/audio."
+    },
+    "correction": "Retain existing six-ray rotation until every ray is explored. Then choose a known reachable frontier with an eligible own soldier, through the native router component edges. Preserve sole guards, ready-outside preference, deterministic distance/tile ordering and known-land limits. Reuse checked unreachable components within the decision.",
+    "regressions": {
+      "path": "tests/unit/ai-scout-frontier.test.ts",
+      "initialRed": {
+        "pass": 0,
+        "fail": 2,
+        "assertions": 8
+      },
+      "rotationRed": {
+        "pass": 0,
+        "fail": 1,
+        "filtered": 5,
+        "assertions": 3
+      },
+      "finalCases": 6,
+      "scope": "Captured missing scout; useful actual exploration beyond an unchanged control and mid-march restore; real known island/foreign soldier exclusion; stricter client reachability; preserved prior rotation; genuinely fully explored map. Existing six movable-troop cases retain sole-guard/attack/defense checks."
+    }
+  },
+  "resting": {
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/201",
+    "fixture": {
+      "schemaVersion": 1,
+      "base": "340ddc2a561354a9df8c2c246745e7e957b08ddb",
+      "candidateSource": {
+        "resources/game/engine/ai.ts": "5826ae11a11c77661f7b46961f9754c51490a7986fe2314dfa75a68741285f98",
+        "resources/game/engine/routing.ts": "241179c8195533adfb3a7d10617ad4c11fb7a5ea31a16ed253f3a278d4ed5a73",
+        "resources/game/engine/rules.ts": "da8653466fbae91e32b3612cfe9f7c39df0bc2cd140d0f5eccd1167dad3843ce",
+        "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+        "tests/unit/ai-scout-frontier.test.ts": "7a95bd1537c1b7a20abff6d001f0a580c0380fbda4f9b72c79a66f8c3e09bda6",
+        "tests/fixtures/ai-scout-frontier.json": "9e8ed94c579a73d9db5391a75bf70c9fe9dfe0509736f8795bc3cc2d3511a33f",
+        "tests/fixtures/ai-scout-frontier.provenance.json": "24dfe95adc0ed175a0e2446489c9df342fa6940b8dfedfd7ab7d5f241581af63"
+      },
+      "fixtureSha256": "5b210f1372fd0b14d5a4f8e976d6a862c4e4bf66916ad5cfabd191becec5f0df",
+      "fixtureBytes": 453606,
+      "capture": "Normal passive-player rivalSession(2), economicAI2withscout-frontier candidate/default80tickcadence, normal starts/no world or clock edits, tick26000",
+      "failure": "12carrier settle programs aim at neutral free tiles while normal civilian router requires owned destinations. Each reports unreachable/2409expanded and immediately selects the same target again.",
+      "profile": "0.10.0",
+      "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/201",
+      "frozenProfile": {
+        "identity": {
+          "id": "roman-engineering",
+          "version": "0.10.0",
+          "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+        },
+        "frozenFileSha256": "b88296bb5d3616ad4f0700bbe246d2e9fc7fd673870fbf4b136cb871f1b39a1d",
+        "before": "eab2856b",
+        "tick": 26001,
+        "after": "f5184e9d",
+        "audit": []
+      },
+      "media": "Generated simulation only; no original raster/audio."
+    },
+    "correction": "Filter nearby resting candidates through the ordinary reachable component and civilian territory constraints, preserving the existing400tile nearby search bound and normal movement. With no candidate, do not create an impossible settle program. Birth and garrison placement keep their prior behavior. No relocation, grants, route-cache patch, increased deadlines or altered speed.",
+    "regressions": {
+      "path": "tests/unit/resting-routing.test.ts",
+      "initialRed": {
+        "pass": 1,
+        "fail": 2,
+        "assertions": 8
+      },
+      "finalCases": 4,
+      "scope": "Normal fresh seed2 resting constraints, real movement/restore/accounting; exact frozen0.10save/replay; explicit separate0.11scenario fork from the captured physical state; policy validation/evidence. The scenario fork is not a save upgrade."
+    },
+    "matchedScenarioDiagnostic": {
+      "fixtureSha256": "5b210f1372fd0b14d5a4f8e976d6a862c4e4bf66916ad5cfabd191becec5f0df",
+      "scope": "Matched captured physical scenario, identical1000normalticks/noAIcommands. New rules are an explicit separate scenario; original saves still restore0.10.0. Diagnostic timings are not wall-clock acceptance assertions.",
+      "runs": [
+        {
+          "name": "legacy",
+          "identity": {
+            "id": "roman-engineering",
+            "version": "0.10.0",
+            "digest": "ac7a5d264941b39ef94fe8f9d11613356de3c70e130617ce7d19960fc060021b"
+          },
+          "ticks": 1000,
+          "elapsedMs": 10496.908374999999,
+          "checksum": "7a679051",
+          "audit": [],
+          "created": [
+            {
+              "plank": 30,
+              "stone": 26,
+              "log": 8,
+              "fish": 8,
+              "bread": 8,
+              "meat": 8,
+              "axe": 3,
+              "saw": 2,
+              "pickaxe": 4,
+              "shovel": 2,
+              "hammer": 4,
+              "scythe": 2,
+              "fishingrod": 2
+            },
+            {
+              "plank": 30,
+              "stone": 26,
+              "log": 8,
+              "fish": 8,
+              "bread": 8,
+              "meat": 8,
+              "axe": 3,
+              "saw": 2,
+              "pickaxe": 4,
+              "shovel": 2,
+              "hammer": 4,
+              "scythe": 2,
+              "fishingrod": 2
+            }
+          ],
+          "pendingNeutralCivilianRests": 12
+        },
+        {
+          "name": "newScenario",
+          "identity": {
+            "id": "roman-engineering",
+            "version": "0.11.0",
+            "digest": "f1ce0705bbe9a53bf880e7c1d38036404c56e1d7256517123d3dd1e38aee0e78"
+          },
+          "ticks": 1000,
+          "elapsedMs": 181.6759579999998,
+          "checksum": "2446c1fa",
+          "audit": [],
+          "created": [
+            {
+              "plank": 30,
+              "stone": 26,
+              "log": 8,
+              "fish": 8,
+              "bread": 8,
+              "meat": 8,
+              "axe": 3,
+              "saw": 2,
+              "pickaxe": 4,
+              "shovel": 2,
+              "hammer": 4,
+              "scythe": 2,
+              "fishingrod": 2
+            },
+            {
+              "plank": 30,
+              "stone": 26,
+              "log": 8,
+              "fish": 8,
+              "bread": 8,
+              "meat": 8,
+              "axe": 3,
+              "saw": 2,
+              "pickaxe": 4,
+              "shovel": 2,
+              "hammer": 4,
+              "scythe": 2,
+              "fishingrod": 2
+            }
+          ],
+          "pendingNeutralCivilianRests": 0
+        }
+      ]
+    }
+  },
+  "priorFailures": {
+    "scope": "Retained pre-correction scout candidate, not accepted release evidence",
+    "unit": "Original passive battle remains playing at50000, fails after479355.82ms with its original120000ms timeout retained. After resting fix alone it still failed the outcome assertion in11.9seconds. Preserving the full prior rotation then passes the same original case in14.5seconds.",
+    "browser": "First8suites pass, full ten-real-minute battle fails. Retained scout-frontier reports/logs; no media receipt copied for failed suite.",
+    "conclusion": "Targeted scouting tests alone were insufficient. Both source corrections and unchanged whole-application acceptance are required."
+  },
+  "checks": {
+    "unit": {
+      "pass": 309,
+      "fail": 0,
+      "assertions": 23062,
+      "files": 43,
+      "logSha256": "5159025aed76703452cf85173119b8d4804c3e524665971f306cf45d0a7d8408"
+    },
+    "lint": {
+      "passed": true,
+      "logSha256": "6799dae31db15e7dfdc6bc5fc65541fc35837ecf3b47a30672f4a06508edc7a5"
+    },
+    "typecheck": {
+      "passed": true,
+      "logSha256": "6fde449bc81da066ffff7f658b26dffae0337d65944e9631bfa14bfca1483265"
+    },
+    "assets": {
+      "passed": true,
+      "logSha256": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c"
+    },
+    "fidelity": {
+      "passed": true,
+      "logSha256": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384"
+    },
+    "roadmap": {
+      "passed": true,
+      "logSha256": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "b0761af36cc850f9a7672b836e3dd1e3b7df5a169ca8e663447b35727dfd2ffd",
+      "distIndexSha256": "166b86405ddcdb08418bb215841a1248e9164de8f57a9642025f45a501a0bced"
+    }
+  },
+  "normalMatches": {
+    "setup": "Ordinary rivalSession seeds2,1,3,5; both economicAI policies with RIVAL_MILITARY/default80tickcadence; normal people/goods and clocks",
+    "executionTracing": "Every result collected at its executed tick before bounded final history discards it",
+    "runs": [
+      {
+        "seed": 2,
+        "tick": 100000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "769a7b2c",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          788,
+          637
+        ],
+        "produced": [
+          {
+            "plank": 298,
+            "log": 296,
+            "stone": 180,
+            "water": 98,
+            "grain": 93,
+            "flour": 92,
+            "bread": 82,
+            "coal": 240,
+            "ironore": 157,
+            "iron": 117,
+            "hammer": 14,
+            "shovel": 14,
+            "axe": 14,
+            "saw": 13,
+            "pickaxe": 13,
+            "scythe": 13,
+            "fishingrod": 13,
+            "sword": 7,
+            "spear": 7,
+            "bow": 7
+          },
+          {
+            "plank": 63,
+            "stone": 84,
+            "fish": 16,
+            "water": 26,
+            "log": 79,
+            "grain": 42,
+            "flour": 26,
+            "bread": 10,
+            "coal": 8
+          }
+        ],
+        "checkpointSha256": "76b6c4bdac7fad7eb94fcff3ffddcdd2814932c9ffeaff31a367fa5f9de98c30"
+      },
+      {
+        "seed": 1,
+        "tick": 31801,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "aa0f0eb7",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          232,
+          290
+        ],
+        "produced": [
+          {
+            "plank": 85,
+            "log": 101,
+            "stone": 56,
+            "fish": 33,
+            "water": 60,
+            "grain": 46,
+            "coal": 171,
+            "flour": 44,
+            "bread": 44,
+            "ironore": 89,
+            "iron": 78,
+            "hammer": 8,
+            "shovel": 11,
+            "axe": 12,
+            "sword": 11,
+            "bow": 10,
+            "spear": 12,
+            "saw": 4
+          },
+          {
+            "plank": 44,
+            "log": 43,
+            "ironore": 15
+          }
+        ],
+        "checkpointSha256": "9d53742d83e92cb26515169542b088556573859e56643d59b218f522a6e7da64"
+      },
+      {
+        "seed": 3,
+        "tick": 100000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "b0a4c855",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          520,
+          800
+        ],
+        "produced": [
+          {
+            "plank": 65,
+            "log": 81,
+            "coal": 24,
+            "stone": 42,
+            "fish": 8,
+            "water": 27,
+            "grain": 43,
+            "flour": 27,
+            "bread": 11
+          },
+          {
+            "plank": 338,
+            "log": 354,
+            "stone": 180,
+            "water": 25,
+            "grain": 41,
+            "flour": 25,
+            "bread": 9,
+            "ironore": 24
+          }
+        ],
+        "checkpointSha256": "00be4bea62ad506faadb3dd4779c999b9563d8b79feaa91a8a7d58704633c9b8"
+      },
+      {
+        "seed": 5,
+        "tick": 72501,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "5d59a35d",
+        "audit": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          467,
+          540
+        ],
+        "produced": [
+          {
+            "log": 104,
+            "plank": 80,
+            "fish": 8,
+            "stone": 52,
+            "water": 21,
+            "ironore": 8
+          },
+          {
+            "plank": 104,
+            "log": 126,
+            "ironore": 59,
+            "stone": 84,
+            "water": 34,
+            "grain": 19,
+            "flour": 19,
+            "bread": 18,
+            "coal": 106,
+            "iron": 41,
+            "hammer": 4,
+            "shovel": 4,
+            "axe": 3,
+            "saw": 2,
+            "pickaxe": 2,
+            "scythe": 2,
+            "fishingrod": 2,
+            "sword": 6,
+            "spear": 6,
+            "bow": 6
+          }
+        ],
+        "checkpointSha256": "1ca7bb1a15ad2cc8bfa6211e8193790fc2d971e703248c97b5703a41de995b18"
+      }
+    ],
+    "continuations": [
+      {
+        "seed": 2,
+        "fromTick": 100000,
+        "tick": 109841,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "7aa8ee06",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          64,
+          31
+        ],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "0595fa78dff5ffa0125f3e14082e2d33d7b7103a6ad99454ca3abb3f210817b7",
+        "produced": [
+          {
+            "plank": 328,
+            "log": 326,
+            "stone": 207,
+            "water": 98,
+            "grain": 107,
+            "flour": 98,
+            "bread": 82,
+            "coal": 240,
+            "ironore": 157,
+            "iron": 117,
+            "hammer": 14,
+            "shovel": 14,
+            "axe": 14,
+            "saw": 13,
+            "pickaxe": 13,
+            "scythe": 13,
+            "fishingrod": 13,
+            "sword": 7,
+            "spear": 7,
+            "bow": 7
+          },
+          {
+            "plank": 64,
+            "stone": 84,
+            "fish": 16,
+            "water": 26,
+            "log": 79,
+            "grain": 42,
+            "flour": 26,
+            "bread": 10,
+            "coal": 8
+          }
+        ]
+      },
+      {
+        "seed": 3,
+        "fromTick": 100000,
+        "tick": 200000,
+        "outcome": {
+          "1": "playing",
+          "2": "playing"
+        },
+        "checksum": "b4b1dd9d",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "executedCounts": [
+          156,
+          311
+        ],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "f11dc4957be46e72bc9db72a30657da4f8348716cacdb0d39f9d2599655f521b",
+        "produced": [
+          {
+            "plank": 65,
+            "log": 81,
+            "coal": 24,
+            "stone": 42,
+            "fish": 8,
+            "water": 27,
+            "grain": 43,
+            "flour": 27,
+            "bread": 11
+          },
+          {
+            "plank": 450,
+            "log": 464,
+            "stone": 239,
+            "water": 25,
+            "grain": 41,
+            "flour": 25,
+            "bread": 9,
+            "ironore": 24
+          }
+        ]
+      }
+    ]
+  },
+  "sharedHeadlessFixture": {
+    "schemaVersion": 1,
+    "craftVersion": "craft version 0.0.341\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+    "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+    "fixtureSha256": "2bfce67a007270487758f9adef0f426563ab2e78e001a17bc54b5ad5202ad5e6",
+    "bundledEngineSha256": "16fce4ffbecbb05b23a234503bfb4c14892fe2e676109ed92c93094a0c7325ba",
+    "bunVersion": "1.4.4",
+    "result": {
+      "tick": 5,
+      "checksum": "c331a944",
+      "restoredChecksum": "c331a944",
+      "replay": {
+        "ok": true,
+        "ticks": 5,
+        "checksum": "c331a944"
+      }
+    },
+    "nativeExitCode": 0,
+    "matchedBunReference": true,
+    "webViewUsed": false,
+    "browser": {
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        }
+      },
+      "consoleErrors": [],
+      "failedRequests": [],
+      "driverSha256": "cd0c6f71e165595ac82088a8fde7cb2aa0a7afab6abf4265f3a5c322ef422bd8"
+    },
+    "scope": "One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+  },
+  "servedBrowserModule": {
+    "recordedAt": "2026-10-25T22:12:34.302007+00:00",
+    "url": "/_stx/modules.172d348d002ee201.js",
+    "bytes": 1498500,
+    "sha256": "6b6c171a752d6b75b39ba76c550556250e81289e4febad4ee77cdd75e34646a5",
+    "restingRoutingOccurrences": 7,
+    "reachableTilesOccurrences": 3
+  },
+  "frameworkAdoptionReceipt": "framework-0.75.311-receipt.json",
+  "remainingFrontier": "Seed3remainsunfinished200000 and further250000diagnostic still makes no iron. Issue202retains missing Roman charcoal planning: two ordinary manual builds produce22coal/8iron without grants, but do not establish automatic recovery, army growth or victory. Broader73/74/76/4stayopen.",
+  "scope": "Scoped engineering scouting and resting corrections. No full AI, all-seed sustainability, human victory, original Gold behavior/content, complete native presentation or cross-platform acceptance claim. Exact pushed-main CI/original385step artifact required before200/201closure.",
+  "passiveRivalTimingDiagnostic": {
+    "tick": 39721,
+    "outcome": {
+      "1": "lost",
+      "2": "won"
+    },
+    "checksum": "ce11d3b4",
+    "audit": [],
+    "allExecutedRefusals": [],
+    "produced": {
+      "plank": 86,
+      "stone": 84,
+      "fish": 28,
+      "water": 64,
+      "coal": 139,
+      "log": 102,
+      "grain": 49,
+      "flour": 49,
+      "bread": 48,
+      "ironore": 72,
+      "iron": 60,
+      "hammer": 4,
+      "spear": 6,
+      "axe": 7,
+      "saw": 3,
+      "sword": 11,
+      "shovel": 8,
+      "bow": 9,
+      "pickaxe": 2,
+      "scythe": 1,
+      "fishingrod": 1
+    },
+    "scope": "Ordinary passive-player seeded match using the same default rival policy/cadence, no clock or world edits. Command-driven timing diagnostic, not real-time browser acceptance."
+  },
+  "localBrowser": {
+    "recordedAt": "2026-10-25T22:17:14.686631+00:00",
+    "totalSteps": 385,
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "c4d6f8ee0ebc6266c59b269f832fe4e64ed1b6f22482dfb2915781c15fb9bb9d",
+        "noErrors": true,
+        "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "3e9a89f370b6af48d8fa3b74b3361744509706b26f0a7d27fa3b27afe1ff1d96",
+        "noErrors": true,
+        "mediaReceiptSha256": "289a74b58a0a1df96199c9cf6af016140d6f21b9fe0abed9ac3071f6e5a1c106"
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "2eec9acf969585116817f7f9ae32429982633380163f6758d7769ea421cb5fe8",
+        "noErrors": true,
+        "mediaReceiptSha256": "197460cb1be204604ceb89c7c3c1c051c3daa8918d3eca9b1236021cf6a72dce"
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "9cdf97d979e4539d52d54c200c202c0c3e175e1debc5bfa0d846466d415d5d26",
+        "noErrors": true,
+        "mediaReceiptSha256": "e9bd5de4e5fb3265560af549428905f715bd62e8c68a104d1f07660acaf6f51f"
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "2918e960d9a04ede4f18ec7663abccea296cf168e8b20552dcd82302fd87846b",
+        "noErrors": true,
+        "mediaReceiptSha256": "8f64005a2235fc5de5df743d41ae7d3807f41cf99edb27a42d8d904a1cbe8394"
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "bb30a7958859346ade6343be3ae141c62881b5f9dfda175f6016f27a1ae21c12",
+        "noErrors": true,
+        "mediaReceiptSha256": "49414c3e0f75caffe245ca8af87025fb4d2188d089a1cebcaf7e11a8ceab7f38"
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "8d5ebf29dc05ce4425f154d78452d7c52fc96e30d097be7abd654ae6bf4b5574",
+        "noErrors": true,
+        "mediaReceiptSha256": "a8fa560df16e9e5513c445b711ec12b86647efb6fe8e934287a48f04b015ed9f"
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "c4a10f92bf5a94905386472beb30e858f5782e6d17685fda6a8dbf3e7dd5c03a",
+        "noErrors": true,
+        "mediaReceiptSha256": "c305c08945f5f7f9290ee06bf3d41d2fc7e59875938639012817e11b41daa0d9"
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "ae8f2e2d640af9772c76b8a69ab579f21c439e16ced5cb0c00fba0ceaee84f87",
+        "noErrors": true,
+        "mediaReceiptSha256": "58014fbdb9b9e8efef373a0f7395bc73e55f82808d60dd2d29042cbe33045feb",
+        "elapsedMs": 614251.233583
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "ca9e891e07a640544a9927415079b52551b6726ef1d99bad22bf989e8aa22e97",
+        "noErrors": true
+      }
+    ],
+    "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  }
+}
