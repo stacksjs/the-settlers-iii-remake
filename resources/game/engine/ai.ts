@@ -92,6 +92,7 @@ export interface EconomicAI {
  */
 export interface Diagnosis {
   kind: 'tool' | 'food' | 'population' | 'delivery' | 'exhausted' | 'materials'
+  material?: 'plank' | 'stone'
   building: number, detail: string
   recovery: Order | null
   recoverable: boolean
@@ -199,6 +200,19 @@ export function diagnose(o: Observation): Diagnosis[] {
     else if (planks + spare.reduce((n, b) => n + b.planks, 0) >= need) found.push({ kind: 'materials', building: spare[0]!.id, detail: `${need} planks needed for ${missing.join(' and ')}; tearing down for its refund`, recovery: { type: 'demolish', building: spare[0]!.id }, recoverable: true })
     else found.push({ kind: 'materials', building: 0, detail: `${need} planks needed for ${missing.join(' and ')} and no planks, logs or refunds remain`, recovery: null, recoverable: false })
   }
+  // A finite granite patch can run out while the site limit is occupied by
+  // buildings waiting for stone. Recover a real bootstrap budget before
+  // ordering more sites. Only observed own or neutral granite establishes this route.
+  const stoneCost = rules.get('stonecutter')?.cost.stone ?? 0
+  if (!own(o, 'stonecutter') && find(o, t => o.object(t) === 'stone', 1, { neutral: true }).length && free(o, 'stone') < stoneCost) {
+    const spare = mine.filter(b => b.phase === 'active' && !['castle', 'woodcutter', 'forester', 'sawmill'].includes(b.type) && !rules.get(b.type)?.military)
+      .map(b => ({ id: b.id, stone: Math.floor((rules.get(b.type)?.cost.stone ?? 0) * num / den) }))
+      .filter(b => b.stone > 0).sort((a, b) => b.stone - a.stone || a.id - b.id)
+    const recoverable = free(o, 'stone') + spare.reduce((n, b) => n + b.stone, 0) >= stoneCost
+    found.push({ kind: 'materials', material: 'stone', building: recoverable ? spare[0]!.id : 0,
+      detail: `${stoneCost} stone needed to restore stone production from known granite`,
+      recovery: recoverable ? { type: 'demolish', building: spare[0]!.id } : null, recoverable })
+  }
   return found
 }
 /** Planks already delivered to the computer's own unfinished sites of a type. */
@@ -300,7 +314,11 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       if (options.military) orders.push(...militaryOrders({ ...o, interval }, options.military))
       // Nothing can be built once materials are unrecoverable, so the computer orders no sites it cannot pay for.
       const capacity = recoveryCapacity(o)
-      const frontier = mineralFrontier(o, policy)
+      const stoneRule = o.rules.buildings.find(b => b.id === 'stonecutter')!
+      const stoneWant = POLICY.find(w => w.building === 'stonecutter')!
+      const stoneBudget = (stoneRule.cost.stone ?? 0) + o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').reduce((n, b) => n + (o.rules.buildings.find(rule => rule.id === b.type)?.cost.stone ?? 0), 0)
+      const restoreStone = free(o, 'stone') <= stoneBudget && !own(o, 'stonecutter') && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active')
+        && free(o, 'plank') >= (stoneRule.cost.plank ?? 0) && find(o, t => o.object(t) === 'stone', 1, { neutral: true }).length > 0
       const pioneers = o.view.settlers.filter(s => s.owner === o.player && s.profession === 'pioneer')
       const readyPioneer = pioneers.some(s => !s.inside && !s.cargo && s.action !== 'walking' && (!s.busy || s.diagnostic === 'duty complete'))
       const tool = o.rules.professions.find(p => p.id === 'pioneer')?.tool
@@ -308,8 +326,14 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       const surveyCrew = geologists.length === 0 && orders.some(command => command.type === 'specialists' && command.profession === 'geologist') ? 1 : 0
       const canEquip = pioneers.length === 0 && (tool === null || (typeof tool === 'string' && offered(o, tool) > 0))
         && carriers - surveyCrew - 1 >= Math.ceil(o.view.population * o.settings.carrierRatio / 100)
-      if (frontier && !diagnosis.some(d => d.recovery?.type === 'dismiss') && (readyPioneer || canEquip)) orders.push({ type: 'specialists', profession: 'pioneer', ...frontier, count: 1 })
-      if (sites >= maxSites || !capacity.build || capacity.awaitingSmith || diagnosis.some(d => (d.kind === 'materials' || d.kind === 'population') && !d.recoverable)) return orders
+      const frontier = (readyPioneer || canEquip) && !diagnosis.some(d => d.recovery?.type === 'dismiss') ? resourceFrontier(o, restoreStone ? [stoneWant] : policy) : null
+      if (frontier) orders.push({ type: 'specialists', profession: 'pioneer', ...frontier, count: 1 })
+      if (diagnosis.some(d => d.material === 'stone' && d.recovery) || sites >= maxSites || !capacity.build || capacity.awaitingSmith || diagnosis.some(d => (d.kind === 'materials' || d.kind === 'population') && !d.recoverable)) return orders
+      if (restoreStone) {
+        const at = placeNear(o, 'stonecutter', stoneWant.near(o))
+        if (at && free(o, 'stone') >= (stoneRule.cost.stone ?? 0)) orders.push({ type: 'build', building: 'stonecutter', ...at })
+        return orders
+      }
       const have = (type: string): number => own(o, type)
       // Hungry mines put the fisher first, and buildings without workers put a residence first, whatever the usual order.
       const timber: Want[] = !o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill') && (have('woodcutter') > 0 || free(o, 'log') > 0) ? [{ building: 'sawmill', count: 1, near: home }] : []
@@ -364,17 +388,20 @@ const NEEDS: Record<string, (o: Observation) => (t: number) => boolean> = {
   fisher: o => t => o.terrain(t) === 'water', waterworks: o => t => o.terrain(t) === 'water',
 }
 
-/** A known deposit without room for its mine is expanded toward through ordinary pioneer orders. */
-function mineralFrontier(o: Observation, policy: Want[]): Point | null {
+/** A known resource without room for its workplace is expanded toward through ordinary pioneer orders. */
+function resourceFrontier(o: Observation, policy: Want[]): Point | null {
   const center = home(o)[0]
   if (!center) return null
   for (const want of policy) {
     if (own(o, want.building) >= want.count) continue
     const workflow = o.rules.buildings.find(rule => rule.id === want.building)?.workflow
-    if (workflow?.kind !== 'extract' || !workflow.food || placeNear(o, want.building, want.near(o))) continue
-    const known = o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && [0, o.player].includes(o.view.owner[sign.tile]!))
+    const mineral = workflow?.kind === 'extract' && workflow.food ? workflow.resource : null
+    const visible = NEEDS[want.building]
+    if ((!mineral && !visible) || placeNear(o, want.building, want.near(o))) continue
+    const known = mineral ? o.view.signs.filter(sign => sign.good === mineral && sign.amount > 0 && [0, o.player].includes(o.view.owner[sign.tile]!))
       .map(sign => ({ x: sign.tile % o.width, y: Math.floor(sign.tile / o.width) }))
       .sort((a, b) => distance(a, center) - distance(b, center) || a.y - b.y || a.x - b.x)
+      : find(o, visible!(o), o.width * o.height, { neutral: true })
     for (const target of known) {
       const walkable = new Set(o.rules.terrain.filter(t => t.walkable).map(t => t.id))
       const blocked = new Set(o.rules.objects.filter(object => object.blocks).map(object => object.id))
@@ -392,8 +419,12 @@ function mineralFrontier(o: Observation, policy: Want[]): Point | null {
 }
 
 function placeNear(o: Observation, type: string, anchors: Point[]): Point | null {
+  // Nearby resource anchors share most candidate tiles. Keep their first
+  // occurrence so the same pure placement check runs once per search.
+  const checked = new Set<number>()
   // Harvesting and extracting buildings must have their resource within their working radius.
-  const workflow = o.rules.buildings.find(b => b.id === type)?.workflow
+  const building = o.rules.buildings.find(b => b.id === type)
+  const workflow = building?.workflow
   const deposits = workflow?.kind === 'extract' && workflow.food ? new Set(o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && o.view.owner[sign.tile] === o.player).map(sign => sign.tile)) : null
   const need = deposits ? (tile: number) => deposits.has(tile) : NEEDS[type]?.(o)
   const radius = workflow && 'radius' in workflow ? workflow.radius : 0
@@ -404,7 +435,13 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
         for (let dx = -r; dx <= r; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue
           const x = anchor.x + dx, y = anchor.y + dy
-          if (x < 0 || y < 0 || x >= o.width || y >= o.height || !o.explored(indexOf(o, x, y))) continue
+          if (x < 0 || y < 0 || x >= o.width || y >= o.height) continue
+          const tile = indexOf(o, x, y)
+          if (!o.explored(tile) || checked.has(tile)) continue
+          checked.add(tile)
+          // Ground requirements are a necessary public precondition. Mines
+          // need not ask the full footprint validator about every grass tile.
+          if (building?.ground && !building.ground.includes(o.terrain(tile) ?? '')) continue
           if (!o.placement(type, x, y) && serves(x, y)) return { x, y }
         }
       }

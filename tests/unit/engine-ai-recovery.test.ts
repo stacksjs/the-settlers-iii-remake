@@ -1,7 +1,7 @@
 import type { Session } from '../../resources/game/engine'
 import { describe, expect, test } from 'bun:test'
 import { audit, checksum, restore, save, createSession, describeMap, diagnose, economicAI, findStart, generateMap, observe, PUBLISHED_RULES, stepAI } from '../../resources/game/engine'
-import { anchors, landscape, order, rules } from '../fixtures/engine'
+import { anchors, landscape, order, place, rules } from '../fixtures/engine'
 import { RIVAL_MILITARY } from '../../resources/game/controller'
 
 type Placed = { type: string, x: number, y: number }
@@ -23,6 +23,53 @@ const play = (s: Session, ticks: number, ai = economicAI(1, { interval: 20 }), s
 const mine = (s: Session) => s.state.results.filter(r => r.player === 1)
 
 describe('AI deadlock recovery', () => {
+  test('the captured normal seed-3 deadlock restores stone production and finishes both waiting sites', async () => {
+    const bytes = await Bun.file(new URL('../fixtures/ai-seed3-stone-bootstrap.json', import.meta.url)).arrayBuffer()
+    expect(new Bun.CryptoHasher('sha256').update(bytes).digest('hex')).toBe('1b4676a8bf291ece7d63cf49aae71e3338f3c978cb2f6639dce8b488bb5087e6')
+    const s = restore(JSON.parse(new TextDecoder().decode(bytes)), PUBLISHED_RULES)
+    expect(s.state.tick).toBe(60000)
+    const before = s.state.ledger[2]!.produced.stone!, created = { ...s.state.ledger[2]!.created }
+    expect(before).toBe(72)
+    expect([1430, 1497].every(id => s.state.buildings.get(id)?.phase === 'building')).toBe(true)
+    const ai = economicAI(2, { military: RIVAL_MILITARY })
+    const sequence = { next: 1 + Math.max(-1, ...s.state.pending.filter(c => c.player === 2).map(c => c.seq), ...s.state.results.filter(c => c.player === 2).map(c => c.seq)) }
+    const completed = new Set<number>()
+    for (let tick = 0; tick < 10000 && (completed.size < 2 || (s.state.ledger[2]!.produced.stone ?? 0) <= before); tick++) {
+      stepAI(s, ai, sequence); s.advance(1)
+      // An exhausted fisher can legitimately be removed after it completed.
+      for (const id of [1430, 1497]) if (s.state.buildings.get(id)?.phase === 'active') completed.add(id)
+    }
+    expect(s.state.ledger[2]!.produced.stone!).toBeGreaterThan(before)
+    expect(s.state.ledger[2]!.created).toEqual(created)
+    expect([...completed].sort((a, b) => a - b)).toEqual([1430, 1497])
+    expect(ai.results).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60000)
+
+  test('stone production is bootstrapped from real refunds while two material-starved sites occupy the limit', () => {
+    const s = computer([{ type: 'woodcutter', x: 49, y: 51 }, { type: 'sawmill', x: 31, y: 44 }, { type: 'waterworks', x: 47, y: 32 }], [
+      { good: 'plank', amount: 24 }, { good: 'stone', amount: 8 }, { good: 'log', amount: 16 }, { good: 'axe', amount: 2 }, { good: 'saw', amount: 1 },
+      { good: 'hammer', amount: 4 }, { good: 'shovel', amount: 4 }, { good: 'pickaxe', amount: 2 },
+    ])
+    const house = place(s, 'medium-residence', { x: 36, y: 54 })
+    s.advance(3000)
+    expect(s.state.buildings.get(house)?.phase).toBe('active')
+    const a = place(s, 'coal-mine', { x: 28, y: 28 }), b = place(s, 'fisher', { x: 52, y: 38 })
+    s.advance(3000)
+    expect([a, b].every(id => s.state.buildings.get(id)?.phase === 'building')).toBe(true)
+    expect(s.view(1).stacks.filter(stack => stack.good === 'stone').reduce((n, stack) => n + stack.amount, 0)).toBe(0)
+    expect(diagnose(observe(s, 1))).toEqual(expect.arrayContaining([expect.objectContaining({ kind: 'materials', recovery: { type: 'demolish', building: expect.any(Number) }, recoverable: true })]))
+    const before = s.state.ledger[1]!.created.stone ?? 0
+    const ai = play(s, 18000)
+    expect(s.state.ledger[1]!.created.stone ?? 0).toBe(before)
+    expect(s.state.ledger[1]!.recovered.stone ?? 0).toBeGreaterThan(0)
+    expect(s.state.ledger[1]!.produced.stone ?? 0).toBeGreaterThan(0)
+    expect([a, b].every(id => s.state.buildings.get(id)?.phase === 'active')).toBe(true)
+    expect(ai.results).toEqual([])
+    expect(mine(s).filter(result => !result.ok)).toEqual([])
+    expect(audit(s.context)).toEqual([])
+  }, 60000)
+
   test('a surveyor explores the visible frontier after surveying the known mountains without reading hidden ore', () => {
     const field = (hiddenGood: string) => {
       const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [

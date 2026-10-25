@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T14:51:28.572286+00:00",
+  "base": "bfa7cb43d7819fc94fdb69f3591692bba1ee0204",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/191",
+  "profile": "roman-engineering@0.9.0",
+  "problem": {
+    "schemaVersion": 1,
+    "base": "6583568e455be2bf8fd5d5a0b4d82192a876221d",
+    "pendingSource": {
+      "aiSha256": "8ad85a8d5b429c61eb84a16672d12e47e44744c0b38f1371dbe3e230e518df25"
+    },
+    "profile": {
+      "id": "roman-engineering",
+      "version": "0.9.0",
+      "digest": "1ebde243c7408435be7c55df79d8f7bbf6ef37ce63fc338a25b98648b280c7e7"
+    },
+    "seed": 3,
+    "tick": 60000,
+    "checkpointSha256": "1b4676a8bf291ece7d63cf49aae71e3338f3c978cb2f6639dce8b488bb5087e6",
+    "checksum": "dcfed3ff",
+    "audit": [],
+    "professions": {
+      "carrier": 35,
+      "farmer": 1,
+      "woodcutter": 2,
+      "pioneer": 2,
+      "stonecutter": 1,
+      "fisher": 1,
+      "sawyer": 1,
+      "miller": 1,
+      "baker": 1,
+      "geologist": 1,
+      "forester": 1,
+      "waterworker": 1,
+      "digger": 4,
+      "builder": 4,
+      "bowman": 2
+    },
+    "unfinishedSites": [
+      {
+        "id": 1430,
+        "type": "fisher",
+        "phase": "building",
+        "used": {
+          "plank": 3,
+          "stone": 1
+        },
+        "workRemaining": 1,
+        "workers": [
+          102,
+          101
+        ]
+      },
+      {
+        "id": 1497,
+        "type": "iron-mine",
+        "phase": "building",
+        "used": {
+          "plank": 4
+        },
+        "workRemaining": 1,
+        "workers": [
+          103,
+          100
+        ]
+      }
+    ],
+    "produced": {
+      "plank": 177,
+      "log": 193,
+      "stone": 72,
+      "water": 24,
+      "grain": 40,
+      "flour": 24,
+      "bread": 8
+    },
+    "observedCause": "No stone stacks or stonecutter remain. The fisher and iron-mine each lack one stone; both count toward the two-site limit, so the planner stops ordering replacement stone production. Builders wait normally for material. The current diagnosis only bootstraps planks, so its delivery entries miss this material dependency.",
+    "limits": "This is an observed follow-up defect on pending mineral expansion source, not a Gold Edition behavior claim. Other stalled seeds need their own diagnosis."
+  },
+  "changes": [
+    "Diagnose a missing stone-production bootstrap budget using observed own or neutral granite and actual refunds from active civilian buildings. Keep military buildings and the timber chain protected.",
+    "Reserve the bootstrap priority while pending sites consume scarce stone. Build a stonecutter through the ordinary placement, delivery, staffing and construction path. Pioneer expansion uses known resources and ordinary specialist commands.",
+    "Calculate a resource frontier only when a pioneer is available or can really be equipped. Deduplicate search tiles and reject a publicly unsuitable ground type before calling the full engine footprint validator. Every selected site still uses normal engine validation."
+  ],
+  "regressions": {
+    "captured": {
+      "checkpointSha256": "1b4676a8bf291ece7d63cf49aae71e3338f3c978cb2f6639dce8b488bb5087e6",
+      "sourceAiHashMatchesCapturedCommit": true,
+      "initialTick": 60000,
+      "initialProducedStone": 72,
+      "waitingSites": [
+        1430,
+        1497
+      ],
+      "result": "Both sites are observed to complete, additional stone is produced, created goods are unchanged, no enqueue is rejected and conservation audit is clean. Finite fish may subsequently be exhausted, so completion is retained when observed rather than requiring the fisher to survive the whole future bound.",
+      "boundTicks": 10000,
+      "passed": true,
+      "logSha256": "bd2b312005c8b20a1a2fd0555eaf70036d3737d561f8d094913d680d175fb922"
+    },
+    "minimized": "A medium residence is built and consumes the last eight initial stones. Two new sites wait for stone. The AI uses real demolition refunds and real granite production to complete them. Starting stone is not increased.",
+    "existingRecoverySuite": {
+      "passed": 25,
+      "failed": 0,
+      "assertions": 317,
+      "logSha256": "4b582170394d18e289d4c855f402b134a26d3da4538a1a86664b5eb6c92dbd78"
+    },
+    "normalSeed2": "The ordinary full-battle and fresh-AI mid-game restore still pass on the combined functional change. No hardcoded finish tick is assumed for this changed planner."
+  },
+  "performance": {
+    "before": "Existing delivery/restore regression failed its unchanged5000ms timeout, about5300ms.",
+    "profileSha256": "0b7d887e6d068be05831e0f981edadbc712dd5bf190cece26c307126d2aaddb5",
+    "profileFinding": "Placement searches consumed78.4percent of sampled time, including searches while no pioneer could act.",
+    "afterMs": 1129.07,
+    "afterLogSha256": "bd2b312005c8b20a1a2fd0555eaf70036d3737d561f8d094913d680d175fb922",
+    "deadlineChanged": false
+  },
+  "checks": {
+    "typecheck": {
+      "passed": true,
+      "logSha256": "1be7fafdd4de45077dab77026feaf5e201933a1a467066225e8770c4ceb26eea"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "logSha256": "407500fb05ee95b304962775bfdff22219fca0bc322ae4dbc73802ad1780eaf7"
+    },
+    "priorFullRun": "268 passed, one captured-regression assertion failed because an exhausted fisher was later removed. The corrected test now retains each actual completion and passes. A full installed-cohort rerun remains required before final qualification.",
+    "buildAndBrowser": "Required again after normal published framework adoption."
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/ai.ts",
+      "sha256": "6ddee99e4e15ef01c38e89d406373b9fd59c9968952872fa6fe7c6bfc18d5bd6"
+    },
+    {
+      "path": "tests/unit/engine-ai-recovery.test.ts",
+      "sha256": "32ffc264dbf1ff7141a83fdb1609de73fc2fc34c636ed1a93b1b5f3f5be0466c"
+    },
+    {
+      "path": "tests/fixtures/ai-seed3-stone-bootstrap.json",
+      "sha256": "1b4676a8bf291ece7d63cf49aae71e3338f3c978cb2f6639dce8b488bb5087e6"
+    },
+    {
+      "path": "tests/fixtures/ai-seed3-stone-bootstrap.provenance.json",
+      "sha256": "38e8ccd013a93e4cfdb114d74b06c16d03042f18edb3e7370ba3ebad65e1b176"
+    }
+  ],
+  "limits": [
+    "This restores an observed engineering AI route; it does not establish original Gold AI policy or timing.",
+    "It does not establish every map seed, every possible bootstrap or a complete native game.",
+    "Do not interpret the earlier five stalled seeds as a passing complete-match matrix."
+  ]
+}

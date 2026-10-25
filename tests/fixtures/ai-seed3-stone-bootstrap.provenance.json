@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "fixture": "ai-seed3-stone-bootstrap.json",
+  "sha256": "1b4676a8bf291ece7d63cf49aae71e3338f3c978cb2f6639dce8b488bb5087e6",
+  "source": "https://github.com/stacksjs/the-settlers-iii-remake/commit/bfa7cb43d7819fc94fdb69f3591692bba1ee0204",
+  "capture": "Ordinary rivalSession(3), economicAI player2 with RIVAL_MILITARY, default80tickcadence, tick60000. Two unfinished sites each lack one stone, no stonecutter remains, and decisions contain no recovery.",
+  "sourceAiSha256": "8ad85a8d5b429c61eb84a16672d12e47e44744c0b38f1371dbe3e230e518df25",
+  "sourceIssue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/191",
+  "media": "Generated engineering map and simulation data. No original game raster or audio."
+}
