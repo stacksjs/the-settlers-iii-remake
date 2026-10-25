@@ -16,6 +16,10 @@ A local installation mistake was rejected by the full byte verifier: a manifest 
 
 The supplied remake repository and public demo remain the available implementation reference. No original Gold executable or original execution captures are available. Exact timing, balance, physical logistics, all original campaigns and redistribution rights remain unverified. The browser game remains a custom prototype; all 120 roadmap slots are tracked, with completion governed by their individual acceptance evidence.
 
+## Atomic checkpoint session evidence
+
+The [atomic session receipt](receipts/checkpoint-atomic-sessions-2026-10-24.json) records the source correction at `10c5681e`: conflicting contexts cannot both acknowledge the same checkpoint, stale loaded game state cannot overwrite newer progress, and disposal stops subsequent migration reads. All 21 checkpoint tests passed with 77 assertions. Two real browser contexts exercised the unchanged installed Craft browser storage provider with native Web Locks and localStorage. The production campaign retained all 58 steps. Both exact-source and main-branch hosted CI passed. This supersedes the earlier two-slot coordinator implementation while retaining its original evidence. Native game lifecycle acceptance remains open.
+
 ## Historical roadmap snapshot
 
 [Master issue #4](https://github.com/stacksjs/the-settlers-iii-remake/issues/4) links 12 epics and 107 implementation slots. The existing [Stacks desktop distribution issue #2059](https://github.com/stacksjs/stacks/issues/2059) is adopted for S3-101. Its authored content is preserved. Actual identities, labels, milestones, parent relationships, and blocking edges are recorded in [github.json](github.json).

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "recorded": "2026-10-24",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/93",
+  "source": "10c5681e83f0d620019ca658d0d956e5e227b071",
+  "commits": [
+    "d27e53fa9da5ea96cb2e349917271bd0b76e526c",
+    "d7c3c0994a788ce7199cef48f430971da87e774c",
+    "10c5681e83f0d620019ca658d0d956e5e227b071"
+  ],
+  "problem": "Two sessions could acknowledge conflicting saves, and a stale loaded session could overwrite newer progress. Empty legacy-migration reads could continue after disposal.",
+  "change": "Use the installed Craft 0.0.330 public setIfAbsent and compareAndSet methods with one atomic version-2 checkpoint record. Keep the expected snapshot from load or the last successful commit. A conflict requires explicit reload. Check lifetime before and after every awaited read or write. Preserve legacy saves through read-only migration.",
+  "validation": {
+    "checkpointTests": 21,
+    "assertions": 77,
+    "failures": 0,
+    "realBrowserContexts": 2,
+    "realBrowserStorage": "Unchanged installed craft-native/browser, native Web Locks and localStorage, isolated same-origin iframes; no polyfills or application debug globals.",
+    "browserChecks": [
+      "one competing creator succeeds",
+      "stale loaded state is refused",
+      "explicit reload resumes generation 3",
+      "previous winner becomes stale",
+      "disposal refuses saving",
+      "fresh document restores the last acknowledged state"
+    ],
+    "browserConsoleErrors": 0,
+    "browserFailedRequests": 0,
+    "productionCampaignSteps": 58,
+    "sourceCI": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40145750666",
+    "mainCI": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40146614621",
+    "bothHostedConclusions": "SUCCESS"
+  },
+  "limits": [
+    "An already-entered native atomic storage operation may complete after cancellation. A disposed coordinator never acknowledges success or starts another operation.",
+    "The browser evidence does not establish native game checkpoints or complete native host lifecycle qualification. S3-091 remains open.",
+    "The prototype does not establish Gold Edition timing, balance, complete campaigns, or redistribution rights."
+  ],
+  "logs": [
+    {
+      "name": "checkpoint-competing-session-unit-red.log",
+      "sha256": "792704f3b0957b4245a650c27ba7f9f81be9da6a6ca1197db548d6c6c2465655"
+    },
+    {
+      "name": "checkpoint-loaded-session-unit-red.log",
+      "sha256": "acec470b81525f4f1e2425207d9a2a539f8c9d7d814d1abfa3af23cea4c0b819"
+    },
+    {
+      "name": "checkpoint-empty-read-disposal-red.log",
+      "sha256": "d5b69282c61cc3d15302d204f9bd264c74f08a73b900d7af2affe2e74dceb296"
+    },
+    {
+      "name": "checkpoint-empty-read-disposal-green.log",
+      "sha256": "867808e1dd8e04ec503168b72ab4d78c011a44e70fafd787d51456a6ba506b02"
+    },
+    {
+      "name": "checkpoint-game-final-browser-contexts.log",
+      "sha256": "f30c4e1d2b69d40aebac8c5c2188e2609f65d9ec7d7b9669d2e8619ec8535ec5"
+    },
+    {
+      "name": "checkpoint-game-final-browser-campaign.log",
+      "sha256": "ed7a94fea9770606011836f98eed9ccb26a9d3dee19218ebff1b61f4b14fb9db"
+    },
+    {
+      "name": "checkpoint-game-main-10c-hosted-checks.json",
+      "sha256": "55dc75d70334e0d488e853d970cdc92287b87490efa699e7332eb014c97b663d"
+    }
+  ]
+}
