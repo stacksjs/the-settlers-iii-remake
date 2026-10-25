@@ -57,9 +57,11 @@
   "screenshot": {
     "sha256": "ea57c1206dc37f8edf71a9a2ff5bfdb2f01e64e319975bf26baa68c9513077ed",
     "bytes": 139227,
-    "width": 65536,
-    "height": 4292542531,
-    "publication": "Raster retained locally only; redistribution evidence unverified."
+    "width": 1167,
+    "height": 798,
+    "publication": "Raster retained locally only; redistribution evidence unverified.",
+    "mediaType": "image/jpeg",
+    "formatVerification": "JPEG signature plus file and sips:1167x798. The screenshot API returned JPEG bytes; the initial PNG-offset dimension interpretation was invalid."
   },
   "limits": [
     "Manual real-browser interface acceptance, separate from the automated DOM-event selection regression.",
