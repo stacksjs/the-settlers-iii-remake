@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T08:58:53.477737+00:00",
+  "base": "4a625e210ad9ae3a2068b6ef4f2b8f9b8616dac3",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/86",
+  "problem": "The military panel could add waiting recruitment orders but could not reduce them.",
+  "reference": {
+    "url": "https://github.com/JakeSteam/settlers/blob/8426388935b436e65b0697ac401c4247ab097364/en/in_menu/menu.htm",
+    "sha256": "6823c1be372ce3c6905d09753d867ecd637e6cd2c5bfa3e26ea5fd161be516bb",
+    "section": "Recruiting Soldiers",
+    "supports": "Arrow controls choose the number of soldiers to recruit.",
+    "limit": "This is manual evidence, not an original executable observation or a timing/balance measurement."
+  },
+  "change": "A validated session command reduces only waiting orders. The shared controller and STX controls use that command. Empty queues disable cancellation.",
+  "red": {
+    "engine": "cancel-recruit rejected as Unknown command before implementation",
+    "engineLogSha256": "290e8087bfeda8c89dc83a7c85663b66d06ddbd5a1f2e468a5e9eb7a8edc71cf",
+    "originalTemplate": {
+      "failedStep": 6,
+      "missing": "Recruitment queue controls and row projection",
+      "reportSha256": "92dab47b2548265ec53cd5c6c504d4aad91dff2d8a7936cea4d7fc834ce79f1a"
+    }
+  },
+  "checks": {
+    "runtime": "Bun 1.4.4 from the normal pinned project toolchain",
+    "units": {
+      "pass": 243,
+      "fail": 0,
+      "assertions": 22498
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": "app, tools, STX: 247 expressions, Buddy types, all exit 0",
+    "productionBuild": "buddy build views exit 0",
+    "browser": [
+      {
+        "viewport": "1440x960",
+        "steps": 25,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "observations": [
+          {
+            "waiting": 0,
+            "canCancel": false
+          },
+          {
+            "waiting": 3,
+            "canCancel": true
+          },
+          {
+            "waiting": 2,
+            "canCancel": true
+          },
+          {
+            "waiting": 2,
+            "canCancel": true
+          },
+          {
+            "waiting": 1,
+            "canCancel": true
+          },
+          {
+            "waiting": 0,
+            "canCancel": false
+          },
+          {
+            "controlsContained": true
+          }
+        ]
+      },
+      {
+        "viewport": "320x568",
+        "steps": 25,
+        "consoleErrors": 0,
+        "failedRequests": 0,
+        "observations": [
+          {
+            "waiting": 0,
+            "canCancel": false
+          },
+          {
+            "waiting": 3,
+            "canCancel": true
+          },
+          {
+            "waiting": 2,
+            "canCancel": true
+          },
+          {
+            "waiting": 2,
+            "canCancel": true
+          },
+          {
+            "waiting": 1,
+            "canCancel": true
+          },
+          {
+            "waiting": 0,
+            "canCancel": false
+          },
+          {
+            "controlsContained": true
+          }
+        ]
+      }
+    ]
+  },
+  "media": [
+    {
+      "viewport": "1440x960",
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "59f618380f3462110835a58d394f3253e0c65576c54af59894508ccaee9845a4",
+        "bytes": 526492,
+        "width": 1440,
+        "height": 960
+      },
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    {
+      "viewport": "320x568",
+      "schemaVersion": 1,
+      "screenshot": {
+        "sha256": "65c8d89eccfe0067e56925eafd2284bb2e43c35bad1e87a4511e2f2409389844",
+        "bytes": 165498,
+        "width": 320,
+        "height": 568
+      },
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  ],
+  "review": {
+    "standards": "Owning game source only, explicit module dependencies, shared command path, STX signals and existing ts-css layout.",
+    "spec": "Only waiting orders change. Active enlistment keeps its weapon and still returns to the queue if interrupted. Recruited soldiers, other classes, physical goods and population are preserved.",
+    "preflight": "Targeted dense game HUD change, existing art/palette/type/motion retained, no new motion or external UI dependencies. Phone and desktop controls remain within the HUD."
+  },
+  "limits": [
+    "Does not cancel already assigned enlistment jobs or dismiss soldiers.",
+    "Does not prove original recruitment timings or Gold Edition parity.",
+    "Issue 86 remains open for its complete inspection-panel and native acceptance."
+  ]
+}

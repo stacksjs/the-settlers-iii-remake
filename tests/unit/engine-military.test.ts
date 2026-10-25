@@ -18,6 +18,27 @@ function field(p1: { profession: string, x: number, y: number }[], p2: { profess
 }
 
 describe('recruitment', () => {
+  test('waiting recruitment orders can be reduced without changing soldiers or goods, including after restore', () => {
+    const s = field([{ profession: 'swordsman', x: 40, y: 70 }], [])
+    order(s, 'recruit', { profession: 'swordsman', count: 3 })
+    order(s, 'recruit', { profession: 'bowman', count: 2 })
+    const population = s.view(1).population, goods = s.view(1).goods
+    order(s, 'cancel-recruit', { profession: 'swordsman', count: 1 })
+    expect(s.state.players[0]!.settings.recruit!.queue).toEqual({ swordsman: 2, bowman: 2 })
+    const copy = restore(JSON.parse(JSON.stringify(save(s))), rules)
+    for (const session of [s, copy]) {
+      expect(session.enqueue({ tick: session.state.tick, player: 1, seq: 1000, type: 'cancel-recruit', profession: 'swordsman', count: 2 })).toBeNull()
+      session.advance(1)
+      expect(session.state.results.at(-1)!.ok).toBe(true)
+      expect(session.state.players[0]!.settings.recruit!.queue).toEqual({ bowman: 2 })
+      expect(session.view(1).population).toBe(population)
+      expect(session.view(1).goods).toEqual(goods)
+      expect(soldiers(session, 1, 'swordsman')).toHaveLength(1)
+      expect(audit(session.context)).toEqual([])
+    }
+    expect(checksum(copy.state)).toBe(checksum(s.state))
+  })
+
   test('barracks turn carriers into soldiers with delivered weapons, keeping rank and accounting', () => {
     const s = createSession({ rules, map: landscape(), seed: 3, players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { plank: 30, stone: 30, sword: 2, bow: 1 } }] })
     const barracks = place(s, 'barracks', anchors.west)
@@ -73,6 +94,11 @@ describe('recruitment', () => {
     const recruit = (): ReturnType<typeof soldiers>[number] | undefined => [...s.state.settlers.values()].find(p => p.program?.kind === 'enlist')
     until(s, () => recruit()?.cargo === 'sword', 600)
     const carrier = recruit()!
+    order(s, 'recruit', { profession: 'swordsman', count: 1 })
+    order(s, 'cancel-recruit', { profession: 'swordsman', count: 1 })
+    expect(carrier.program?.kind).toBe('enlist')
+    expect(carrier.cargo).toBe('sword')
+    expect(s.state.players[0]!.settings.recruit!.queue.swordsman).toBeUndefined()
     order(s, 'demolish', { building: barracks })
     run(s, 200)
     expect(carrier.profession).toBe('carrier')
@@ -94,6 +120,13 @@ describe('recruitment', () => {
     }
     expect(reject('recruit', { profession: 'carrier', count: 1 })).toBe('Malformed recruitment order.')
     expect(reject('recruit', { profession: 'swordsman', count: 0 })).toBe('Malformed recruitment order.')
+    for (const fields of [{ profession: 'carrier', count: 1 }, { profession: 'swordsman', count: 0 }, { profession: 'swordsman', count: -1 }, { profession: 'swordsman', count: 1.5 }, { profession: 'swordsman', count: 1001 }]) {
+      expect(reject('cancel-recruit', fields)).toBe('Malformed recruitment cancellation.')
+    }
+    expect(reject('cancel-recruit', { profession: 'swordsman', count: 1 })).toBe('There are not that many waiting recruits.')
+    order(s, 'recruit', { profession: 'swordsman', count: 1 })
+    expect(reject('cancel-recruit', { profession: 'swordsman', count: 2 })).toBe('There are not that many waiting recruits.')
+    expect(s.state.players[0]!.settings.recruit!.queue.swordsman).toBe(1)
     expect(reject('settings', { settings: { rank: 2 } })).toBe('Promote soldiers with manna instead.')
     expect(reject('promote', { profession: 'swordsman' })).toBe('A promotion needs 10 manna; you have 0.')
     expect(reject('promote', { profession: 'carrier' })).toBe('Only soldiers can be promoted.')

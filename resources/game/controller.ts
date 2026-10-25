@@ -572,6 +572,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!session) return
       report(send('recruit', { profession, count: 1 }) ?? `A ${profession} will be recruited when a barracks has the weapon and a carrier is free.`)
     },
+    cancelRecruit(profession: string) {
+      if (!session) return
+      report(send('cancel-recruit', { profession, count: 1 }) ?? `One waiting ${profession} order cancelled.`)
+    },
     recruitAutomatic() {
       if (!session) return
       const next = !session.state.players[PLAYER - 1]!.settings.recruit?.automatic

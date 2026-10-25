@@ -297,6 +297,17 @@ function execute(ctx: Context, command: Command): CommandResult {
       if (typeof command.profession !== 'string' || !specialists.includes(command.profession) || !integer(command.count, 1, 50)) return result(false, 'Malformed order to return specialists.')
       return dismiss(ctx, player.id, command.profession, command.count) ? result(true) : result(false, `No idle ${command.profession} can return to carrying.`)
     }
+    case 'cancel-recruit': {
+      const profession = typeof command.profession === 'string' ? command.profession : ''
+      if (!rules.military || !ctx.profession.get(profession)?.soldier || !integer(command.count, 1, 1000)) return result(false, 'Malformed recruitment cancellation.')
+      const queue = player.settings.recruit?.queue
+      const queued = queue?.[profession] ?? 0
+      if (!queue || command.count > queued) return result(false, 'There are not that many waiting recruits.')
+      // Assigned enlistment jobs have already left this queue. Only waiting orders change.
+      if (queued === command.count) delete queue[profession]
+      else queue[profession] = queued - command.count
+      return result(true)
+    }
     case 'recruit': {
       const soldier = typeof command.profession === 'string' ? ctx.profession.get(command.profession)?.soldier : undefined
       if (!rules.military || !soldier || !integer(command.count, 1, 100)) return result(false, 'Malformed recruitment order.')
@@ -332,7 +343,7 @@ function execute(ctx: Context, command: Command): CommandResult {
   }
 }
 
-const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'move-soldiers', 'attack', 'promote', 'cast', 'thieves', 'thief', 'dismiss'])
+const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'settings', 'urgent-tool', 'specialists', 'recruit', 'cancel-recruit', 'move-soldiers', 'attack', 'promote', 'cast', 'thieves', 'thief', 'dismiss'])
 
 export interface PlayerView {
   tick: number, player: number, width: number, height: number

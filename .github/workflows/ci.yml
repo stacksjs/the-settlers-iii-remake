@@ -45,6 +45,7 @@ jobs:
           bun tests/browser/resize.ts http://127.0.0.1:3450/
           bun tests/browser/production.ts http://127.0.0.1:3450/
           bun tests/browser/selection.ts http://127.0.0.1:3450/
+          bun tests/browser/recruitment.ts http://127.0.0.1:3450/
           bun tests/browser/working-area.ts http://127.0.0.1:3450/
           bun tests/browser/checkpoints.ts
       # Original-media rasters remain local until reviewed permission exists.
@@ -65,6 +66,8 @@ jobs:
             storage/framework/runtime/shots/production-media.json
             storage/framework/runtime/shots/selection.json
             storage/framework/runtime/shots/selection-media.json
+            storage/framework/runtime/shots/recruitment.json
+            storage/framework/runtime/shots/recruitment-media.json
             storage/framework/runtime/shots/working-area.json
             storage/framework/runtime/shots/working-area-media.json
             storage/framework/runtime/shots/checkpoints.json
