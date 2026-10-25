@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-25T07:26:39.969337+00:00",
+  "source": "bc94c55dd80d232ba3b213842bbad54b27756f8a",
+  "sourceCI": 40168507478,
+  "sourceCIConclusion": "success",
+  "installed": {
+    "stacks": "0.75.294",
+    "stx": "0.2.686",
+    "craft": "0.0.330"
+  },
+  "host": "macOS Google Chrome, CUA native tab input",
+  "url": "http://127.0.0.1:3451/",
+  "setup": "Normal New settlement > Computer rival. Roman engineering profile; 44 starting settlers includes 4 swordsmen and 2 bowmen. Existing temporary QA save replaced through normal UI.",
+  "observations": [
+    {
+      "input": "Pause; left-drag the castle area",
+      "visible": "No soldiers in that area. Army panel showed0 outside; starting guard had garrisoned."
+    },
+    {
+      "input": "Settlers > Military > Send soldiers; left-click map",
+      "visible": "Your soldiers march there and hold the position.5 soldiers stand outside the garrisons; one remains inside."
+    },
+    {
+      "input": "Escape; native left-drag rectangle",
+      "visible": "5 soldiers marked. Army panel also showed5 marked."
+    },
+    {
+      "input": "Native Alt+1",
+      "visible": "Group 1 holds 5 soldiers. Press 1 to mark them, twice to find them."
+    },
+    {
+      "input": "Native Escape, then1, then Ctrl+right-click",
+      "visible": "5 soldiers will march there, ignoring enemies."
+    },
+    {
+      "input": "Native Shift+right-click",
+      "visible": "5 soldiers will add that waypoint."
+    },
+    {
+      "input": "Native Alt+right-click",
+      "visible": "5 soldiers will patrol between here and there."
+    },
+    {
+      "input": "4x; Save",
+      "visible": "Settlement saved on this device. Time 0:36."
+    },
+    {
+      "input": "Load",
+      "visible": "Saved settlement restored.5 soldiers stand outside the garrisons; transient marked set cleared."
+    },
+    {
+      "input": "Pause",
+      "visible": "Time 0:59,5 soldiers outside, final screenshot captured."
+    }
+  ],
+  "screenshot": {
+    "sha256": "ea57c1206dc37f8edf71a9a2ff5bfdb2f01e64e319975bf26baa68c9513077ed",
+    "bytes": 139227,
+    "width": 65536,
+    "height": 4292542531,
+    "publication": "Raster retained locally only; redistribution evidence unverified."
+  },
+  "limits": [
+    "Manual real-browser interface acceptance, separate from the automated DOM-event selection regression.",
+    "Observed dispatch messages and army counts. Exact routes, completed patrol cycles, damage and combat were not measured in this session.",
+    "Does not establish Gold Edition starting values, original timing, campaign completion, hardware-device coverage or native game acceptance.",
+    "The maintained installed driver 294 was not used for the native digit and modifier delivery; CUA sent real browser input."
+  ]
+}
