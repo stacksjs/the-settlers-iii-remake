@@ -1,5 +1,6 @@
 import type { Point, Session } from './engine'
 import { toView } from './engine'
+import { geologistSurveyImage } from './geologist-images'
 import { surveyMarker } from './survey-signs'
 
 // The scene is everything a player's screen shows, derived only from the
@@ -90,12 +91,17 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       const to = toView(s.next % map.width, Math.floor(s.next / map.width), map.elevation[s.next]!)
       view = { x: view.x + (to.x - view.x) * step, y: view.y + (to.y - view.y) * step }
     }
-    const frame = spriteDirection(s.dir) * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
+    let frame = spriteDirection(s.dir) * 12 + (walking && !options.reduceMotion ? 1 + Math.floor(step * 11) % 11 : 0)
     // Soldiers wear their rank's original sequence; health is shown as a share of the rank's maximum.
     const soldier = s.soldier ? rules.professions.find(p => p.id === s.profession)?.soldier : undefined
     // A soldier between blows plays its rank's strike sequence; its direction faces the target.
     const striking = !!soldier && s.action === 'working' && s.soldier!.cooldown > 0
-    const sprite = soldier ? `${striking ? 'strike' : 'soldier'}:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : s.profession === rules.religion?.priest ? 'priest' : 'worker'
+    let sprite = soldier ? `${striking ? 'strike' : 'soldier'}:${s.profession}-${s.soldier!.rank}` : s.cargo ? `carry:${s.cargo}` : s.profession === rules.religion?.priest ? 'priest' : s.profession === 'geologist' ? 'geologist' : 'worker'
+    const work = s.program?.steps[s.program.pc]
+    if (!s.cargo && s.profession === 'geologist' && s.action === 'working' && s.program?.kind === 'duty' && work?.op === 'work') {
+      const image = geologistSurveyImage(options.reduceMotion ? 0 : (s.step - 1) / Math.max(1, work.ticks - 1))
+      sprite = image.sprite; frame = image.frame
+    }
     items.push({ kind: 'settler', sprite, frame: striking ? spriteDirection(s.dir) : frame, view, ...(striking ? { progress: 1 - s.soldier!.cooldown / soldier!.attackTicks } : {}), depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
   }
   for (const p of state.projectiles ?? []) {

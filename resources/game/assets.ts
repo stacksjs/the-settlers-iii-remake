@@ -1,3 +1,4 @@
+import { geologistImages } from './geologist-images'
 import { surveySigns } from './survey-signs'
 
 export interface AtlasFrame { key: string, frame: number, x: number, y: number, width: number, height: number, offsetX: number, offsetY: number }
@@ -18,6 +19,10 @@ export async function loadOriginalAssets(): Promise<Atlas> {
     const images = frames.get(expected.key)
     if (images?.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21))
       throw new Error(`Original survey images are missing or invalid: ${expected.key}`)
+  }
+  for (const expected of geologistImages) {
+    const images = frames.get(expected.key)
+    if (images?.length !== expected.frames || images.some((frame, index) => frame.frame !== index)) throw new Error(`Original geologist images are missing or invalid: ${expected.key}`)
   }
   return { image, frames }
 }

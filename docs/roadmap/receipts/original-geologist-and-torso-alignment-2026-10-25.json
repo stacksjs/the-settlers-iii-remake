@@ -1,0 +1,495 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T03:57:23.674773+00:00",
+  "issues": [
+    209,
+    210
+  ],
+  "baseline": "fc70d01839e7c799ccd3a4d23e244d7ae141dbd3",
+  "change": "Original Roman geologist movement and two survey sequences; generic DAT torso table alignment corrected at the decoder source.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt",
+        "gitBlob": "014bc2353b1c4509f65ccfe292fc943aa289d355",
+        "bytes": 15112,
+        "sha256": "da3ad405cb920f501088209a86ab3d6d6a6dd1e766599ea4d70ea885a86882e5"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables.txt",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables.txt",
+        "gitBlob": "d670a3ac314f87bb4f19ccfedc6dfc8e635a0834",
+        "bytes": 21203,
+        "sha256": "88fe5c9e2389ddca6ddfd809e2ef56c460bc118d463bf7d1dfc9177703528b38"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java",
+        "gitBlob": "cf4fc777bc43afd9a5f7a1208e5a22177f883c8d",
+        "bytes": 7141,
+        "sha256": "67c0cfceab2612d3a88e51a5e1a302cafc86e3279553c9a1982f55bcc3a2f569"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileReader.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileReader.java",
+        "gitBlob": "4d6adbbf688f3e5bd042d86a91ce2dfd8add1cff",
+        "bytes": 1834,
+        "sha256": "74244bc3ab55a73bfc77daaf3d5816fbff8cc4be8873871de88122610baef388"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+        "gitBlob": "1161efd4d6040312fc16663de4d6f244a790d437",
+        "bytes": 21077,
+        "sha256": "4db1d80e35e8661dd88bc1935774fd3dd7a69a2f3592aab66e74196ff70abd2e"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/TorsoTranslator.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/TorsoTranslator.java",
+        "gitBlob": "db80b2452b739e3bfbbe44c155dc889633e66c5f",
+        "bytes": 2135,
+        "sha256": "4c5d64d2e303a91bebc05819585f4e6aad141b77a4dc63aefe4f2cce779825fd"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "gitBlob": "254e1b2c04c39109a993991cfd34937f5f4352c2",
+        "bytes": 29998,
+        "sha256": "51255419f32c813ba24853f70549cb0f638956e3375f018159096cbecdd8e5bc"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/movable/specialist/GeologistMovable.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/movable/specialist/GeologistMovable.java",
+        "gitBlob": "1e2f65959fe164904a8ade6e3a804da312f3802d",
+        "bytes": 4979,
+        "sha256": "fdebd5ceaa7ed7520982fbf2eb91b3372c7fcbbc3a3b9302b9e0bd092f716399"
+      }
+    ],
+    "images": [
+      {
+        "key": "geologist",
+        "file": 11,
+        "goldSequence": 37,
+        "demoSequence": 37,
+        "rawTorsoIndex": 24,
+        "frames": 72
+      },
+      {
+        "key": "geologist-survey-1",
+        "file": 11,
+        "goldSequence": 39,
+        "demoSequence": 39,
+        "rawTorsoIndex": 26,
+        "frames": 31
+      },
+      {
+        "key": "geologist-survey-2",
+        "file": 11,
+        "goldSequence": 38,
+        "demoSequence": 38,
+        "rawTorsoIndex": 25,
+        "frames": 16
+      }
+    ],
+    "workOrder": "GeologistMovable plays ACTION1 (sequence 39, 31 frames) then ACTION2 (sequence 38, 16 frames) before writing the sign. Their reference durations are 1.4 and 1.5, used here only as a visual ratio inside the existing engineering survey task.",
+    "evidenceClass": "Pinned remake source plus original demo bytes; not original Gold runtime observation."
+  },
+  "decoderCorrection": {
+    "cause": "Body and torso sequence tables were read at the same raw index. The reference right-aligns a shorter torso table, leaving an absent prefix.",
+    "examples": [
+      {
+        "name": "carrier",
+        "bodyCount": 60,
+        "torsoCount": 60,
+        "prefix": 0,
+        "bodySequence": 0,
+        "rawTorsoIndex": 0,
+        "frames": 72,
+        "datSha256": "1c74a23ebaedd4f62cf2dfcf79ec5e79e9d8e7d0bd5b2ee1ca4cdf1e7298b18f"
+      },
+      {
+        "name": "geologist",
+        "bodyCount": 239,
+        "torsoCount": 226,
+        "prefix": 13,
+        "bodySequence": 37,
+        "rawTorsoIndex": 24,
+        "frames": 72,
+        "datSha256": "9e1db95c7adafe0dc75e953436da00170f78b8e0f332aa5d784f14f82f3daaff"
+      },
+      {
+        "name": "priest",
+        "bodyCount": 239,
+        "torsoCount": 226,
+        "prefix": 13,
+        "bodySequence": 195,
+        "rawTorsoIndex": 182,
+        "frames": 72,
+        "datSha256": "9e1db95c7adafe0dc75e953436da00170f78b8e0f332aa5d784f14f82f3daaff"
+      },
+      {
+        "name": "swordsman-rank-1",
+        "bodyCount": 34,
+        "torsoCount": 25,
+        "prefix": 9,
+        "bodySequence": 9,
+        "rawTorsoIndex": 0,
+        "frames": 72,
+        "datSha256": "91f7174597fec545e34d684a5a7ab3e1fb438dbe1142789051b2abfd5c92b335"
+      }
+    ],
+    "fix": "S3Dat.has and S3Dat.frames share layer-aware sequence resolution. Only torso 0x3112 receives the reference shift; body, GUI and landscape addressing remain unchanged.",
+    "notPerProfession": "There are no per-profession index offsets in the importer. The corrected decoder also repairs existing priest and soldier clothing. Equal-length carrier tables keep their original addressing.",
+    "initialWrongProbe": "The first independent composition probe inherited the old raw lookup and found only 10/10/16 torso frames. It is retained privately as incorrect-raw-index-composed-frames.json. Before importer changes, a second probe read and aligned raw section pointers independently; it found 72/31/16 correct layers and supplies the committed pixel fixture.",
+    "sourceCommit": "c62189b724237487c97796efb771600866d692d5"
+  },
+  "presentation": {
+    "source": "resources/game/scene.ts and resources/game/geologist-images.ts",
+    "behavior": "Movement uses actual direction and step, idle uses the original standing frame. Actual duty work uses its current op and step for the two reference images in order. Reduced motion fixes the first work image. Cargo retains priority; existing scene tests retain real cargo, soldiers and fog.",
+    "worldContract": "Scene reads preserve checksums; a mid-second-action restore keeps identical images and state, then produces the same survey sign. No rule, survey duration, mining reserve, command, save format, replay behavior, AI or clock changes.",
+    "profile": {
+      "version": "0.13.0",
+      "digest": "546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931"
+    },
+    "palette": "Existing prototype torso tint 0.88/0.72/0.34 retained. Original player palettes and full shadow mapping remain unverified."
+  },
+  "assets": {
+    "newGeologistFrames": 119,
+    "allSpriteFrames": 3967,
+    "dimensions": [
+      1024,
+      6310
+    ],
+    "atlas": "sprites.760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9.png",
+    "atlasSha256": "760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9",
+    "missingRequested": [],
+    "interfaceImages": 52,
+    "sounds": 6,
+    "convertedFiles": 95,
+    "geologistPixelFixtureSha256": "3ae6e3d13b019155359f7dca828eb085c545fa46a2f7608f427aa022cef7c8c3",
+    "torsoPointerFixtureSha256": "50b8ba59237bdd2c837c73e86ad306ff65e5dbb1d3e20e6b31d504c937b1b9b2",
+    "independence": "Expected torso pointers are aligned directly from raw DAT section headers, not from the corrected torso accessor. Composed RGBA identities were retained before changing the maintained importer. Existing composition and grayscale tests cover the common pixel decoder.",
+    "publication": "Original raster and audio files remain local pending redistribution evidence."
+  },
+  "checks": {
+    "walkingRed": {
+      "result": "0 pass, 1 fail, 2 assertions; expected geologist, received worker",
+      "logSha256": "ba2aa7693cacf9a90107e08b11cdd7f055617458263fbbe1265b8ee7a7385d6f"
+    },
+    "workRed": {
+      "result": "The real working scene still used the standing geologist; expected the first survey sequence",
+      "logSha256": "04d53910be5c2e1b9c932180677582ea5ad4d6fed7c5aad0cc406a0fd2face6d"
+    },
+    "torsoRed": {
+      "result": "10 pass, 1 fail, 36 assertions; an absent torso prefix incorrectly appeared present",
+      "logSha256": "e359f1ad1822c2752d56bfeb45aacbff80ff0280a3b856cf719764b25cf523c3"
+    },
+    "assetRed": {
+      "result": "0 pass, 1 fail, 2 assertions; geologist frames absent from the old atlas",
+      "logSha256": "fb0c5656a36910ff1944193e587d2299ea3ea3b31fd6c25f42a96063dfa87aed"
+    },
+    "focused": {
+      "result": "17 pass, 0 fail, 526 assertions across 4 files",
+      "logSha256": "1b4c3ac2f3106100a9bba55ca056a1e09cdf2b1171467639479d60cb8f06197e"
+    },
+    "unit": {
+      "result": "361 pass, 0 fail, 23927 assertions across 54 files, 325.98 seconds",
+      "logSha256": "958caa768a4c60594a35ada5ce0b7fd5b50e7b88ad85e4b736f284c6097b1ac4"
+    },
+    "types": "App, tools and 258 STX expressions pass",
+    "lint": "0 errors, 0 warnings",
+    "assets": "All 3967 sprites, 52 interface images, 6 PCM WAV and 95 files verify with provenance",
+    "build": "Production views pass",
+    "content": "25 categories, 95 files verified",
+    "fidelity": "4 edition profiles, 107 systems, 6 targets valid",
+    "roadmap": "107 implementation issues, 12 epics, one master valid",
+    "browser": {
+      "recordedAt": "2026-10-26T04:06:05.756464+00:00",
+      "totalSteps": 472,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "768edda6861d6f104a35dfaa3d372f42f4b47d6a6823d3224d23bc48668ccec4",
+          "noErrors": true,
+          "mediaReceiptSha256": "f3c09a762acd0837c1364129dfdffd5820b2052715cb9da215d9f281ab26bd20"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "31dbca16651631d28c9e58a0a906535e13f7697da2d73e4453ff2a06edfb0860",
+          "noErrors": true,
+          "mediaReceiptSha256": "6462ba336e903226b95dcb0001b05d2d0ec34b6e17e20f16e7b94bd0f28c01c9"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "8ae42e33951d0fd2a29b6adcb35d58ad2157df13a003a3f75baa198b25cdd185",
+          "noErrors": true,
+          "mediaReceiptSha256": "6f8e545415ec1f1a9dabd30ffe03ad8479c3d3b6ee23d139d1d67065f53b336c"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "2da7e4f30a6c861dc1c0416f3216b197f0be076b808acc2d36fad627d58c73a2",
+          "noErrors": true,
+          "mediaReceiptSha256": "23c92c4e9e0b7abc053476a719d8771ae32adb70fa2a5911afc21532bef0e085"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "628d2fd8f612f2d2dca584096bbb41aa4985e68c54b5e15ef4d4b2cb466c1b24",
+          "noErrors": true,
+          "mediaReceiptSha256": "6262a75bc65907e18b9617940620bd3f63dd4ffd7c17a05670af555737b69a09"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "2d5973d229f66dde36c20f6e135d4dbaec2415f436398f7086c2e737e95053f4",
+          "noErrors": true,
+          "mediaReceiptSha256": "faffd24bccf7d64db38e567a1756e0663e01f7367bf754ed65d189d5e9ab2680"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "42af2b4f63f3ea8ccce6d67db4244d35f691d2e60b2a3dbb420840c137e267d5",
+          "noErrors": true,
+          "mediaReceiptSha256": "3c9cabffd9770876f1c959a3b22857c5d4822aaa22af6fdb60515330ef47719a"
+        },
+        {
+          "suite": "storage-inspection",
+          "steps": 87,
+          "reportSha256": "4a4c55cf145b8fb1d28225e329654ff47d01485a9f6840857812f57b4f722878",
+          "noErrors": true,
+          "mediaReceiptSha256": "85da82a3b96e2e7083e0233441a54da1d22f668ab43781f35766c79312dece7e"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "0e12d03bbac0ef97f4a37ba1804d0201b26305e723a359b356f2041bf5454e8c",
+          "noErrors": true,
+          "mediaReceiptSha256": "ba6c84fba90909bec74ea12359988fb542c5eabde29ebaf171fc916c71904c8b"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "f5becd70ef33b09ec025f9a66dd26801930b69069736740349c8bbca55222cbb",
+          "noErrors": true,
+          "mediaReceiptSha256": "37949f3288d53b5c5bb79fdc6586021e223e670f6692685a569419bd5c6ebae1",
+          "elapsedMs": 616520.143167
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "8c99e5bb622d6d11c1b3b6f203cdd95744b1f9c8789df19e0f8901b187c1b2e9",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    "reviewSha256": "3b06e3c7d008e31007735aec0dcd2cfee70e3f8a698b4b20c02cb51dff47e1fa"
+  },
+  "nativeBrowser": {
+    "scope": "Actual saved rival seed 1, ordinary save/reload, existing geologist ordered with native occupation controls and keyboard to the previously observed mountain (32,75). Native 1x simulation; no session, save, clock or AI injection.",
+    "viewport": [
+      664,
+      823
+    ],
+    "population": 44,
+    "ownBuildings": 4,
+    "stockAtCapture": {
+      "log": 16,
+      "plank": 30,
+      "stone": 19,
+      "hammer": 5,
+      "shovel": 5
+    },
+    "capture": {
+      "file": "native-geologist-work.jpg",
+      "sha256": "6178920429de8a97a3eda6532bc2460f9d548db76fb8a3ef89f38ea403c9e133",
+      "AXSha256": "e3bc4db396036fb6ad7d52233ba4fb09573a8df6e04540dd44b5abd8c7eaac58"
+    },
+    "observation": "Original geologist and survey signs render in the real game. Public scene tests establish the precise action order; this raster alone does not identify both action phases or establish Gold behavior.",
+    "gameplayLimit": "Timber buildings completed through normal controls, scouting and surveying are active. No human-input rival victory or complete mineral economy is established.",
+    "savedCapture": {
+      "file": "native-geologist-saved.jpg",
+      "sha256": "39f4861cbb86d4d4eed8a8b559634a22f3daed0176701c2234391d250ac3a475",
+      "AXSha256": "bb8eaa20d9a13162f2c8abe14ebba5dfc191db736efd66eebbac7198daff0075",
+      "state": "Paused and saved through normal controls. The match remains unfinished."
+    }
+  },
+  "deliveryVerification": [
+    {
+      "url": "http://127.0.0.1:3450",
+      "atlas": "sprites.760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9.png",
+      "atlasSha256": "760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9",
+      "manifestSha256": "d999d234992d0d9c5da37fe91d1ad29646549ef0a1ec24ce9f8c778b41af01d1",
+      "modules": [
+        {
+          "path": "/_stx/runtime.9f638c585ebef006.js",
+          "bytes": 237781,
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9"
+        },
+        {
+          "path": "/_stx/modules.fe0a8acaf2231c7a.js",
+          "bytes": 1933035,
+          "sha256": "65b57d27223303a5f10fc05b4619585da89f1675d4d3fb17de8b46c663c4955a"
+        },
+        {
+          "path": "/_stx/router.0ab03ca144393a09.js",
+          "bytes": 72580,
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f"
+        }
+      ],
+      "containsCandidate": true
+    },
+    {
+      "url": "http://127.0.0.1:3457",
+      "atlas": "sprites.760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9.png",
+      "atlasSha256": "760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9",
+      "manifestSha256": "d999d234992d0d9c5da37fe91d1ad29646549ef0a1ec24ce9f8c778b41af01d1",
+      "modules": [
+        {
+          "path": "/_stx/runtime.9f638c585ebef006.js",
+          "bytes": 237781,
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9"
+        },
+        {
+          "path": "/_stx/modules.fe0a8acaf2231c7a.js",
+          "bytes": 1933035,
+          "sha256": "65b57d27223303a5f10fc05b4619585da89f1675d4d3fb17de8b46c663c4955a"
+        },
+        {
+          "path": "/_stx/router.0ab03ca144393a09.js",
+          "bytes": 72580,
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f"
+        }
+      ],
+      "containsCandidate": true
+    },
+    {
+      "url": "http://127.0.0.1:3458",
+      "atlas": "sprites.760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9.png",
+      "atlasSha256": "760c9342fb1495f95ac23674894938e7e4c95ed74c58cd5d0ba2cc473a1beef9",
+      "manifestSha256": "d999d234992d0d9c5da37fe91d1ad29646549ef0a1ec24ce9f8c778b41af01d1",
+      "modules": [
+        {
+          "path": "/_stx/runtime.9f638c585ebef006.js",
+          "bytes": 237781,
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9"
+        },
+        {
+          "path": "/_stx/modules.fe0a8acaf2231c7a.js",
+          "bytes": 1933035,
+          "sha256": "65b57d27223303a5f10fc05b4619585da89f1675d4d3fb17de8b46c663c4955a"
+        },
+        {
+          "path": "/_stx/router.0ab03ca144393a09.js",
+          "bytes": 72580,
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f"
+        }
+      ],
+      "containsCandidate": true
+    }
+  ],
+  "previousMainQualification": {
+    "recordedAt": "2026-10-26T03:50:04.766165+00:00",
+    "commit": "fc70d01839e7c799ccd3a4d23e244d7ae141dbd3",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40264479687",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12625973400,
+      "bytes": 21698,
+      "sha256": "46d11ba7850c8d7005b1e222dc824292c07a56cc2fef655ba44208507e8efda3",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "6bc03da88c62ab9f6cfcb1b0e21575a5b34964a3cf61a2647ef1760bd8035676",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "6157032f8fc634ff1d82952425d2452bde9572d1cb7f0a2ff8ae3310e4e518a9",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "9624186a4a9ddb1667e827c3d8a60368f0bb4d35af89126f58a1c8e5e8046b36",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "6136fe09baf8f65b4ca482fb4837060df50cb60fd5480bd7ddeffff1390449d8",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "f746fde224e9007d5249d79d7c1eb786008b5631d32fe76a9238aab248f5e1c8",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "f7537d083384b7c962cdfea8f585cec42ad3ef98e9807887f305d17c7b7f892a",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "7aa951ea0f8eaa35cb15e426ec23e8d2a108cf4f8175ba760d8f34a0cd979d27",
+        "noErrors": true
+      },
+      {
+        "suite": "storage-inspection",
+        "steps": 87,
+        "reportSha256": "ab1a4177fdc981f8d549b9281421e1f55fa6edfa029da1964ab865473865df02",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "6b2584cc1facfa73da037568fd0d8722cf0607d94e9dafd63243d68e6fedf074",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "2f3a0812b8c88dfe1a2d3c201837aec140846c06141743d544a14c3710bc20a8",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "f7fe4129042fc7ac38622d444f1b303e4df7f0e01be57a9dd6b85d6c459c0160",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 472,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "frameworkCohort": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4",
+    "sourceChanges": "Application scene and original-content decoder/importer. No installed dependencies or framework runtimes edited; no framework release required by these game source corrections."
+  },
+  "remaining": [
+    "Committed CI and its original diagnostic artifact are pending for this slice.",
+    "Other civilian profession images, full original palettes and shadows, remaining Gold systems and native app presentation remain open.",
+    "The separate retained 5,000-tick native staffing probe remains unqualified with an unexplained uncaught error."
+  ]
+}

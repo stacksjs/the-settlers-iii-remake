@@ -8,7 +8,7 @@ export const contentPolicy: ContentPolicy = {
     { id: 'terrain', status: 'partial', description: 'Selected original demo landscape frames. All factions and terrain variants remain uninventoried.' },
     { id: 'vegetation-and-deposits', status: 'partial', description: 'Selected trees, sapling and crop growth stages, stone frames and twelve original survey-sign frames. Other decorations and finite-deposit media remain uninventoried.' },
     { id: 'buildings', status: 'partial', description: 'Final and construction-site images for the 24 Roman buildings the engine defines. Destruction media and other faction sets remain uninventoried.' },
-    { id: 'settlers-and-soldiers', status: 'partial', description: 'Roman carrier walking cycles in six directions, empty-handed and with each Roman good, with torso layers. Other professions, armies and actions remain uninventoried.' },
+    { id: 'settlers-and-soldiers', status: 'partial', description: 'Roman carriers with cargo, ranked soldiers, priests and geologist movement and survey sequences, with aligned torso layers. Other civilian professions, faction sets and activities remain uninventoried.' },
     { id: 'ships-and-vehicles', status: 'not-imported', description: 'Ships, donkey transport, siege and their directional/action sequences.' },
     { id: 'goods-and-wares', status: 'partial', description: 'Pile sizes one to eight for 23 Roman goods. Other factions\' goods, interface icons and remaining wares remain uninventoried.' },
     { id: 'animals-and-wildlife', status: 'not-imported', description: 'Livestock, wildlife and their directional/action sequences.' },

@@ -4,6 +4,14 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: original geologist and torso alignment (2026-10-25)
+
+The [geologist and clothing receipt](roadmap/receipts/original-geologist-and-torso-alignment-2026-10-25.json) records 119 original Roman geologist frames: six-direction movement and both survey actions, in the supplied remake's order. The scene chooses them from the real movement and duty work state, preserving the engineering survey duration. The reference 1.4:1.5 action ratio governs visual progress only. Reduced motion keeps the work image still while the task continues; a mid-survey restore preserves state and images. No original Gold timing is claimed.
+
+Importing those frames exposed a decoder error. The original specialist and soldier DAT files have shorter torso tables, which the reference aligns to the last body sequences. Our decoder used raw matching indices, mixing unrelated clothing. Layer resolution now applies that alignment at the decoder source, also correcting existing priests and soldiers. Carrier tables with equal counts retain their original addressing. Independent raw-pointer fixtures and all 119 composed geologist frame hashes pass, along with 361 unit tests and 472 fresh browser steps, including the unchanged full battle with empty error collections. The importer verifies 3,967 sprite frames and 95 converted files. The prototype player palette remains unchanged; complete original colors and shadows remain open.
+
+A normal saved rival match reloads the candidate atlas and displays the original geologist and signs after native survey commands. The precise action ordering is established by the public scene tests. This playthrough has not established a human victory or a complete mineral economy. Full web fidelity and native game presentation remain unfinished.
+
 ## Update: storage area selection (2026-10-25)
 
 The [storage inspection receipt](roadmap/receipts/storage-area-inspection-2026-10-25.json) records a browser selection failure at a real original-map construction site. Enter at its passable center opened no panel, while a blocked edge opened the same building. The controller now selects across the saved profile's full protected building area, matching the pinned remake's separate selection grid. It preserves the movement-blocking geometry and rejects foreign buildings and invalid tiles. Engine rules and profile 0.13.0 are unchanged.

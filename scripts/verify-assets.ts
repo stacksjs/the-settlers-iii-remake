@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import type { AtlasFrame } from '../resources/game/assets'
+import { geologistImages } from '../resources/game/geologist-images'
 import { interfaceImages } from '../resources/game/interface-assets'
 import { surveySigns } from '../resources/game/survey-signs'
 import { contentPolicy } from '../docs/content/policy'
@@ -20,6 +21,10 @@ const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id 
 for (const expected of surveySigns) {
   const images = manifest.sprites.filter(frame => frame.key === expected.key)
   if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21)) throw new Error(`Invalid original survey frames ${expected.key}`)
+}
+for (const expected of geologistImages) {
+  const images = manifest.sprites.filter(frame => frame.key === expected.key)
+  if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index)) throw new Error(`Invalid original geologist frames ${expected.key}`)
 }
 for (const key of required) if (!manifest.sprites.some(frame => frame.key === key && frame.width && frame.height)) throw new Error(`Missing asset ${key}`)
 for (const key of ['worker', ...goods.map(id => `carry:${id}`)]) if (manifest.sprites.filter(frame => frame.key === key).length !== 72) throw new Error(`Carrier ${key} needs twelve frames in each of six directions`)

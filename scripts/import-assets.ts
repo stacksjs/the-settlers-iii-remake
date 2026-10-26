@@ -3,6 +3,7 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
+import { geologistImages, geologistReferencePaths } from '../resources/game/geologist-images'
 import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
 import { surveyReferencePaths, surveySigns } from '../resources/game/survey-signs'
 import { composeDatSprites, S3Dat } from './lib/s3-dat'
@@ -26,7 +27,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -133,6 +134,8 @@ for (const path of surveyReferencePaths) await getReference(path)
 const surveyReferences = surveyReferencePaths.map(path => `reference:${path}`)
 for (const image of surveySigns) await sequence(image.key, image.file, image.sequence, Array.from({ length: image.frames }, (_, frame) => frame), surveyReferences)
 await sequence('worker', 10, 0, 'all')
+for (const path of geologistReferencePaths) if (!provenanceInputs.has(`reference:${path}`)) await getReference(path)
+for (const image of geologistImages) await sequence(image.key, image.file, image.sequence, Array.from({ length: image.frames }, (_, frame) => frame), geologistReferencePaths.map(path => `reference:${path}`))
 // Roman soldiers by rank, from the reference remake's movables-ROMAN table (file 12, ranks 1 to 3).
 const soldierSprites: Record<string, [number, number, number]> = { swordsman: [9, 11, 10], pikeman: [15, 17, 16], bowman: [21, 23, 22] }
 for (const [profession, ranks] of Object.entries(soldierSprites)) for (const [rank, seq] of ranks.entries()) await sequence(`soldier:${profession}-${rank + 1}`, 12, seq, 'all', materialRefs, true)
@@ -142,6 +145,7 @@ for (const [profession, ranks] of Object.entries(strikeSprites)) for (const [ran
 // Roman priests (the reference's MAGE): file 11, walking sequence 195.
 await sequence('priest', 11, 195, 'all', materialRefs, true)
 const torsoReferences = [
+  'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java',
   'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/TorsoTranslator.java',
   'jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java',
 ]
@@ -149,7 +153,7 @@ for (const path of torsoReferences) await getReference(path)
 // This prototype palette is an explicit presentation choice. Original player
 // colors remain unverified; the DAT decoder preserves the source grayscale.
 const torsoTint = [0.88, 0.72, 0.34] as const
-for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key === 'priest' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:'))) {
+for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key === 'priest' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:') || geologistImages.some(image => image.key === entry.key))) {
   const worker = await dat(entry.source.file)
   if (!worker.has(entry.source.actualSequence, 0x3112)) continue
   const torsoFrames = worker.frames(entry.source.actualSequence, 0x3112)
