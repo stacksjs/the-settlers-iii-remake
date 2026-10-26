@@ -226,5 +226,29 @@
     "assets": "3967frames/52UIimages/6PCM sounds/95filesverified",
     "build": "oneproductionpage,21.45seconds",
     "review": "SourceRGBmathmatchespinnedColor;testreader/compositionindependent;131pixelidentitiesrefreshedfromrawbytes;simulationandsavesunchanged;nocriticalfindings."
+  },
+  "originalHostRetry": {
+    "failedCI": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40336734531",
+    "failure": "Original demo host returnedHTTP500 beforeunit/browserchecks.",
+    "correction": "Verified downloader retries only500/502/503/504, maximum3attempts with1s/2sbackoff. Allattempts and abortable waits share the original120000ms deadline. SameURL andpinnedSHA256;permanenterrors andbadbytesfailwithoutpublishing.",
+    "local": "5tests19assertions pass,includingfresh500then200,persistent503 bounded3attempts,403/404 immediatefail,badbytes/cachechecks. Typesandlintclean. FreshdownloadfromofficialURL succeeded andmatchedoriginalpinnedSHA.",
+    "evidence": [
+      {
+        "file": "ci-download-failure.log",
+        "sha256": "ff8ef89da1fcbb0efcec05f38fd3e5ad075ded3d5f4117db0cb1667e85e83867"
+      },
+      {
+        "file": "download-red.log",
+        "sha256": "f6c8124d641d194df81d479fc563a67197b9d7f7340679aab700bb37d5ab1022"
+      },
+      {
+        "file": "download-green.log",
+        "sha256": "79c190fa2a7d744c3abd157ac3d46d5ecad270218d4f182c3d343dd45551d304"
+      },
+      {
+        "file": "fresh-original-download.log",
+        "sha256": "239169b95f6360f2803cf534344e0dc275bad8eee189c089c0783dd2b62e34c5"
+      }
+    ]
   }
 }
