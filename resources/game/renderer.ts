@@ -9,7 +9,8 @@ import { scene } from './scene'
 // changes simulation state, and foreign entities are drawn only where the
 // player currently sees, matching the engine's player view.
 export interface Camera { x: number, y: number, zoom: number }
-const CHUNK = 32, CHUNK_SCALE = 2
+const CHUNK = 32
+const TERRAIN_CACHE_BYTES = 64 * 1024 * 1024
 const TERRAIN_FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', moor: '#6b6447', snow: '#e8ecef', swamp: '#5d7347', water: '#3c7f8a' }
 // Terrain without an imported original texture is drawn as a flat colour until its media is converted.
 const TERRAIN_TEXTURE: Record<string, string> = { grass: 'terrain-grass', mountain: 'terrain-rock', sand: 'terrain-sand', desert: 'terrain-sand', water: 'terrain-water' }
@@ -21,6 +22,16 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   // The pinned reference's ScreenPosition starts at 100%, preserving original sprite pixels.
   const camera: Camera = { x: 0, y: 0, zoom: 1 }
   const chunks = new Map<string, { canvas: HTMLCanvasElement, left: number, top: number, signature: string }>()
+  let terrainBytes = 0, terrainFrameBytes = 0, terrainFrameBuilds = 0, terrainSession: Session | null = null, terrainPlayer = 0, chunkScale = 2
+  function retireChunk(key: string): void {
+    const chunk = chunks.get(key)!
+    terrainBytes -= chunk.canvas.width * chunk.canvas.height * 4
+    chunk.canvas.width = 0; chunk.canvas.height = 0; chunks.delete(key)
+  }
+  const clearChunks = (): void => { for (const key of chunks.keys()) retireChunk(key) }
+  function reserveTerrain(bytes: number): void {
+    while (chunks.size && terrainBytes + bytes > TERRAIN_CACHE_BYTES) retireChunk(chunks.keys().next().value!)
+  }
   let patterns: Map<string, CanvasPattern> | null = null
   let playerSlots: readonly number[] = DEFAULT_PLAYER_SLOTS
   const tinted = new Map<string, HTMLCanvasElement>(), tintLimit = 512
@@ -55,17 +66,27 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     return result
   }
 
-  function renderChunk(session: Session, player: number, cx: number, cy: number) {
-    const { map } = session.state, rules = session.rules, viewer = session.state.players.find(p => p.id === player)!
+  function chunkBounds(session: Session, cx: number, cy: number) {
+    const { map } = session.state
     const x0 = cx * CHUNK, y0 = cy * CHUNK, x1 = Math.min(map.width - 1, x0 + CHUNK), y1 = Math.min(map.height - 1, y0 + CHUNK)
-    const left = x0 * 16 - y1 * 8 - 16, right = x1 * 16 - y0 * 8 + 16, top = y0 * 9 - 255 * 2 - 16, bottom = y1 * 9 + 16
-    let maxRise = 0
-    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) maxRise = Math.max(maxRise, map.elevation[y * map.width + x]!)
-    const realTop = y0 * 9 - maxRise * 2 - 16
+    const left = x0 * 16 - y1 * 8 - 16, right = x1 * 16 - y0 * 8 + 16
+    let minY = Infinity, maxY = -Infinity
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const viewY = y * 9 - map.elevation[y * map.width + x]! * 2
+      minY = Math.min(minY, viewY); maxY = Math.max(maxY, viewY)
+    }
+    const realTop = Math.floor((minY - 16) * chunkScale) / chunkScale, bottom = Math.ceil((maxY + 16) * chunkScale) / chunkScale
+    return { x0, y0, x1, y1, left, right, realTop, bottom }
+  }
+  function renderChunk(session: Session, player: number, bounds: ReturnType<typeof chunkBounds>) {
+    const { map } = session.state, rules = session.rules, viewer = session.state.players.find(p => p.id === player)!
+    const { x0, y0, x1, y1, left, right, realTop, bottom } = bounds
+    const surfaceWidth = Math.ceil((right - left) * chunkScale), surfaceHeight = Math.ceil((bottom - realTop) * chunkScale)
+    reserveTerrain(surfaceWidth * surfaceHeight * 4)
     const surface = canvas.ownerDocument.createElement('canvas')
-    surface.width = Math.ceil((right - left) * CHUNK_SCALE); surface.height = Math.ceil((bottom - realTop) * CHUNK_SCALE)
+    surface.width = surfaceWidth; surface.height = surfaceHeight
     const g = surface.getContext('2d')!
-    g.setTransform(CHUNK_SCALE, 0, 0, CHUNK_SCALE, -left * CHUNK_SCALE, -realTop * CHUNK_SCALE)
+    g.setTransform(chunkScale, 0, 0, chunkScale, -left * chunkScale, -realTop * chunkScale)
     patterns ??= texturePatterns(g)
     const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
     const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
@@ -140,9 +161,14 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     marked?: ReadonlySet<number>, band?: { x0: number, y0: number, x1: number, y1: number } | null
   }
   function draw(session: Session, options: DrawOptions): void {
+    terrainFrameBytes = 0; terrainFrameBuilds = 0
     ctx!.fillStyle = '#0d1714'; ctx!.fillRect(0, 0, width, height)
     if (!atlas) return
     const { state, rules } = session, { map } = state, viewer = state.players.find(p => p.id === options.player)!
+    // Retain at least one raster sample per displayed device pixel when
+    // zooming out. Original 100% rendering keeps its existing 2x backing grid.
+    const scale = Math.min(2, 2 ** Math.ceil(Math.log2(camera.zoom * 2)))
+    if (terrainSession !== session || terrainPlayer !== options.player || chunkScale !== scale) { clearChunks(); terrainSession = session; terrainPlayer = options.player; chunkScale = scale }
     ctx!.imageSmoothingEnabled = camera.zoom < 1
     // Terrain chunks are rebuilt when terrain, territory or sight changes.
     const signature = `${state.navigation}:${Math.floor(state.tick / rules.visibility.interval)}`
@@ -155,8 +181,20 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         const right = Math.min(map.width - 1, cx * CHUNK + CHUNK) * 16 - cy * CHUNK * 8 + 16
         const sx0 = camera.x + left * z, sx1 = camera.x + right * z, sy1 = camera.y + (Math.min(map.height - 1, cy * CHUNK + CHUNK) * 9 + 16) * z, sy0 = camera.y + (cy * CHUNK * 9 - 520) * z
         if (sx1 < 0 || sx0 > width || sy1 < 0 || sy0 > height) continue
-        if (!chunk || chunk.signature !== signature) { chunk = { ...renderChunk(session, options.player, cx, cy), signature }; chunks.set(key, chunk) }
-        ctx!.drawImage(chunk.canvas, camera.x + chunk.left * z, camera.y + chunk.top * z, chunk.canvas.width / CHUNK_SCALE * z, chunk.canvas.height / CHUNK_SCALE * z)
+        const bounds = chunkBounds(session, cx, cy)
+        if (camera.y + bounds.bottom * z < 0 || camera.y + bounds.realTop * z > height) continue
+        if (!chunk || chunk.signature !== signature) {
+          if (chunk) retireChunk(key)
+          chunk = { ...renderChunk(session, options.player, bounds), signature }
+          terrainFrameBuilds++
+          const bytes = chunk.canvas.width * chunk.canvas.height * 4
+          if (bytes <= TERRAIN_CACHE_BYTES) { chunks.set(key, chunk); terrainBytes += bytes }
+        }
+        else { chunks.delete(key); chunks.set(key, chunk) }
+        terrainFrameBytes += chunk.canvas.width * chunk.canvas.height * 4
+        ctx!.drawImage(chunk.canvas, camera.x + chunk.left * z, camera.y + chunk.top * z, chunk.canvas.width / chunkScale * z, chunk.canvas.height / chunkScale * z)
+        // An oversized chunk is still drawn, but never retained beyond its use.
+        if (!chunks.has(key)) { chunk.canvas.width = 0; chunk.canvas.height = 0 }
       }
     }
     // Visible tile range for entity culling.
@@ -267,11 +305,13 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     camera, resize, draw, home,
     /** Canvas coordinates of a view point under the current camera. */
     screen: toScreen,
-    setAssets(value: Atlas) { clearTinted(); atlas = value; patterns = null; chunks.clear() },
-    setPlayerSlots(slots: readonly number[]) { playerSlots = slots; chunks.clear() },
+    setAssets(value: Atlas) { clearTinted(); atlas = value; patterns = null; clearChunks() },
+    setPlayerSlots(slots: readonly number[]) { playerSlots = slots; clearChunks() },
     tintedFrameCount: () => tinted.size,
-    dispose() { clearTinted(); chunks.clear(); patterns = null; atlas = null },
-    invalidate() { chunks.clear() },
+    /** Retained capacity and summed raster bytes drawn this frame, not RSS/GPU memory. */
+    terrainCacheMemory: () => ({ entries: chunks.size, bytes: terrainBytes, frameBytes: terrainFrameBytes, rebuiltChunks: terrainFrameBuilds, limit: TERRAIN_CACHE_BYTES }),
+    dispose() { clearTinted(); clearChunks(); patterns = null; atlas = null; terrainSession = null },
+    invalidate() { clearChunks() },
     pick(session: Session, clientX: number, clientY: number): Point | null {
       const rect = canvas.getBoundingClientRect()
       return pick(session.state.map, (clientX - rect.left - camera.x) / camera.zoom, (clientY - rect.top - camera.y) / camera.zoom)

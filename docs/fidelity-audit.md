@@ -217,3 +217,9 @@ These are engineering priorities, not claims that those systems are already impl
 ## Torso fixture portability correction (2026-10-25)
 
 Linux CI exposed an incorrectly capitalized carrier DAT path in the new real-data torso fixture. The fixture now uses the exact original archive entry, `Gfx/siedler3_10.f8007e01f.dat`. Its directory-entry assertion catches the same error on case-insensitive filesystems. This changes test provenance only; the decoder, generated images and simulation are unchanged. The failed run and local red/green evidence are retained in the [geologist and torso receipt](roadmap/receipts/original-geologist-and-torso-alignment-2026-10-25.json).
+
+## Browser terrain retention (2026-10-26)
+
+The renderer retains at most 64 MiB of terrain backing stores and releases retired canvases explicitly. Zoomed-out backing density follows the displayed resolution, and chunk bounds follow the actual projected vertices. Player and session changes cannot reuse another view's fog cache. An authored browser regression checks pan/return pixels, repeated minimum-zoom draws without rasterization, a view exceeding the retained budget, changing elevations, assets, palettes, visibility and disposal. A separate comparison against the previous renderer found no channel differences at 100% zoom across flat ground, hills, cliffs and mixed materials. The [terrain-cache receipt](roadmap/receipts/browser-terrain-cache-2026-10-26.json) records measurements and qualification status.
+
+This establishes a terrain retention bound, not total process/GPU memory or a cross-host frame-rate budget. Terrain triangle seams remain #215, and broader large-world/native performance remains #100. Original Gold runtime equivalence remains unverified.

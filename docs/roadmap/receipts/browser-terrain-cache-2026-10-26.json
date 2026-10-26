@@ -1,0 +1,207 @@
+{
+  "recordedAt": "2026-10-26T17:36:25.863157+00:00",
+  "issue": 216,
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "base": "e7fc9eadabd16599994897057b2b486ed12e43f9",
+  "scope": "Browser terrain backing-store retention, projected bounds and cache ownership. Not Gold observations, native performance, total process RSS or GPU-memory qualification.",
+  "implementation": {
+    "limitBytes": 67108864,
+    "eviction": "Least recently used chunks evicted before allocating another backing store. Replaced, evicted, invalidated and disposed canvases explicitly reset dimensions to zero.",
+    "viewDensity": "Power-of-two density retains at least one sample per displayed device pixel when zoomed out with the supported DPR ceiling2; existing100%2x grid retained. Scale changes invalidate cache.",
+    "bounds": "Exact projected vertex extrema with padding for border posts, aligned to the backing raster grid. Coarse culling is followed by actual projected bounds.",
+    "ownership": "Session identity, viewing player, navigation/visibility signature, palette, assets and disposal respected.",
+    "diagnostics": "Retained entries and RGBA capacity, per-frame drawn raster capacity and rebuilt chunk count. These are resource dimensions/counters, not RSS or GPU measurements."
+  },
+  "negativeControl": "Full browser regression against frozen published renderer plus read-only memory getter fails at81,920,000retainedbytes. Wider pan returns with130,744,320bytes instead ofinitial49,152,000. No original assets or browser API replacements.",
+  "rejectedFirstPolicy": "Initial64MiB eviction alone caused repeated rasterization, around140ms per stress-view draw. Retained as diagnostic evidence; final minimum-zoom repeated draws rebuild zero chunks.",
+  "browser": {
+    "ok": true,
+    "draws": 26,
+    "drawMs": [
+      18.599999994039536,
+      12,
+      10.099999994039536,
+      7,
+      0,
+      0.10000000894069672,
+      14.099999994039536,
+      11.600000008940697,
+      70,
+      70,
+      0.29999999701976776,
+      68.5,
+      71.79999999701977,
+      69.40000000596046,
+      30.799999997019768,
+      0.19999998807907104,
+      54.3999999910593,
+      52.599999994039536,
+      15.099999994039536,
+      13.200000002980232,
+      13.799999997019768,
+      2.8999999910593033,
+      2.1000000089406967,
+      2.2999999970197678,
+      28.700000002980232,
+      28
+    ],
+    "maximumBytes": 65536000,
+    "largeFrameBytes": 81920000,
+    "limit": 67108864,
+    "samples": [
+      {
+        "x": 80,
+        "entries": 9,
+        "bytes": 36864000,
+        "frameBytes": 28672000,
+        "rebuiltChunks": 4,
+        "limit": 67108864
+      },
+      {
+        "x": 144,
+        "entries": 13,
+        "bytes": 53248000,
+        "frameBytes": 28672000,
+        "rebuiltChunks": 4,
+        "limit": 67108864
+      },
+      {
+        "x": 208,
+        "entries": 16,
+        "bytes": 65372160,
+        "frameBytes": 24412160,
+        "rebuiltChunks": 3,
+        "limit": 67108864
+      },
+      {
+        "x": 16,
+        "entries": 16,
+        "bytes": 65372160,
+        "frameBytes": 20480000,
+        "rebuiltChunks": 0,
+        "limit": 67108864
+      },
+      {
+        "x": 16,
+        "entries": 16,
+        "bytes": 65372160,
+        "frameBytes": 20480000,
+        "rebuiltChunks": 0,
+        "limit": 67108864
+      }
+    ],
+    "panReturn": true,
+    "repeatedDraw": true,
+    "minimumZoomWithoutThrashing": true,
+    "overBudgetViewport": true,
+    "elevatedChunkSizes": true,
+    "playerSwitch": true,
+    "sessionSwitch": true,
+    "visibilityInvalidation": true,
+    "paletteInvalidation": true,
+    "assetReplacement": true,
+    "disposal": true,
+    "checksumUnchanged": true,
+    "scope": "Actual Canvas renderer and public engineering sessions with an empty or authored one-pixel atlas. Capacity covers retained terrain backing stores, not total RSS or GPU memory. Frame bytes sum the raster capacity drawn; timings are host measurements, not a cross-host frame-rate qualification. No original media or Gold runtime observations."
+  },
+  "pixelComparison": {
+    "ok": true,
+    "checks": [
+      {
+        "variant": "flat",
+        "channels": 1536000,
+        "differences": 0
+      },
+      {
+        "variant": "hill",
+        "channels": 1536000,
+        "differences": 0
+      },
+      {
+        "variant": "cliff",
+        "channels": 1536000,
+        "differences": 0
+      },
+      {
+        "variant": "materials",
+        "channels": 1536000,
+        "differences": 0
+      }
+    ],
+    "scope": "Exact native100%pixel comparison against unchanged published game renderer. Authored worlds and empty atlas; not Gold runtime observations."
+  },
+  "checks": {
+    "types": "App, tools and STX2scripts/258expressions clean.",
+    "lint": "500files zeroerrors/warnings, including receipt and fidelity note.",
+    "assets": "11,139frames,95files verified.",
+    "shadow": "12,673independentpixels/32poses/29surveyposes pass.",
+    "playerColor": "2,664independentpixels pass.",
+    "buildSeconds": 34.89,
+    "unit": {
+      "pass": 388,
+      "fail": 0,
+      "assertions": 75494,
+      "files": 62,
+      "seconds": 214.5
+    },
+    "ci": "Awaiting source commit after qualification of the preceding shadow change."
+  },
+  "evidence": {
+    "budget-red-report.json": {
+      "bytes": 2698,
+      "sha256": "d0f54bbb10df8980678c6ebe8f42fea042aeb923a73b560d5bddb2f76cd84873"
+    },
+    "browser-baseline-report.json": {
+      "bytes": 949,
+      "sha256": "dfac202547f3e10b10bd80cfa0afc4a3a08222230837c2b1cb94d6c19e560069"
+    },
+    "browser-budget-final-report.json": {
+      "bytes": 4258,
+      "sha256": "7bde780e5ad7c9875a4e872e338912c23a589371e9e08050976f468b4a8c1dc9"
+    },
+    "bounds-comparison-report.json": {
+      "bytes": 1908,
+      "sha256": "3ffa1da282eb33fc08a710df281ceff4e25d38bc3097cff6fd277ac6a5bb65d0"
+    },
+    "shadows-final.log": {
+      "bytes": 80,
+      "sha256": "d0fa30fae6362c0b3fedd97fb56d71e26e6f5e4bfb55b05b06522b3dd5609385"
+    },
+    "player-colors-final.log": {
+      "bytes": 75,
+      "sha256": "dc10889c8b7ff40e471dd3a57c4b78200a2f3ebfa458b5361bc0123551a12a4c"
+    },
+    "assets.log": {
+      "bytes": 331,
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5"
+    },
+    "types-publish.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "lint-publish.log": {
+      "bytes": 301,
+      "sha256": "aeea72d7fd26cfcf9b8e398af79474bc7923d3f385302ddf13aedd90f6efebb6"
+    },
+    "browser-original-tutorial-final.png": {
+      "bytes": 83981,
+      "sha256": "7658272dbb2083f05cedc444af8ff22242c47da2929d93f036ab76bbfc363664"
+    },
+    "unit-publish.log": {
+      "bytes": 44392,
+      "sha256": "6cfd3b024bb104e8753bb87e3b7841c1efad801af612eb642479abf5efb329cd"
+    }
+  },
+  "remaining": [
+    "Terrain triangle coverage seams remain#215.",
+    "Large view exceeding retained budget paints completely, but does not establish a frame-rate budget. Full large-world and native performance remain#100.",
+    "Original Gold executable equivalence and native game presentation remain unqualified."
+  ],
+  "originalMedia": "No original raster or audio content in this cache fixture; local original-tutorial screenshot remains private under existing policy.",
+  "sourceSha256": "5b1dd38450aa1c811bf4fbc8194a861ee7728ad8626dfaad7d01b1bb384b2ed5",
+  "review": {
+    "standards": "No source workaround, framework patch, generated runtime edit, dependency change, source-media alteration or simulation mutation. Full owning renderer diff reviewed.",
+    "spec": "Byte budget and release lifecycle covered; same-map player/session isolation and allocation-before-retention accounted for.100%rendering compared independently to published source. Large over-budget views retain correct output; cross-host FPS remains unqualified.",
+    "preflight": "No template/layout/copy changes. Original tutorial remains functional on established STX/ts-css interface; private final preview retained. Marketing/hero checks do not apply to this renderer-resource change."
+  }
+}

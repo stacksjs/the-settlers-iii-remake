@@ -54,6 +54,7 @@ jobs:
           bun tests/browser/checkpoints.ts
           bun tests/browser/player-colors.ts
           bun tests/browser/shadows.ts
+          bun tests/browser/terrain-cache.ts
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
       - name: Retain non-media browser diagnostics
@@ -89,5 +90,7 @@ jobs:
             storage/framework/runtime/shots/player-colors-media.json
             storage/framework/runtime/shots/shadows.json
             storage/framework/runtime/shots/shadows-media.json
+            storage/framework/runtime/shots/terrain-cache.json
+            storage/framework/runtime/shots/terrain-cache-media.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore
