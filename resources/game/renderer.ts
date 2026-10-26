@@ -203,11 +203,6 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         ctx!.beginPath(); ctx!.moveTo(p.x - ux * 5 * z, p.y - uy * 5 * z); ctx!.lineTo(p.x + ux * 5 * z, p.y + uy * 5 * z); ctx!.stroke()
         return
       }
-      case 'sign': {
-        const color = item.good === 'coal' ? '#2b2b2b' : item.good === 'ironore' ? '#b5643c' : item.good === 'goldore' ? '#e3c04d' : '#eeeeee'
-        ctx!.fillStyle = '#5b4632'; ctx!.fillRect(p.x - 0.6 * z, p.y - 8 * z, 1.2 * z, 8 * z); ctx!.fillStyle = color; ctx!.fillRect(p.x - 2.5 * z, p.y - 10 * z, 5 * z, 3 * z)
-        return
-      }
       default: sprite(item.sprite, item.view, item.frame)
     }
     if ((item.kind === 'building' || item.kind === 'site') && item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }

@@ -1,0 +1,501 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T02:15:48.765695+00:00",
+  "issue": 207,
+  "baseline": "d5b3c268b22987fbea269a731fa255dadbd357d1",
+  "change": "Original geologist survey symbols and content-addressed atlas delivery, using existing player knowledge.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.common/src/main/java/jsettlers/common/mapobject/EMapObjectType.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/java/jsettlers/common/mapobject/EMapObjectType.java",
+        "gitBlob": "907163043c9969cc61538bff8406ad8679fd00d0",
+        "bytes": 5332,
+        "sha256": "d58c4864ae5d9690c0eefe2ffb1fcbd9d3c241468ba063c98ca00a9c26a7d502"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/MapObjectDrawer.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/MapObjectDrawer.java",
+        "gitBlob": "10cc924b92e8e558bb957000a16bc55a32dc0023",
+        "bytes": 54712,
+        "sha256": "37a78c72811e5476d8498182f99c03fb125991a95ac0d77c1a0693dd6c1d0f4f"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/objects/RessourceSignMapObject.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/objects/RessourceSignMapObject.java",
+        "gitBlob": "7c13d0a9d5607a24511203d600b670d38ffca582",
+        "bytes": 2668,
+        "sha256": "dac006da6e4211833cea03ba7a084acf504bdc33610b6f31afcc3e24826d1fab"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json",
+        "gitBlob": "254e1b2c04c39109a993991cfd34937f5f4352c2",
+        "bytes": 29998,
+        "sha256": "51255419f32c813ba24853f70549cb0f638956e3375f018159096cbecdd8e5bc"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/movable/specialist/GeologistMovable.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/movable/specialist/GeologistMovable.java",
+        "gitBlob": "1e2f65959fe164904a8ade6e3a804da312f3802d",
+        "bytes": 4979,
+        "sha256": "fdebd5ceaa7ed7520982fbf2eb91b3372c7fcbbc3a3b9302b9e0bd092f716399"
+      },
+      {
+        "path": "jsettlers.common/src/main/java/jsettlers/common/landscape/EResourceType.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/java/jsettlers/common/landscape/EResourceType.java",
+        "gitBlob": "789123900ddb8c552a46a0d8528eec11a16f51a2",
+        "bytes": 1967,
+        "sha256": "06b7cfb373ced0d355e1f4c9c44b372cd434cd2b7594edf5b1ad577690212cd8"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/movable/MovableGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/movable/MovableGrid.java",
+        "gitBlob": "ea267dc8ee25737d92bd5a95e53e8b282d22df08",
+        "bytes": 5814,
+        "sha256": "a6a2582d0fdea0ea347c2fedabdb17b2aac3e05406419625cd705c4233ec53ae"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "gitBlob": "e8a6b185a385c59eb073debbe8023f674fc31aaf",
+        "bytes": 80613,
+        "sha256": "a272fd68af10f699c8398a1a64180f46f68f9711856292af048e9a1437f81d03"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/movable/interfaces/AbstractMovableGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/movable/interfaces/AbstractMovableGrid.java",
+        "gitBlob": "285585e6cede23a9003825550ef6f23aafb8a162",
+        "bytes": 5017,
+        "sha256": "5d2fd5aa028f7cd797bc1ebe2307478cc200b2786d7d3c48947bf958256f4df4"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/objects/MapObjectsManager.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/objects/MapObjectsManager.java",
+        "gitBlob": "104cd16dafc0d03984b7504c411aeaca306be08d",
+        "bytes": 24112,
+        "sha256": "ed71b417c216ea5c741e04fd1e71e517fa2132a858d97703dc5c7f31a88be76c"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/loading/original/OriginalMapFileContent.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/loading/original/OriginalMapFileContent.java",
+        "gitBlob": "0b2d3c091d51df85089e5216c3c45f1b4870afd0",
+        "sha256": "276516386b1e51e6260797943a6fe71bb88347bd62c810f8b589e47cc103a8a8",
+        "bytes": 11577
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/constants/Constants.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/constants/Constants.java",
+        "gitBlob": "bb3445a5a655b87405c19b24d25267ef422f4ab3",
+        "bytes": 4874,
+        "sha256": "d57d21e5825a9c955007a84ca7248bf7dc5fac28a6c8445fd8f5f38e18c386d7"
+      }
+    ],
+    "originalDatSha256": "cf8d7a23b3188e6326b3e5918f135527de790ad38747b181b595e8dcfc11ad0a",
+    "frames": {
+      "schemaVersion": 1,
+      "reference": "paulwedeck/settlers-remake@6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+      "sourceDatSha256": "cf8d7a23b3188e6326b3e5918f135527de790ad38747b181b595e8dcfc11ad0a",
+      "evidence": "Unexecuted original-demo image decode with pinned remake selectors. No Gold runtime observation or redistribution grant.",
+      "signs": [
+        {
+          "name": "coal",
+          "file": 1,
+          "goldSequence": 94,
+          "demoSequence": 94,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "913126179e2107807a1be52a9adc9b11ee8b7f5e1aef6f880bbb414e4a94cd82",
+              "pngSha256": "59da2c7b2cf4e8582d870e2d30e0b9ee11849969cca6f598e582df99493b2740"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "f75177f827d92ccee78db120ad13f9a671b87c924143fa1ecefd38020258fa54",
+              "pngSha256": "0a4aff6128357a188980e728622d2ff8ed436ffd44dd6bf6cf53cf1db39dc082"
+            }
+          ]
+        },
+        {
+          "name": "gems",
+          "file": 1,
+          "goldSequence": 95,
+          "demoSequence": 95,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "53a20cffb40d91a675934915543564c79cec1ceaf76f0e4bd964aae90114b54e",
+              "pngSha256": "bb36cd10a0feb90abb169854f3d53fb12090ce53453b442c2990bb540e9d0f98"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "a76282f1e5497f595abf2377005507e2998e7baa07c810f20c31f8194e5fc0d9",
+              "pngSha256": "dff466336d0dbe6c9fa6800f98cc7386eb242e9af944b7cf6fa6f819b1dfdd2e"
+            }
+          ]
+        },
+        {
+          "name": "goldore",
+          "file": 1,
+          "goldSequence": 96,
+          "demoSequence": 96,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "1d85acd0aa240ea75b2a3228376ee184f8d6456ad67262f4d5a8d78fc2a3683b",
+              "pngSha256": "79809ba4021f8c7f2763725498548d218579ce898086e40d2c1e9394a9b4f04a"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "ed6b37ce511441575d492c030bfe213ad97bffcef2e0c50cbff4293b25c40d91",
+              "pngSha256": "746cd8e06877debab8327b093ab072421b6f16cda067f371506fd38912664428"
+            }
+          ]
+        },
+        {
+          "name": "ironore",
+          "file": 1,
+          "goldSequence": 97,
+          "demoSequence": 97,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "adfe9a3be76ef09c46ed8082cc3d5666ca370af8294e49624f67312f6d890228",
+              "pngSha256": "66fa255dde7757914b5aa3efdc49720b4b6223f16c0b5bd969713563c150b2fd"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "d1f216ffb8ceec988ebb9c8d4765a0531b8dda08508b73461235d4416805bc8c",
+              "pngSha256": "02d1a15c72536e71528553e018f48604910e9b1aa3c07140c14509c503b7e54c"
+            }
+          ]
+        },
+        {
+          "name": "sulfur",
+          "file": 1,
+          "goldSequence": 98,
+          "demoSequence": 98,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "28ecf536251208f51ea2fbe3671425a634b27a9499a0fd791cecc052afe2f222",
+              "pngSha256": "a8fa60ece6976bd96fb44f8b4c9fe52eb0b88fe5594c8dc63a8bafa1229aa88a"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "f8a0a71667bb6428fe2dee4340bf34b26b2e0be5aa141ca79e39c8df1b5ae940",
+              "pngSha256": "6f9e3b10fb3587524f2137ab413ee1d64073b911e7b7c165677048d050e490d5"
+            }
+          ]
+        },
+        {
+          "name": "empty",
+          "file": 1,
+          "goldSequence": 99,
+          "demoSequence": 99,
+          "frames": [
+            {
+              "frame": 0,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "2c4969ad70e1ff287791ff5c25e547ba13f755c9aa8412e3b173ff7f6d1f6549",
+              "pngSha256": "e65dd4b2e969d08db3d9d50ff71e02127c766332bef1af407741d1d5b52264b1"
+            },
+            {
+              "frame": 1,
+              "width": 14,
+              "height": 24,
+              "offsetX": -8,
+              "offsetY": -21,
+              "pixelsSha256": "4f11a7aa4b8c90a13dfe74f5f693ce50c361729aa34bd7c6651e55ae465c690e",
+              "pngSha256": "cf230d2b3e96d1e7df9977ba6e217f33628cd4382e9bb707bc959b07c4d10bab"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "displayContract": {
+    "objectsFile": 1,
+    "sequences": {
+      "coal": 94,
+      "gems": 95,
+      "goldore": 96,
+      "ironore": 97,
+      "sulfur": 98,
+      "empty": 99
+    },
+    "framesEach": 2,
+    "dimensions": [
+      14,
+      24
+    ],
+    "anchor": [
+      -8,
+      -21
+    ],
+    "calculation": "Reference original raw 0..15 values scale to round(raw * 127/15), normalize by maximum 50, floor(progress * 2), clamp to last frame. Zero or exhausted knowledge draws the empty symbol.",
+    "engineeringLimit": "Current rules keep raw counts, including generated counts above 15. The display scale saturates; no reserves, rules, world state or mining quantities are converted. This is not original Gold runtime evidence."
+  },
+  "assets": {
+    "spriteFrames": 3848,
+    "atlas": "sprites.172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c.png",
+    "atlasSha256": "172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c",
+    "dimensions": [
+      1024,
+      6687
+    ],
+    "missingRequested": [],
+    "interfaceImages": 52,
+    "pcmWav": 6,
+    "convertedFiles": 95,
+    "sourceFrameFixtureSha256": "96e7e2cf71624e2b12015bf8ed496ad79120465925d31ee7fbd633e36f93c15e",
+    "originalMediaPublication": "withheld-pending-redistribution-evidence"
+  },
+  "checks": {
+    "red": "0 pass, 13 fail, 49 assertions",
+    "redLogSha256": "ee6cc291b50fde9c04b9412dc7a72f622c462cebca03f2b6eb6d844004615041",
+    "intermediate": "Scene implementation passed two cases; ten cases initially assumed an eager ledger. Assertion corrected for legitimately absent empty production ledgers; original failure retained.",
+    "focused": "13 pass, 0 fail, 128 assertions",
+    "unit": "349 pass, 0 fail, 23384 assertions, 50 files",
+    "unitLogSha256": "66f2a385481d704bb8440dd0653384d4a83f4bd7d24b47a5420db438a7015162",
+    "types": "App, tools and 258 STX expressions pass",
+    "lint": "0 errors, 0 warnings",
+    "assets": "All 3848 frames, 52 interface images, 6 PCM WAV and 95 converted files pass provenance verification",
+    "build": "Production views build passed",
+    "browser": {
+      "recordedAt": "2026-10-26T02:23:35.515960+00:00",
+      "totalSteps": 385,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "52fb122e7390cc89509b6c5e782219268d9dbb0f632e7ccf976ce969b35e1365",
+          "noErrors": true,
+          "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "c691bf08c636b1436853f07ad8f54d497853589e1a092e615971c2819978b535",
+          "noErrors": true,
+          "mediaReceiptSha256": "42c728d451eaa83fb683093f3cbac20c4dcf7ce40137b33a6c3acb2d6a8e015b"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "86608edbfbfa642fd5790bcfd293ec81825134edd19ee2730f66d591cfec7fca",
+          "noErrors": true,
+          "mediaReceiptSha256": "09e17eec9a764eeb0e15675972a85d891e73786da1d95fcf70dc2a3af1b986a4"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "02d320ac1c7c983df23689926199809022fde81d3bf5ec69d927602fbd9222c2",
+          "noErrors": true,
+          "mediaReceiptSha256": "e029a6a39da8b2794d818fbc30694f692103d2d692b37fba5778dcc0facf29eb"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "2936bf80e6a25aa0996c2e3eb14faa67330eb3e8d247025a94a595a19c38591b",
+          "noErrors": true,
+          "mediaReceiptSha256": "a80cfd0384af710e3e8e6e5d7c9d703c97f196d158a24b06bd7cf0884320fa47"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "dba8d4a6c94ec3cc7665d0aba45de0dc0971d4184adbc34359c98b30a22a0c7a",
+          "noErrors": true,
+          "mediaReceiptSha256": "2e96051dd18642e21aae91626e7adb73b9a03655621f84fb84dd86a2ab15ab12"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "f3baaac11a51ba2c9f6c3b30be740f03ce496a0e46f6d849f9d471b3edfb2db7",
+          "noErrors": true,
+          "mediaReceiptSha256": "68c8d38b9fe70a24fd3685a476d27649f17c1ffc04fd08ed185ba5c9db760176"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "2f3343a077a69066519627dc325b272af5f6582981ecc86e52264ea342271845",
+          "noErrors": true,
+          "mediaReceiptSha256": "c7e90345912ebf7f87197d6a156ee0a88094ba86c8801aa3caab5be61b185f58"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "1e3038c7f1c3198473060bd31db7d014267d224808095c3be011ca78992b2117",
+          "noErrors": true,
+          "mediaReceiptSha256": "630d85af40b841f75728a8665f19d639781556df35becb6cc24629f7ecfd8cdf",
+          "elapsedMs": 629002.467667
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "80af71047686e824ec5be00510398454045f138de8609a890b89def5d3d8549b",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    "content": "25 inventory categories, 95 converted files verified",
+    "fidelity": "Specification valid: 4 edition profiles, 107 required systems, 6 targets",
+    "roadmap": "Catalog valid: 107 implementation issues, 12 epics, one master",
+    "reviewSha256": "e489e1d3ed49ca6194bc934a56519976bdfc1942a3a9448bb28e47bb58ab7c3d",
+    "browserLogSha256": "c2e4ba7f5ab9d540916a63f3243d934c384f34fe705dd0316e5007e0afbadbd9"
+  },
+  "nativeBrowserInput": {
+    "scope": "Actual browser controls on the existing original T1 save, warm browser cache reloaded after the new manifest and hashed atlas were built. No session/save/clock injection.",
+    "rules": "0.13.0",
+    "pausedAt": "156:59",
+    "population": 51,
+    "buildings": 5,
+    "observation": "Original empty wooden signboards are visible alongside coherent terrain, settlers and HUD. This does not establish ore extraction, human skirmish victory, native app presentation or original Gold parity.",
+    "capture": {
+      "format": "JPEG",
+      "width": 1280,
+      "height": 720,
+      "sha256": "1bf7bc3aa62e3d82c0b197ea50d98d52865f00f74ebf546f5a024469bdb2c16d",
+      "axSha256": "01187bdd6e6c66f381f7b2469bf63bc6de3808f0089c5561c75c4968d9a64eb6"
+    },
+    "previousCaptureSha256": "0fdf0851a6a1b5ee3056208313a9890289191ba404f2c8a51c6ab380ed36e349"
+  },
+  "frameworkCohort": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4",
+    "locksChanged": false,
+    "sourceChanges": "Game source only. No framework defect established by this presentation correction."
+  },
+  "previousMainQualification": {
+    "commit": "d5b3c268b22987fbea269a731fa255dadbd357d1",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40253360687",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12621798178,
+      "bytes": 19645,
+      "sha256": "709d0e08d7b5cb5df6a630d8a8d832d6814fe82cff5eaa38905f0e7865d7b5b9",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true,
+      "browserSteps": 385
+    }
+  },
+  "remaining": [
+    "Exact committed CI and original diagnostics are pending for this marker change.",
+    "Broader graphics, mineral balance, inspection, Gold fidelity and native presentation remain open.",
+    "The separate native 5000-tick staffing probe still exits with an unexplained uncaught error. No native guard, tick window or pre-existing battle deadline was changed."
+  ],
+  "deliveryVerification": [
+    {
+      "url": "http://127.0.0.1:3450",
+      "manifestSha256": "9528a641e0af72859553ac1c4714a822010d714bde3d244a8a2663837f3ac343",
+      "atlas": "sprites.172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c.png",
+      "atlasSha256": "172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c",
+      "frames": 3848,
+      "matchesBuiltBytes": true,
+      "scriptUrls": [
+        "/_stx/runtime.9f638c585ebef006.js",
+        "/_stx/modules.d89bd878d56c9397.js",
+        "/_stx/router.0ab03ca144393a09.js"
+      ],
+      "includesSurveyImplementation": true,
+      "modules": [
+        {
+          "url": "/_stx/runtime.9f638c585ebef006.js",
+          "bytes": 237781,
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9"
+        },
+        {
+          "url": "/_stx/modules.d89bd878d56c9397.js",
+          "bytes": 1931466,
+          "sha256": "66002acaf615dfefa3aa3c2ce525b8a4d51aa59d61f2b0da75329358abb4c36b"
+        },
+        {
+          "url": "/_stx/router.0ab03ca144393a09.js",
+          "bytes": 72580,
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f"
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3457",
+      "manifestSha256": "9528a641e0af72859553ac1c4714a822010d714bde3d244a8a2663837f3ac343",
+      "atlas": "sprites.172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c.png",
+      "atlasSha256": "172dff7ac8a0afb5305e68b9860a29dc20bea642974e2de67514af187796491c",
+      "frames": 3848,
+      "matchesBuiltBytes": true,
+      "scriptUrls": [
+        "/_stx/runtime.9f638c585ebef006.js",
+        "/_stx/modules.d89bd878d56c9397.js",
+        "/_stx/router.0ab03ca144393a09.js"
+      ],
+      "includesSurveyImplementation": true,
+      "modules": [
+        {
+          "url": "/_stx/runtime.9f638c585ebef006.js",
+          "bytes": 237781,
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9"
+        },
+        {
+          "url": "/_stx/modules.d89bd878d56c9397.js",
+          "bytes": 1931466,
+          "sha256": "66002acaf615dfefa3aa3c2ce525b8a4d51aa59d61f2b0da75329358abb4c36b"
+        },
+        {
+          "url": "/_stx/router.0ab03ca144393a09.js",
+          "bytes": 72580,
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f"
+        }
+      ]
+    }
+  ]
+}

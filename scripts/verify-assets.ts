@@ -3,16 +3,24 @@ import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import type { AtlasFrame } from '../resources/game/assets'
 import { interfaceImages } from '../resources/game/interface-assets'
+import { surveySigns } from '../resources/game/survey-signs'
 import { contentPolicy } from '../docs/content/policy'
 import { inspectContentBundle } from './lib/content-provenance'
 
 const directory = resolve(import.meta.dir, '../public/assets/settlers-original')
-const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { version: number, width: number, height: number, source: { sha256: string }, sprites: AtlasFrame[], missing?: unknown[] }
-const atlas = png.sync.read(Buffer.from(await Bun.file(resolve(directory, 'sprites.png')).arrayBuffer()))
+const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { version: number, atlas: string, width: number, height: number, source: { sha256: string }, sprites: AtlasFrame[], missing?: unknown[] }
+if (!/^sprites\.[a-f0-9]{64}\.png$/.test(manifest.atlas)) throw new Error('Invalid immutable atlas path')
+const atlasBytes = Buffer.from(await Bun.file(resolve(directory, manifest.atlas)).arrayBuffer())
+if (manifest.atlas !== `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`) throw new Error('Atlas bytes differ from their content address')
+const atlas = png.sync.read(atlasBytes)
 if (manifest.version !== 1 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
 const buildings = ['castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'barracks', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse', 'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith']
 const goods = ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword']
 const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', 'terrain-grass', 'terrain-water', 'terrain-sand', 'terrain-rock']
+for (const expected of surveySigns) {
+  const images = manifest.sprites.filter(frame => frame.key === expected.key)
+  if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21)) throw new Error(`Invalid original survey frames ${expected.key}`)
+}
 for (const key of required) if (!manifest.sprites.some(frame => frame.key === key && frame.width && frame.height)) throw new Error(`Missing asset ${key}`)
 for (const key of ['worker', ...goods.map(id => `carry:${id}`)]) if (manifest.sprites.filter(frame => frame.key === key).length !== 72) throw new Error(`Carrier ${key} needs twelve frames in each of six directions`)
 for (const id of buildings) if (!(await Bun.file(resolve(directory, `${id}.png`)).exists())) throw new Error(`Missing building composite ${id}`)

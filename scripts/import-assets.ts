@@ -4,6 +4,7 @@ import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
+import { surveyReferencePaths, surveySigns } from '../resources/game/survey-signs'
 import { composeDatSprites, S3Dat } from './lib/s3-dat'
 import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
@@ -25,7 +26,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -128,6 +129,9 @@ await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
 await sequence('vine', 1, 25, [0, 1, 2, 3], [], true)
 for (const [i, seq] of [1, 2, 4, 7, 8, 16, 17].entries()) await sequence(`tree-${i}`, 1, seq, [0])
 await sequence('stone-deposit', 1, 31, [0, 4, 8])
+for (const path of surveyReferencePaths) await getReference(path)
+const surveyReferences = surveyReferencePaths.map(path => `reference:${path}`)
+for (const image of surveySigns) await sequence(image.key, image.file, image.sequence, Array.from({ length: image.frames }, (_, frame) => frame), surveyReferences)
 await sequence('worker', 10, 0, 'all')
 // Roman soldiers by rank, from the reference remake's movables-ROMAN table (file 12, ranks 1 to 3).
 const soldierSprites: Record<string, [number, number, number]> = { swordsman: [9, 11, 10], pikeman: [15, 17, 16], bowman: [21, 23, 22] }
@@ -178,9 +182,11 @@ for (const [index, entry] of entries.entries()) {
   const r = records[index]!
   for (let row = 0; row < r.height; row++) entry.sprite.data.copy(pixels, ((r.y + row) * width + r.x) * 4, row * r.width * 4, (row + 1) * r.width * 4)
 }
-await Bun.write(resolve(output, 'sprites.png'), png.sync.write({ width, height, data: pixels }))
-await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 1, atlas: 'sprites.png', width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
-addOutput('sprites.png', ['buildings', 'terrain', 'vegetation-and-deposits', 'settlers-and-soldiers', 'goods-and-wares'], entries.flatMap(entry => entry.inputs), entries.flatMap(entry => entry.selection))
+const atlasBytes = png.sync.write({ width, height, data: pixels })
+const atlasFile = `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`
+await Bun.write(resolve(output, atlasFile), atlasBytes)
+await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 1, atlas: atlasFile, width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
+addOutput(atlasFile, ['buildings', 'terrain', 'vegetation-and-deposits', 'settlers-and-soldiers', 'goods-and-wares'], entries.flatMap(entry => entry.inputs), entries.flatMap(entry => entry.selection))
 addOutput('manifest.json', ['generated-metadata'], entries.flatMap(entry => entry.inputs), ['Original atlas selectors, dimensions, displacements and pinned source identities'])
 console.log(`Converted ${records.length} original sprites into a ${width}x${height} transparent PNG atlas. ${missing.length} requested sprites are absent from the demo and listed in the manifest.`)
 

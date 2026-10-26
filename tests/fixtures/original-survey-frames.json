@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "reference": "paulwedeck/settlers-remake@6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+  "sourceDatSha256": "cf8d7a23b3188e6326b3e5918f135527de790ad38747b181b595e8dcfc11ad0a",
+  "evidence": "Unexecuted original-demo image decode with pinned remake selectors. No Gold runtime observation or redistribution grant.",
+  "signs": [
+    {
+      "name": "coal",
+      "file": 1,
+      "goldSequence": 94,
+      "demoSequence": 94,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "913126179e2107807a1be52a9adc9b11ee8b7f5e1aef6f880bbb414e4a94cd82",
+          "pngSha256": "59da2c7b2cf4e8582d870e2d30e0b9ee11849969cca6f598e582df99493b2740"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "f75177f827d92ccee78db120ad13f9a671b87c924143fa1ecefd38020258fa54",
+          "pngSha256": "0a4aff6128357a188980e728622d2ff8ed436ffd44dd6bf6cf53cf1db39dc082"
+        }
+      ]
+    },
+    {
+      "name": "gems",
+      "file": 1,
+      "goldSequence": 95,
+      "demoSequence": 95,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "53a20cffb40d91a675934915543564c79cec1ceaf76f0e4bd964aae90114b54e",
+          "pngSha256": "bb36cd10a0feb90abb169854f3d53fb12090ce53453b442c2990bb540e9d0f98"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "a76282f1e5497f595abf2377005507e2998e7baa07c810f20c31f8194e5fc0d9",
+          "pngSha256": "dff466336d0dbe6c9fa6800f98cc7386eb242e9af944b7cf6fa6f819b1dfdd2e"
+        }
+      ]
+    },
+    {
+      "name": "goldore",
+      "file": 1,
+      "goldSequence": 96,
+      "demoSequence": 96,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "1d85acd0aa240ea75b2a3228376ee184f8d6456ad67262f4d5a8d78fc2a3683b",
+          "pngSha256": "79809ba4021f8c7f2763725498548d218579ce898086e40d2c1e9394a9b4f04a"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "ed6b37ce511441575d492c030bfe213ad97bffcef2e0c50cbff4293b25c40d91",
+          "pngSha256": "746cd8e06877debab8327b093ab072421b6f16cda067f371506fd38912664428"
+        }
+      ]
+    },
+    {
+      "name": "ironore",
+      "file": 1,
+      "goldSequence": 97,
+      "demoSequence": 97,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "adfe9a3be76ef09c46ed8082cc3d5666ca370af8294e49624f67312f6d890228",
+          "pngSha256": "66fa255dde7757914b5aa3efdc49720b4b6223f16c0b5bd969713563c150b2fd"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "d1f216ffb8ceec988ebb9c8d4765a0531b8dda08508b73461235d4416805bc8c",
+          "pngSha256": "02d1a15c72536e71528553e018f48604910e9b1aa3c07140c14509c503b7e54c"
+        }
+      ]
+    },
+    {
+      "name": "sulfur",
+      "file": 1,
+      "goldSequence": 98,
+      "demoSequence": 98,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "28ecf536251208f51ea2fbe3671425a634b27a9499a0fd791cecc052afe2f222",
+          "pngSha256": "a8fa60ece6976bd96fb44f8b4c9fe52eb0b88fe5594c8dc63a8bafa1229aa88a"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "f8a0a71667bb6428fe2dee4340bf34b26b2e0be5aa141ca79e39c8df1b5ae940",
+          "pngSha256": "6f9e3b10fb3587524f2137ab413ee1d64073b911e7b7c165677048d050e490d5"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "file": 1,
+      "goldSequence": 99,
+      "demoSequence": 99,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "2c4969ad70e1ff287791ff5c25e547ba13f755c9aa8412e3b173ff7f6d1f6549",
+          "pngSha256": "e65dd4b2e969d08db3d9d50ff71e02127c766332bef1af407741d1d5b52264b1"
+        },
+        {
+          "frame": 1,
+          "width": 14,
+          "height": 24,
+          "offsetX": -8,
+          "offsetY": -21,
+          "pixelsSha256": "4f11a7aa4b8c90a13dfe74f5f693ce50c361729aa34bd7c6651e55ae465c690e",
+          "pngSha256": "cf230d2b3e96d1e7df9977ba6e217f33628cd4382e9bb707bc959b07c4d10bab"
+        }
+      ]
+    }
+  ]
+}

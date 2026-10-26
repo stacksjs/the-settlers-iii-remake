@@ -1,12 +1,13 @@
 import type { Point, Session } from './engine'
 import { toView } from './engine'
+import { surveyMarker } from './survey-signs'
 
 // The scene is everything a player's screen shows, derived only from the
 // session and that player's sight. The canvas painter draws it; tests compare it
 // with the simulation. Nothing here is decorative: every item is an entity.
 export interface SceneItem {
   kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'sign' | 'arrow'
-  /** Sprite key and frame in the original atlas. Signs and arrows have no sprite. */
+  /** Sprite key and frame in the original atlas. Arrows have no sprite. */
   sprite: string, frame: number
   view: Point, depth: number
   /** Simulation entity: tile for objects and signs, id for piles, buildings and settlers. */
@@ -108,7 +109,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
   for (const sign of viewer.signs) {
     if (sign.until <= state.tick) continue
     const x = sign.tile % map.width, y = Math.floor(sign.tile / map.width), view = toView(x, y, map.elevation[sign.tile]!)
-    items.push({ kind: 'sign', sprite: '', frame: 0, view, depth: view.y, entity: sign.tile, owner: options.player, ...(sign.good ? { good: sign.good } : {}), amount: sign.amount })
+    items.push({ kind: 'sign', ...surveyMarker(sign.good ?? undefined, sign.amount), view, depth: view.y, entity: sign.tile, owner: options.player, ...(sign.good ? { good: sign.good } : {}), amount: sign.amount })
   }
   return items.sort((a, b) => a.depth - b.depth || a.entity - b.entity)
 }

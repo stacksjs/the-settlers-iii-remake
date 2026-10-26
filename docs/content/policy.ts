@@ -6,7 +6,7 @@ export const contentPolicy: ContentPolicy = {
   originalSources: [{ id: 'amazons-demo', sha256: 'ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65', rightsStatus: 'unverified', permittedChannels: [] }],
   inventory: [
     { id: 'terrain', status: 'partial', description: 'Selected original demo landscape frames. All factions and terrain variants remain uninventoried.' },
-    { id: 'vegetation-and-deposits', status: 'partial', description: 'Selected trees, sapling and crop growth stages, and stone frames. Other decorations and finite-deposit media remain uninventoried.' },
+    { id: 'vegetation-and-deposits', status: 'partial', description: 'Selected trees, sapling and crop growth stages, stone frames and twelve original survey-sign frames. Other decorations and finite-deposit media remain uninventoried.' },
     { id: 'buildings', status: 'partial', description: 'Final and construction-site images for the 24 Roman buildings the engine defines. Destruction media and other faction sets remain uninventoried.' },
     { id: 'settlers-and-soldiers', status: 'partial', description: 'Roman carrier walking cycles in six directions, empty-handed and with each Roman good, with torso layers. Other professions, armies and actions remain uninventoried.' },
     { id: 'ships-and-vehicles', status: 'not-imported', description: 'Ships, donkey transport, siege and their directional/action sequences.' },
