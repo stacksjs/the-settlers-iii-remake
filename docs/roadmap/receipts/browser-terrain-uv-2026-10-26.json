@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T21:58:56.618538+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/217",
+  "parentIssue": 88,
+  "status": "Source correction with focused browser checks passed; full local suite and pushed-head CI qualification pending",
+  "scope": "Continuous terrain texture coordinates in the browser, based on pinned remake source. Not Gold executable observations or full terrain presentation/native parity.",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/Background.java",
+        "sha256": "97ae86aecb3c00cd63767e9134f222f1ae9f59af80b59ab8fea1c68cdfe08ec2",
+        "bytes": 36882
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/ETextureOrientation.java",
+        "sha256": "1e30553d1a8c894afed27ba8cff4c96af8903ad5ff9df3727f3fab682ebe2761",
+        "bytes": 4146
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/DrawConstants.java",
+        "sha256": "02c03b7777c464343d080c88644680468b2231ae3f6740f41321e5dee1cbe589",
+        "bytes": 2104
+      }
+    ],
+    "continuousCoordinates": {
+      "u": "16*x-8*y+8",
+      "v": "16*y"
+    },
+    "projectedCoordinates": {
+      "x": "16*x-8*y",
+      "y": "9*y-2*height"
+    }
+  },
+  "reproduction": {
+    "command": "bun tests/browser/terrain.ts",
+    "beforeSource": "945a0b547c04a59618d1bb6f6cb2b3d1c5b286e5",
+    "expected": "137,39,50,255 at both heights",
+    "actualFlat": "33,25,16,255",
+    "actualRaised13": "33,67,46,255",
+    "rootCause": "The material sampler repeated pixels in elevated screen coordinates, giving the wrong texture frequency and height-dependent phase.",
+    "redLog": {
+      "sha256": "198e655de84b7ba47d05ab63ec48fc67c58f359112052741fc1dfc0f1cff815d",
+      "bytes": 895
+    },
+    "redReport": {
+      "sha256": "76171a464c1b2847b1f01b806b7d900526cbd33ac5a3f44bee8dfc37e7a18880",
+      "bytes": 1674
+    }
+  },
+  "implementation": [
+    "Assign reference continuous UV to grid vertices while retaining actual elevated raster geometry",
+    "Interpolate UV from pixel centres with face coefficients computed once per face, preserving negative winding and collapsed no-paint behavior",
+    "Keep unscaled opaque raw source texels, nearest selection, existing shade/fog maps and cache/disposal limits",
+    "Use independent literal texels and native Canvas reference transform; classify both nearest stages with exact rational positions without RGB tolerance or skipped ties"
+  ],
+  "focusedBrowser": [
+    {
+      "deviceScale": 1,
+      "checkedPixels": 120339,
+      "texturedCases": 360,
+      "exactTexels": 56480,
+      "tiedTexels": 52840,
+      "maximumFrameBytes": 2958400,
+      "maximumMaterialBytes": 131076,
+      "sourceUnchanged": true,
+      "resourceBounds": true,
+      "disposal": true,
+      "checksumUnchanged": true
+    },
+    {
+      "deviceScale": 2,
+      "checkedPixels": 120339,
+      "texturedCases": 360,
+      "exactTexels": 74020,
+      "tiedTexels": 35300,
+      "maximumFrameBytes": 2958400,
+      "maximumMaterialBytes": 131076,
+      "sourceUnchanged": true,
+      "resourceBounds": true,
+      "disposal": true,
+      "checksumUnchanged": true
+    }
+  ],
+  "testSurface": {
+    "literalSamples": 6,
+    "sourceImages": [
+      "terrain-grass:128x128",
+      "terrain-water:32x32",
+      "terrain-rock:128x128",
+      "terrain-sand:128x128"
+    ],
+    "authoredSource": "16x32 distinct texels for literal faces; 4x4 checker for the native pattern comparison",
+    "heights": [
+      0,
+      13
+    ],
+    "texturedCasesPerScale": 360,
+    "zoomValues": [
+      0.5,
+      0.6,
+      0.75,
+      1,
+      1.25,
+      3
+    ],
+    "cameraOffsets": [
+      0,
+      0.25,
+      0.5
+    ],
+    "negativeCoordinates": true,
+    "unequalVertexHeights": [
+      2,
+      1,
+      0
+    ],
+    "foldedNegativeArea": true,
+    "collapsedFace": true,
+    "rawMaterialCapacityPixels": 65536,
+    "capacityRegression": "257x257 raw source exceeds the unchanged 65536-pixel bound; capacity is checked on raw source rather than redundant density copies"
+  },
+  "installedCohort": {
+    "stacks": "0.75.320",
+    "stx": "0.2.711",
+    "craft": "0.0.341",
+    "pantry": "0.11.130"
+  },
+  "publication": "Original image pixels and screenshots remain private. Only explicit nonmedia diagnostics may be uploaded.",
+  "pending": [
+    "Full local production browser suite including the unshortened ten minute rival battle",
+    "Exact pushed-head production CI and original artifact digest/CRC qualification"
+  ],
+  "remaining": [
+    "Full landscape transition selection and raw landscape identity",
+    "Reference per-vertex lighting and visibility interpolation",
+    "Matched Gold executable scenes and native GPU sampling behavior",
+    "Large-world/native performance and full campaign/platform matrix"
+  ],
+  "checks": {
+    "lint": {
+      "command": "./buddy lint",
+      "result": "passed",
+      "sha256": "9a96cfe087aa157339d59c20897ad6430af17988a87cc37ff978aa87cf901645",
+      "bytes": 301
+    },
+    "types": {
+      "command": "bun run typecheck",
+      "result": "passed",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94",
+      "bytes": 543
+    },
+    "assets": {
+      "command": "bun run assets:verify",
+      "result": "passed",
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5",
+      "bytes": 331
+    },
+    "build": {
+      "command": "./buddy build views",
+      "result": "passed",
+      "sha256": "a1cc4968265e37d86a6469fd636117658772a804f2bb967419ed4cc62f856650",
+      "bytes": 1366
+    },
+    "units": {
+      "command": "./buddy test --unit",
+      "result": "passed",
+      "tests": 395,
+      "failures": 0,
+      "assertions": 75581,
+      "files": 63,
+      "seconds": 293.83,
+      "sha256": "36ce7673a803250ed879703ea5ead7480692facabde97f0686da20ae2052bff7",
+      "bytes": 45122
+    },
+    "fullBrowser": {
+      "result": "running at record time",
+      "suiteCount": 16,
+      "battleWaitMs": 600000
+    }
+  },
+  "manualBrowser": {
+    "url": "http://127.0.0.1:3463/",
+    "scenario": "Original tutorial map from the verified Amazons demo",
+    "actions": [
+      "New settlement",
+      "Original tutorial map",
+      "Pause",
+      "Save",
+      "Load"
+    ],
+    "observed": "Saved settlement restored at 0:05 with 51 settlers and the original guard tower",
+    "screenshot": {
+      "sha256": "84fa6d710273e5fc675de2eec0cd00411296b4a56d66e0ee3542b10349490cce",
+      "bytes": 136550,
+      "width": 1280,
+      "height": 720,
+      "publication": "private"
+    },
+    "designReview": "Preserve the established reference-led game presentation; no template, navigation, typography, theme, motion or control redesign in this slice."
+  }
+}

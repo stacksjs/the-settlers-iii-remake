@@ -346,5 +346,179 @@
     "scope": "Actual browser UI on the installed framework. This is not an original Gold executable comparison.",
     "screenshotSha256": "d27f94c37596517de2a262576a8ef22bc0d3f2ac968c2dcdda26b1b5bd927ed5",
     "rasterPublication": "Private local evidence only."
+  },
+  "postPushQualification": {
+    "recordedAt": "2026-10-26T21:58:56.617138+00:00",
+    "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/215",
+    "status": "Closed as completed after exact pushed-head CI and original archive verification",
+    "ci": {
+      "identity": {
+        "kind": "original immutable CI ZIP, API digest and every CRC verified",
+        "head": "945a0b547c04a59618d1bb6f6cb2b3d1c5b286e5",
+        "runId": 40404384950,
+        "artifactId": 12691018398,
+        "archiveBytes": 31301,
+        "sha256": "f88871f5f02f3fbfb698d5067bb4df5fa29f51f73866480b4cf7a35dd4d1810a"
+      },
+      "suiteCount": 16,
+      "steps": 510,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 4,
+          "steps": 72
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 609708.240498,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": 65673,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    },
+    "local": {
+      "identity": {
+        "kind": "local complete browser-suite diagnostics"
+      },
+      "suiteCount": 16,
+      "steps": 510,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 4,
+          "steps": 72
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 615562.894125,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": 65673,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    }
   }
 }

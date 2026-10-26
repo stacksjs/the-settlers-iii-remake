@@ -98,7 +98,9 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       const g = surface.getContext('2d')!
       g.setTransform(chunkScale, 0, 0, chunkScale, -left * chunkScale, -realTop * chunkScale)
       const raster = new ImageData(surfaceWidth, surfaceHeight), pixels = new Uint32Array(raster.data.buffer)
-      const rasterPoint = (p: Point): Point => ({ x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale })
+      // Background/ETextureOrientation continuous UVs follow the land grid,
+      // independently of the height-deformed projected geometry.
+      const rasterPoint = (p: Point, x: number, y: number) => ({ x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale, u: x * 16 - y * 8 + 8, v: y * 16 })
       const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
       const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
       const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
@@ -106,8 +108,9 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
         const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay), t = ay * map.width + ax
         const explored = !!viewer.explored[t], delta = explored ? map.elevation[ay * map.width + ax]! - map.elevation[cy2 * map.width + cx2]! : 0
-        const sample = materials!.sampler(explored ? kind : 'unexplored', chunkScale, delta, !explored || !!viewer.visible[t], left * chunkScale, realTop * chunkScale)
-        paintTriangle(pixels, surfaceWidth, surfaceHeight, rasterPoint(pa), rasterPoint(pb), rasterPoint(pc), sample)
+        const ra = rasterPoint(pa, ax, ay), rb = rasterPoint(pb, bx, by), rc = rasterPoint(pc, cx2, cy2)
+        const sample = materials!.sampler(explored ? kind : 'unexplored', delta, !explored || !!viewer.visible[t], ra, rb, rc)
+        paintTriangle(pixels, surfaceWidth, surfaceHeight, ra, rb, rc, sample)
       }
       // Background.addTrianglesToGeometry emits the upward face first.
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { triangle([x, y], [x + 1, y + 1], [x, y + 1]); triangle([x, y], [x + 1, y], [x + 1, y + 1]) }
