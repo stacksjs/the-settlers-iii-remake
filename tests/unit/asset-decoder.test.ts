@@ -18,6 +18,24 @@ test('DAT conversion keeps transparency, RGB565 colors, signed anchors and odd-b
   expect([sprite.width, sprite.height, sprite.offsetX, sprite.offsetY]).toEqual([2, 1, -1, -2])
   expect([...sprite.data]).toEqual([0, 0, 0, 0, 0, 255, 0, 255])
 })
+test('DAT RGB555 and RGB565 midtones match reference channel truncation at every channel level', () => {
+  // Literal tables from the pinned Color.cnv5to8/cnv6to8 contract, independent
+  // of the production decoder. Packed words exercise the public byte boundary.
+  const five = [0, 8, 16, 24, 32, 41, 49, 57, 65, 74, 82, 90, 98, 106, 115, 123, 131, 139, 148, 156, 164, 172, 180, 189, 197, 205, 213, 222, 230, 238, 246, 255]
+  const six = [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 170, 174, 178, 182, 186, 190, 194, 198, 202, 206, 210, 214, 218, 222, 226, 230, 234, 238, 242, 246, 250, 255]
+  for (const format of ['555', '565'] as const) for (const channel of [0, 1, 2]) {
+    const levels = format === '565' && channel === 1 ? six : five
+    for (const [level, expected] of levels.entries()) {
+      const shift = channel === 0 ? format === '565' ? 11 : 10 : channel === 1 ? 5 : 0
+      const bytes = fixture(); bytes.writeUInt16LE(level << shift, 188)
+      const sprite = new S3Dat(bytes).decode(173, format)
+      const rgba = [0, 0, 0, 255]; rgba[channel] = expected
+      expect([...sprite.data]).toEqual([0, 0, 0, 0, ...rgba])
+      expect([sprite.offsetX, sprite.offsetY]).toEqual([-1, -2])
+    }
+  }
+})
+
 test('DAT conversion refuses truncated, oversized or out-of-bounds data', () => {
   expect(() => new S3Dat(Buffer.alloc(10))).toThrow()
   expect(() => new S3Dat(fixture(0x8003)).decode(173)).toThrow('width')

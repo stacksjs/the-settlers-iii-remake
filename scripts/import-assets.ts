@@ -31,7 +31,7 @@ const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'sc
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
-  provenanceOutputs.push({ path, categories: [...new Set(categories)], inputs: [...new Set([...converterInputs, ...inputs])], selection: [...new Set(selection)] })
+  provenanceOutputs.push({ path, categories: [...new Set(categories)], inputs: [...new Set([...converterInputs, ...colorReferences.map(path => `reference:${path}`), ...inputs])], selection: [...new Set(selection)] })
 }
 // Converted media is regenerated from scratch, so files from an earlier mapping never linger unmapped.
 await rm(output, { recursive: true, force: true })
@@ -52,6 +52,8 @@ const getReference = async (path: string): Promise<string> => {
 }
 await getReference('README.md')
 await getReference('LICENSE.txt')
+const colorReferences = ['jsettlers.common/src/main/java/jsettlers/common/Color.java', 'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileType.java']
+for (const path of colorReferences) await getReference(path)
 const mappingPath = 'jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json'
 const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping?: number[], guiMapping?: number[] } | null)[]
 const datFiles = new Map<number, S3Dat>()

@@ -1,0 +1,230 @@
+{
+  "recordedAt": "2026-10-26T14:02:59.647400+00:00",
+  "issue": 213,
+  "base": "b4901de023cfd02053f94bde115dc2f53c168bfb",
+  "scope": "RGB555/RGB565 channel expansion follows supplied pinned reference. No original Gold runtime color equivalence claim.",
+  "root": "Bit replication makes15five-bit and30six-bit intermediate channel levels one value brighter than reference truncation.",
+  "referenceSources": [
+    {
+      "path": "jsettlers.common/src/main/java/jsettlers/common/Color.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/java/jsettlers/common/Color.java",
+      "gitBlob": "11e76be5bf8560da5a26ff7dc321af0b9ebb8b9b",
+      "bytes": 10045,
+      "sha256": "bf150a4008c037ffa3ce0d8129d639fefed04fa24b1c514c2b49e647934a13ad"
+    },
+    {
+      "path": "jsettlers.logic/src/main/java/jsettlers/logic/player/Player.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/player/Player.java",
+      "gitBlob": "353532a050fd84dd66564a6232890e40a8f43ffa",
+      "bytes": 6677,
+      "sha256": "3b82110eadb48194a9d85d2f849128553d4926a423313508071b8d302d42b7d1"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "gitBlob": "29c237ac0e3b9372b4525cecf2d7043063f2578b",
+      "bytes": 14228,
+      "sha256": "e8c098a07c019ccf00dafb5761c4a862cf987f2d5a0c068d7de9f27b0dba9720"
+    },
+    {
+      "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "gitBlob": "028ea16eb2640153b885b5e793cd5fa3f7c1e2b0",
+      "bytes": 1276,
+      "sha256": "0755f619652cf3db4b955ec0059a056bf827f5d208640305d799843e782b2e18"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileType.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileType.java",
+      "gitBlob": "b59c691c364dc34b5ad6d3a64699dfd2623b080c",
+      "sha256": "aa2596ffca6736743b59cf38681e5a43f78a437398e1610e4ecf0b6da9d5aeb5"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/GuiTranslator.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/GuiTranslator.java",
+      "gitBlob": "5d7788feba31991313c69eba4bddf67df1d9fc56",
+      "sha256": "cfa8e2dc7e1b61aecea887d7c07467e65129bec24a78e84e52a4b85da3e82b33"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/LandscapeTranslator.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/LandscapeTranslator.java",
+      "gitBlob": "b1c4c01fcd1a45145ded12a73a57fc2d00e077b5",
+      "sha256": "80490716cbd8d1c2e55e6d34876bb67ba915bad78761a9f0ee685bebbe56451f"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/SettlerTranslator.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/SettlerTranslator.java",
+      "gitBlob": "7416ee147b39e6bb56348d7aa13b7d277c4f84d2",
+      "sha256": "74c977903a5e935f67d27dcd6ab29352a3a6bb9ce01bfc2fbb7cd88ba36e6af3"
+    }
+  ],
+  "regression": {
+    "before": "11pass1fail,51assertions;hand-encoded intermediate channel mismatch",
+    "after": "12pass0fail490assertions;all5/6-bit levels in each RGB channel and both formats",
+    "independentPixels": "Separate test-only raw DAT reader with literal5-bit lookup and Java-float6-bit arithmetic. No production DAT/compositor imports. Real body,landscape,GUI comparisons and131geologist/sign frame identities.",
+    "geometry": "119geologist torso hashes and geometry unchanged.12survey sign bounds unchanged.",
+    "firstFull": "368pass1fail due old12sign pixel fixture. Independently refreshed original sign identities, then all16focused905assertions passed.",
+    "fullFinal": "369passed,0failed,24452assertions,56files,224.10seconds."
+  },
+  "browser": "72fresh production control-frame steps,emptyconsole/request/collectionerrors",
+  "assets": "3967frames,52UIimages,6PCM WAV,95convertedfiles verified;newatlas content address;alloriginalpixeloutputs rebuilt through importer",
+  "unchanged": "No simulation,rules,commands,saves,replays,dependency or framework changes. Prototype torso tint remains pending211.",
+  "evidence": [
+    {
+      "file": "channel-red.log",
+      "sha256": "618f82d38fe98e6698ed4cdd4eb6ae57b63a67907ef7d7805de0dad7cca0b856"
+    },
+    {
+      "file": "channel-green.log",
+      "sha256": "dd9ba72e174d88bc437e030896024e724f1ae13f0f044a0bacce3f9ef3ce7102"
+    },
+    {
+      "file": "focused-final.log",
+      "sha256": "31b9d246f93c5e4f8e3f3c1243c6fe44ece6457066ea909c2e65ff8e90d2dfe6"
+    },
+    {
+      "file": "browser-control-report.json",
+      "sha256": "675692aaa5977a52c4a83d48a579f7e7da60983952f69b92072d4d886559c9a4"
+    },
+    {
+      "file": "browser-control-media.json",
+      "sha256": "9da430f5d7a8971ad2c0038f8fec05d0c6297b0669b640df02775c48136fa545"
+    },
+    {
+      "file": "types.log",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    {
+      "file": "assets.log",
+      "sha256": "c891efb627d622cd2de4fd195c344cad8e4daf70cdcdeea991a5dde3c07a458d"
+    },
+    {
+      "file": "build.log",
+      "sha256": "5f9a116e46fe80e5865f7d75222fdbe6db3d855fd5f1f05020ab0dd4fc86f3f0"
+    },
+    {
+      "file": "refresh-reference-frames.ts",
+      "sha256": "39a93edd24a76ca81679e07d895dc420f042ffbef1aff6f1f47b9f7920dfb714"
+    },
+    {
+      "file": "refresh-reference-signs.ts",
+      "sha256": "60c441ff73dee3c5fb33e9dc44d9b98c6749df659032ddaba4f889f40b119aa0"
+    },
+    {
+      "file": "unit.log",
+      "sha256": "994950868498054c8741d6436d2814ac6f9fb0fe6e92033334466a52e4e19dce"
+    },
+    {
+      "file": "unit-final.log",
+      "sha256": "4cf9788207f9f1c3d42363303f86b544a02632c18b9ab9cd9c224b52042915f3"
+    },
+    {
+      "file": "lint-final.log",
+      "sha256": "d5b3958e2a0b115b23795ac42548d4b4cbfc3846a908b453f9bdf3d98605469f"
+    },
+    {
+      "file": "types-final.log",
+      "sha256": "6bff23649ffc1315fbe28aca53455888eb1c6c0dd6ab0bc8e0c7113e0c29c8d1"
+    }
+  ],
+  "previousMainQualification": {
+    "recordedAt": "2026-10-26T05:10:43.620442+00:00",
+    "commit": "b4901de023cfd02053f94bde115dc2f53c168bfb",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40271004612",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12628628091,
+      "bytes": 23586,
+      "sha256": "940260388dc4d21f27705d79c122b124d26a5a289d38b77605c96cb47ed3e267",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "242c2c949e50194e7e4d53f6a2b045b3075c93146d76895044744b4f76bb1a5e",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "a91826c56fbe17e475262d2383738d7ddb226504239d272645478de6e92fdf7c",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "00a7a8b78008d9f09a1e9999ba178df2d2ee601d16aa0e23f92864e23f333dcc",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "b5bcedc94bf989e1a99c4e448206efc9c69f2f01fb08ced2aa960be52f53e8b6",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "4883e9859c98862e0da2f36ad96ac44b7991f01bc947b1971f70379479c26304",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "f2fc241e2080e2f313015d63d5c2a261f1f27fb8f1cd17ac6f1a2e51e91ee98a",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "34c2cd117026fab1751ebdf15e4408d085bdeb54edad30c6a6a9a6206316422c",
+        "noErrors": true
+      },
+      {
+        "suite": "storage-inspection",
+        "steps": 87,
+        "reportSha256": "ca96c621ad13ee48994affe68460e21c9df54688747ec2ce9afa705d9e3c2d54",
+        "noErrors": true
+      },
+      {
+        "suite": "mine-placement",
+        "steps": 28,
+        "reportSha256": "be19fc6e06f0a6820ae03e5bd09eee5edf7c0ca697f5069ae836c8f1eeac932e",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "e0fc8e00b0917922e1bc1b8a1430d87d7f66239fde6dcdfa64142154e6ca6ff4",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "6067913e21e5a9f8991d3ffd00225421812cdc6855cfda1b6b5d150ae3e1074a",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "392d278c1e3053c57520ceb2ac506a626c3de1166c25c9a284edb79805731aed",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 500,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "remaining": [
+    "CommittedCI and originaldiagnostics pending beforeclosure.",
+    "211playercolors and originalslotmapping followthis correction."
+  ],
+  "checks": {
+    "types": "app/tools/258STXexpressions allpass",
+    "lint": "493files0errors0warnings",
+    "assets": "3967frames/52UIimages/6PCM sounds/95filesverified",
+    "build": "oneproductionpage,21.45seconds",
+    "review": "SourceRGBmathmatchespinnedColor;testreader/compositionindependent;131pixelidentitiesrefreshedfromrawbytes;simulationandsavesunchanged;nocriticalfindings."
+  }
+}

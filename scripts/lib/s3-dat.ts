@@ -101,7 +101,8 @@ export class S3Dat {
           else {
             const value = this.u16(at); at += 2
             const r = color === '565' ? value >> 11 : (value >> 10) & 31, g = color === '565' ? (value >> 5) & 63 : (value >> 5) & 31, b = value & 31
-            data[pixel] = (r << 3) | (r >> 2); data[pixel + 1] = color === '565' ? (g << 2) | (g >> 4) : (g << 3) | (g >> 2); data[pixel + 2] = (b << 3) | (b >> 2)
+            // Color.cnv5to8/cnv6to8 truncate proportional expansion.
+            data[pixel] = Math.floor(r * 255 / 31); data[pixel + 1] = Math.floor(g * 255 / (color === '565' ? 63 : 31)); data[pixel + 2] = Math.floor(b * 255 / 31)
           }
           data[pixel + 3] = 255
         }

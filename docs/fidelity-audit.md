@@ -4,6 +4,10 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: reference RGB channel expansion (2026-10-26)
+
+The DAT reader now follows the supplied remake's truncated RGB555 and RGB565 expansion. Bit replication had made some intermediate channels one value brighter. Exhaustive channel tests and an independent raw-data reader cover actual body, landscape and GUI pixels. The [RGB receipt](roadmap/receipts/reference-rgb-channel-expansion-2026-10-26.json) retains the failing examples and independently refreshed 119 geologist and 12 survey-sign frame identities. Torso grayscale, anchors and the simulation remain unchanged. This establishes reference-decoder consistency, not measured Gold runtime color equivalence.
+
 ## Update: surveyed mine-site recommendations (2026-10-25)
 
 The browser mine chooser now prefers legal sites within the existing extraction radius of the player's own live matching survey signs. It shares that public forecast with computer site selection. The search retains its nearest-ring ordering and a legal speculative fallback, which now warns when no matching deposit is known. It does not inspect hidden reserves or alter mining, food, timing, commands or save formats.
