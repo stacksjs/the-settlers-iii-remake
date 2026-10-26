@@ -2,7 +2,7 @@ import type { Context } from './context'
 import type { Building, Job, Op, Settler, Stack } from './state'
 import { available, changed, doorOf, emit, footprint, nextId, occupy, offsetTile, passable, pointAt, record, ruleOf, tileOf } from './context'
 import { distance, neighbours } from './geometry'
-import { cancelJob, dropCargo } from './logistics'
+import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, halt, spawn, start } from './settlers'
 
 const SITE_CREW = { digger: 2, builder: 2 }
@@ -200,9 +200,37 @@ export function complete(ctx: Context, b: Building): void {
   for (const hook of completions) hook(ctx, b)
 }
 
-/** Staffing pass: residences grow population, sites get crews, workplaces get workers. */
+/** Return only surplus unassigned crew, newest first, leaving ongoing work intact. */
+function reassignConstruction(ctx: Context): void {
+  if (ctx.rules.constructionReassignment !== 'surplus-idle') return
+  for (const player of ctx.state.players) {
+    const people = population(ctx, player.id)
+    for (const profession of ['builder', 'digger'] as const) {
+      const crew = people.filter(s => s.profession === profession)
+      const limit = profession === 'builder' ? player.settings.builderLimit : player.settings.diggerLimit
+      let surplus = crew.length - limit
+      if (surplus <= 0) continue
+      const idle = crew.filter(s => free(s) && s.action !== 'walking' && s.next < 0).sort((a, b) => b.id - a.id)
+      for (const s of idle) {
+        if (surplus <= 0) break
+        if (s.tool) {
+          const tool = s.tool
+          if (dropToGround(ctx, player.id, tileOf(ctx, s), tool, 1)) continue
+          record(ctx, player.id, 'recovered', tool, 1)
+          s.tool = null
+        }
+        changeProfession(ctx, s, 'carrier')
+        s.diagnostic = null
+        surplus--
+      }
+    }
+  }
+}
+
+/** Staffing pass: idle surplus returns, residences grow, sites and workplaces get workers. */
 export function staff(ctx: Context): void {
   const { state } = ctx
+  reassignConstruction(ctx)
   for (const b of [...state.buildings.values()].sort((a, c) => a.order - c.order || a.id - c.id)) {
     const rule = ruleOf(ctx, b)
     if (b.phase === 'active' && rule.residents && b.residents < rule.residents.count && state.tick >= b.nextResident) {
@@ -216,6 +244,9 @@ export function staff(ctx: Context): void {
       const total = population(ctx, b.owner).filter(s => assignedProfession(ctx, s) === profession).length
       const player = state.players.find(p => p.id === b.owner)!
       const limit = profession === 'digger' ? player.settings.diggerLimit : player.settings.builderLimit
+      // Surplus crew unable to put down a tool must not start fresh work above
+      // the reduced cap. Existing work programs continue independently.
+      if (ctx.rules.constructionReassignment === 'surplus-idle' && total > limit) continue
       if (crew < SITE_CREW[profession] && (total < limit || population(ctx, b.owner).some(s => s.profession === profession && free(s)))) {
         const shortage = recruit(ctx, b, profession, s => siteSteps(ctx, b, s), 'site')
         b.shortage = shortage

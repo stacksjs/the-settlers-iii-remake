@@ -26,7 +26,7 @@ export function dropToGround(ctx: Context, owner: number, tile: number, good: st
   const capacity = ctx.rules.logistics.groundPileCapacity, seen = new Set([tile]), queue = [tile]
   for (let i = 0; i < queue.length && amount > 0 && i < 2000; i++) {
     const at = queue[i]!, existing = groundStackAt(ctx, at)
-    if (existing && existing.good === good && existing.capacity - existing.amount - existing.reservedIn > 0) {
+    if (existing && (ctx.rules.groundPileMerging !== 'same-owner' || existing.owner === owner) && existing.good === good && existing.capacity - existing.amount - existing.reservedIn > 0) {
       const n = Math.min(amount, existing.capacity - existing.amount - existing.reservedIn); existing.amount += n; amount -= n
     }
     else if (!existing && ctx.index.buildingAt[at] === 0 && ctx.terrain[ctx.state.map.terrain[at]!]!.walkable && !(ctx.objects[ctx.state.map.object[at]! - 1]?.blocks) && !isDoor(ctx, at)) {

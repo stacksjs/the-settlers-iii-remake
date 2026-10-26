@@ -68,7 +68,7 @@ try {
     matchedBunReference: true,
     webViewUsed: false,
     browser,
-    scope: 'One headless simulation, save/restore and replay fixture. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.',
+    scope: 'Headless baseline, construction-tool recovery and ground-pile ownership scenarios with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.',
   }
   await Bun.write(join(runtime, 'native-engine-receipt.json'), `${JSON.stringify(receipt, null, 2)}\n`)
   console.log(JSON.stringify(receipt))

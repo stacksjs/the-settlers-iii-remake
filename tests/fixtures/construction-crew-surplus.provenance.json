@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "source": "cc702ac849ec35c2dfffa8cace3930e91e0b363c",
+  "fixture": "construction-crew-surplus.json",
+  "bytes": 436855,
+  "sha256": "c097e8737e78286cbb6363fff9fd88a3901c8037c8ec12dbe957eba928789fe6",
+  "capture": "Normal rivalSession(2), four ordinary player build commands for woodcutter, stonecutter, sawmill and forester, normal rival policy, tick5004 before lowering the crew cap. No world, goods or clock edits.",
+  "failure": "Eight idle builders hold all hammers. Reducing builderLimit12to2 leaves them builders; a geologist cannot equip.",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/204",
+  "media": "Generated simulation only, no original raster/audio."
+}

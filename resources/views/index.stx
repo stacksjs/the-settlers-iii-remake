@@ -99,6 +99,7 @@ onDestroy(() => game?.dispose())
         <div class="guide-panel" :if="showGuide()" tabindex="0" role="region" aria-label="Playing guide">
           <h2>Every good is carried.</h2>
           <p>Carriers fetch each plank and stone from where it lies. Diggers level the site, builders build it, and a worker needs the right tool before a workplace opens.</p>
+          <p :if="view().canReassignCrew">Lower the builder or digger limit in Occupations to return idle workers and their tools to carrying. Busy workers finish their current task first.</p>
           <p>Woodcutters and stonecutters walk to the nearest tree or granite in their working area. Foresters replant. Full doorsteps stop production until goods are used or taken to a storage area.</p>
           <p>Mark goods for storage in the Goods panel. Send pioneers to push your border and geologists to survey mountains. Miners work longer after their favourite meal.</p>
           <p>Romans offer wine at a small temple. Each offering becomes manna, and manna promotes one class of soldiers recruited from then on. A charcoal maker turns five planks into coal.</p>
@@ -107,6 +108,7 @@ onDestroy(() => game?.dispose())
           <p>Click a soldier or drag a rectangle to mark soldiers; Shift adds, Alt marks one type. Right-click to move them: Ctrl ignores enemies, Shift adds up to three waypoints, Alt patrols. Alt and a number stores a group, the number marks it, twice centers on it.</p>
           <p>Drag with the right mouse button to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
           <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
+          <p class="guide-note">Settlement rules: {{ view().rulesVersion }}. Saved settlements keep their original rules. Start a new settlement for the latest rules.</p>
           <button type="button" class="primary-button" @click="closeGuide()">Back to the settlement</button>
         </div>
         <div class="guide-panel restart-panel" :if="confirmRestart()">

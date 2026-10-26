@@ -71,6 +71,10 @@ export interface RulesProfile {
   constructionOccupancy?: 'current-and-next'
   /** Earlier profiles chose nearby resting tiles without checking the movement route. */
   restingRouting?: 'reachable'
+  /** Earlier profiles kept surplus construction professions after their caps fell. */
+  constructionReassignment?: 'surplus-idle'
+  /** Earlier ground drops could merge compatible goods from different players. */
+  groundPileMerging?: 'same-owner'
   /** Absent in profiles published before soldiers existed. */
   military?: {
     searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number
@@ -206,11 +210,13 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   if (rules.specialistRouting !== undefined && rules.specialistRouting !== 'reachable') problems.push('Unknown specialist routing policy')
   if (rules.constructionOccupancy !== undefined && rules.constructionOccupancy !== 'current-and-next') problems.push('Unknown construction occupancy policy')
   if (rules.restingRouting !== undefined && rules.restingRouting !== 'reachable') problems.push('Unknown resting routing policy')
+  if (rules.constructionReassignment !== undefined && rules.constructionReassignment !== 'surplus-idle') problems.push('Unknown construction reassignment policy')
+  if (rules.groundPileMerging !== undefined && rules.groundPileMerging !== 'same-owner') problems.push('Unknown ground pile merging policy')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -274,7 +280,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.11.0',
+  version: '0.12.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -360,6 +366,8 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   specialistRouting: 'reachable',
   constructionOccupancy: 'current-and-next',
   restingRouting: 'reachable',
+  constructionReassignment: 'surplus-idle',
+  groundPileMerging: 'same-owner',
   military: {
     searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
     wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
@@ -382,6 +390,8 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'specialistRouting': E(sources.spec, 'Automatic specialist duties choose the nearest reachable candidate through the normal movement router. This is engineering recovery behavior, not a Gold executable observation.'),
     'constructionOccupancy': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/193', 'Construction rejects outside settlers on the footprint or already stepping onto it. This prevents physical enclosure during movement; original Gold construction behavior remains unobserved.'),
     'restingRouting': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/201', 'Resting settlers choose a free tile reachable through the ordinary movement edges and civilian territory constraints. This prevents impossible repeated resting orders; original Gold crowd behavior remains unobserved.'),
+    'constructionReassignment': E('https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/PartitionManager.java', 'Return surplus jobless builders and diggers to carriers through physical tool recovery. The pinned remake reconciles profession caps periodically and drops the real tool; this engineering profile uses its existing staffing cadence and absolute limits. Exact original Gold timing and percentage behavior remain unobserved. See issue204.'),
+    'groundPileMerging': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/205', 'A physical ground drop merges only into a compatible pile owned by the dropping player. This protects per-player conservation without transferring or granting goods. Exact original Gold ground-pile behavior remains unobserved.'),
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
     'tools': M(sources.jobs, 'Tool requirements: builders hammer, diggers shovel, woodcutter axe, stonecutter and miner pick, farmer scythe, fisherman rod, smiths hammer.', 'S3-031'),

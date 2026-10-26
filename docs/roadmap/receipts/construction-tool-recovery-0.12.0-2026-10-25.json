@@ -1,0 +1,581 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T00:35:42.937082+00:00",
+  "base": "cc702ac849ec35c2dfffa8cace3930e91e0b363c",
+  "issues": [
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/204",
+    "https://github.com/stacksjs/the-settlers-iii-remake/issues/205"
+  ],
+  "sourceFilesSha256": {
+    "resources/game/engine/rules.ts": "a076efe6809d7cd88db7c74ce8c2aa9809743e045393dd4ba2eab2f9408753e2",
+    "resources/game/engine/catalog.ts": "3cc48e36f4b6549a5545c56cd1ee724dbf1c0185f3e3d428ad9a199e24749a7b",
+    "resources/game/engine/workforce.ts": "c200c69b9c1ec481085620fcb04a603592b5b8f39d2c431cef6a6855b4905f98",
+    "resources/game/engine/logistics.ts": "f3a7cd9496e90a899b986b5486a64106e7deb56858ea0978d69b8e87a16e07ac",
+    "resources/game/engine/session.ts": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209",
+    "resources/game/engine/ai.ts": "ec8f281e288c4f9459b7c9db65dfe9bc6c8b9f464e3d17f588d6094023ec2afb",
+    "resources/game/engine/profiles/roman-engineering-0.11.0.json": "4c867bd9a251472d4cc4189acdff20575c6e2669337e8f4ec626db51a808d4de",
+    "resources/game/controller.ts": "2495573d1eefc0a93b9932ff436c5ba9d2b90c2cc25010d8e5829345d1567d26",
+    "resources/views/index.stx": "786402ed06111f18642afee36f209093e85988d3434d874955d74bf93daa2103",
+    "tests/unit/construction-reassignment.test.ts": "d1ab6ad734e2a2d3119514e4746870a752efb8d079ec02ae7586a78a57ccfa9f",
+    "tests/unit/ground-pile-ownership.test.ts": "714c19c7d63b0b8a8238af4cbcaa2fe2c3e5c4d923c99a3a84ae11a563107c79",
+    "tests/unit/engine-core.test.ts": "2e2bca09515c284e2b87ac52b12735b382f94ef74d5c37a57d59cbfdb73a5753",
+    "tests/fixtures/construction-crew-surplus.json": "c097e8737e78286cbb6363fff9fd88a3901c8037c8ec12dbe957eba928789fe6",
+    "tests/fixtures/construction-crew-surplus.provenance.json": "bf73658ebc8df8065b6366bccf2b3d2ae8298d5367c4b06b3f802738ce20a214",
+    "tests/fixtures/native-engine-probe.ts": "21b6f109bc0f1848cebc76f1d9bdeb6f54a0e6f43b85b5aed157bbde5a13dc45",
+    "scripts/native-engine-check.ts": "34d3e5d5c317f4e40df680fe8257f5ce59643ce53b1d1c8e8920021a0d36e401",
+    "bun.lock": "0d06a28dde98657fb014f26ae9263a7d5da49a8cb9c5dd9311fbb228ebe4cb68",
+    "pantry.lock": "2002ab498cd3a71ffa7be05e21c734657360b5130f7e96252979dcc6ab8e0e86"
+  },
+  "rules": {
+    "version": "0.12.0",
+    "digest": "d395f484d1d23bddf25979de1fde57f6850922916ab96775681b74d449ff0bc4"
+  },
+  "legacy": {
+    "frozen011": {
+      "identity": {
+        "id": "roman-engineering",
+        "version": "0.11.0",
+        "digest": "f1ce0705bbe9a53bf880e7c1d38036404c56e1d7256517123d3dd1e38aee0e78"
+      },
+      "sha256": "4c867bd9a251472d4cc4189acdff20575c6e2669337e8f4ec626db51a808d4de",
+      "bytes": 216246
+    },
+    "capture": {
+      "schemaVersion": 1,
+      "source": "cc702ac849ec35c2dfffa8cace3930e91e0b363c",
+      "fixture": "construction-crew-surplus.json",
+      "bytes": 436855,
+      "sha256": "c097e8737e78286cbb6363fff9fd88a3901c8037c8ec12dbe957eba928789fe6",
+      "capture": "Normal rivalSession(2), four ordinary player build commands for woodcutter, stonecutter, sawmill and forester, normal rival policy, tick5004 before lowering the crew cap. No world, goods or clock edits.",
+      "failure": "Eight idle builders hold all hammers. Reducing builderLimit12to2 leaves them builders; a geologist cannot equip.",
+      "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/204",
+      "media": "Generated simulation only, no original raster/audio."
+    },
+    "startTick": 5004,
+    "startChecksum": "1e8e5a21",
+    "endTick": 5206,
+    "endChecksum": "f6debd29",
+    "saveAndReplayMatch": true
+  },
+  "corrections": [
+    "During the existing staffing pass, return surplus idle builders and diggers to carriers, newest IDs first. Drop their actual equipment as owned physical goods before changing profession. Busy, walking, assigned or laden workers keep their work.",
+    "With no ground space, keep the worker and tool until normal delivery frees room. Surplus crew cannot begin fresh work above the reduced cap while tool return is blocked.",
+    "Ground drops merge only compatible goods owned by the dropping player. A foreign pile keeps its ownership and quantity; the returned tool is placed separately.",
+    "Show the actual saved rules version in the guide. Crew-recovery guidance appears only for a supporting profile. Older saves retain their previous rules."
+  ],
+  "existingValuesUnchanged": {
+    "all011ValuesRetainedApartFromNewVersionModesEvidence": true,
+    "costsAndRecipes": true,
+    "startingGoods": true,
+    "movementAndResting": true,
+    "militaryAndAIPolicy": true,
+    "clocksAndBattleBudgets": true
+  },
+  "pinnedReference": {
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "verifiedSourceFiles": [
+      {
+        "name": "ProfessionSettings.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/ProfessionSettings.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/ProfessionSettings.java",
+        "gitBlob": "640cd1d9b321e7ecd60fd2b95d77566a96c80c21",
+        "sha256": "f737db6231a3e0bbade23f9665bc06eb9d2a199ff6ec58d01a7e1094585b6c1d",
+        "bytes": 3515
+      },
+      {
+        "name": "RelativeProfessionLimit.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/RelativeProfessionLimit.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/RelativeProfessionLimit.java",
+        "gitBlob": "6e19be1f24e3e265ede6aefdce894b9a8d39fbf8",
+        "sha256": "cb4e170d2ff8aa0cbf00271a645ed2ce5883501f53496b45f092c9e9acf88dcc",
+        "bytes": 1396
+      },
+      {
+        "name": "AbsoluteProfessionLimit.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/AbsoluteProfessionLimit.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/settings/AbsoluteProfessionLimit.java",
+        "gitBlob": "1eeedfc16857713144e29ae56ad6602ac51dff17",
+        "sha256": "76c79fccb79b7e0a943ed5072f4a80da652ca665dba2f5fa1026f47a865fd3d8",
+        "bytes": 1313
+      },
+      {
+        "name": "DiggerMovable.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/movable/civilian/DiggerMovable.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/movable/civilian/DiggerMovable.java",
+        "gitBlob": "2ecc1df3e1b886a9e9ee5794a985aa165b6eeb57",
+        "sha256": "36c1d0005a048cf4b90941dac25d270899fdba25595bcdb86432b63fc4d5eef1",
+        "bytes": 4753
+      },
+      {
+        "name": "ConvertGuiTask.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/input/tasks/ConvertGuiTask.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/input/tasks/ConvertGuiTask.java",
+        "gitBlob": "918b9b4b1327e482b7e9adfabbd9ba55b0a013a1",
+        "sha256": "9b575439bc1d94123a8f5ffa84336b011572435de3ec83c95169c5b618dae9f0",
+        "bytes": 2626
+      },
+      {
+        "name": "PartitionManager.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/PartitionManager.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/PartitionManager.java",
+        "gitBlob": "ef02774908da8f820a18d088eb1a059e81c9a015",
+        "sha256": "9864eaf541ecf9109dacab8582c7132a5e1c81fcbcff418c2c308da8ae14bd7f",
+        "bytes": 20206
+      },
+      {
+        "name": "BricklayerMovable.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/movable/civilian/BricklayerMovable.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/movable/civilian/BricklayerMovable.java",
+        "gitBlob": "c9ab5e5a70e3167d3770ed402d5036c6f15b3fb6",
+        "sha256": "149786e088ca54a7e437e44dc5705c1fd579cb1f42031550e91eb8b7ae12d9c2",
+        "bytes": 3186
+      },
+      {
+        "name": "GuiInterface.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/input/GuiInterface.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/input/GuiInterface.java",
+        "gitBlob": "d407a200cc0d1af7b51225d1bcaa118dac65b724",
+        "sha256": "728ac47803b9c852271a12a97b61c86a59e2bc376e7b9d1322176c2bdd4c558a",
+        "bytes": 26731
+      },
+      {
+        "name": "Partition.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/Partition.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/Partition.java",
+        "gitBlob": "1346ae866df0a4ee9d63a7d48e5cd135c25ad55a",
+        "sha256": "4bce2b9c14e23ca4ed486481a55f3ee2fe0dd138ccadbace22e2e3fc48c49b4a",
+        "bytes": 3937
+      },
+      {
+        "name": "PartitionsGrid.java",
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/PartitionsGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/PartitionsGrid.java",
+        "gitBlob": "c44dcf130f1c48cbadad09e904667616cf13558e",
+        "sha256": "3f62a9bf8ba331236f5b8b6e810ccf0795435ea67c6f37235854e0da0897fec6",
+        "bytes": 29494
+      }
+    ],
+    "interpretation": "The pinned remake periodically reconciles surplus jobless bricklayers and diggers and drops their real tools. This profile uses the existing game staffing cadence and absolute caps. Exact original Gold reassignment timing and percentage-control agreement remain unobserved."
+  },
+  "regressions": {
+    "paths": [
+      "tests/unit/construction-reassignment.test.ts",
+      "tests/unit/ground-pile-ownership.test.ts"
+    ],
+    "expandedOldSourceRed": {
+      "pass": 2,
+      "fail": 4,
+      "assertions": 25
+    },
+    "blockedToolFreshAssignmentRed": {
+      "pass": 0,
+      "fail": 1,
+      "filtered": 7,
+      "assertions": 4
+    },
+    "finalFocused": {
+      "pass": 39,
+      "fail": 0,
+      "assertions": 3662,
+      "files": 4
+    },
+    "coverage": "Ordinary four-site recovery, actual geologist equipment, retained crew, busy work completing, diggers, ownership boundaries, full-ground tool retention, real storage delivery freeing room, blocked surplus not starting fresh work, foreign/same-owner merging, save/replay/restore and evidenced-rule validation.",
+    "retainedIntermediateFailures": [
+      "An initial evidence constant name was corrected before successful checks.",
+      "Two tests initially assumed every player ledger was eagerly initialized; assertions now treat an absent created-goods ledger as zero.",
+      "The first crowded-ground fixture guessed an invalid storage site; it now selects a legal site through the public placement helper.",
+      "The first crowded-ground delivery attempt had no storage demand; it now enables actual log storage through the normal settings command.",
+      "The first full run was327pass/1failure because the original-profile rejection test searched only the shortened error message. It now inspects the complete public RulesError.problems and requires rejection of both E and U evidence.",
+      "A328test run passed before the additional blocked-tool assignment case exposed above-cap reuse. The source guard and new regression produce the final329test result.",
+      "The expanded headless fixture initially imported an unexported type; it now infers the public record return type. Final types and exact native/browser execution pass."
+    ]
+  },
+  "checks": {
+    "unit": {
+      "pass": 329,
+      "fail": 0,
+      "assertions": 23209,
+      "files": 47,
+      "seconds": 195.23
+    },
+    "lint": "0 errors and warnings",
+    "typecheck": "app/tools/views pass,258 template expressions",
+    "assets": "pass",
+    "fidelity": "pass",
+    "roadmap": "pass",
+    "productionBuild": "pass",
+    "browser": {
+      "recordedAt": "2026-10-26T00:35:42.702908+00:00",
+      "totalSteps": 385,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "a9b36edcdfba98c61e85d251d4647c14643402e048871d01d98c3d9bf1509f89",
+          "noErrors": true,
+          "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "472140553beaec10b6dce933943fbffe84dd126ab4c0890d190e830645a216b1",
+          "noErrors": true,
+          "mediaReceiptSha256": "d219d9f8edbc684642796135729dae983ae7fab45a8577ca58e23434f53e8afc"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "c6f00d2fe39cf04ad3170260a119f2269242c790385829ba3a4b5d30413a0a0c",
+          "noErrors": true,
+          "mediaReceiptSha256": "86967c622fa601e30dce71a9a794195fef6ccafc4174bd7a116f0864a1bb88ce"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "1d4fbacb30934ac2912546476b5a8047abaf3bf4c3f906dbacf7ccd88ed8265b",
+          "noErrors": true,
+          "mediaReceiptSha256": "a3fb309017d556a8bf6a6201d3eb387a291ddfc68f2ef01538c04794737bdfd0"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "66a5cca410d466137f3604149c393e4b681ebeff0cba8910ff6b4594aed9e735",
+          "noErrors": true,
+          "mediaReceiptSha256": "efd5dc26e3396c04960b756617deada21a9460bcf995ff2018e9af8d2ef5841a"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "3a4a4423ba94e9e351f25ce3ac5015c7d588310d18e8b25d0b50225c1d7d4790",
+          "noErrors": true,
+          "mediaReceiptSha256": "99b49db9a3f104cbbe26a4212ef9e9fca3bef62494eda62bf546aafa19056df7"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "f40d94af3527282d6a2ff3ecd3d478fbd3320beae79de8449dd595ab1601b85c",
+          "noErrors": true,
+          "mediaReceiptSha256": "103087d6cf41006eeb24a3cee57a2d5d5e6f7d94a9708cce0fb99f50eaf5613e"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "fccf2e6bf190e2432ae25bbe4d0970b8636462d96a14e048f3450b3ee8456437",
+          "noErrors": true,
+          "mediaReceiptSha256": "4213120776faa97555f0dcce72009600640a33ab95b10db14e950b6153c5dccc"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "e0baa128106082081ed8f4cf576be736b849f5d011214c67f7b9c965bbe8b47b",
+          "noErrors": true,
+          "mediaReceiptSha256": "643f4cb24d390c667779b251582d5b2a1a861fce3cd331ab05f7538514d46678",
+          "elapsedMs": 619534.604417
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "ae7264a608c54314b772d69f351c695001f495c1faa6d1b2d28d31952c711506",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    "sharedHeadlessEngine": {
+      "schemaVersion": 1,
+      "craftVersion": "craft version 0.0.341\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+      "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+      "fixtureSha256": "21b6f109bc0f1848cebc76f1d9bdeb6f54a0e6f43b85b5aed157bbde5a13dc45",
+      "bundledEngineSha256": "f75a2945ef1f99b54a400ceb69c4fdb01c632a3506d0693d46ef098c8d4b47f9",
+      "bunVersion": "1.4.4",
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        },
+        "crewRecovery": {
+          "tick": 5,
+          "checksum": "3f7112a3",
+          "restoredChecksum": "3f7112a3",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "3f7112a3"
+          },
+          "builderCount": 2,
+          "diggerCount": 2,
+          "hammers": 6,
+          "shovels": 4,
+          "createdUnchanged": true
+        },
+        "pileOwnership": {
+          "tick": 5,
+          "checksum": "1b4ce693",
+          "restoredChecksum": "1b4ce693",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "1b4ce693"
+          },
+          "ownHammers": 1,
+          "foreignHammers": 3
+        }
+      },
+      "nativeExitCode": 0,
+      "matchedBunReference": true,
+      "webViewUsed": false,
+      "browser": {
+        "result": {
+          "tick": 5,
+          "checksum": "c331a944",
+          "restoredChecksum": "c331a944",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "c331a944"
+          },
+          "crewRecovery": {
+            "tick": 5,
+            "checksum": "3f7112a3",
+            "restoredChecksum": "3f7112a3",
+            "replay": {
+              "ok": true,
+              "ticks": 5,
+              "checksum": "3f7112a3"
+            },
+            "builderCount": 2,
+            "diggerCount": 2,
+            "hammers": 6,
+            "shovels": 4,
+            "createdUnchanged": true
+          },
+          "pileOwnership": {
+            "tick": 5,
+            "checksum": "1b4ce693",
+            "restoredChecksum": "1b4ce693",
+            "replay": {
+              "ok": true,
+              "ticks": 5,
+              "checksum": "1b4ce693"
+            },
+            "ownHammers": 1,
+            "foreignHammers": 3
+          }
+        },
+        "consoleErrors": [],
+        "failedRequests": [],
+        "driverSha256": "cd0c6f71e165595ac82088a8fde7cb2aa0a7afab6abf4265f3a5c322ef422bd8"
+      },
+      "scope": "Headless baseline, construction-tool recovery and ground-pile ownership scenarios with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+    }
+  },
+  "nativeBrowserInput": {
+    "method": "CUA native clicks and keyboard through ordinary setup, construction, staffing caps, specialist dispatch, save and page reload. No session/save/clock injection.",
+    "observations": [
+      "A normal seed2 four-site opening reaches8builders and no free hammers. Lowering the cap from12to2 returns6hammers. One equips a geologist, leaving5hammers.",
+      "Cold page reload preserves the visible2builders,5hammers and1geologist. Population remains44.",
+      "An actual older0.11 save shows0.11 in the guide and omits the new crew guidance. A new0.12 game shows0.12 and the guidance."
+    ],
+    "captures": [
+      {
+        "name": "native-before-recovery.jpg",
+        "format": "JPEG",
+        "bytes": 157092,
+        "sha256": "c070eec3a6e0182f73b88177c63c94ec1dd5e914f1424b4d57b5dc60d9baf52c",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "44dd51bcc6c0ab67f73211395af0d660229e3379ea8ef815a026d08cd71d703d"
+      },
+      {
+        "name": "native-current-guide.jpg",
+        "format": "JPEG",
+        "bytes": 163229,
+        "sha256": "7bc8aea1c9e3284779362343339c2ddb6b63938a58a4e46a9c79f70edc74e2c2",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "a953fae1060882dcfce72e10b8c5cb4a0319147bb52fdd0dc6ebc60a94ec6768"
+      },
+      {
+        "name": "native-equipped-geologist.jpg",
+        "format": "JPEG",
+        "bytes": 158804,
+        "sha256": "c6a1907a21bdbbea9cfbe4aa150723ed57364679f2b2c37b066f4ae908a0ca9d",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "1ecd3903e8a02ccaddeb1016daf1f0aaec427c31329adc6230bc2cca595b76ad"
+      },
+      {
+        "name": "native-legacy-guide.jpg",
+        "format": "JPEG",
+        "bytes": 163405,
+        "sha256": "2206de75bc4a672e3c3964af2a3a4f906ad48a857b7ecbe29fe52fb493e6613c",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "629d6c4b718c91aeafcd776e9a730ae845e9d7a20b25006e00ce132f1c8d727f"
+      },
+      {
+        "name": "native-recovered-hammers.jpg",
+        "format": "JPEG",
+        "bytes": 158936,
+        "sha256": "0b1d306d0529c8077acdb930ac60e601009e97ced5c84fa3bb3bcea2fa737912",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "14b64e3aa27f3942950cf16be068442a5ab9179794c6a23953c37f0c89bbcc1b"
+      },
+      {
+        "name": "native-restored-recovery.jpg",
+        "format": "JPEG",
+        "bytes": 158554,
+        "sha256": "07494404096a06b02effc1455de9e2e92d33cb5d59ba11f219cfbf95d73868d8",
+        "width": 1280,
+        "height": 720,
+        "accessibilitySha256": "9713f1c92eb439e459428c28a9debaac2fff270cff4a654bc173ed5e458a211d"
+      }
+    ],
+    "lastManualState": "Paused/saved26:11 after ordinary forestry work-area adjustment and geologist/pioneer exploration. Not a player-side victory.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "sampledOrdinaryMatches": {
+    "results": [
+      {
+        "seed": 2,
+        "tick": 184761,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "b034bac1",
+        "audit": [],
+        "failedCommands": 0
+      },
+      {
+        "seed": 1,
+        "tick": 31801,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "aa0f0eb7",
+        "audit": [],
+        "failedCommands": 0
+      },
+      {
+        "seed": 3,
+        "tick": 139741,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "d6a0bdf8",
+        "audit": [],
+        "failedCommands": 0
+      },
+      {
+        "seed": 5,
+        "tick": 73581,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "ce4ce34e",
+        "audit": [],
+        "failedCommands": 0
+      }
+    ],
+    "allPerTickExecutedAndEnqueuedCommandsTraced": true,
+    "sourceTraceFiles": [
+      "additional-seeds.json",
+      "continued-matches.json"
+    ],
+    "limit": "Four sampled two-policy engineering matches, with normal continuations for seeds2and3. Not all seeds, indefinite sustainability, original difficulty or a player-side native-input victory."
+  },
+  "previousMainQualification": {
+    "recordedAt": "2026-10-25T23:45:37.363167+00:00",
+    "commit": "cc702ac849ec35c2dfffa8cace3930e91e0b363c",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40244633903",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12618617732,
+      "bytes": 19651,
+      "sha256": "46b79dfa1daa049459610a92c9ee7f6836cdb17b8d32b434a3d224fd0d23bdfe",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "198d53330dfd10467a0295731418e36453fa9260ba6f80114750475ec9619e30",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "42c5669ecf779bc2255b54ce25f3285a05bd98e47c565b634487ba1f8eb3c279",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "f5cccba0d93f252cbd9078f39219757907424faa7a8c4042bd2d2b7b7dd7dd0a",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "247a817c9cb1c03345143cae1b0493b36dbb7d3a46183cd22e6cbdef58aa827a",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "822c5bb231426d4b9dc8b2358d6a7a8ea47bffe790d449af5db9bfc6028cc77c",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "a8e45432bf98d04605b6a6b9205be22b67c98fadc0c7b15f99ec21391c0f75a5",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "42aa41b9cf3219dc2f4b0117b1cf0368f8ac09cebb941a38f16efc3f7b9d1924",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "81c42d549f481e8adf828a191726b04e587a860dc9e5d5555fc6ce50df43b090",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "b1eb0ed982a1850c3541b7a147368d15151d9942b8714b45aa481f9c59dc7a3a",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "7d79e105b6ff34ee57b73fb9bd059238eaa7dc96dfbad6807186afbb10af240c",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 385,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "framework": "Qualified published Stacks0.75.311/STX0.2.691/Craft0.0.341/Pantry0.11.127/Bun1.4.4 unchanged. No upstream dependency defect or release needed for these application rules.",
+  "scopeLimits": [
+    "Own pushed-main CI and original artifact must be verified before closing204/205.",
+    "Absolute engineering caps and staffing cadence are not measured Gold behavior. Original executable observations remain unavailable.",
+    "Headless Craft execution is not native graphics, persistent frame callbacks, native HUD or full mobile/desktop qualification.",
+    "Broader73/74/76/4 remain open. The full game and original Gold parity are not yet qualified."
+  ]
+}
