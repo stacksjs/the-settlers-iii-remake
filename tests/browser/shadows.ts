@@ -18,9 +18,8 @@ for (const [sprite, file, sequence] of [['worker', 10, 0], ['soldier:swordsman-1
     for (let y = shadow.offsetY - 2; y < shadow.offsetY + shadow.height + 2; y++) for (let x = shadow.offsetX - 2; x < shadow.offsetX + shadow.width + 2; x++) {
       if (opaque(body, x, y) || opaque(torso, x, y)) continue
       const alpha = x >= shadow.offsetX && y >= shadow.offsetY && x < shadow.offsetX + shadow.width && y < shadow.offsetY + shadow.height ? shadow.data[((y - shadow.offsetY) * shadow.width + x - shadow.offsetX) * 4 + 3]! : 0
-      // The terrain mesh has antialiased shared edges. Measure the same
-      // periodic flat-ground location beyond every source layer, rather than
-      // assuming its rasterized background is one constant color.
+      // Measure the same periodic flat-ground location beyond every source
+      // layer so the independent alpha oracle uses the actual ground color.
       const groundX = [48, -48, 32, -32].map(shift => x + shift).find(ref => Math.abs(ref) <= 48 && !opaque(body, ref, y) && !opaque(torso, ref, y) && !opaque(shadow, ref, y))
       if (groundX === undefined) throw new Error(`No isolated periodic ground sample for ${sprite}:${frame}`)
       samples.push({ x, y, alpha, groundX })

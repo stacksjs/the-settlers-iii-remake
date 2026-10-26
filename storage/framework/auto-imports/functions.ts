@@ -49,7 +49,7 @@ export type { CraftSidebarSelectEvent } from '@stacksjs/defaults/functions/craft
 export { dashboardApi, dashboardStream, dashboardDownload, DashboardApiError } from '@stacksjs/defaults/functions/dashboard-api.ts'
 export type { ApiRequestOptions } from '@stacksjs/defaults/functions/dashboard-api.ts'
 export { parseDashboardDate } from '@stacksjs/defaults/functions/dashboard-dates.ts'
-export { formErrorMessages } from '@stacksjs/defaults/functions/dashboard-form.ts'
+export { formErrorMessages, slugify } from '@stacksjs/defaults/functions/dashboard-form.ts'
 export { pageControls, useRecordsDashboard } from '@stacksjs/defaults/functions/dashboard-list.ts'
 export type { PageControls, RecordsDashboardOptions, RecordsDashboard } from '@stacksjs/defaults/functions/dashboard-list.ts'
 export { fetchDashboardHome, useDashboard } from '@stacksjs/defaults/functions/dashboard.ts'

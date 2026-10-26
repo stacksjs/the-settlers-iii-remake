@@ -144,7 +144,113 @@
       "files": 62,
       "seconds": 214.5
     },
-    "ci": "Awaiting source commit after qualification of the preceding shadow change."
+    "ci": {
+      "recordedAt": "2026-10-26T18:04:57.248818+00:00",
+      "commit": "6d1bff2481192d0fe9146222d8ebd65204aa0afb",
+      "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40370734370",
+      "conclusion": "success",
+      "originalArtifact": {
+        "id": 12674815325,
+        "bytes": 27849,
+        "sha256": "a32c30e6f141d9807c48d621d4d1ba230338c5e5ba17b5e894b5be9d815d8796",
+        "matchedGithubDigest": true,
+        "allZipCrcsVerified": true
+      },
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "931aed31ca4773b273791c51cf2924c61f7c59cfa0c167d4d91d865bda930f87",
+          "noErrors": true
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "e0e9a85fc18f6e547a7f08a72026cf79364522b07240fd320416359e01c5179c",
+          "noErrors": true
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "5e7b8aada2d3b04cfa5fcfb4b5e57d79ff505faedc928dca3b54c62f288721f0",
+          "noErrors": true
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "886f6506ca1004d8c65a4d221c939d5cead790fdec4da52813e235cff20617ff",
+          "noErrors": true
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "eca4d3c495ecaaf8dd0877de9758ae6dd3502651faa43628fc76e904f28217a1",
+          "noErrors": true
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "a14adbdb8a848424dc06b44ba264679e8ddf7162331d78e23cb18490b5f16a6b",
+          "noErrors": true
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "d8fd24190c16b96fbce20d9ba06754b1c078d327d90265babff89458ae79dc90",
+          "noErrors": true
+        },
+        {
+          "suite": "storage-inspection",
+          "steps": 87,
+          "reportSha256": "35ff0d8cf472dddc4a8edf409b4d4246f0b493a1a1503266a7299d068052aa9b",
+          "noErrors": true
+        },
+        {
+          "suite": "mine-placement",
+          "steps": 28,
+          "reportSha256": "d4847efb0b9980e7e32c870f6f4488c57fbc92e88c87415728be83e1a3f48453",
+          "noErrors": true
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "3da4a5d3c4a4dd0ca69cf765743d21bbce1463ea48dc45ac8b8cf632578fa42b",
+          "noErrors": true
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "2238553e18e21633726d05c3ce1c29e96cbfe926c2e3111893198ab9e586cc12",
+          "noErrors": true
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "a5b08c1e38914be3378c839eed3a7fc5c0edf2b3ed36031e1356ecf58edc4c32",
+          "noErrors": true
+        },
+        {
+          "suite": "player-colors",
+          "steps": 2,
+          "reportSha256": "a503cbb9534776d19595229e82d774372eff9f51f0108f1e4867ab5b33192ec2",
+          "noErrors": true
+        },
+        {
+          "suite": "shadows",
+          "steps": 2,
+          "reportSha256": "74f1b381926728afabc11e1de3afd170eee648afdb56b44213cf3be848290b21",
+          "noErrors": true
+        },
+        {
+          "suite": "terrain-cache",
+          "steps": 2,
+          "reportSha256": "2636c80f9e4d031f4ec09491504c87bb9e71b1cf0ed5d9a431f6cb717b8b5c38",
+          "noErrors": true
+        }
+      ],
+      "totalSteps": 506,
+      "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+    }
   },
   "evidence": {
     "budget-red-report.json": {

@@ -1,3 +1,5 @@
+import { createTerrainMaterials } from './terrain-materials'
+import { paintTriangle } from './terrain-raster'
 import { colorTorsoPixels, DEFAULT_PLAYER_SLOTS, playerCSS } from './player-colors'
 import type { Atlas, AtlasFrame } from './assets'
 import type { Point, Session } from './engine'
@@ -11,9 +13,7 @@ import { scene } from './scene'
 export interface Camera { x: number, y: number, zoom: number }
 const CHUNK = 32
 const TERRAIN_CACHE_BYTES = 64 * 1024 * 1024
-const TERRAIN_FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', moor: '#6b6447', snow: '#e8ecef', swamp: '#5d7347', water: '#3c7f8a' }
-// Terrain without an imported original texture is drawn as a flat colour until its media is converted.
-const TERRAIN_TEXTURE: Record<string, string> = { grass: 'terrain-grass', mountain: 'terrain-rock', sand: 'terrain-sand', desert: 'terrain-sand', water: 'terrain-water' }
+
 
 export function createRenderer(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d')
@@ -21,18 +21,22 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   let atlas: Atlas | null = null, width = 0, height = 0, pixelRatio = 1
   // The pinned reference's ScreenPosition starts at 100%, preserving original sprite pixels.
   const camera: Camera = { x: 0, y: 0, zoom: 1 }
-  const chunks = new Map<string, { canvas: HTMLCanvasElement, left: number, top: number, signature: string }>()
-  let terrainBytes = 0, terrainFrameBytes = 0, terrainFrameBuilds = 0, terrainSession: Session | null = null, terrainPlayer = 0, chunkScale = 2
+  const chunks = new Map<string, { canvas: HTMLCanvasElement, left: number, top: number, signature: string, inputs: Uint8Array }>()
+  let terrainBytes = 0, terrainInputBytes = 0, terrainFrameBytes = 0, terrainFrameBuilds = 0, terrainSession: Session | null = null, terrainPlayer = 0, chunkScale = 2
   function retireChunk(key: string): void {
     const chunk = chunks.get(key)!
     terrainBytes -= chunk.canvas.width * chunk.canvas.height * 4
+    terrainInputBytes -= chunk.inputs.byteLength
     chunk.canvas.width = 0; chunk.canvas.height = 0; chunks.delete(key)
   }
-  const clearChunks = (): void => { for (const key of chunks.keys()) retireChunk(key) }
+  const terrainFrame = canvas.ownerDocument.createElement('canvas')
+  terrainFrame.width = terrainFrame.height = 0
+  const terrainContext = terrainFrame.getContext('2d')!
+  const clearChunks = (): void => { for (const key of chunks.keys()) retireChunk(key); terrainFrame.width = terrainFrame.height = 0 }
   function reserveTerrain(bytes: number): void {
     while (chunks.size && terrainBytes + bytes > TERRAIN_CACHE_BYTES) retireChunk(chunks.keys().next().value!)
   }
-  let patterns: Map<string, CanvasPattern> | null = null
+  let materials: ReturnType<typeof createTerrainMaterials> | null = null
   let playerSlots: readonly number[] = DEFAULT_PLAYER_SLOTS
   const tinted = new Map<string, HTMLCanvasElement>(), tintLimit = 512
   const clearTinted = (): void => { for (const surface of tinted.values()) { surface.width = 0; surface.height = 0 }; tinted.clear() }
@@ -51,21 +55,6 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     return surface
   }
 
-  function texturePatterns(target: CanvasRenderingContext2D): Map<string, CanvasPattern> {
-    const result = new Map<string, CanvasPattern>()
-    if (!atlas) return result
-    for (const [terrain, key] of Object.entries(TERRAIN_TEXTURE)) {
-      const frame = atlas.frames.get(key)?.[0]
-      if (!frame?.width) continue
-      const tile = canvas.ownerDocument.createElement('canvas')
-      tile.width = frame.width; tile.height = frame.height
-      tile.getContext('2d')!.drawImage(atlas.image, frame.x, frame.y, frame.width, frame.height, 0, 0, frame.width, frame.height)
-      const pattern = target.createPattern(tile, 'repeat')
-      if (pattern) result.set(terrain, pattern)
-    }
-    return result
-  }
-
   function chunkBounds(session: Session, cx: number, cy: number) {
     const { map } = session.state
     const x0 = cx * CHUNK, y0 = cy * CHUNK, x1 = Math.min(map.width - 1, x0 + CHUNK), y1 = Math.min(map.height - 1, y0 + CHUNK)
@@ -78,44 +67,67 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     const realTop = Math.floor((minY - 16) * chunkScale) / chunkScale, bottom = Math.ceil((maxY + 16) * chunkScale) / chunkScale
     return { x0, y0, x1, y1, left, right, realTop, bottom }
   }
+  // Compare actual inputs after a visibility/navigation pass. A stationary
+  // world must not rerasterize just because another pass ran. The halo includes
+  // neighboring ownership used by border posts; comparison has no hash collisions.
+  function terrainInputs(session: Session, player: number, bounds: ReturnType<typeof chunkBounds>, previous?: Uint8Array): Uint8Array {
+    const { map } = session.state, viewer = session.state.players.find(p => p.id === player)!
+    const fields = [map.terrain, map.elevation, map.owner, viewer.explored, viewer.visible]
+    const x0 = Math.max(0, bounds.x0 - 1), x1 = Math.min(map.width - 1, bounds.x1 + 1), y0 = Math.max(0, bounds.y0 - 1), y1 = Math.min(map.height - 1, bounds.y1 + 1)
+    const length = (x1 - x0 + 1) * (y1 - y0 + 1) * fields.length
+    let index = 0, same = previous?.length === length
+    if (same) {
+      compare: for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) for (const field of fields) {
+        if (previous![index++] !== field[y * map.width + x]) { same = false; break compare }
+      }
+      if (same) return previous!
+    }
+    const value = new Uint8Array(length); index = 0
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) for (const field of fields) value[index++] = field[y * map.width + x]!
+    return value
+  }
   function renderChunk(session: Session, player: number, bounds: ReturnType<typeof chunkBounds>) {
     const { map } = session.state, rules = session.rules, viewer = session.state.players.find(p => p.id === player)!
     const { x0, y0, x1, y1, left, right, realTop, bottom } = bounds
     const surfaceWidth = Math.ceil((right - left) * chunkScale), surfaceHeight = Math.ceil((bottom - realTop) * chunkScale)
     reserveTerrain(surfaceWidth * surfaceHeight * 4)
     const surface = canvas.ownerDocument.createElement('canvas')
-    surface.width = surfaceWidth; surface.height = surfaceHeight
-    const g = surface.getContext('2d')!
-    g.setTransform(chunkScale, 0, 0, chunkScale, -left * chunkScale, -realTop * chunkScale)
-    patterns ??= texturePatterns(g)
-    const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
-    const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
-    const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
-      const [ax, ay] = a, [bx, by] = b, [cx2, cy2] = c
-      if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
-      const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay), t = ay * map.width + ax
-      g.beginPath(); g.moveTo(pa.x, pa.y); g.lineTo(pb.x, pb.y); g.lineTo(pc.x, pc.y); g.closePath()
-      if (!viewer.explored[t]) { g.fillStyle = '#0d1714'; g.fill(); return }
-      g.fillStyle = patterns!.get(kind) ?? TERRAIN_FILL[kind] ?? '#6f9452'; g.fill()
-      // Light falls from the upper left: slopes facing it brighten, the others darken.
-      const slope = (map.elevation[ay * map.width + ax]! - map.elevation[cy2 * map.width + cx2]!) * 0.05
-      g.fillStyle = slope >= 0 ? `rgba(255,248,220,${Math.min(0.35, slope)})` : `rgba(10,20,15,${Math.min(0.45, -slope)})`; g.fill()
-      if (!viewer.visible[t]) { g.fillStyle = 'rgba(8,16,13,0.38)'; g.fill() }
-    }
-    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { triangle([x, y], [x + 1, y], [x + 1, y + 1]); triangle([x, y], [x + 1, y + 1], [x, y + 1]) }
-    // Border posts mark tiles whose neighbour belongs to someone else.
-    for (let y = y0; y <= y1; y++) {
-      for (let x = x0; x <= x1; x++) {
-        const t = y * map.width + x, owner = map.owner[t]!
-        if (!owner || !viewer.explored[t]) continue
-        const edge = [[0, -1], [1, 0], [1, 1], [0, 1], [-1, 0], [-1, -1]].some(([dx, dy]) => { const nx = x + dx!, ny = y + dy!; return nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || map.owner[ny * map.width + nx] !== owner })
-        if (!edge) continue
-        const p = at(x, y)
-        g.fillStyle = '#1a1a14'; g.fillRect(p.x - 1.5, p.y - 6, 3, 6)
-        g.fillStyle = playerCSS(playerSlots, owner); g.fillRect(p.x - 1, p.y - 7, 2, 3)
+    let complete = false
+    try {
+      surface.width = surfaceWidth; surface.height = surfaceHeight
+      const g = surface.getContext('2d')!
+      g.setTransform(chunkScale, 0, 0, chunkScale, -left * chunkScale, -realTop * chunkScale)
+      const raster = new ImageData(surfaceWidth, surfaceHeight), pixels = new Uint32Array(raster.data.buffer)
+      const rasterPoint = (p: Point): Point => ({ x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale })
+      const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
+      const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
+      const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
+        const [ax, ay] = a, [bx, by] = b, [cx2, cy2] = c
+        if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
+        const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay), t = ay * map.width + ax
+        const explored = !!viewer.explored[t], delta = explored ? map.elevation[ay * map.width + ax]! - map.elevation[cy2 * map.width + cx2]! : 0
+        const sample = materials!.sampler(explored ? kind : 'unexplored', chunkScale, delta, !explored || !!viewer.visible[t], left * chunkScale, realTop * chunkScale)
+        paintTriangle(pixels, surfaceWidth, surfaceHeight, rasterPoint(pa), rasterPoint(pb), rasterPoint(pc), sample)
       }
+      // Background.addTrianglesToGeometry emits the upward face first.
+      for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { triangle([x, y], [x + 1, y + 1], [x, y + 1]); triangle([x, y], [x + 1, y], [x + 1, y + 1]) }
+      g.putImageData(raster, 0, 0)
+      // Border posts mark tiles whose neighbour belongs to someone else.
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+          const t = y * map.width + x, owner = map.owner[t]!
+          if (!owner || !viewer.explored[t]) continue
+          const edge = [[0, -1], [1, 0], [1, 1], [0, 1], [-1, 0], [-1, -1]].some(([dx, dy]) => { const nx = x + dx!, ny = y + dy!; return nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || map.owner[ny * map.width + nx] !== owner })
+          if (!edge) continue
+          const p = at(x, y)
+          g.fillStyle = '#1a1a14'; g.fillRect(p.x - 1.5, p.y - 6, 3, 6)
+          g.fillStyle = playerCSS(playerSlots, owner); g.fillRect(p.x - 1, p.y - 7, 2, 3)
+        }
+      }
+      complete = true
+      return { canvas: surface, left, top: realTop }
     }
-    return { canvas: surface, left, top: realTop }
+    finally { if (!complete) surface.width = surface.height = 0 }
   }
 
   function frame(key: string, index = 0): AtlasFrame | null {
@@ -167,35 +179,63 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     const { state, rules } = session, { map } = state, viewer = state.players.find(p => p.id === options.player)!
     // Retain at least one raster sample per displayed device pixel when
     // zooming out. Original 100% rendering keeps its existing 2x backing grid.
-    const scale = Math.min(2, 2 ** Math.ceil(Math.log2(camera.zoom * 2)))
+    const scale = Math.max(0.5, Math.min(2, 2 ** Math.ceil(Math.log2(camera.zoom * 2))))
     if (terrainSession !== session || terrainPlayer !== options.player || chunkScale !== scale) { clearChunks(); terrainSession = session; terrainPlayer = options.player; chunkScale = scale }
     ctx!.imageSmoothingEnabled = camera.zoom < 1
     // Terrain chunks are rebuilt when terrain, territory or sight changes.
     const signature = `${state.navigation}:${Math.floor(state.tick / rules.visibility.interval)}`
     const z = camera.zoom
+    const visible: { key: string, bounds: ReturnType<typeof chunkBounds> }[] = []
     for (let cy = 0; cy * CHUNK < map.height - 1; cy++) {
       for (let cx = 0; cx * CHUNK < map.width - 1; cx++) {
-        const key = `${cx}:${cy}`
-        let chunk = chunks.get(key)
         const left = cx * CHUNK * 16 - Math.min(map.height - 1, cy * CHUNK + CHUNK) * 8 - 16
         const right = Math.min(map.width - 1, cx * CHUNK + CHUNK) * 16 - cy * CHUNK * 8 + 16
         const sx0 = camera.x + left * z, sx1 = camera.x + right * z, sy1 = camera.y + (Math.min(map.height - 1, cy * CHUNK + CHUNK) * 9 + 16) * z, sy0 = camera.y + (cy * CHUNK * 9 - 520) * z
         if (sx1 < 0 || sx0 > width || sy1 < 0 || sy0 > height) continue
         const bounds = chunkBounds(session, cx, cy)
         if (camera.y + bounds.bottom * z < 0 || camera.y + bounds.realTop * z > height) continue
+        visible.push({ key: `${cx}:${cy}`, bounds })
+      }
+    }
+    // Assemble neighbors on one sampling grid. Screen tiles have disjoint
+    // integer device-pixel clips. The sampling gutter copies actual neighboring
+    // raster data without enlarging any triangle or painting across its edges.
+    const tilePixels = Math.max(1, Math.floor(256 * pixelRatio))
+    const frameSize = Math.ceil(tilePixels / pixelRatio / z * chunkScale) + 6
+    if (frameSize * frameSize * 4 > 8 * 1024 * 1024) throw new RangeError('Terrain staging raster exceeds its supported capacity')
+    if (terrainFrame.width !== frameSize || terrainFrame.height !== frameSize) {
+      terrainFrame.width = terrainFrame.height = 0
+      terrainFrame.width = terrainFrame.height = frameSize
+    }
+    terrainContext.imageSmoothingEnabled = false
+    for (let py = 0; py < canvas.height; py += tilePixels) for (let px = 0; px < canvas.width; px += tilePixels) {
+      const pw = Math.min(tilePixels, canvas.width - px), ph = Math.min(tilePixels, canvas.height - py)
+      const left = Math.floor((px / pixelRatio - camera.x) / z * chunkScale) - 2, top = Math.floor((py / pixelRatio - camera.y) / z * chunkScale) - 2
+      const right = Math.ceil(((px + pw) / pixelRatio - camera.x) / z * chunkScale) + 2, bottom = Math.ceil(((py + ph) / pixelRatio - camera.y) / z * chunkScale) + 2
+      terrainContext.clearRect(0, 0, frameSize, frameSize)
+      for (const { key, bounds } of visible) {
+        if (bounds.right * chunkScale < left || bounds.left * chunkScale > right || bounds.bottom * chunkScale < top || bounds.realTop * chunkScale > bottom) continue
+        let chunk = chunks.get(key)
+        const inputs = !chunk || chunk.signature !== signature ? terrainInputs(session, options.player, bounds, chunk?.inputs) : chunk.inputs
+        if (chunk && inputs === chunk.inputs) chunk.signature = signature
         if (!chunk || chunk.signature !== signature) {
           if (chunk) retireChunk(key)
-          chunk = { ...renderChunk(session, options.player, bounds), signature }
-          terrainFrameBuilds++
+          chunk = { ...renderChunk(session, options.player, bounds), signature, inputs }; terrainFrameBuilds++
           const bytes = chunk.canvas.width * chunk.canvas.height * 4
-          if (bytes <= TERRAIN_CACHE_BYTES) { chunks.set(key, chunk); terrainBytes += bytes }
+          if (bytes <= TERRAIN_CACHE_BYTES) { chunks.set(key, chunk); terrainBytes += bytes; terrainInputBytes += inputs.byteLength }
         }
         else { chunks.delete(key); chunks.set(key, chunk) }
         terrainFrameBytes += chunk.canvas.width * chunk.canvas.height * 4
-        ctx!.drawImage(chunk.canvas, camera.x + chunk.left * z, camera.y + chunk.top * z, chunk.canvas.width / chunkScale * z, chunk.canvas.height / chunkScale * z)
-        // An oversized chunk is still drawn, but never retained beyond its use.
+        terrainContext.drawImage(chunk.canvas, chunk.left * chunkScale - left, chunk.top * chunkScale - top)
         if (!chunks.has(key)) { chunk.canvas.width = 0; chunk.canvas.height = 0 }
       }
+      ctx!.save(); ctx!.setTransform(1, 0, 0, 1, 0, 0)
+      ctx!.beginPath(); ctx!.rect(px, py, pw, ph); ctx!.clip()
+      ctx!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      // The reference background texture retains its default nearest filter.
+      ctx!.imageSmoothingEnabled = false
+      ctx!.drawImage(terrainFrame, 0, 0, right - left, bottom - top, camera.x + left / chunkScale * z, camera.y + top / chunkScale * z, (right - left) / chunkScale * z, (bottom - top) / chunkScale * z)
+      ctx!.restore()
     }
     // Visible tile range for entity culling.
     const yMin = Math.max(0, Math.floor((-camera.y / z) / 9) - 2), yMax = Math.min(map.height - 1, Math.ceil(((height - camera.y) / z + 520) / 9) + 2)
@@ -305,12 +345,14 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     camera, resize, draw, home,
     /** Canvas coordinates of a view point under the current camera. */
     screen: toScreen,
-    setAssets(value: Atlas) { clearTinted(); atlas = value; patterns = null; clearChunks() },
+    setAssets(value: Atlas) { clearTinted(); materials?.dispose(); atlas = value; materials = createTerrainMaterials(canvas.ownerDocument, value); clearChunks() },
     setPlayerSlots(slots: readonly number[]) { playerSlots = slots; clearChunks() },
     tintedFrameCount: () => tinted.size,
     /** Retained capacity and summed raster bytes drawn this frame, not RSS/GPU memory. */
-    terrainCacheMemory: () => ({ entries: chunks.size, bytes: terrainBytes, frameBytes: terrainFrameBytes, rebuiltChunks: terrainFrameBuilds, limit: TERRAIN_CACHE_BYTES }),
-    dispose() { clearTinted(); clearChunks(); patterns = null; atlas = null; terrainSession = null },
+    terrainCacheMemory: () => ({ entries: chunks.size, bytes: terrainBytes, inputBytes: terrainInputBytes, frameBytes: terrainFrameBytes, rebuiltChunks: terrainFrameBuilds, limit: TERRAIN_CACHE_BYTES }),
+    terrainFrameMemory: () => ({ bytes: terrainFrame.width * terrainFrame.height * 4, limit: 8 * 1024 * 1024 }),
+    terrainMaterialMemory: () => materials?.memory() ?? { bytes: 0, limit: 2 * 1024 * 1024, entries: 0, shadeBytes: 0 },
+    dispose() { clearTinted(); clearChunks(); materials?.dispose(); materials = null; atlas = null; terrainSession = null },
     invalidate() { clearChunks() },
     pick(session: Session, clientX: number, clientY: number): Point | null {
       const rect = canvas.getBoundingClientRect()

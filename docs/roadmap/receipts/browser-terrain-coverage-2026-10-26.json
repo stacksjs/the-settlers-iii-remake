@@ -1,0 +1,350 @@
+{
+  "recordedAt": "2026-10-26T21:24:01.159593+00:00",
+  "issue": 215,
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "base": "6d1bff2481192d0fe9146222d8ebd65204aa0afb",
+  "referenceRevision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+  "scope": "Browser terrain mesh coverage, source nearest filtering and face order. Existing material UV selection and lighting recipes remain broader #88 work; not original Gold runtime or native-host qualification.",
+  "referenceSources": [
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/Background.java",
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/Background.java",
+      "sha256": "97ae86aecb3c00cd63767e9134f222f1ae9f59af80b59ab8fea1c68cdfe08ec2"
+    },
+    {
+      "path": "go.graphics/src/main/java/go/graphics/TextureHandle.java",
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics/src/main/java/go/graphics/TextureHandle.java",
+      "sha256": "bbc0e41f8453c72d373c82d3843096461384fda3445c538bc9aabf6aeed607ae"
+    },
+    {
+      "path": "go.graphics.swing/src/main/java/go/graphics/swing/opengl/LWJGLTextureHandle.java",
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/java/go/graphics/swing/opengl/LWJGLTextureHandle.java",
+      "sha256": "f566e5fc3e19156e053ae48e8aa7421a48d809967e12a3de3f7a3054cc507449"
+    },
+    {
+      "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/background.vert",
+      "url": "https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/background.vert",
+      "sha256": "9e8941270e6ab282736fad412337cbc45ec8636ad189df4679409d2677fb3e65"
+    }
+  ],
+  "implementation": {
+    "coverage": "Opaque pixel-centre rasterization, half-open shared-edge ownership, clipped row spans. Geometry is unchanged; no enlarged triangles, filler lines or additive brightening.",
+    "composition": "Cached neighbors assembled on one raster grid before sampling disjoint integer-device-pixel viewport tiles. Sampling gutters contain actual neighboring raster data.",
+    "filter": "Background retains TextureHandle defaultNEAREST_FILTER; LWJGLTextureHandle sets both min/mag GL_NEAREST. Original RGB source texels remain exact. Existing sprite sampling is unchanged.",
+    "ordering": "Within-cell upward face precedes downward face, matching Background. Independent opaque-projection property compares global row order with8/16/32block grouping. Worked actual-browser folded-cell and cross-chunk samples enforce face/row occlusion.",
+    "materials": "Native Canvas samples source texels and builds bounded per-channel shading/fog lookup tables. Original images remain read-only. Unsupported alpha and capacity fail explicitly; incomplete chunk canvases are released.",
+    "invalidation": "Compare exact terrain/elevation/ownership/explored/visible inputs, including border-post neighbor halo, after actual visibility/navigation passes. Stationary inputs reuse raster data; no hash collisions or clock replacement.",
+    "limits": {
+      "retainedChunkCanvasBytes": 67108864,
+      "stagingCanvasBytes": 8388608,
+      "materialPixelBytes": 2097152,
+      "materialEntries": 32,
+      "shaderLookupBytes": 104448,
+      "oneMaterialPixels": 65536,
+      "inputSnapshotBytesPerChunkMaximum": 6125
+    },
+    "unchanged": [
+      "simulation rules and commands",
+      "save/replay formats and checksums",
+      "map-size and imported-image allocation guards",
+      "original media bytes and converter"
+    ]
+  },
+  "browser": {
+    "driver": "Normal installed @stacksjs/defaults@0.75.320 browser CLI",
+    "contexts": [
+      {
+        "requestedScale": 1,
+        "driverScale": 1,
+        "observedScale": 1,
+        "result": {
+          "ok": true,
+          "deviceScale": 1,
+          "checkedPixels": 65673,
+          "uniformCases": 18,
+          "texturedCases": 180,
+          "exactTexels": 40550,
+          "tiedTexels": 14110,
+          "differingTies": 3380,
+          "exactNonTieNativePattern": true,
+          "equidistantSourceCandidates": true,
+          "originalPalettePreserved": true,
+          "originalTextures": true,
+          "originalMaterialKinds": 4,
+          "negativeTextureCoordinates": true,
+          "unsupportedAlphaRejected": true,
+          "materialCapacityGuard": true,
+          "mixedMaterials": true,
+          "elevation": true,
+          "opaqueOverlap": true,
+          "sourceFaceOrder": true,
+          "crossChunkOcclusion": true,
+          "fog": true,
+          "sourceUnchanged": true,
+          "unchangedVisibilityWithoutRebuild": true,
+          "resourceBounds": true,
+          "disposal": true,
+          "checksumUnchanged": true,
+          "maximumFrameBytes": 2958400,
+          "maximumMaterialBytes": 655368,
+          "scope": "Production browser renderer and public engineering sessions, independent continuous native material oracle and exact supplied terrain texels. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity."
+        },
+        "recordedTimings": {
+          "count": 224,
+          "minimumMs": 0.29999999701976776,
+          "medianMs": 3.5499999970197678,
+          "maximumMs": 124.20000000298023,
+          "scope": "Fixture draw measurements, not a full-world frame-rate qualification."
+        }
+      },
+      {
+        "requestedScale": 2,
+        "driverScale": 2,
+        "observedScale": 2,
+        "result": {
+          "ok": true,
+          "deviceScale": 2,
+          "checkedPixels": 65673,
+          "uniformCases": 18,
+          "texturedCases": 180,
+          "exactTexels": 50360,
+          "tiedTexels": 4300,
+          "differingTies": 530,
+          "exactNonTieNativePattern": true,
+          "equidistantSourceCandidates": true,
+          "originalPalettePreserved": true,
+          "originalTextures": true,
+          "originalMaterialKinds": 4,
+          "negativeTextureCoordinates": true,
+          "unsupportedAlphaRejected": true,
+          "materialCapacityGuard": true,
+          "mixedMaterials": true,
+          "elevation": true,
+          "opaqueOverlap": true,
+          "sourceFaceOrder": true,
+          "crossChunkOcclusion": true,
+          "fog": true,
+          "sourceUnchanged": true,
+          "unchangedVisibilityWithoutRebuild": true,
+          "resourceBounds": true,
+          "disposal": true,
+          "checksumUnchanged": true,
+          "maximumFrameBytes": 2958400,
+          "maximumMaterialBytes": 655368,
+          "scope": "Production browser renderer and public engineering sessions, independent continuous native material oracle and exact supplied terrain texels. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity."
+        },
+        "recordedTimings": {
+          "count": 224,
+          "minimumMs": 0.20000000298023224,
+          "medianMs": 3.5,
+          "maximumMs": 123.09999999403954,
+          "scope": "Fixture draw measurements, not a full-world frame-rate qualification."
+        }
+      }
+    ],
+    "totalCheckedPixels": 131346,
+    "captures": [
+      {
+        "scale": 1,
+        "screenshot": {
+          "sha256": "5730b3cca03a56e8eff73cee5a6606ff014041bc855c7ed8b9bfdff74628fe67",
+          "bytes": 11349,
+          "width": 900,
+          "height": 600
+        }
+      },
+      {
+        "scale": 2,
+        "screenshot": {
+          "sha256": "940e995743c5f8c1965faf4ed29259fa9ec6309fa02244830bd3816b8609b506",
+          "bytes": 28010,
+          "width": 1800,
+          "height": 1200
+        }
+      }
+    ],
+    "noErrors": true
+  },
+  "nearestBoundaryContract": "Every non-tie sample equals the continuous native pattern and its exact source texel. Exact rational authored camera positions identify equidistant boundaries; both outputs must equal one of their exact nearest source candidates. No RGB tolerance, epsilon exclusion or skipped pixels. Native GPU boundary behavior remains unqualified.",
+  "redEvidence": {
+    "publishedGround": "101,136,75,255 instead of111,148,82,255 on uniform grass.",
+    "separateFiltering": "New opaque faces alone still left dark gaps across chunk junctions under zoom/translation.",
+    "faceOrder": "Folded cell161,183,130,255 instead of111,148,82,255 until matching upward/downward reference order.",
+    "stationary": "An unchanged actual visibility pass rebuilt5chunks before exact input comparison."
+  },
+  "rejectedExperiments": [
+    "Additive fill only solved one coverage pixel and cannot establish overlap correctness.",
+    "Unoptimized per-pixel edge checks took about100ms/chunk; span prototype about4ms/chunk.",
+    "Four-sample filter-grid alignment moved a native-filter mismatch and did not establish correctness.",
+    "Folded destination/global-matrix variations did not make native nearest-boundary decisions identical; exact source-candidate classification established that all differences occur at equidistant texels."
+  ],
+  "checks": {
+    "unit": "395 passed, zero failures, 75581 assertions across 63 files, 302.06 seconds after framework adoption.",
+    "types": "Application, tools and STX: zero errors. Two STX scripts and 258 template expressions.",
+    "lint": "505 files, zero errors and warnings.",
+    "assets": "11139 frames and 95 converted files verified.",
+    "existingBrowsers": "Terrain cache, original shadows and player colors passed with the new renderer.",
+    "build": "Production build passed after normal framework adoption.",
+    "ci": "Pending source push and exact game CI; #215 remains open until that qualification completes.",
+    "production": "All 16 normal browser suites running on a fresh production Buddy server; through skirmish passed, full unshortened rival battle running at record time."
+  },
+  "remaining": [
+    "Full terrain material coordinate/junction selection, vertex lighting and original border presentation remain#88.",
+    "Exact original Gold runtime and native rendering remain unqualified.",
+    "Capacity counters are not total process RSS/GPU-memory or full large-world frame-rate qualification;#100 remains open."
+  ],
+  "media": "Original rasters remain local. CI retains only explicit non-media diagnostics.",
+  "evidence": {
+    "red-current.log": {
+      "bytes": 2000,
+      "sha256": "5fe25c5c5f4146fda4b158c17c029e353e297bdfe0507d82c31431553ed4a155"
+    },
+    "boundary-path-red-result.json": {
+      "bytes": 3476,
+      "sha256": "5a62c3748015765504b6ea39264974272bbffc8da4a8469d09f7025bf67b4197"
+    },
+    "boundary-assembled-report.json": {
+      "bytes": 4338,
+      "sha256": "06c831b6da059b9b3d886aa3e2c0c2e27e2f889f434337bbcc2bcb280783b46c"
+    },
+    "boundary-baseline-report.json": {
+      "bytes": 7652,
+      "sha256": "58d014f7817c0f337d4944fd1054a17b4495329727e4ba0e084bb77f5c24682f"
+    },
+    "face-order-red-report.json": {
+      "bytes": 1430,
+      "sha256": "f8664c48cb27a013d3a06ad14861923df621a35ebcf635883410deedb8cb9a0a"
+    },
+    "stationary-red-report.json": {
+      "bytes": 1393,
+      "sha256": "ea8ee3374114c7078e404e95a87bf613d64330850353c84c8dbd04370aa6b788"
+    },
+    "stationary-green-report.json": {
+      "bytes": 1444,
+      "sha256": "0b95cc24f18e6b3ed7be54313128b46085244c906f52cdfb1c26dd354cc62533"
+    },
+    "nearest-report.json": {
+      "bytes": 1320,
+      "sha256": "86898b8c7821361c1e70ba7b4c385addea590f2e2e054c3eefb0953c9669191e"
+    },
+    "nearest-tie-report.json": {
+      "bytes": 4607,
+      "sha256": "36c40d81c5b7f20e9fcdb2743c81eafb8b390bbf3eae0ac956d38baae1e06064"
+    },
+    "filter-grid-report.json": {
+      "bytes": 1317,
+      "sha256": "6e06533c59a816ba819ac571ca93c31097c82da0b24469aa1024697ef746ee35"
+    },
+    "global-matrix-report.json": {
+      "bytes": 1320,
+      "sha256": "e1fa3809f06ddab283192182aba5e68e7e8cdf46e19360053961f68c456129b2"
+    },
+    "browser-final-report.json": {
+      "bytes": 20341,
+      "sha256": "be1c999b5b2679f0d20ec3cfc1afbc6a2c5fc51b04c0249da28b6e462bac8ecc"
+    },
+    "raster-order-proof.log": {
+      "bytes": 790,
+      "sha256": "da7e76df75f308c18db5f2aefb272aff9c2b6bfa891c429bae3024af1d21b041"
+    },
+    "assets-final.log": {
+      "bytes": 331,
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5"
+    },
+    "cache-final.log": {
+      "bytes": 92,
+      "sha256": "775632525e17c039b38de4be894d71121375118174a7ac134ab212580e40216b"
+    },
+    "shadows-final.log": {
+      "bytes": 80,
+      "sha256": "d0fa30fae6362c0b3fedd97fb56d71e26e6f5e4bfb55b05b06522b3dd5609385"
+    },
+    "player-colors-final.log": {
+      "bytes": 75,
+      "sha256": "dc10889c8b7ff40e471dd3a57c4b78200a2f3ebfa458b5361bc0123551a12a4c"
+    },
+    "game-installed-terrain-320.json": {
+      "bytes": 20361,
+      "sha256": "0d2855cee8bb3ffcec7387d403cacca006297d00f6800b14b2993d116142680c"
+    },
+    "game-installed-terrain-media-320.json": {
+      "bytes": 710,
+      "sha256": "5fa85ce8dbb21ebccf613ab22b5b1916e184d4ccd091e42d892c8952e5734d18"
+    },
+    "game-installed-cohort-320.json": {
+      "bytes": 6813,
+      "sha256": "6dd017725b9305f6fa462c240c5308c45105ef264f308bdac005eb41f4f9a954"
+    },
+    "framework-320-publication-verified.json": {
+      "bytes": 2979,
+      "sha256": "7b254295d77fe4531ecd95dd453367aa3c838eba59c7ebe336f3b3db793874fb"
+    },
+    "framework-320-ci.json": {
+      "bytes": 44871,
+      "sha256": "18ff760f29abcbaa72f076f2dbb8452201e381010f2b9944605495ef350b3914"
+    },
+    "stx-publication-verified.json": {
+      "bytes": 2489,
+      "sha256": "149a07b1d9429fde6fc772de06677a4ed8cd032a3e07f1e7ccc52d18a408c877"
+    },
+    "game-unit-320.log": {
+      "bytes": 45119,
+      "sha256": "1c56a95e1a8a50c8dabd8bc2c33dcdb71473bb0ebcf3c8c090181b7f8edecedc"
+    },
+    "game-types-320.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "game-lint-320.log": {
+      "bytes": 301,
+      "sha256": "0ce7e1f0103a40e8a45c018b58c17bb67689325c6fc2d1f1a711ba91389a5f32"
+    },
+    "game-assets-320.log": {
+      "bytes": 331,
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5"
+    },
+    "game-build-320.log": {
+      "bytes": 1366,
+      "sha256": "d5060d66c917218c9a9eadb4f9376c2d6ee7aedb187a9f44fccd7072bf31eac2"
+    },
+    "temp-backfill-buddy-migrate-receipt.json": {
+      "bytes": 302,
+      "sha256": "982311602a92757b97345000001dd217ca1d7e961de8aa2d896722777e566f4d"
+    }
+  },
+  "evidenceNotes": {
+    "browser-final-report.json": "Retained historical report only. Its requested 2x label did not observe actual 2x and cannot qualify Retina behavior.",
+    "browser-publish-report.json": "Retained failure after asserting observed scale. Requested 2x actually observed 1x with installed old driver."
+  },
+  "upstream": {
+    "framework": "0.75.320",
+    "stx": "0.2.711",
+    "craft": "0.0.341",
+    "pantry": "0.11.130",
+    "sourceHead": "7ee9e874090cdec0cef703ccb54f3787fefe73de",
+    "sourceCi": "https://github.com/stacksjs/stacks/actions/runs/40397993453",
+    "releaseCi": "https://github.com/stacksjs/stacks/actions/runs/40397993651",
+    "sourceCiAndReleaseGreen": true,
+    "installedFrameworkPackagesVerified": 81,
+    "adoption": "Normal buddy upgrade --version 0.75.320, Pantry install and frozen Bun install. Paired runtime versions and installed driver bytes verified.",
+    "issues": [
+      "https://github.com/stacksjs/stacks/issues/3019",
+      "https://github.com/stacksjs/stx/issues/2123",
+      "https://github.com/stacksjs/stacks/issues/3020"
+    ],
+    "sourceRepairs": [
+      "Native browser device scale was ignored in scenario commands.",
+      "STX event-list declarations and parent payload checking failed valid views.",
+      "Disabled-feature filtering orphaned temporary backfill cleanup, stopping real deployment."
+    ],
+    "blockedRelease": "0.75.319 was blocked from publication by failed deployment. 0.75.320 passed the complete source, deployment and publication gates."
+  },
+  "manualBrowser": {
+    "origin": "http://127.0.0.1:3462/",
+    "scene": "Original Amazons T1 tutorial",
+    "observed": "51 settlers, one original tower, source goods and graphics. Normal Save and Load restored the paused 0:15 checkpoint.",
+    "scope": "Actual browser UI on the installed framework. This is not an original Gold executable comparison.",
+    "screenshotSha256": "d27f94c37596517de2a262576a8ef22bc0d3f2ac968c2dcdda26b1b5bd927ed5",
+    "rasterPublication": "Private local evidence only."
+  }
+}

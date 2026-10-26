@@ -29,6 +29,6 @@
     "prepublishOnly": "bun run build"
   },
   "devDependencies": {
-    "stacks": "0.75.311"
+    "stacks": "0.75.320"
   }
 }
