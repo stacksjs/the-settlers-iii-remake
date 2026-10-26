@@ -57,7 +57,7 @@ function describe(id: string, profile = rules): string {
 
 const STATUS: Record<string, string> = {
   'leveling': 'Diggers are levelling the site', 'building': 'Builders are at work', 'suspended': 'Work paused', 'inputs': 'Waiting for supplies', 'output-full': 'Doorstep full',
-  'no-resources': 'Nothing left in the working area', 'no-space': 'No room to plant', 'exhausted': 'Deposit exhausted', 'food': 'Miners need food', 'carriers': 'Too few carriers to spare', 'settlers': 'No free settlers',
+  'no-resources': 'Nothing left in the working area', 'no-space': 'No room to plant', 'exhausted': 'Deposit exhausted', 'food': 'Miners need food', 'carriers': 'Too few carriers to spare', 'settlers': 'No free settlers', 'crew-limit': 'Construction crew limit reached', 'unreachable': 'No free worker can reach this workplace',
 }
 const article = (word: string): string => `${/^[aeiou]/.test(word) ? 'an' : 'a'} ${word}`
 export function status(phase: string, shortage: string | null, suspended: boolean, worker: boolean, needsWorker: boolean): string {

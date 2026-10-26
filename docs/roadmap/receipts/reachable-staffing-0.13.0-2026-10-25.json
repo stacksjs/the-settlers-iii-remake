@@ -1,0 +1,694 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T01:14:48.882000+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/206",
+  "status": "locally-qualified-browser-correction; exact pushed-main CI and original diagnostics required before closure",
+  "base": "cff0f52414d3783ad3fa24759c339c975aa1799f",
+  "owner": "stacksjs/the-settlers-iii-remake",
+  "problem": "On the original tutorial map, normal build orders repeatedly chose idle trained diggers outside the tower land. They could not follow the civilian route and blocked reachable carriers and real tools. Four sites stayed in leveling after 20,000 ordinary ticks; native browser input also retained the stall at 42:55.",
+  "correction": {
+    "rules": "roman-engineering@0.13.0",
+    "digest": "546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931",
+    "policy": "staffingRouting=reachable",
+    "behavior": [
+      "Prefer skilled workers whose ordinary route reaches the actual first work destination.",
+      "Otherwise select a carrier and real tool supply with valid routes for both legs, preserving caps and carrier reserve.",
+      "Keep unreachable workers, tools, goods and territory where they are. No relocation, grants or stock edits."
+    ],
+    "frozenPrevious": "roman-engineering@0.12.0",
+    "previousDigest": "d395f484d1d23bddf25979de1fde57f6850922916ab96775681b74d449ff0bc4",
+    "allOtherProfileValuesUnchanged": true
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/controller.ts",
+      "bytes": 48495,
+      "sha256": "8e63ae098c307dc2a118c3eb8aaaa181732ffbbe1f140a3ee945bcf2a0e67c62"
+    },
+    {
+      "path": "resources/game/engine/rules.ts",
+      "bytes": 51575,
+      "sha256": "9e26f34765f30424876fb34263700df416b6dcbcee4c8dbc83e679d6a3e029fb"
+    },
+    {
+      "path": "resources/game/engine/catalog.ts",
+      "bytes": 2008,
+      "sha256": "f7671ddeea4f4a40fc79aea3672b54623ec5e43b94ffd1c4d3144c4921e88359"
+    },
+    {
+      "path": "resources/game/engine/workforce.ts",
+      "bytes": 15852,
+      "sha256": "44561500b31e12f50903b28e0b0bc6b1a3c6fe67d879e1b57b4309fe8eeb7b63"
+    },
+    {
+      "path": "resources/game/engine/profiles/roman-engineering-0.12.0.json",
+      "bytes": 217327,
+      "sha256": "cc2aab19ce09b897963361a3456e6fb0883a6a4fc8b72336683ae9d1799207f4"
+    },
+    {
+      "path": "resources/game/engine/session.ts",
+      "bytes": 33400,
+      "sha256": "f29658189770b0e4510672ec0b68f8958bafbb21be97858e1818d402b40f4209"
+    },
+    {
+      "path": "resources/game/engine/ai.ts",
+      "bytes": 43236,
+      "sha256": "ec8f281e288c4f9459b7c9db65dfe9bc6c8b9f464e3d17f588d6094023ec2afb"
+    },
+    {
+      "path": "resources/game/engine/original.ts",
+      "bytes": 9135,
+      "sha256": "a0114c5fca643bf842d977f51e4c7e2b496bdab0ef5be855777b30bc6ea40a6b"
+    },
+    {
+      "path": "resources/views/index.stx",
+      "bytes": 46805,
+      "sha256": "786402ed06111f18642afee36f209093e85988d3434d874955d74bf93daa2103"
+    },
+    {
+      "path": "tests/unit/staffing-routing.test.ts",
+      "bytes": 6279,
+      "sha256": "cde77ad6055d31665deae82b899f0e3feaf68aad09816196b1bb35ccdc8f7a89"
+    },
+    {
+      "path": "tests/unit/engine-core.test.ts",
+      "bytes": 22818,
+      "sha256": "45f75a2b8ba587bc63b95bd76d3b892319b8f01a508f17b060524deaf73c26a5"
+    },
+    {
+      "path": "tests/fixtures/native-engine-probe.ts",
+      "bytes": 3337,
+      "sha256": "21b6f109bc0f1848cebc76f1d9bdeb6f54a0e6f43b85b5aed157bbde5a13dc45"
+    },
+    {
+      "path": "tests/fixtures/native-staffing-probe.ts",
+      "bytes": 1956,
+      "sha256": "9a08bb1faf36e285c687c13e4642fc0f83e33eaa736e45204bd889421e5528fa"
+    },
+    {
+      "path": "scripts/native-engine-check.ts",
+      "bytes": 6000,
+      "sha256": "e9902229dd058b67a66c656dda177a781da17da54711a4ca133a081e3b9dc499"
+    },
+    {
+      "path": "bun.lock",
+      "bytes": 64780,
+      "sha256": "0d06a28dde98657fb014f26ae9263a7d5da49a8cb9c5dd9311fbb228ebe4cb68"
+    },
+    {
+      "path": "pantry.lock",
+      "bytes": 4371,
+      "sha256": "2002ab498cd3a71ffa7be05e21c734657360b5130f7e96252979dcc6ab8e0e86"
+    }
+  ],
+  "checks": {
+    "unit": {
+      "pass": 336,
+      "fail": 0,
+      "assertions": 23256,
+      "files": 48,
+      "elapsedSeconds": 389.28,
+      "logSha256": "30a14b09e818b5781d0bd0abfcb5e04387e7fe952518129aa61841170ab0a1d8"
+    },
+    "types": {
+      "app": true,
+      "tools": true,
+      "STXExpressions": 258,
+      "logSha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 0,
+      "logSha256": "79e8b8c0b4baf55b3d615df9a692a1f66e33c831d36d4c4a289af049b23495ab"
+    },
+    "productionBuild": {
+      "passed": true,
+      "logSha256": "d739ee4ea88a1d31baf9f855fc5ddf6483fadcd909ef0a05348f3b5679779327"
+    },
+    "assets": "463f809b6c5e057b4833dd759ce03d92300344562b00b7b79e189a75f47d854c",
+    "roadmap": "30156dc3f33bc4dc8f9a5fbafaccd2af34baf86afc5cbbf081c725898bbec4af",
+    "fidelity": "0695af4f95efe2a074696321a4c3e97bc37412273d2182cf622df0e52ec08384",
+    "browser": {
+      "recordedAt": "2026-10-26T01:11:34.275015+00:00",
+      "totalSteps": 385,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "cafe9e391b15bb6f5a864c877215244be2def3bf32a1c9c3aba1b6b88e3add9c",
+          "noErrors": true,
+          "mediaReceiptSha256": "955dacbeb8f8826687649642c89d04438641649e96846989de1686374c78731a"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "a1976b15ccb9b41ad969994a3424ef7ab1a951420cc6f34d5fb75e750fc36131",
+          "noErrors": true,
+          "mediaReceiptSha256": "1175b258531b74f07ee9589395cf9f7a4c8a60b1125ccb8799c91f9df80b7f6f"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "b48ea391d6f9ca7263f0c5011d64fc04869da8a31e7ce897631e096a42690190",
+          "noErrors": true,
+          "mediaReceiptSha256": "11072b5118d3d8c5ace27b87350ab4830fad1f2603edb350ad41bc9f9e9be566"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "5fee72ff26a3d5e00c0471d9e94b3963f2143ac92fef4d89cc25e52950bcf182",
+          "noErrors": true,
+          "mediaReceiptSha256": "6a63c1a4f6e480cb7fd700b0456dcb6c7f652e1866c0589e19c6efe5869081e3"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "f7379d60660b77202ed5f6b7c880fc3a826f000f3a0c87f3bd7a394262e46311",
+          "noErrors": true,
+          "mediaReceiptSha256": "f724918071d4172cc9076154bca3029d96b365c4e359424225559d70e1de6b09"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "4b1a9a98d0ce1ff3a0d39f22fb3381118bdd841094355ed4f183b0db81bd9fc2",
+          "noErrors": true,
+          "mediaReceiptSha256": "68857f3c10bf399749de3574bb59b4018c1f2a1ee97e2533f48bf95c529706bc"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "df33a92410cedfb018296a03a8c09709d922887ebd0055abfb89e87ab861214f",
+          "noErrors": true,
+          "mediaReceiptSha256": "304fa8c9de5c78370f30500da586467684f941459f3e446a3bbb583720321b70"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "5519a28e0a8172fdafee90980e3832f79e628cd54414be9b3e9a26df5139e461",
+          "noErrors": true,
+          "mediaReceiptSha256": "995a7c8f643788c8a9f873066d935d398b2e80eb903b6f619c7917616a00e08b"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "e2ff48b58165a90d7e24dccb501ce3416f2c8a5e5f66b5a05c00a8a35d227c8c",
+          "noErrors": true,
+          "mediaReceiptSha256": "40b3f918e107d73502b17637998396985d26ad12dd62ac41cc2046c893856b13",
+          "elapsedMs": 617675.8172500001
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "efea4a165040f26691fc0581be57758f1230edae9cec0fed92e4624bc9765ea3",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  },
+  "regressions": {
+    "seam": "Public generated scenarios, session commands, player views, save/restore and replay. No direct world edits or mocked transport.",
+    "cases": [
+      "Unreachable idle builder allows reachable carriers to use real tools.",
+      "A farther reachable skilled worker is selected without taking another hammer or exceeding the crew cap.",
+      "Frozen 0.12 keeps the stalled behavior; current saves and replays match.",
+      "Unknown or unevidenced staffing policy is rejected.",
+      "Disconnected tool supply is skipped before assigning an equipment trip.",
+      "Disconnected carrier is skipped before assigning an equipment trip.",
+      "No reachable tool leaves tools unreserved, creates no builder and preserves accounting."
+    ],
+    "red": {
+      "pass": 0,
+      "fail": 2,
+      "assertions": 8,
+      "logSha256": "b7fdb555ed57b4e41c41a4340ca7bb32ad5064263d4183388d5aaa9992e9bbd7"
+    },
+    "finalFocused": {
+      "pass": 7,
+      "fail": 0,
+      "assertions": 46,
+      "logSha256": "af1026a1e7f092a509b1f8a3a2d95e763fccc459c2447ea257e6844ed6526e91"
+    },
+    "retainedIntermediateResults": [
+      "A two-worker site legitimately used one extra hammer; the skilled-only scenario now uses its actual existing two-builder cap.",
+      "The file named cap-fallback-red.log passed and did not prove a cap failure. No red claim is made for it.",
+      "An authored water ring initially intersected the storage footprint, so that invalid fixture was moved clear of it.",
+      "The first full unit run was stopped while that fixture was being corrected; final336 passed."
+    ]
+  },
+  "originalMapProbe": {
+    "legacy": {
+      "tick": 20000,
+      "checksum": "28042822",
+      "allFourSitesStillLeveling": true,
+      "audit": [],
+      "traceSha256": "5ce85fe9a384a6f36e66c2bfe1b8ba6c76262f628153d89492ff81976dba0dc1"
+    },
+    "current": {
+      "afterNormalStaffingControls": {
+        "phase": "after-normal-crew-controls",
+        "tick": 30000,
+        "checksum": "791b5263",
+        "audit": [],
+        "goods": {
+          "hammer": 10,
+          "shovel": 12,
+          "stone": 38,
+          "plank": 30,
+          "scythe": 2,
+          "axe": 3,
+          "fishingrod": 2,
+          "pickaxe": 1,
+          "saw": 1,
+          "meat": 10
+        },
+        "produced": {},
+        "buildings": [
+          {
+            "type": "small-tower",
+            "phase": "active",
+            "shortage": null
+          },
+          {
+            "type": "woodcutter",
+            "phase": "active",
+            "shortage": "no-resources"
+          },
+          {
+            "type": "stonecutter",
+            "phase": "active",
+            "shortage": "no-resources"
+          },
+          {
+            "type": "sawmill",
+            "phase": "active",
+            "shortage": "inputs"
+          },
+          {
+            "type": "forester",
+            "phase": "active",
+            "shortage": "no-space"
+          }
+        ],
+        "commands": [
+          {
+            "tick": 0,
+            "player": 1,
+            "seq": 0,
+            "type": "build",
+            "ok": true
+          },
+          {
+            "tick": 1,
+            "player": 1,
+            "seq": 1,
+            "type": "build",
+            "ok": true
+          },
+          {
+            "tick": 2,
+            "player": 1,
+            "seq": 2,
+            "type": "build",
+            "ok": true
+          },
+          {
+            "tick": 3,
+            "player": 1,
+            "seq": 3,
+            "type": "build",
+            "ok": true
+          },
+          {
+            "tick": 20000,
+            "player": 1,
+            "seq": 4,
+            "type": "settings",
+            "ok": true
+          }
+        ]
+      },
+      "traceSha256": "1a1fa552b4b62ed017d456a9b55940e1723c05f66d489c69b6c3fb3fa0372673"
+    },
+    "limits": "The probe completes construction after ordinary crew controls; its unexpanded working areas do not prove production. The separate native-input playthrough below demonstrates actual timber production. Original territory-byte semantics and tutorial objectives remain unverified; importer and terrain are unchanged."
+  },
+  "nativeBrowserInput": {
+    "controlsOnly": true,
+    "initial": "New original tutorial map under 0.13, four suggested ordinary keyboard build orders.",
+    "management": "After leveling, lower builders from 12 to 2 and diggers from 8 to 0, then send a pioneer to 181,188.",
+    "beforeReload": {
+      "time": "40:50",
+      "population": 51,
+      "buildings": 5,
+      "produced": {
+        "log": 22,
+        "plank": 8,
+        "stone": 0
+      },
+      "consumed": {
+        "log": 8,
+        "plank": 10,
+        "stone": 10
+      }
+    },
+    "afterColdReloadAndOrdinary1xContinuation": {
+      "time": "43:50",
+      "population": 51,
+      "produced": {
+        "log": 24,
+        "plank": 8,
+        "stone": 0
+      },
+      "stock": {
+        "log": 16,
+        "plank": 38,
+        "stone": 38,
+        "hammer": 10,
+        "shovel": 11
+      }
+    },
+    "rulesGuideAXSha256": "4a7910119c4cc7ae7df864a70ddd39530714a022d25b95070e459e698757c0b2",
+    "captures": [
+      {
+        "name": "native-stalled-012",
+        "jpegBytes": 82282,
+        "jpegSha256": "416bb317d10f287b4724e83fcf80381a72df6fce9e20588aa7fca5dc0a11048b",
+        "dimensions": [
+          1280,
+          720
+        ],
+        "AXSha256": "9295d8cdb3a38668cf29b651baa52e166affa3dcb1807399de0d8083d3973491",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "native-reachable-013",
+        "jpegBytes": 144531,
+        "jpegSha256": "930ed27eddca07529fb5b62d0c0143ba8a546300a68cf3b812db92a53766946b",
+        "dimensions": [
+          1280,
+          720
+        ],
+        "AXSha256": "1cdc0889c918d278ada05e6cc924a649ca3802fb864919514302dc767e55da45",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "native-production-013",
+        "jpegBytes": 145411,
+        "jpegSha256": "6e00f1d34da143044ed859dc0a90aced06fae8028c5008fa038c9d16ddae0428",
+        "dimensions": [
+          1280,
+          720
+        ],
+        "AXSha256": "f7a3e429d70d2f2def08ab164979923bb20b20d3dfb793373db4187abeff131f",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      {
+        "name": "native-restored-013",
+        "jpegBytes": 146291,
+        "jpegSha256": "fc2c9aeb666722c4f438b9bec6143d9f693fc1836f01af4df530509a2f748357",
+        "dimensions": [
+          1280,
+          720
+        ],
+        "AXSha256": "7d311ecd6a2d6e05ad6e460747759b3a1e0140f389c8ab6e8c2fec849fd8b702",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    ],
+    "limits": "No stone-production, full tutorial-script, player skirmish-victory or indefinite sustainability claim."
+  },
+  "headlessNative": {
+    "qualifiedExistingProbe": {
+      "schemaVersion": 1,
+      "craftVersion": "craft version 0.0.341\nBuilt with Zig 0.18.0-dev.146+35accc06e\nPlatform: macOS",
+      "executableSha256": "105bd07fd98775a2b3716360c22842b25cf253f740a9542c7af39b72283c3f45",
+      "fixtureSha256": "21b6f109bc0f1848cebc76f1d9bdeb6f54a0e6f43b85b5aed157bbde5a13dc45",
+      "bundledEngineSha256": "a3b140cfd1f287c71dd39af243b4aec04e3360d9ae3bd54d2d92883f64bdc964",
+      "bunVersion": "1.4.4",
+      "result": {
+        "tick": 5,
+        "checksum": "c331a944",
+        "restoredChecksum": "c331a944",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "c331a944"
+        },
+        "crewRecovery": {
+          "tick": 5,
+          "checksum": "3f7112a3",
+          "restoredChecksum": "3f7112a3",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "3f7112a3"
+          },
+          "builderCount": 2,
+          "diggerCount": 2,
+          "hammers": 6,
+          "shovels": 4,
+          "createdUnchanged": true
+        },
+        "pileOwnership": {
+          "tick": 5,
+          "checksum": "1b4ce693",
+          "restoredChecksum": "1b4ce693",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "1b4ce693"
+          },
+          "ownHammers": 1,
+          "foreignHammers": 3
+        }
+      },
+      "nativeExitCode": 0,
+      "matchedBunReference": true,
+      "webViewUsed": false,
+      "browser": {
+        "result": {
+          "tick": 5,
+          "checksum": "c331a944",
+          "restoredChecksum": "c331a944",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "c331a944"
+          },
+          "crewRecovery": {
+            "tick": 5,
+            "checksum": "3f7112a3",
+            "restoredChecksum": "3f7112a3",
+            "replay": {
+              "ok": true,
+              "ticks": 5,
+              "checksum": "3f7112a3"
+            },
+            "builderCount": 2,
+            "diggerCount": 2,
+            "hammers": 6,
+            "shovels": 4,
+            "createdUnchanged": true
+          },
+          "pileOwnership": {
+            "tick": 5,
+            "checksum": "1b4ce693",
+            "restoredChecksum": "1b4ce693",
+            "replay": {
+              "ok": true,
+              "ticks": 5,
+              "checksum": "1b4ce693"
+            },
+            "ownHammers": 1,
+            "foreignHammers": 3
+          }
+        },
+        "consoleErrors": [],
+        "failedRequests": [],
+        "driverSha256": "cd0c6f71e165595ac82088a8fde7cb2aa0a7afab6abf4265f3a5c322ef422bd8"
+      },
+      "scope": "Headless baseline, construction-tool recovery and ground-pile ownership scenarios with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified."
+    },
+    "largerStaffingProbe": {
+      "command": "CRAFT_BIN=<original qualified Craft 341> bun scripts/native-engine-check.ts --staffing",
+      "fixture": "tests/fixtures/native-staffing-probe.ts",
+      "tickWindow": 5000,
+      "nativeExit": 1,
+      "nativeDiagnostic": "uncaught error",
+      "logSha256": "825e83998f1f247226ebd1f1e81467f36f27e6de9a6b9977e78d3e45cb6b39e1",
+      "independentLongScenarioAlsoFailed": true,
+      "independentInitialCreationSucceeded": "7d7c1694",
+      "cause": "unestablished",
+      "claim": "Unqualified; retained for native settlement issue 26. Tick window and original 30-second CLI bound unchanged. No budget increase, runtime patch or native success claim."
+    },
+    "retainedContentionFailure": {
+      "nativeExit": 143,
+      "sequentialUnchangedRetry": "passed within the original bound",
+      "logSha256": "c049f8feed251a711169cce2f6058e12ec063f78ff48e90d1ab7f2e8a66ac53f"
+    }
+  },
+  "sampledSameRulesAI": {
+    "scope": "Four sampled normal matches, full executed refusal traces, ordinary continuation for unfinished 100k matches. Not all-seed or player-victory proof.",
+    "results": [
+      {
+        "seed": 1,
+        "tick": 31801,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "75b06dc7",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "8f55166e5acfb5927ae70464c71c653d629dd3d064ff7dc7e639259bcef3e336"
+      },
+      {
+        "seed": 2,
+        "tick": 185721,
+        "outcome": {
+          "1": "won",
+          "2": "lost"
+        },
+        "checksum": "653847bb",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "e4bef50bcbcff78d858bffd194db42a4b85fd200cb3b855ceb7741e2dacac593"
+      },
+      {
+        "seed": 3,
+        "tick": 139741,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "739fbb2b",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "f6fcaaddcae499487b76f3d5e1bf536f2b00730be576e58a620a2e75116598ab"
+      },
+      {
+        "seed": 5,
+        "tick": 73581,
+        "outcome": {
+          "1": "lost",
+          "2": "won"
+        },
+        "checksum": "321a9ecf",
+        "audit": [],
+        "allExecutedRefusals": [],
+        "rejectedEnqueues": [
+          [],
+          []
+        ],
+        "checkpointSha256": "49ec27e07eeb3eb41fcedb0a01f58c635f3dcee2385d6e4b7e554036aabeb6ba"
+      }
+    ],
+    "initialTraceSha256": "8bcdbf57d3533c710e4517790ee7e623b68e5bcd7d4ba3bc6dc6fd5c20f814ca",
+    "continuationTraceSha256": "e9c4166ae6af564e7bdf88066ba81404ecbcc51e02d20797d0671f1fc4e80591"
+  },
+  "frameworkCohort": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4",
+    "locksChanged": false,
+    "release": "No framework defect is established by this game staffing correction. The larger native failure remains unqualified and under investigation; no empty package release or installed-runtime edit was made."
+  },
+  "previousMainQualification": {
+    "recordedAt": "2026-10-26T00:57:50.656737+00:00",
+    "commit": "cff0f52414d3783ad3fa24759c339c975aa1799f",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40250357921",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12620477909,
+      "bytes": 19656,
+      "sha256": "2008147d00a0cb02cbe7ced65bab5938bd9f33582abd3a2b7f92b2ec9945fbf3",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "c7014f57240f10874f16a524bde50080ca867b67eb55fc7e7324834b4bc22215",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "f1d38a7188140459b5c6dd526c0652153a3b425dfb2958479f267419a90f9e67",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "77d319fc2fe851f88648ad04ae19d8f830fb76f00ddfbe0edf29516d34e1f775",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "59e4389245fb8219cdfea855c5fa07c3fe2e7ca51510121704288ed8f43dc606",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "389dcf55f71a61a02f29fceaf2a108ef8cfeb6f4783790c176f0768ffcacb9a2",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "8ded448ec9ddf9519edc3a02c31b0279e8679d51b1cfae25b7f7f1e9a5b0eea0",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "6d4a92591b06e9eabb7af8aafa229e03b7add30de6cedcdad693130539e4cb18",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "2604272b8abca6fdf85c1a37e4cc74dc4df9946aefd2356662450a433b128a06",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "4869f33a1fec342a8e0aa1d7fd94c37f6ad1546048c57e543a1a42b8d11e7271",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "c3092638f70d4cd80e4d99f4f108fb1838033d1869ede37fefc5396a7128b5f8",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 385,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "constraints": [
+    "Engineering evidence, not observed original Gold rules or timing.",
+    "No change to original stocks, recipes, clocks, AI policy, original importer or battle budgets.",
+    "No original raster/audio is committed or uploaded.",
+    "Exact candidate main CI and its original artifact must pass before closing 206.",
+    "Full browser game, Gold parity and native presentation remain unfinished."
+  ]
+}

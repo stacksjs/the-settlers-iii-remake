@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { resolveCraftBinary } from 'craft-native'
 
-if (process.argv.slice(2).some(arg => arg !== '--browser')) throw new Error('Usage: bun scripts/native-engine-check.ts [--browser]')
+if (process.argv.slice(2).some(arg => arg !== '--browser' && arg !== '--staffing')) throw new Error('Usage: bun scripts/native-engine-check.ts [--browser] [--staffing]')
 
 // Consume the maintained SDK resolver and public native CLI. No WebView or
 // substitute runtime is involved; binary publication provenance is separate.
@@ -10,11 +10,13 @@ const requested = resolveCraftBinary()
 const binary = Bun.which(requested)
 if (!binary) throw new Error(`Craft native CLI is unavailable: ${requested}`)
 const root = resolve(import.meta.dir, '..')
+const staffing = process.argv.includes('--staffing')
+const fixture = staffing ? 'native-staffing-probe.ts' : 'native-engine-probe.ts'
 const runtime = join(root, 'storage/framework/runtime')
 await mkdir(runtime, { recursive: true })
 const work = await mkdtemp(join(runtime, 'native-engine-'))
 try {
-  const build = await Bun.build({ entrypoints: [join(root, 'tests/fixtures/native-engine-probe.ts')], outdir: work, target: 'browser', format: 'esm', minify: false })
+  const build = await Bun.build({ entrypoints: [join(root, 'tests/fixtures', fixture)], outdir: work, target: 'browser', format: 'esm', minify: false })
   if (!build.success) throw new AggregateError(build.logs, 'Cannot bundle the shared engine fixture')
   if (build.outputs.length !== 1) throw new Error('The shared engine fixture must produce one self-contained script')
   const artifact = build.outputs[0]!, source = await artifact.text()
@@ -60,7 +62,7 @@ try {
     schemaVersion: 1,
     craftVersion: `${version.stdout.toString()}${version.stderr.toString()}`.trim(),
     executableSha256: Bun.SHA256.hash(await Bun.file(binary).arrayBuffer(), 'hex'),
-    fixtureSha256: Bun.SHA256.hash(await Bun.file(join(root, 'tests/fixtures/native-engine-probe.ts')).arrayBuffer(), 'hex'),
+    fixtureSha256: Bun.SHA256.hash(await Bun.file(join(root, 'tests/fixtures', fixture)).arrayBuffer(), 'hex'),
     bundledEngineSha256: Bun.SHA256.hash(source, 'hex'),
     bunVersion: Bun.version,
     result: JSON.parse(expected) as unknown,
@@ -68,9 +70,11 @@ try {
     matchedBunReference: true,
     webViewUsed: false,
     browser,
-    scope: 'Headless baseline, construction-tool recovery and ground-pile ownership scenarios with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.',
+    scope: staffing
+      ? 'Headless 5000-tick reachable staffing scenario with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.'
+      : 'Headless baseline, construction-tool recovery and ground-pile ownership scenarios with save/restore and replay. Native presentation, persistent frame callbacks and Gold Edition fidelity remain unverified.',
   }
-  await Bun.write(join(runtime, 'native-engine-receipt.json'), `${JSON.stringify(receipt, null, 2)}\n`)
+  await Bun.write(join(runtime, staffing ? 'native-staffing-receipt.json' : 'native-engine-receipt.json'), `${JSON.stringify(receipt, null, 2)}\n`)
   console.log(JSON.stringify(receipt))
 }
 finally { await rm(work, { recursive: true, force: true }) }

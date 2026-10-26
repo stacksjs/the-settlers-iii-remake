@@ -4,6 +4,7 @@ import { available, changed, doorOf, emit, footprint, nextId, occupy, offsetTile
 import { distance, neighbours } from './geometry'
 import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, halt, spawn, start } from './settlers'
+import { route } from './routing'
 
 const SITE_CREW = { digger: 2, builder: 2 }
 
@@ -67,24 +68,39 @@ export function carriersToSpare(ctx: Context, owner: number): number {
 export function recruit(ctx: Context, b: Building, profession: string, steps: (s: Settler) => Op[], kind: string): string | null {
   const owner = b.owner, at = pointAt(ctx, doorOf(ctx, b))
   const byDistance = (a: Settler, c: Settler): number => distance(a, at) - distance(c, at) || a.id - c.id
-  const skilled = population(ctx, owner).filter(s => s.profession === profession && free(s)).sort(byDistance)[0]
+  const routing = ctx.rules.staffingRouting === 'reachable'
+  const reaches = (from: number, to: number, adjacent = false): boolean => route(ctx, from, to, { territory: owner, adjacent }).ok
+  // Commutes and site work both begin with the ordinary go operation. Inspect
+  // its actual destination rather than assuming every building uses its door.
+  const reachesWork = (s: Settler, from = tileOf(ctx, s)): boolean => {
+    const first = steps(s)[0]
+    return first?.op !== 'go' || reaches(from, first.tile, first.adjacent)
+  }
+  const skilled = population(ctx, owner).filter(s => s.profession === profession && free(s)).sort(byDistance).find(s => !routing || reachesWork(s))
   if (skilled) { assign(b, skilled, profession); start(ctx, skilled, kind, b.id, steps(skilled)); return null }
+  if (routing && (profession === 'builder' || profession === 'digger')) {
+    const player = ctx.state.players.find(p => p.id === owner)!
+    const limit = profession === 'builder' ? player.settings.builderLimit : player.settings.diggerLimit
+    if (population(ctx, owner).filter(s => assignedProfession(ctx, s) === profession).length >= limit) return 'crew-limit'
+  }
   if (carriersToSpare(ctx, owner) < 1) return 'carriers'
   const tool = ctx.profession.get(profession)!.tool
   const carriers = population(ctx, owner).filter(s => s.profession === 'carrier' && free(s))
   if (!carriers.length) return 'settlers'
   if (tool === null) {
-    const carrier = carriers.sort(byDistance)[0]!
+    const carrier = carriers.sort(byDistance).find(s => !routing || reachesWork(s))
+    if (!carrier) return 'unreachable'
     changeProfession(ctx, carrier, profession)
     assign(b, carrier, profession)
     start(ctx, carrier, kind, b.id, steps(carrier))
     return null
   }
   const offers = toolOffers(ctx, owner, tool).sort((a, c) => distance(pointAt(ctx, a.tile), at) - distance(pointAt(ctx, c.tile), at) || a.id - c.id)
-  const source = offers.find(o => !ctx.state.cooldowns.has(`equip:${o.id}:${b.id}`))
+  const canEquip = (s: Settler, source: Stack): boolean => !routing || (reaches(tileOf(ctx, s), source.tile) && reachesWork(s, source.tile))
+  const source = offers.find(o => !ctx.state.cooldowns.has(`equip:${o.id}:${b.id}`) && carriers.some(s => canEquip(s, o)))
   if (!source) return `tool:${tool}`
   const from = pointAt(ctx, source.tile)
-  const carrier = carriers.sort((a, c) => distance(a, from) - distance(c, from) || a.id - c.id)[0]!
+  const carrier = carriers.sort((a, c) => distance(a, from) - distance(c, from) || a.id - c.id).find(s => canEquip(s, source))!
   const job: Job = { id: nextId(ctx), kind: 'equip', owner, tool, source: source.id, settler: carrier.id, profession, building: b.id, picked: false }
   ctx.state.jobs.set(job.id, job)
   source.reservedOut++
