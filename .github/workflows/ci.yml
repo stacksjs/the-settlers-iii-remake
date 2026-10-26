@@ -47,6 +47,7 @@ jobs:
           bun tests/browser/selection.ts http://127.0.0.1:3450/
           bun tests/browser/recruitment.ts http://127.0.0.1:3450/
           bun tests/browser/working-area.ts http://127.0.0.1:3450/
+          bun tests/browser/storage-inspection.ts http://127.0.0.1:3450/
           bun tests/browser/skirmish.ts http://127.0.0.1:3450/
           bun tests/browser/rival-battle.ts http://127.0.0.1:3450/
           bun tests/browser/checkpoints.ts
@@ -72,6 +73,8 @@ jobs:
             storage/framework/runtime/shots/recruitment-media.json
             storage/framework/runtime/shots/working-area.json
             storage/framework/runtime/shots/working-area-media.json
+            storage/framework/runtime/shots/storage-inspection.json
+            storage/framework/runtime/shots/storage-inspection-media.json
             storage/framework/runtime/shots/skirmish.json
             storage/framework/runtime/shots/skirmish-media.json
             storage/framework/runtime/shots/rival-battle.json

@@ -147,6 +147,21 @@ function economy(session: Session): { carried: number, needs: string[], producti
   }
 }
 
+/**
+ * The reference indexes the whole protected building area for selection,
+ * separately from blocked movement tiles. Storage centers remain passable.
+ */
+export function inspectBuildingAt(session: Session, player: number, point: Point): number | null {
+  const { width, height } = session.state.map
+  if (!Number.isInteger(point.x) || !Number.isInteger(point.y) || point.x < 0 || point.y < 0 || point.x >= width || point.y >= height) return null
+  for (const b of session.state.buildings.values()) {
+    if (b.owner !== player) continue
+    const rule = session.rules.buildings.find(r => r.id === b.type)!
+    if ([...rule.footprint, ...rule.protected, rule.door].some(([x, y]) => b.x + x === point.x && b.y + y === point.y)) return b.id
+  }
+  return null
+}
+
 function inspect(session: Session, id: number) {
   const b = session.state.buildings.get(id)
   if (!b || b.owner !== PLAYER) return null
@@ -399,9 +414,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!error) { play('build'); selected = Math.max(...[...session.state.buildings.values()].filter(b => b.owner === PLAYER).map(b => b.id)) }
       return
     }
-    const map = session.state.map, t = cursor.y * map.width + cursor.x
-    const id = session.context.index.buildingAt[t] || [...session.state.buildings.values()].find(b => b.owner === PLAYER && b.x + (rules.buildings.find(r => r.id === b.type)!.door[0]) === cursor!.x && b.y + (rules.buildings.find(r => r.id === b.type)!.door[1]) === cursor!.y)?.id || 0
-    selected = id && session.state.buildings.get(id)?.owner === PLAYER ? id : null
+    selected = inspectBuildingAt(session, PLAYER, cursor)
     emit()
   }
 

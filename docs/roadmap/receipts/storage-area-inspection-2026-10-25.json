@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T03:23:48.642468+00:00",
+  "issue": 208,
+  "baseline": "a61986bbed9a60e45f4863b7857d806e8d4f43b5",
+  "problem": "Storage centers are protected but passable. Inspection used the movement-blocking index and could not select those centers. A blocked edge tile selected the same actual building.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/objects/ObjectsGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/objects/ObjectsGrid.java",
+        "gitBlob": "7afd22e8899407a41b77b47eba8f23d415598334",
+        "sha256": "391a3b228c67c24a48bb41c719efef43497183486e23bce30890b89683554956",
+        "bytes": 8625
+      },
+      {
+        "path": "jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stock.xml",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/stock.xml",
+        "gitBlob": "0abfeecee27af1521cee8535141b057a0847ab5e",
+        "sha256": "d3fd5cee0fa898fb4540307cc310544c481545df5a20b10d852612d4c7d80d12",
+        "bytes": 4964
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "gitBlob": "e8a6b185a385c59eb073debbe8023f674fc31aaf",
+        "bytes": 80613,
+        "sha256": "a272fd68af10f699c8398a1a64180f46f68f9711856292af048e9a1437f81d03"
+      }
+    ],
+    "finding": "MainGrid passes the complete protected area to ObjectsGrid.setBuildingArea. Its separate building grid handles selection. stock.xml includes the center as protected with block=false.",
+    "evidenceClass": "reference-remake-source, not original Gold runtime observation"
+  },
+  "correction": {
+    "interface": "inspectBuildingAt(session, player, point) in resources/game/controller.ts",
+    "behavior": "Select an own building across its saved profile footprint, protected tiles and door. Reject non-tile/out-of-bounds input and foreign buildings. Both keyboard Enter and pointer clicks use the same controller path.",
+    "simulation": "No movement index, geometry, territory, accounting, profile, AI, clock, saves or dependency locks changed. Engineering profile stays 0.13.0, digest 546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931."
+  },
+  "checks": {
+    "initialRed": {
+      "result": "0 pass, 1 fail, 3 assertions; expected storage59, got null at the passable center",
+      "logSha256": "d80e92dc38355fb4f741f3b179ac3b2648eac6432dcae37ecfd124a70b5fe2f8"
+    },
+    "focused": {
+      "result": "5 pass, 0 fail, 52 assertions",
+      "logSha256": "fabd66d4f633b5df5420a844819e0b5ab5087d9ee23291b991444cef6cbbfec2",
+      "scope": "Actual construction and completed storage sessions, independent XML tile literals, castle and empty ground, bounds, visible/concealed foreign buildings, save/restore, checksum preservation and physical soldier movement through the storage center."
+    },
+    "retainedIntermediateFailures": [
+      "The first fixed run selected the correct site but a test incorrectly assumed leveling on flat ground; the actual site was already in building phase. The assertion now names that actual phase.",
+      "The movement check initially expected a walk on the command tick. It now waits through ordinary ticks for the actual first walking action before verifying the center crossing. No engine cadence changed.",
+      "The first browser invocation used an unsupported 60000ms assertion parameter. Corrected to the driver 30000ms maximum; no browser report was produced for that invocation. The corrected candidate run passed 87 steps. It is not a pre-fix browser red claim."
+    ],
+    "unit": {
+      "result": "354 pass, 0 fail, 23436 assertions, 51 files,218.27 seconds",
+      "logSha256": "ec8e7a3d01f067149e55b394132be1ae9f0205429da3d5a181046d8e5bd8365a"
+    },
+    "types": "App, tools and 258 STX expressions pass",
+    "lint": "0 errors,0 warnings",
+    "build": "Production views passed 18.40 seconds",
+    "assets": "3848 original frames, 52 interface images, 6 PCM WAV clips, 95 files pass; imported media unchanged",
+    "content": "25 categories, 95 verified files",
+    "fidelity": "4 edition profiles, 107 required systems, 6 targets valid",
+    "roadmap": "107 implementation issues, 12 epics, one master valid",
+    "focusedBrowser": {
+      "steps": 87,
+      "allPassed": true,
+      "errors": [],
+      "reportSha256": "f34be70b5d69d986c493f1ac0557a02b0b81947a6ee76ab1a4a68520e32c6155",
+      "mediaReceiptSha256": "4db5c5bd3e89941d55d5d815e5e0dc84093e185971e248040bd6458548c0b4d2",
+      "scope": "Normal seed5 controls, under-construction and completed storage, native Enter and pointer at the chronicle-centered canvas, castle inspection, empty-ground clearing, actual cold reload and save/load. No session, save or clock injection."
+    },
+    "fullBrowser": {
+      "recordedAt": "2026-10-26T03:30:35.268992+00:00",
+      "totalSteps": 472,
+      "suites": [
+        {
+          "suite": "campaign",
+          "steps": 58,
+          "reportSha256": "99929317d94fcc3e701ca4356360863531e2ca26e3687bb85597d998a49fa361",
+          "noErrors": true,
+          "mediaReceiptSha256": "8ee2667ab0242b3dc53d61b128a1742d0224ac751484724115c9ebd40be96f27"
+        },
+        {
+          "suite": "control-frame",
+          "steps": 72,
+          "reportSha256": "d13f297e402f05c19ec2b549001f36caa0c92fc4dc2194f9d7a4db2d574fb251",
+          "noErrors": true,
+          "mediaReceiptSha256": "f1625c50409e4d6db6e22244998422595c799dd0663ee62080f83e12c8946629"
+        },
+        {
+          "suite": "resize",
+          "steps": 5,
+          "reportSha256": "25aa60dbb5f443303941b971f1f6b4457e4939e8d705fd93ebefb7f98605af99",
+          "noErrors": true,
+          "mediaReceiptSha256": "dfab6b157b7a93437f8fac153dd0ac2d7ff5f6f1fa4ba05dc21798746d89bfc0"
+        },
+        {
+          "suite": "production",
+          "steps": 19,
+          "reportSha256": "9d975b6ed8274ccec1fc105c82530ce7f624c2e545da10b6f718ba5a7a713a14",
+          "noErrors": true,
+          "mediaReceiptSha256": "8efd4c0d0f4e6090fd536d9aa0b7c10c986c9753f24695746c66897160ccc697"
+        },
+        {
+          "suite": "selection",
+          "steps": 33,
+          "reportSha256": "31115370c6cd6e168f78222c5fe59f8ce673a3507f45a6c85d08d7cb816cfc47",
+          "noErrors": true,
+          "mediaReceiptSha256": "37961c4049ee59db8af853be830203ad39cb7e7776d97b59950e73a5f590d36d"
+        },
+        {
+          "suite": "recruitment",
+          "steps": 68,
+          "reportSha256": "50ade3abc5c024f828706f1394ca0f52e087a22c0c172162e2552ceac1effa4e",
+          "noErrors": true,
+          "mediaReceiptSha256": "0cbfc426e506f332d82025e9ae6cdbbee202f6f028c01fef45724afbadacbaa1"
+        },
+        {
+          "suite": "working-area",
+          "steps": 57,
+          "reportSha256": "8afeb605b46fb8c91aa3aae5e2961b3910d3fe38bbe2de6d0ac394aba74209bc",
+          "noErrors": true,
+          "mediaReceiptSha256": "180cbeefbf12030cbf5039688167aad0d625f24c06192934d61515d4b4afad4f"
+        },
+        {
+          "suite": "storage-inspection",
+          "steps": 87,
+          "reportSha256": "c065fb709eb41052d0896956eafbdb251aea301d9978bcef52c5fba9a20bc776",
+          "noErrors": true,
+          "mediaReceiptSha256": "85da82a3b96e2e7083e0233441a54da1d22f668ab43781f35766c79312dece7e"
+        },
+        {
+          "suite": "skirmish",
+          "steps": 26,
+          "reportSha256": "8d35c611bfd9ba0bdd48e467d853e4d89fc3164fdc966aa76322870c43200915",
+          "noErrors": true,
+          "mediaReceiptSha256": "3db29eecb2c95e46050f49b5f6b2402d99dd5f4b582cf49de49af4ba2cadf628"
+        },
+        {
+          "suite": "rival-battle",
+          "steps": 46,
+          "reportSha256": "254e8b798b38724be03112ccb033156fcca1290b53af5e1bbd82d6c7f1bcddcb",
+          "noErrors": true,
+          "mediaReceiptSha256": "b42258ec6eb4913f435443f5e51d6835636c962f6c275ae7284395563286c7f3",
+          "elapsedMs": 614756.752833
+        },
+        {
+          "suite": "checkpoints",
+          "steps": 1,
+          "reportSha256": "287f3afa535d4887fa82e886aa8854d41ec2acf9643d100b0049188e3b9b6587",
+          "noErrors": true
+        }
+      ],
+      "scope": "Current candidate production browser scenarios, real inputs, ten real minutes at ordinary 4x, actual save/reload. No Gold parity or native presentation claim.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    "reviewSha256": "fc2e39a391e5a8323d0d29e87190756627a9e17cdd48c6dba3751b3e17a5d3b6"
+  },
+  "nativeBrowserInput": {
+    "before": {
+      "pausedAt": "172:23",
+      "storageCenter": [
+        192,
+        208
+      ],
+      "result": "Enter does not open a panel; a blocked edge does.",
+      "centerCaptureSha256": "eb87e9c896699bf2616f1970174c9369a2b9d0946b0cbbc3d401318dca432ca9",
+      "edgeCaptureSha256": "8bce8ff5c659b365a64d24ca788b409dc1e9d7cb33b886791acd23a27482703f"
+    },
+    "after": {
+      "pausedAt": "172:30",
+      "storageCenter": [
+        192,
+        208
+      ],
+      "result": "Native Enter and a native pointer click both open the storage panel at its center. Stock and construction progress remain as displayed before selection.",
+      "progress": 0.5,
+      "population": 51,
+      "buildings": 6,
+      "stock": {
+        "log": 16,
+        "plank": 38,
+        "stone": 38,
+        "hammer": 9,
+        "shovel": 10
+      },
+      "captures": [
+        {
+          "name": "native-fixed-center-keyboard",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "jpegSha256": "b8cf2f430d421d072a25302ccf1a6bb8d1302797f7f31e8a334e8845652c2f3c",
+          "AXSha256": "d51e7dbe0befc269ec80989ed5269b488f050d331d093880f8e2c94c99d0ebb8"
+        },
+        {
+          "name": "native-fixed-center-pointer",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "jpegSha256": "711635c3b7dbffd0dc4179ef004c3102c9582b665b67490e1843e8d06fa3b8e7",
+          "AXSha256": "bb90cd16b8d79975b3bc8454b33045dd9035a16620a4e8c036b40d80512018d5"
+        },
+        {
+          "name": "native-fixed-center-panel-heading",
+          "format": "JPEG",
+          "dimensions": [
+            1280,
+            720
+          ],
+          "jpegSha256": "b4bfffac6d0ed37e9639f0dc7c2a9536c03f43c4ff4b58c314ca26c4dda4c932",
+          "AXSha256": "c6a40f1ca7ddfba7138927dc8123db4483968d98fb1c4e8d313b55d72d32cefc"
+        }
+      ]
+    },
+    "scope": "Actual original T1 save, ordinary reload and native controls, no world/save/clock injection. The live site remains under construction. Original-map construction completion is not established by this selection test.",
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "constructionInvestigation": {
+    "scope": "Separate ordinary-command reproduction, not the exact native saved state.",
+    "result": "A storage at a different legal suggested site (172,197) completes with 2 planks and 2 stone consumed and clean accounting. The native site (192,208) is obstructed by vegetation under this different timing. This does not reproduce or explain the native construction delay. No extra construction correction is claimed.",
+    "logSha256": "4c5c6a5719c8081d392a24f1afe85168f54e88b1198ba141bcd7abc4cb52bf9c"
+  },
+  "deliveryVerification": [
+    {
+      "url": "http://127.0.0.1:3450",
+      "modules": [
+        {
+          "path": "/_stx/runtime.9f638c585ebef006.js",
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9",
+          "bytes": 237781
+        },
+        {
+          "path": "/_stx/modules.84a05f23f2bcec19.js",
+          "sha256": "8a8918f6f9b1b3452964af3c756cfcbc52780b84e668bbd83e304e5471a4f6ea",
+          "bytes": 1931710
+        },
+        {
+          "path": "/_stx/router.0ab03ca144393a09.js",
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f",
+          "bytes": 72580
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:3457",
+      "modules": [
+        {
+          "path": "/_stx/runtime.9f638c585ebef006.js",
+          "sha256": "4549eb1ef194100bc8b6470c3b9bfa8445bbdb6d0d429be52e46a2205ce039b9",
+          "bytes": 237781
+        },
+        {
+          "path": "/_stx/modules.84a05f23f2bcec19.js",
+          "sha256": "8a8918f6f9b1b3452964af3c756cfcbc52780b84e668bbd83e304e5471a4f6ea",
+          "bytes": 1931710
+        },
+        {
+          "path": "/_stx/router.0ab03ca144393a09.js",
+          "sha256": "a21fa30bc66c7dc72e7dab48444e2e0a87c9cc85750876021f0261780d9cd38f",
+          "bytes": 72580
+        }
+      ]
+    }
+  ],
+  "previousMainQualification": {
+    "recordedAt": "2026-10-26T02:44:32.705855+00:00",
+    "commit": "a61986bbed9a60e45f4863b7857d806e8d4f43b5",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40258910379",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12623722699,
+      "bytes": 19652,
+      "sha256": "aec706c4c3080851dfa616d6314ed4d1fdddb5fc050008ca88957c53cff31206",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "73081f20cde2b8e3ac9b5d9adf16d33dc43b39b519206200d36cf32b47da5789",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "0855bb1ca23b7b7d6d4f6b88f846747fbac7be3c9f04eb3d432294c756d8f078",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "6260a4e682c277077fa3f9d494afddc20ac0b45b600f6ec346eba07847bfd365",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "fe871ec09865b7c7e7c21872a4b93fbab0a3a9beb521bb1424a599d414ba3ac1",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "dd8f5375e034e044d9e4b7d0e3f835fc7f2057526e17376525402292479771fe",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "2cd760beca44761a1e9950641dab3768678c027daf34898b275153a258b3dfa8",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "b4ba3bbcea88fdc882f17143a91296ece4271ea3453932d2d647069e63f303ed",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "6fbdcfd0af849be8c54f7fe156474ac28caf8e72cac438cc261ed5805221a8af",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "aa7c40890e8543c0c8ec35446b89744002c260ca54a78ad1507f576310cc2dcb",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "62dadf25d9b4bdc1c00c4ac7048bc32bfd80df70cd5e3c1b0024df3b5d354dac",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 385,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  },
+  "frameworkCohort": {
+    "stacks": "0.75.311",
+    "stx": "0.2.691",
+    "craft": "0.0.341",
+    "pantry": "0.11.127",
+    "bun": "1.4.4",
+    "sourceChanges": "Application controller and regression coverage only. No framework defect is established by this selection correction."
+  },
+  "remaining": [
+    "Committed CI and its original diagnostic artifact are pending for this slice.",
+    "Original Gold selection behavior, full inspection controls, full web fidelity and native game presentation remain unqualified.",
+    "The separate native 5,000-tick staffing probe remains unqualified with an unexplained uncaught error."
+  ]
+}
