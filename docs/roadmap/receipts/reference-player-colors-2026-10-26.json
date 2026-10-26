@@ -143,6 +143,18 @@
     "control-frame-final.log": {
       "bytes": 126,
       "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    },
+    "ci-first-failure.log": {
+      "bytes": 86542,
+      "sha256": "0499f3418e82bdecdfec0e5a4d7634bb61d296e20422cade072086d90e7744fd"
+    },
+    "all-layers-case-green.log": {
+      "bytes": 437,
+      "sha256": "0e511c078e3dfdcb10c7c8b2846e8e2a39787652621c87ee0b99f738834e1c8f"
+    },
+    "types-case-green.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
     }
   },
   "nativeInputPreview": {
@@ -189,5 +201,13 @@
       "independentSourcePixels": 2664,
       "errors": []
     }
+  },
+  "ciFirstAttempt": {
+    "url": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40343193555",
+    "commit": "6f42192314cbaa2047d93115dbe29bc27ddb9101",
+    "result": "376 pass, one new exhaustive source-layer test failed on Linux.",
+    "cause": "The archive contains lowercase siedler3_10.f8007e01f.dat; the new test guessed an uppercase prefix accepted by the local filesystem.",
+    "fix": "Resolve the actual source-directory entry before opening the DAT file. All 7294 independent layer comparisons remain required. No production or framework changes.",
+    "focused": "1 pass, 0 fail, 14589 assertions. App/tools/STX types pass."
   }
 }
