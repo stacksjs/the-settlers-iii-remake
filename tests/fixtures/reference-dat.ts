@@ -12,12 +12,31 @@ export function referenceFrames(bytes: Buffer, section: number, sequence: number
   for (let i = 0; i < 6; i++) { const at = bytes.readUInt32LE(56 + i * 4); sections.set(bytes.readUInt32LE(at), { at, count: bytes.readUInt16LE(at + 6) }) }
   const table = sections.get(section)!
   const shift = section === 0x3112 ? Math.max(0, sections.get(0x106)!.count - table.count) : 0
-  if (sequence < shift || sequence - shift >= table.count) return []
-  const start = bytes.readUInt32LE(table.at + 8 + (sequence - shift) * 4)
+  if (section !== 0x5982 && (sequence < shift || sequence - shift >= table.count)) return []
+  let start = section === 0x5982 ? 0 : bytes.readUInt32LE(table.at + 8 + (sequence - shift) * 4)
+  if (section === 0x5982) {
+    // Direct port of the reference's array alignment, intentionally separate
+    // from the production reader's physical-index calculation.
+    const bodies = sections.get(0x106)!.count, difference = bodies - table.count
+    const raw = Array.from({ length: table.count }, (_, index) => bytes.readUInt32LE(table.at + 8 + index * 4))
+    const aligned: (number | undefined)[] = difference > 0 ? Array(bodies).fill(undefined) : raw.slice()
+    if (difference > 0) for (let index = 0; index < raw.length; index++) aligned[index + ([7, 8].includes(difference) ? difference : 0)] = raw[index]
+    if (difference === 0 && bodies === 239) for (let index = 171; index >= 13; index--) aligned[index] = aligned[index - 13]
+    if (difference === 26) {
+      for (let index = 0; index < 27; index++) aligned[index] = aligned[index + 3]
+      for (let index = 27; index < 36; index++) aligned[index] = aligned[index + 2]
+      aligned[28] = undefined; aligned[44] = aligned[38]; aligned[45] = aligned[39]
+      for (let index = 36; index < 44; index++) aligned[index] = undefined
+      for (let index = 46; index < aligned.length; index++) aligned[index] = undefined
+    }
+    if (difference === 28) { aligned[4] = aligned[1]; aligned[6] = undefined; aligned[2] = undefined }
+    if (aligned[sequence] === undefined) return []
+    start = aligned[sequence]!
+  }
   if (section === 0x2412 || section === 0x11306) return [start]
   return Array.from({ length: bytes.readUInt16LE(start + 6) >>> 8 }, (_, i) => start + bytes.readUInt32LE(start + 8 + i * 4))
 }
-export function referenceImage(bytes: Buffer, offset: number, torso = false, header: 'displaced' | 'landscape' | 'gui' = 'displaced'): ReferenceImage {
+export function referenceImage(bytes: Buffer, offset: number, torso: boolean | 'shadow' = false, header: 'displaced' | 'landscape' | 'gui' = 'displaced'): ReferenceImage {
   const displaced = header === 'displaced', dimensions = offset + (displaced ? 4 : 0)
   const width = bytes.readUInt16LE(dimensions), height = bytes.readUInt16LE(dimensions + 2)
   const image = { width, height, offsetX: displaced ? bytes.readInt16LE(offset + 8) : 0, offsetY: displaced ? bytes.readInt16LE(offset + 10) : 0, data: Buffer.alloc(width * height * 4) }
@@ -31,7 +50,8 @@ export function referenceImage(bytes: Buffer, offset: number, torso = false, hea
       for (let pixel = 0; pixel < (run & 0xff); pixel++, column++) {
         if (column >= width) throw new Error('Invalid verified reference row')
         const to = (row * width + column) * 4
-        if (torso) { const gray = five[bytes[cursor++]! & 31]!; image.data.set([gray, gray, gray, 255], to) }
+        if (torso === 'shadow') image.data.set([0, 0, 0, 136], to)
+        else if (torso) { const gray = five[bytes[cursor++]! & 31]!; image.data.set([gray, gray, gray, 255], to) }
         else { const word = bytes.readUInt16LE(cursor); cursor += 2; image.data.set([five[(word >>> 11) & 31]!, six[(word >>> 5) & 63]!, five[word & 31]!, 255], to) }
       }
     } while (!last)

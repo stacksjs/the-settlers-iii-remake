@@ -2,15 +2,19 @@ import type { Point, Session } from './engine'
 import { toView } from './engine'
 import { geologistSurveyImage } from './geologist-images'
 import { surveyMarker } from './survey-signs'
+import { SHADOW_ROW_OFFSET } from './shadow-images'
 
 // The scene is everything a player's screen shows, derived only from the
 // session and that player's sight. The canvas painter draws it; tests compare it
 // with the simulation. Nothing here is decorative: every item is an entity.
 export interface SceneItem {
-  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'sign' | 'arrow'
+  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'shadow' | 'sign' | 'arrow'
   /** Sprite key and frame in the original atlas. Arrows have no sprite. */
   sprite: string, frame: number
+  /** Projection and map-row depth are independent, as in MapObjectDrawer.getZ. */
   view: Point, depth: number
+  /** Original map scan order breaks equal-depth ties independently of projection. */
+  tile: number
   /** Simulation entity: tile for objects and signs, id for piles, buildings and settlers. */
   entity: number, owner: number
   /** Construction share built in, for sites. */
@@ -46,7 +50,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       if (!object || !viewer.explored[t]) continue
       const rule = rules.objects[object - 1]!, view = toView(x, y, map.elevation[t]!)
       const age = state.tick - map.objectSince[t]!, growth = rule.grows ? Math.min(0.999, age / rule.grows.ticks) : 1
-      const base = { view, depth: view.y, entity: t, owner: 0 }
+      const base = { view, depth: y, tile: t, entity: t, owner: 0 }
       const variety = (((x * 73856093) ^ (y * 19349663)) >>> 0) % 7
       if (rule.id === 'tree') items.push({ ...base, kind: 'tree', sprite: `tree-${variety}`, frame: 0 })
       // The painter maps growth onto however many sapling frames the atlas holds.
@@ -67,7 +71,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const slot = piles.get(st.tile) ?? 0
     piles.set(st.tile, slot + 1)
     const base = toView(x, y, map.elevation[st.tile]!), view = { x: base.x + (slot ? 10 + ((slot - 1) % 3) * 9 : 0), y: base.y + (slot ? Math.floor((slot - 1) / 3) * 6 - 2 : 0) }
-    items.push({ kind: 'pile', sprite: `stack:${st.good}`, frame: Math.min(8, st.amount) - 1, view, depth: view.y, entity: st.id, owner: st.owner, good: st.good, amount: st.amount })
+    items.push({ kind: 'pile', sprite: `stack:${st.good}`, frame: Math.min(8, st.amount) - 1, view, depth: Math.floor(st.tile / map.width), tile: st.tile, entity: st.id, owner: st.owner, good: st.good, amount: st.amount })
   }
   for (const b of state.buildings.values()) {
     const rule = rules.buildings.find(r => r.id === b.type)!
@@ -76,8 +80,8 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const view = toView(b.x, b.y, map.elevation[b.y * map.width + b.x]!)
     const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
     const own = b.owner === options.player
-    if (b.phase === 'active') items.push({ kind: 'building', sprite: `building:${b.type}`, frame: 0, view, depth: view.y + 4, entity: b.id, owner: b.owner, phase: b.phase, suspended: own && b.suspended })
-    else items.push({ kind: 'site', sprite: `site:${b.type}`, frame: 0, view, depth: view.y + 4, entity: b.id, owner: b.owner, phase: b.phase, reveal: b.phase === 'building' ? (total - b.workRemaining) / total : 0, suspended: own && b.suspended })
+    if (b.phase === 'active') items.push({ kind: 'building', sprite: `building:${b.type}`, frame: 0, view, depth: b.y, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, suspended: own && b.suspended })
+    else items.push({ kind: 'site', sprite: `site:${b.type}`, frame: 0, view, depth: b.y + 1, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, reveal: b.phase === 'building' ? (total - b.workRemaining) / total : 0, suspended: own && b.suspended })
   }
   for (const s of state.settlers.values()) {
     if (s.inside) continue
@@ -102,7 +106,11 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
       const image = geologistSurveyImage(options.reduceMotion ? 0 : (s.step - 1) / Math.max(1, work.ticks - 1))
       sprite = image.sprite; frame = image.frame
     }
-    items.push({ kind: 'settler', sprite, frame: striking ? spriteDirection(s.dir) : frame, view, ...(striking ? { progress: 1 - s.soldier!.cooldown / soldier!.attackTicks } : {}), depth: view.y + 1, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) })
+    const body: SceneItem = { kind: 'settler', sprite, frame: striking ? spriteDirection(s.dir) : frame, view, ...(striking ? { progress: 1 - s.soldier!.cooldown / soldier!.attackTicks } : {}), depth: s.y, tile: t, entity: s.id, owner: s.owner, action: s.action, ...(s.cargo ? { good: s.cargo } : {}), ...(soldier ? { rank: s.soldier!.rank, health: s.soldier!.health / soldier.health[s.soldier!.rank - 1]! } : {}) }
+    // The reference adds 20*z_per_y to fragment depth. Its ortho projection
+    // maps Z with factor -1/2, placing a shadow 40 map rows behind its body.
+    // A separate ordered layer preserves occlusion even on steep terrain.
+    items.push({ kind: 'shadow', sprite: body.sprite, frame: body.frame, view: body.view, progress: body.progress, depth: s.y - SHADOW_ROW_OFFSET, tile: t, entity: s.id, owner: s.owner }, body)
   }
   for (const p of state.projectiles ?? []) {
     if (!seen(p.from) && !seen(p.to)) continue
@@ -110,12 +118,12 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const from = at(p.from), to = at(p.to), share = Math.min(1, Math.max(0, (state.tick - p.fired) / Math.max(1, p.arrives - p.fired)))
     // Arrows rise and fall along their flight; the simulation only knows when they land.
     const view = { x: from.x + (to.x - from.x) * share, y: from.y + (to.y - from.y) * share - Math.sin(share * Math.PI) * 24 }
-    items.push({ kind: 'arrow', sprite: '', frame: 0, view, depth: view.y + 2, entity: p.id, owner: p.owner, from, to })
+    items.push({ kind: 'arrow', sprite: '', frame: 0, view, depth: Math.floor(p.from / map.width) + (Math.floor(p.to / map.width) - Math.floor(p.from / map.width)) * share, tile: p.from, entity: p.id, owner: p.owner, from, to })
   }
   for (const sign of viewer.signs) {
     if (sign.until <= state.tick) continue
     const x = sign.tile % map.width, y = Math.floor(sign.tile / map.width), view = toView(x, y, map.elevation[sign.tile]!)
-    items.push({ kind: 'sign', ...surveyMarker(sign.good ?? undefined, sign.amount), view, depth: view.y, entity: sign.tile, owner: options.player, ...(sign.good ? { good: sign.good } : {}), amount: sign.amount })
+    items.push({ kind: 'sign', ...surveyMarker(sign.good ?? undefined, sign.amount), view, depth: y, tile: sign.tile, entity: sign.tile, owner: options.player, ...(sign.good ? { good: sign.good } : {}), amount: sign.amount })
   }
-  return items.sort((a, b) => a.depth - b.depth || a.entity - b.entity)
+  return items.sort((a, b) => a.depth - b.depth || a.tile - b.tile || Number(a.kind === 'settler') - Number(b.kind === 'settler') || a.entity - b.entity)
 }

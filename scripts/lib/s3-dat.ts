@@ -45,12 +45,33 @@ export class S3Dat {
   }
   private u16(offset: number): number { if (offset < 0 || offset + 2 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt16LE(offset) }
   private u32(offset: number): number { if (offset < 0 || offset + 4 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt32LE(offset) }
-  private sequenceStart(sequence: number, type: number): number | undefined {
+  /** Physical table selector for a body-aligned layer, retained in provenance. */
+  layerSequence(sequence: number, type = 0x106): number | null {
     const section = this.sections.get(type)
     // AdvancedDatFileReader aligns shorter torso tables to the last body
     // sequences. Their absent prefix is not a different profession's clothing.
-    const shift = type === 0x3112 ? Math.max(0, (this.sections.get(0x106)?.length ?? 0) - (section?.length ?? 0)) : 0
-    return section?.[sequence - shift]
+    const difference = (this.sections.get(0x106)?.length ?? 0) - (section?.length ?? 0)
+    const shift = type === 0x3112 ? Math.max(0, difference) : type === 0x5982 && [7, 8].includes(difference) ? difference : 0
+    let index = sequence - shift
+    // The reference's 239-sequence specialist layout reuses earlier shadow
+    // sequences for bodies 13..171, even though its table has equal length.
+    if (type === 0x5982 && difference === 0 && section?.length === 239 && sequence >= 13 && sequence <= 171) index -= 13
+    if (type === 0x5982 && difference === 26) {
+      if (sequence <= 26) index += 3
+      else if (sequence <= 35) index += 2
+      else if (sequence === 44 || sequence === 45) index -= 6
+      else index = -1
+      if (sequence === 28) index = -1
+    }
+    if (type === 0x5982 && difference === 28) {
+      if (sequence === 4) index = 1
+      if (sequence === 2 || sequence === 6) index = -1
+    }
+    return Number.isInteger(index) && index >= 0 && index < (section?.length ?? 0) ? index : null
+  }
+  private sequenceStart(sequence: number, type: number): number | undefined {
+    const index = this.layerSequence(sequence, type)
+    return index === null ? undefined : this.sections.get(type)?.[index]
   }
   /** Whether a body sequence has the requested layer, including absent torso prefixes. */
   has(sequence: number, type = 0x106): boolean { return this.sequenceStart(sequence, type) !== undefined }
@@ -68,7 +89,7 @@ export class S3Dat {
       return frame
     })
   }
-  decode(offset: number, color: '565' | '555' | 'torso' = '565', header: 'displaced' | 'landscape' | 'gui' = 'displaced'): Sprite {
+  decode(offset: number, color: '565' | '555' | 'torso' | 'shadow' = '565', header: 'displaced' | 'landscape' | 'gui' = 'displaced'): Sprite {
     // GUI has two reserved shorts after its dimensions; landscape has one.
     const headerBytes = header === 'displaced' ? 12 : header === 'gui' ? 8 : 6
     if (offset < 0 || offset + headerBytes > this.bytes.length) throw new Error('Truncated DAT sprite header')
@@ -90,6 +111,12 @@ export class S3Dat {
         if (x + count > width) throw new Error('DAT row exceeds sprite width')
         for (let n = 0; n < count; n++, x++) {
           const pixel = (y * width + x) * 4
+          if (color === 'shadow') {
+            // ShadowTranslator emits black with alpha 136 for each opaque
+            // run position. Unlike bodies and torsos, it reads no pixel bytes.
+            data[pixel + 3] = 136
+            continue
+          }
           if (color === 'torso') {
             if (at >= this.bytes.length) throw new Error('Truncated DAT torso')
             const shade = this.bytes[at++]! & 31

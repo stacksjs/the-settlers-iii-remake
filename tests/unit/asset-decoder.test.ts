@@ -18,6 +18,24 @@ test('DAT conversion keeps transparency, RGB565 colors, signed anchors and odd-b
   expect([sprite.width, sprite.height, sprite.offsetX, sprite.offsetY]).toEqual([2, 1, -1, -2])
   expect([...sprite.data]).toEqual([0, 0, 0, 0, 0, 255, 0, 255])
 })
+test('DAT shadow runs contain no pixel-color bytes and retain source opacity, skips and signed anchors', () => {
+  const data = fixture().subarray(0, 192)
+  data.writeUInt32LE(data.length, 48)
+  data.writeUInt16LE(3, 177); data.writeUInt16LE(2, 179)
+  data.writeUInt16LE(0x0101, 186); data.writeUInt16LE(0x8001, 188); data.writeUInt16LE(0x8201, 190)
+  const image = new S3Dat(data).decode(173, 'shadow')
+  expect([image.width, image.height, image.offsetX, image.offsetY]).toEqual([3, 2, -1, -2])
+  expect([...image.data]).toEqual([0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 136, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136])
+})
+test('DAT shadow decoding rejects incomplete rows, overflowing runs and oversized allocations', () => {
+  const short = fixture(0x0101).subarray(0, 188); short.writeUInt32LE(short.length, 48)
+  expect(() => new S3Dat(short).decode(173, 'shadow')).toThrow('Truncated DAT')
+  expect(() => new S3Dat(fixture(0x8003)).decode(173, 'shadow')).toThrow('width')
+  const large = fixture(); large.writeUInt16LE(2049, 177)
+  expect(() => new S3Dat(large).decode(173, 'shadow')).toThrow('dimensions')
+  const noEnd = fixture(0); noEnd.fill(0, 186)
+  expect(() => new S3Dat(noEnd).decode(173, 'shadow')).toThrow('row runs')
+})
 test('DAT RGB555 and RGB565 midtones match reference channel truncation at every channel level', () => {
   // Literal tables from the pinned Color.cnv5to8/cnv6to8 contract, independent
   // of the production decoder. Packed words exercise the public byte boundary.

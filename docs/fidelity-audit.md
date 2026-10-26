@@ -4,11 +4,19 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: original movable shadows (2026-10-26)
+
+Current movable imports now retain 3,525 original shadow masks alongside unchanged bodies and grayscale torso layers. The DAT decoder consumes no per-pixel color bytes for shadow runs and preserves the reference translator's alpha value of 136. Independent table alignment covers the shorter prefix and specialist remapping; physical source selectors are retained in provenance. The reference attaches only 22 shadow frames to the 144-frame high-rank bowman strike, so its remaining 122 frames stay explicitly unattached rather than receiving fabricated shadows.
+
+The browser paints matching pose layers using map-row depth. The source's orthographic projection and shadow offset place shadows 40 map rows behind their bodies. Sorting by elevated screen Y had reversed body order on steep terrain; the scene now separates projection from depth and retains map scan order for equal-depth ties. Browser probes cover 12,673 source-mask pixel comparisons across 32 poses, both depth-occlusion directions, missing layers, fog, pause, save/restore and disposal. The [shadow receipt](roadmap/receipts/original-movable-shadows-2026-10-26.json) records the decoder, scene and rendering regressions.
+
+This advances the supplied-reference browser presentation. Static/building shadows, additional profession and faction animations, original Gold executable observations and native presentation remain unfinished under the broader roadmap.
+
 ## Update: player colors and original map slots (2026-10-26)
 
 The importer preserves all 3,647 current movable bodies and 3,647 aligned grayscale torso masks separately. The browser multiplies mask intensity by the owning player's explicit reference palette slot, then paints opaque body pixels above it. Borders, foreign identity markers and the minimap share that mapping. The first 20 reference slots were copied by its author from an original editor screenshot; the remaining 12 are remake additions. These are source-based presentation choices, not measured Gold runtime colors.
 
-Original content resolves by exact ID and digest, retaining original indices when unsupported civilizations are omitted. Mapping stays outside simulation state, saves and replay checksums. An unavailable saved mapping produces a startup error and retains the checkpoint. A 512-frame LRU releases colored canvases on eviction, asset replacement and disposal. Independent raw decoding checks every imported movable body and mask; the real browser checks multiple colors, fog, restoration, layer precedence, missing layers and checkpoint preservation. The [player-color receipt](roadmap/receipts/reference-player-colors-2026-10-26.json) records this scope. Full shadows, other profession animations, native presentation and original Gold observation remain unfinished.
+Original content resolves by exact ID and digest, retaining original indices when unsupported civilizations are omitted. Mapping stays outside simulation state, saves and replay checksums. An unavailable saved mapping produces a startup error and retains the checkpoint. A 512-frame LRU releases colored canvases on eviction, asset replacement and disposal. Independent raw decoding checks every imported movable body and mask; the real browser checks multiple colors, fog, restoration, layer precedence, missing layers and checkpoint preservation. The [player-color receipt](roadmap/receipts/reference-player-colors-2026-10-26.json) records this scope. Broader graphics coverage, native presentation and original Gold observation remain unfinished.
 
 ## Update: reference RGB channel expansion (2026-10-26)
 

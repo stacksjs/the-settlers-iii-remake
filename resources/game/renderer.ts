@@ -189,19 +189,26 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   }
 
   let marked: ReadonlySet<number> | null = null
+  function posedIndex(item: SceneItem): number {
+    const per = Math.max(1, Math.floor((atlas!.frames.get(item.sprite)?.length ?? 6) / 6))
+    return item.progress === undefined ? item.frame : item.frame * per + Math.min(per - 1, Math.floor(item.progress * per))
+  }
   function paint(item: SceneItem, player: number): void {
     const z = camera.zoom, p = toScreen(item.view)
     switch (item.kind) {
       case 'sapling': sprite(item.sprite, item.view, Math.floor((item.growth ?? 0) * (atlas!.frames.get('sapling')?.length ?? 1))); break
       case 'building': for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i); break
       case 'site': if (item.phase === 'building') for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i, 1, Math.max(0.08, item.reveal ?? 0)); break
+      case 'shadow': {
+        const body = frame(item.sprite, posedIndex(item)), shadow = body?.shadow ? atlas!.frames.get(body.shadow)?.find(layer => layer.frame === body.frame) : null
+        if (shadow?.width && shadow.height) ctx!.drawImage(atlas!.image, shadow.x, shadow.y, shadow.width, shadow.height, camera.x + (item.view.x + shadow.offsetX) * z, camera.y + (item.view.y + shadow.offsetY) * z, shadow.width * z, shadow.height * z)
+        break
+      }
       case 'settler':
-        ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
         if (marked?.has(item.entity)) { ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = Math.max(1, z); ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 7 * z, 3 * z, 0, 0, Math.PI * 2); ctx!.stroke() }
         // Strike sequences hold equal runs per direction. Body and clothing
         // resolve the same actual frame before either layer is painted.
-        const per = Math.max(1, Math.floor((atlas!.frames.get(item.sprite)?.length ?? 6) / 6))
-        const index = item.progress === undefined ? item.frame : item.frame * per + Math.min(per - 1, Math.floor(item.progress * per))
+        const index = posedIndex(item)
         const body = frame(item.sprite, index)
         const mask = body?.torso ? atlas!.frames.get(body.torso)?.find(mask => mask.frame === body.frame) : null
         if (mask) {

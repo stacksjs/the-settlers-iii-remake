@@ -18,6 +18,8 @@ describe('render scene', () => {
     until(s, () => [...s.state.settlers.values()].some(p => p.cargo === 'plank' && p.action === 'walking'), 2000)
     const items = scene(s, { player: 1 })
     const settlers = items.filter(i => i.kind === 'settler')
+    // A shadow is a visual layer, not another carrier or inventory location.
+    for (const shadow of items.filter(i => i.kind === 'shadow')) expect(shadow.good).toBeUndefined()
     const outside = [...s.state.settlers.values()].filter(p => !p.inside)
     expect(settlers.map(i => i.entity).sort((a, b) => a - b)).toEqual(outside.map(p => p.id).sort((a, b) => a - b))
     for (const item of settlers) {
@@ -40,12 +42,12 @@ describe('render scene', () => {
     for (const i of piles) drawn[i.good!] = (drawn[i.good!] ?? 0) + i.amount!
     for (const i of settlers) if (i.good) drawn[i.good] = (drawn[i.good] ?? 0) + 1
     expect(drawn).toEqual(s.view(1).goods)
-    const site = items.find(i => i.entity === id)!
+    const site = items.find(i => i.kind === 'site' && i.entity === id)!
     const b = s.state.buildings.get(id)!
     expect(site.kind).toBe('site')
     expect(site.reveal).toBe(b.phase === 'building' ? (7 - b.workRemaining) / 7 : 0)
     until(s, () => b.phase === 'active', 4000)
-    expect(scene(s, { player: 1 }).find(i => i.entity === id)).toMatchObject({ kind: 'building', sprite: 'building:sawmill' })
+    expect(scene(s, { player: 1 }).find(i => i.kind === 'building' && i.entity === id)).toMatchObject({ kind: 'building', sprite: 'building:sawmill' })
   }, 30_000)
 
   test('a paused simulation draws the same scene: nothing moves or works on its own', () => {

@@ -1,8 +1,9 @@
-import { isPlayerSprite, validatePlayerSlotCatalog } from '../resources/game/player-colors'
+import { validatePlayerSlotCatalog } from '../resources/game/player-colors'
 import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import type { AtlasFrame } from '../resources/game/assets'
+import { indexAtlasFrames } from '../resources/game/assets'
 import { geologistImages } from '../resources/game/geologist-images'
 import { interfaceImages } from '../resources/game/interface-assets'
 import { surveySigns } from '../resources/game/survey-signs'
@@ -16,26 +17,29 @@ const atlasBytes = Buffer.from(await Bun.file(resolve(directory, manifest.atlas)
 if (manifest.atlas !== `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`) throw new Error('Atlas bytes differ from their content address')
 const atlas = png.sync.read(atlasBytes)
 validatePlayerSlotCatalog(manifest.playerSlots)
-for (const body of manifest.sprites.filter(frame => isPlayerSprite(frame.key))) if (body.torso === undefined) throw new Error('Missing clothing-layer metadata')
-for (const frame of manifest.sprites) if (frame.torso && !manifest.sprites.some(mask => mask.key === frame.torso && mask.frame === frame.frame)) throw new Error(`Missing original clothing ${frame.key}:${frame.frame}`)
-for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('torso:'))) if (!manifest.sprites.some(body => body.key === mask.key.slice(6) && body.frame === mask.frame && body.torso === mask.key)) throw new Error(`Orphan original clothing ${mask.key}:${mask.frame}`)
+const frames = indexAtlasFrames(manifest.sprites, manifest.width, manifest.height)
 for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('torso:'))) for (let y = 0; y < mask.height; y++) for (let x = 0; x < mask.width; x++) { const at = ((mask.y + y) * atlas.width + mask.x + x) * 4; if (atlas.data[at] !== atlas.data[at + 1] || atlas.data[at] !== atlas.data[at + 2]) throw new Error('Original clothing is not grayscale') }
-if (manifest.version !== 2 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
+for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('shadow:'))) {
+  for (let y = 0; y < mask.height; y++) for (let x = 0; x < mask.width; x++) {
+    const at = ((mask.y + y) * atlas.width + mask.x + x) * 4
+    if (atlas.data[at] || atlas.data[at + 1] || atlas.data[at + 2] || ![0, 136].includes(atlas.data[at + 3]!)) throw new Error('Original shadow pixels have invalid color or opacity')
+  }
+}
+if (manifest.version !== 3 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
 const buildings = ['castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'barracks', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse', 'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith']
 const goods = ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword']
 const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', 'terrain-grass', 'terrain-water', 'terrain-sand', 'terrain-rock']
 for (const expected of surveySigns) {
-  const images = manifest.sprites.filter(frame => frame.key === expected.key)
+  const images = frames.get(expected.key) ?? []
   if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21)) throw new Error(`Invalid original survey frames ${expected.key}`)
 }
 for (const expected of geologistImages) {
-  const images = manifest.sprites.filter(frame => frame.key === expected.key)
+  const images = frames.get(expected.key) ?? []
   if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index)) throw new Error(`Invalid original geologist frames ${expected.key}`)
 }
-for (const key of required) if (!manifest.sprites.some(frame => frame.key === key && frame.width && frame.height)) throw new Error(`Missing asset ${key}`)
-for (const key of ['worker', ...goods.map(id => `carry:${id}`)]) if (manifest.sprites.filter(frame => frame.key === key).length !== 72) throw new Error(`Carrier ${key} needs twelve frames in each of six directions`)
+for (const key of required) if (!frames.get(key)?.some(frame => frame.width && frame.height)) throw new Error(`Missing asset ${key}`)
+for (const key of ['worker', ...goods.map(id => `carry:${id}`)]) if (frames.get(key)?.length !== 72) throw new Error(`Carrier ${key} needs twelve frames in each of six directions`)
 for (const id of buildings) if (!(await Bun.file(resolve(directory, `${id}.png`)).exists())) throw new Error(`Missing building composite ${id}`)
-for (const f of manifest.sprites) if (![f.x, f.y, f.width, f.height, f.offsetX, f.offsetY].every(Number.isInteger) || f.x < 0 || f.y < 0 || f.width < 0 || f.height < 0 || f.x + f.width > atlas.width || f.y + f.height > atlas.height) throw new Error(`Invalid atlas frame ${f.key}:${f.frame}`)
 if (!atlas.data.some((value, index) => index % 4 === 3 && value === 0) || !atlas.data.some((value, index) => index % 4 === 3 && value === 255)) throw new Error('Atlas must preserve transparent and opaque pixels')
 const sounds = await Bun.file(resolve(directory, 'sounds.json')).json() as Record<string, string>
 for (const [key, file] of Object.entries(sounds)) {

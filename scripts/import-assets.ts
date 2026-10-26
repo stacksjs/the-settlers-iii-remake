@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import { originalPlayerSlots } from '../resources/game/engine/original'
 import { isPlayerSprite, playerColorReferences } from '../resources/game/player-colors'
+import { shadowReferencePaths } from '../resources/game/shadow-images'
 import { geologistImages, geologistReferencePaths } from '../resources/game/geologist-images'
 import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
 import { surveyReferencePaths, surveySigns } from '../resources/game/survey-signs'
@@ -29,7 +30,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/engine/original.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/shadow-images.ts', 'resources/game/engine/original.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -60,6 +61,7 @@ const tutorialBytes = await readFile(resolve(source, 'Map/TUTORIAL/T1.MAP'))
 const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map/TUTORIAL/T1.MAP', tutorialBytes)
 const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
 for (const path of playerColorReferences) await getReference(path)
+for (const path of shadowReferencePaths) if (!provenanceInputs.has(`reference:${path}`)) await getReference(path)
 const mappingPath = 'jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json'
 const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping?: number[], guiMapping?: number[] } | null)[]
 const datFiles = new Map<number, S3Dat>()
@@ -75,7 +77,7 @@ async function dat(file: number): Promise<S3Dat> {
   }
   return datFiles.get(file)!
 }
-const entries: { key: string, frame: number, source: { file: number, sequence: number, actualSequence: number, section: number, frame: number }, inputs: string[], selection: string[], sprite: Sprite, torso?: string | null }[] = []
+const entries: { key: string, frame: number, source: { file: number, sequence: number, actualSequence: number, section: number, frame: number, layerSequence?: number }, inputs: string[], selection: string[], sprite: Sprite, torso?: string | null, shadow?: string | null }[] = []
 // Sprites the demo data does not contain are listed in the manifest rather than substituted.
 const missing: { key: string, file: number, sequence: number, frame: number | null, reason: string }[] = []
 async function sequence(key: string, file: number, gold: number, frames: number[] | 'all', references: string[] = [], optional = false): Promise<void> {
@@ -174,6 +176,22 @@ for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
     inputs: [...entry.inputs], selection: [`${datInputs.get(entry.source.file)}:section=0x3112,body-sequence=${entry.source.actualSequence},frame=${entry.source.frame},grayscale=original`], sprite: reader.decode(at, 'torso') })
 }
 entries.push(...clothing)
+// Movable shadow mappings are identity for files 10/11/12 before the
+// reference's independent table alignment. They are not torso selectors.
+const shadows: typeof entries = []
+for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
+  entry.shadow = null
+  if (![10, 11, 12].includes(entry.source.file)) throw new Error(`Original movable shadow mapping is not implemented for DAT ${entry.source.file}`)
+  const reader = await dat(entry.source.file), layerSequence = reader.layerSequence(entry.source.actualSequence, 0x5982)
+  if (layerSequence === null) continue
+  const at = reader.frames(entry.source.actualSequence, 0x5982)[entry.source.frame]
+  if (at === undefined) continue
+  entry.shadow = `shadow:${entry.key}`
+  const references = shadowReferencePaths.map(path => `reference:${path}`)
+  shadows.push({ key: entry.shadow, frame: entry.frame, source: { ...entry.source, section: 0x5982, layerSequence }, inputs: [datInputs.get(entry.source.file)!, `reference:${mappingPath}`, ...references],
+    selection: [`${datInputs.get(entry.source.file)}:section=0x5982,body-sequence=${entry.source.actualSequence},physical-shadow-sequence=${layerSequence},frame=${entry.source.frame},alpha=136`], sprite: reader.decode(at, 'shadow') })
+}
+entries.push(...shadows)
 for (const [key, index] of Object.entries({ grass: 0, water: 17, rock: 21, sand: 31 })) {
   const landscape = await dat(0), at = landscape.frames(index, 0x2412)[0]!
   entries.push({ key: `terrain-${key}`, frame: 0, source: { file: 0, sequence: index, actualSequence: index, section: 0x2412, frame: 0 },
@@ -184,7 +202,7 @@ let x = 1, y = 1, row = 0
 const records = entries.map(entry => {
   const { width: w, height: h, offsetX, offsetY } = entry.sprite
   if (x + w + 1 > width) { x = 1; y += row + 2; row = 0 }
-  const result = { key: entry.key, frame: entry.frame, x, y, width: w, height: h, offsetX, offsetY, source: entry.source, inputs: entry.inputs, selection: entry.selection, ...(entry.torso !== undefined ? { torso: entry.torso } : {}) }
+  const result = { key: entry.key, frame: entry.frame, x, y, width: w, height: h, offsetX, offsetY, source: entry.source, inputs: entry.inputs, selection: entry.selection, ...(entry.torso !== undefined ? { torso: entry.torso } : {}), ...(entry.shadow !== undefined ? { shadow: entry.shadow } : {}) }
   x += w + 2; row = Math.max(row, h)
   return result
 })
@@ -196,7 +214,7 @@ for (const [index, entry] of entries.entries()) {
 const atlasBytes = png.sync.write({ width, height, data: pixels })
 const atlasFile = `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`
 await Bun.write(resolve(output, atlasFile), atlasBytes)
-await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 2, playerSlots: [{ id: 'demo:Map/TUTORIAL/T1.MAP', digest: provenanceInputs.get(tutorialInput)!.sha256, slots: originalPlayerSlots(tutorial.players) }], atlas: atlasFile, width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
+await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 3, playerSlots: [{ id: 'demo:Map/TUTORIAL/T1.MAP', digest: provenanceInputs.get(tutorialInput)!.sha256, slots: originalPlayerSlots(tutorial.players) }], atlas: atlasFile, width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
 addOutput(atlasFile, ['buildings', 'terrain', 'vegetation-and-deposits', 'settlers-and-soldiers', 'goods-and-wares'], entries.flatMap(entry => entry.inputs), entries.flatMap(entry => entry.selection))
 addOutput('manifest.json', ['generated-metadata'], [tutorialInput, ...entries.flatMap(entry => entry.inputs)], ['Original atlas selectors, dimensions, displacements and pinned source identities'])
 console.log(`Converted ${records.length} original sprites into a ${width}x${height} transparent PNG atlas. ${missing.length} requested sprites are absent from the demo and listed in the manifest.`)

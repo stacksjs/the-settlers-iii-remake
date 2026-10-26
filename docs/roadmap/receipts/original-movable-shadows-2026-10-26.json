@@ -1,0 +1,299 @@
+{
+  "recordedAt": "2026-10-26T16:40:05.889231+00:00",
+  "issue": 214,
+  "base": "a62ae094dfee1995d9dd03f9ff61f5e830a52147",
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "scope": "Currently imported movable shadow masks and source depth ordering in the browser. Supplied-reference evidence, not original Gold runtime observation or native graphics qualification.",
+  "referenceRevision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+  "referenceSources": [
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+      "bytes": 21077,
+      "sha256": "4db1d80e35e8661dd88bc1935774fd3dd7a69a2f3592aab66e74196ff70abd2e",
+      "gitBlob": "1161efd4d6040312fc16663de4d6f244a790d437"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/ShadowTranslator.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/translator/ShadowTranslator.java",
+      "bytes": 1929,
+      "sha256": "c32663154695cd1c37d3b08055f1cad87f653d55653a498d0fe75cdc4dacd5a0",
+      "gitBlob": "c7bbd8e381845e75d74c3a8800ba8e456965e202"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/shadowmap/ShadowMapping.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/shadowmap/ShadowMapping.java",
+      "bytes": 506,
+      "sha256": "21ed120091978fe47d5994a436dcd3002669253dce26d6b383057e2a301e9c67",
+      "gitBlob": "d564228cb5442339a745ac201e3d4d8d732e7f89"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/shadowmap/IdentityShadowMapping.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/shadowmap/IdentityShadowMapping.java",
+      "bytes": 201,
+      "sha256": "2668dad7952e16a8b7e0aede2eb84c863405cc1b337667ab31587398a9160821",
+      "gitBlob": "7fa44e429b65064ac63c0b80b12ca12b7f570524"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/ImageProvider.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/ImageProvider.java",
+      "bytes": 12409,
+      "sha256": "ced06eccb3f03fd524b74e76edf6dc1c330d6052f0e866aadfeb73cdb023c2b8",
+      "gitBlob": "2cecfc85443468486812360f8ebcc1c130eb9650"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/MapObjectDrawer.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/MapObjectDrawer.java",
+      "bytes": 54712,
+      "sha256": "37a78c72811e5476d8498182f99c03fb125991a95ac0d77c1a0693dd6c1d0f4f",
+      "gitBlob": "10cc924b92e8e558bb957000a16bc55a32dc0023"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapContent.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapContent.java",
+      "bytes": 36471,
+      "sha256": "0c40e353d3302deee1c02386a8ba415db1c0f93241cc8c195de2c0beb8c79773",
+      "gitBlob": "25b8621df3471b8d5c1006721b16a09e7165e992"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "bytes": 14228,
+      "sha256": "e8c098a07c019ccf00dafb5761c4a862cf987f2d5a0c068d7de9f27b0dba9720",
+      "gitBlob": "29c237ac0e3b9372b4525cecf2d7043063f2578b"
+    },
+    {
+      "path": "go.graphics.swing/src/main/java/go/graphics/swing/opengl/LWJGLDrawContext.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/java/go/graphics/swing/opengl/LWJGLDrawContext.java",
+      "bytes": 18560,
+      "sha256": "71689b9e027515aaf2af7738e9a99e13a92109a9debfe1d84629ad095644beac",
+      "gitBlob": "e688281dc86812b3aa26fc3f2808b7f7738d94c8"
+    },
+    {
+      "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "bytes": 1276,
+      "sha256": "0755f619652cf3db4b955ec0059a056bf827f5d208640305d799843e782b2e18",
+      "gitBlob": "028ea16eb2640153b885b5e793cd5fa3f7c1e2b0"
+    }
+  ],
+  "implementation": {
+    "decoder": "Shadow opaque runs emit black RGBA alpha136 without consuming pixel-color bytes. Existing DAT bounds and run limits remain enforced.",
+    "mapping": "Independent shadow table alignment: 7/8 missing prefixes, equal239 specialist range13..171, distinct26/28-difference aliases. Current movable files10/11/12 use the reference factory identity mapping before physical-table alignment. Other movable file families fail explicitly until mapped.",
+    "metadata": "Manifest3, physical layerSequence selector and explicit string/null shadow associations. Browser/build share typed reference, geometry and frame-sequence validation. Pixel capacity matches the published PNG decoder default256MiB per-buffer limit; no image allocation guard was bypassed.",
+    "depth": "MapObjectDrawer.getZ uses logical map row; ortho projection(-1,1) and unchanged globalZscale1 map Z to fragment depth with factor-1/2. +20*z_per_y shadow offset therefore orders shadow40maprows behind body. Equal-depth ties follow original map tile scan order. Projection/elevation remain separate from depth.",
+    "painter": "Matching body frame selects original shadow by exact frame association. Separate scene layers preserve source occlusion and opaque body/torso precedence; no generic oval for missing data.",
+    "memory": "Shadows draw directly from the atlas, with no per-player copies or new texture cache. Existing colored-torso LRU and disposal remain.",
+    "unchanged": [
+      "body and torso pixel data",
+      "simulation/rules/commands",
+      "save and replay formats/checksums",
+      "fog/ownership rules",
+      "dependency cohort"
+    ]
+  },
+  "content": {
+    "manifestVersion": 3,
+    "totalFrames": 11139,
+    "shadowFrames": 3525,
+    "unattachedFrames": {
+      "strike:bowman-3": 122
+    },
+    "attachmentLimit": "Reference attaches22shadowframes to144bodyframes here; no Gold-intended absence claim.",
+    "atlasWidth": 1024,
+    "atlasHeight": 13403,
+    "rgbaBytes": 54898688,
+    "convertedFiles": 95,
+    "interfaceImages": 52,
+    "wavSounds": 6,
+    "romanBuildingTypes": 32
+  },
+  "checks": {
+    "unit": {
+      "pass": 388,
+      "fail": 0,
+      "assertions": 75494,
+      "files": 62,
+      "seconds": 200.22
+    },
+    "types": "After review: app, tools and STX2scriptblocks/258templateexpressions clean.",
+    "lint": "498files, zero errors/warnings.",
+    "assets": "Byte/input provenance verified for95files; alloriginalmovable masks independently compared; actual66body/40shadow reference layout also verified.",
+    "buildSeconds": 30.64,
+    "shadowBrowser": {
+      "ok": true,
+      "checkedPixels": 12673,
+      "poses": 32,
+      "surveyPoses": 29,
+      "originalCarrierSoldierGeologist": true,
+      "transparentBoundaries": true,
+      "signedAnchors": true,
+      "fog": true,
+      "pause": true,
+      "saveRestore": true,
+      "missingLayer": true,
+      "bodyAndTorsoPrecedence": true,
+      "sourceDepthOcclusion": true,
+      "sourceMaskUnchanged": true,
+      "assetReplacementAndDisposal": true,
+      "scope": "Production renderer and public sessions; original masks over flat engineering ground, plus authored layers for exact depth occlusion. Not Gold runtime observations."
+    },
+    "browserErrors": {
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": []
+    },
+    "existingBrowsers": "Playercolors2664independentpixels and72control-frame steps passed."
+  },
+  "evidence": {
+    "decoder-red.log": {
+      "bytes": 2887,
+      "sha256": "0319da9d636e51464e9ae4533f8468eb7dfa6497b9f4f6350b0a938b7c76a9fe"
+    },
+    "decoder-green.log": {
+      "bytes": 1599,
+      "sha256": "21748ce1b2fb3349b1729557510337033717358aafdc6d8bcd5b69043e36cfd9"
+    },
+    "mapping-red.log": {
+      "bytes": 1587,
+      "sha256": "4b3ea88bb23c70c55fc4fe44fc1d48c4af0bbcc96979cdc1fa83239af69aaa37"
+    },
+    "mapping-prefix-green.log": {
+      "bytes": 1743,
+      "sha256": "063987d54c42686673350ea053b7352dedc854faf32763ea65d5ecc159530873"
+    },
+    "mapping-specialist-red.log": {
+      "bytes": 1850,
+      "sha256": "efe59ff282107134f91acf319776268ddea8ae21d9ff459507f683766461a9cd"
+    },
+    "mapping-specialist-green.log": {
+      "bytes": 1849,
+      "sha256": "d456baefb97f3ab18007b2bcda5e7b618d46c8e6c68235e018408e355137e85e"
+    },
+    "mapping-other-layouts-red.log": {
+      "bytes": 1939,
+      "sha256": "91477f5293b38c96bcbe141554b089486d686cbd8cc7b18080b59a13e3f534c8"
+    },
+    "mapping-all-green.log": {
+      "bytes": 2068,
+      "sha256": "26d6e808cf9c41787b4ca7ba8354f9dcb48ab05e4655f6e04d08a7825549b9d8"
+    },
+    "scene-red.log": {
+      "bytes": 2066,
+      "sha256": "b0c073473081e1deba578d4e9db8e24fa2fd0b31807e901daf8508c80d6437a2"
+    },
+    "scene-order-green.log": {
+      "bytes": 1426,
+      "sha256": "a2367b2e02d1c9c05d2c495bbaeeb1b0b862fe55eb0f262b68ca7bbd1e3e63fc"
+    },
+    "browser-baseline-red.log": {
+      "bytes": 1035,
+      "sha256": "2ff81d557825d80d42aa1c95bf1579ee1d6ed92d2340b2a7f0f21c3fd303d0e1"
+    },
+    "browser-baseline-report.json": {
+      "bytes": 937,
+      "sha256": "8a07a3c954213f0c9a8fc0ca07488af8bf95f2a0d9a4c02677179d36990d3d23"
+    },
+    "browser-final.log": {
+      "bytes": 80,
+      "sha256": "d0fa30fae6362c0b3fedd97fb56d71e26e6f5e4bfb55b05b06522b3dd5609385"
+    },
+    "player-colors-final.log": {
+      "bytes": 75,
+      "sha256": "dc10889c8b7ff40e471dd3a57c4b78200a2f3ebfa458b5361bc0123551a12a4c"
+    },
+    "control-frame-final.log": {
+      "bytes": 126,
+      "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    },
+    "atlas-shadow-metadata-red.log": {
+      "bytes": 2159,
+      "sha256": "93d4218ea267dc73d0b12d27fe5006c97834403a7ad6c11c919abd3ad4130d79"
+    },
+    "atlas-bounds-red.log": {
+      "bytes": 1948,
+      "sha256": "18ef4ec6abb1334f9304865b19fb1f415ca526d3c6e74b92b04a8e8fd85835f7"
+    },
+    "metadata-final-green.log": {
+      "bytes": 1029,
+      "sha256": "851ecd25038e6dc5c50286fce373b3a884c3a9e16668b0e029e5d0b7ccdc8141"
+    },
+    "unit-final.log": {
+      "bytes": 44371,
+      "sha256": "19ba4e8ea0b0180158633cfeb629b361d76263a79ba83de2cf2b4303fba007c0"
+    },
+    "types-final.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "lint-final.log": {
+      "bytes": 301,
+      "sha256": "ee9c9388f6d266876d3c71d7389ead488c4ab9306c264843ffb34e42bfc6462b"
+    },
+    "assets-final.log": {
+      "bytes": 331,
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5"
+    },
+    "build-final.log": {
+      "bytes": 1366,
+      "sha256": "781d2640f270eb7187646fc4efb6f95596a4102da5310fec2f7691b3ef71da42"
+    },
+    "browser-original-shadows.png": {
+      "bytes": 131168,
+      "sha256": "11acb309d98fdeaf8f6a207509bfb35600df76abdb30a036e19ef5ae45cb2410"
+    },
+    "review-cargo-red.log": {
+      "bytes": 2184,
+      "sha256": "39e989d116e8b83e708c6cdd87024817980f83f72ca3e6336749622707393103"
+    },
+    "review-cargo-green.log": {
+      "bytes": 1426,
+      "sha256": "5881497ca50833e4b3b53314cb84da0a8a0cb7e07353b5eff1300155ee567818"
+    },
+    "unit-review.log": {
+      "bytes": 44377,
+      "sha256": "adf06dfc624cdccc6eb30e39d8f9da690b10600f529613f192ac0e012da470dd"
+    },
+    "types-review.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "browser-review.log": {
+      "bytes": 80,
+      "sha256": "d0fa30fae6362c0b3fedd97fb56d71e26e6f5e4bfb55b05b06522b3dd5609385"
+    },
+    "build-review.log": {
+      "bytes": 1366,
+      "sha256": "e0ff2e3413ef864eb771f9bb938edd104986e1bd49f933bf2c41e93aa4a8357a"
+    },
+    "lint-receipt.log": {
+      "bytes": 301,
+      "sha256": "c5a68058f2a1261e672dbad2fecd3e90b7181e7a0d8d01648b88f7e2e4b956e2"
+    }
+  },
+  "nativeInputPreview": {
+    "url": "http://127.0.0.1:3461/",
+    "map": "Original T1 tutorial",
+    "population": 51,
+    "buildings": 1,
+    "pausedAt": "1:13",
+    "actions": "Ordinary page reload, pause, save and load on original map; restored successfully with original shadow shapes and red identity colors.",
+    "rasterPublication": "Local only; original media redistribution remains unverified."
+  },
+  "invalidHarnessAttempts": [
+    "Independent reference initially applied raw shadow-table bounds before alignment; fixed reference helper and retained diagnostic.",
+    "Uniform flat terrain has rasterized antialiased mesh seams. Initial constant-RGB assumption was rejected. Pixel checks now measure the same periodic ground outside every original layer and apply independently decoded shadow alpha. Published renderer still fails a real missing-shadow pixel; no game rendering was altered to accommodate the test."
+  ],
+  "remaining": [
+    "static and building shadows",
+    "additional profession/faction action sequences",
+    "terrain mesh seam investigation",
+    "Gold executable observations",
+    "native game presentation and full gameplay/campaign parity"
+  ],
+  "review": {
+    "standards": "Source owner and explicit TypeScript module boundaries retained. No installed dependency/runtime edits. Renderer resources and layer validation reviewed.",
+    "spec": "Original masks/selectors/alpha, independent mappings, read-only simulation, source depth and pixel/fog/lifecycle acceptance covered. Broader Gold/native scope remains open.",
+    "findingFixed": "Shadow layers initially inherited the carrier goods property. A real carrying-scene regression failed, then shadow payload was reduced to visual pose/identity only. Full388tests and shadowbrowser rerun passed after the fix."
+  }
+}
