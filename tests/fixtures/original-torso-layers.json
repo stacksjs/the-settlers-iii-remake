@@ -4,7 +4,7 @@
   "samples": [
     {
       "name": "carrier",
-      "path": "Gfx/Siedler3_10.f8007e01f.dat",
+      "path": "Gfx/siedler3_10.f8007e01f.dat",
       "datSha256": "1c74a23ebaedd4f62cf2dfcf79ec5e79e9d8e7d0bd5b2ee1ca4cdf1e7298b18f",
       "bodyCount": 60,
       "torsoCount": 60,

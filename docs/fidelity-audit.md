@@ -189,3 +189,7 @@ Still not matched: no value is an admitted original observation. Costs, capaciti
 5. Compare original and browser scenes at matched camera positions and states before claiming visual fidelity. Complete directional/action animation and audio integration after the underlying behavior exists.
 
 These are engineering priorities, not claims that those systems are already implemented. More sprites or passing the present campaign tests cannot substitute for the logistics and unit simulation.
+
+## Torso fixture portability correction (2026-10-25)
+
+Linux CI exposed an incorrectly capitalized carrier DAT path in the new real-data torso fixture. The fixture now uses the exact original archive entry, `Gfx/siedler3_10.f8007e01f.dat`. Its directory-entry assertion catches the same error on case-insensitive filesystems. This changes test provenance only; the decoder, generated images and simulation are unchanged. The failed run and local red/green evidence are retained in the [geologist and torso receipt](roadmap/receipts/original-geologist-and-torso-alignment-2026-10-25.json).

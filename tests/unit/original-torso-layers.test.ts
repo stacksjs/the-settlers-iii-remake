@@ -1,10 +1,15 @@
 import { expect, test } from 'bun:test'
-import { resolve } from 'node:path'
+import { readdir } from 'node:fs/promises'
+import { basename, resolve } from 'node:path'
 import { S3Dat } from '../../scripts/lib/s3-dat'
 import fixture from '../fixtures/original-torso-layers.json'
 
 test('actual demo carrier, geologist, priest and soldier layers follow the reference torso alignment', async () => {
+  const originalNames = await readdir(resolve(import.meta.dir, '../../storage/reference/demo/Gfx'))
   for (const sample of fixture.samples) {
+    // Directory entry comparison stays case-sensitive even on macOS, so a
+    // misspelled fixture path fails here before reaching Linux CI.
+    expect(originalNames).toContain(basename(sample.path))
     const bytes = Buffer.from(await Bun.file(resolve(import.meta.dir, '../../storage/reference/demo', sample.path)).arrayBuffer())
     expect(Bun.SHA256.hash(bytes, 'hex')).toBe(sample.datSha256)
     const reader = new S3Dat(bytes)

@@ -491,5 +491,34 @@
     "Committed CI and its original diagnostic artifact are pending for this slice.",
     "Other civilian profession images, full original palettes and shadows, remaining Gold systems and native app presentation remain open.",
     "The separate retained 5,000-tick native staffing probe remains unqualified with an unexplained uncaught error."
-  ]
+  ],
+  "caseSensitiveFixtureCorrection": {
+    "failedCommit": "42485e5ea55e2182f47c46d9486626a43f69c3cc",
+    "failedCI": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40267366374",
+    "result": "360 passed, 1 failed before browser checks. Linux ENOENT in real-data torso fixture.",
+    "cause": "Fixture producer capitalized the carrier DAT basename. The original archive entry is Gfx/siedler3_10.f8007e01f.dat; macOS accepted the incorrect case.",
+    "correction": "Fixture uses exact original filename. A directory-entry assertion enforces exact case on every filesystem. The independent probe records the actual archive entry. No source assets renamed and no case-insensitive test fallback.",
+    "localRegression": {
+      "before": "0 passed, 1 failed on exact directory entry assertion",
+      "after": "1 passed, 0 failed, 38 assertions"
+    },
+    "evidence": [
+      {
+        "file": "ci-path-failure.log",
+        "sha256": "f4370e2807c2b2110979eb7adfe121a423fb0d2281a82851b68e5bdde945cdd2"
+      },
+      {
+        "file": "path-case-red.log",
+        "sha256": "014caf739e65dafb9d222ef02ece4c73fe6231157e3bcf47f7f7d60942e6e07c"
+      },
+      {
+        "file": "path-case-green.log",
+        "sha256": "16dda0b7a405eb1ae72397d2fd9f3e60ddfe9695186b303ca0cc036d94c1c2be"
+      },
+      {
+        "file": "probe-torso-samples.ts",
+        "sha256": "3804d7136efdebc107c13113c8f3581b3ee7b3c4ed84347562d4850fec67fb66"
+      }
+    ]
+  }
 }
