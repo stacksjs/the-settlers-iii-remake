@@ -488,7 +488,6 @@
     "sourceChanges": "Application scene and original-content decoder/importer. No installed dependencies or framework runtimes edited; no framework release required by these game source corrections."
   },
   "remaining": [
-    "Committed CI and its original diagnostic artifact are pending for this slice.",
     "Other civilian profession images, full original palettes and shadows, remaining Gold systems and native app presentation remain open.",
     "The separate retained 5,000-tick native staffing probe remains unqualified with an unexplained uncaught error."
   ],
@@ -520,5 +519,88 @@
         "sha256": "3804d7136efdebc107c13113c8f3581b3ee7b3c4ed84347562d4850fec67fb66"
       }
     ]
+  },
+  "committedQualification": {
+    "recordedAt": "2026-10-26T04:40:48.588381+00:00",
+    "commit": "9f07c022ecbaf8cbfc34d40fb1aac5df475099a4",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40268507778",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12628280159,
+      "bytes": 21703,
+      "sha256": "e47a329fbf4de9ab66e4b3a969cdc2b78384ba4166f6bed6ee65c00a277e1ae0",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "10867a44eb61bace628f1281dcf0382d4e53562f2e44c0715554669e03421aa7",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "0f22db328cb78e025afe2525d6cee66d61aa92192518843342c0dc952bb0fec8",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "f08d513f4e7a470f000f214950d2eaf423419a1fd1064acf32ae6c59d5ea294e",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "7b8e1e294fb349d26829047ed00a20f7ac2442fe8f200e903e61e3200325b64e",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "27b3add008ec0e5aae1a166a8859b0f437611121de23f53e367d2fc3122dcb01",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "7bbf6f9255c7bd860526cd861ad9a14320b70083a4b94e6cf9dca91e3767f576",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "e4108594e7a379063b0d1f9506b983176cf95ff948ed885280c0169931b23352",
+        "noErrors": true
+      },
+      {
+        "suite": "storage-inspection",
+        "steps": 87,
+        "reportSha256": "084203d86d968003d4b31e28a2aa3195f1ea4a942ff71d4827017079fe1976c5",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "ad494a6968f47224ba8d4176228744c94c88689d623c2f434ccb37405ab096c2",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "8b7ef7f1a942c31f69f87d146859468c19e3f41b2f851dfcbf59b2994edec565",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "fadd719cf4f7944eb8bb12defddc958c022842dda5563a3d98cc755c6ed35daf",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 472,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
   }
 }

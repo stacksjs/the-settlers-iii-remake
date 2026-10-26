@@ -5,6 +5,7 @@ import type { Command, CommandResult, PlayerSettings } from './state'
 import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
 import { footprint } from './context'
 import { harvestableSite } from './production'
+import { surveyedMineForecast } from './placement'
 import { reachableTiles } from './routing'
 
 // A computer player is a client like any other: it reads what its player may
@@ -499,10 +500,12 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
   // Harvesting and extracting buildings must have their resource within their working radius.
   const building = o.rules.buildings.find(b => b.id === type)
   const workflow = building?.workflow
-  const deposits = workflow?.kind === 'extract' && workflow.food ? new Set(o.view.signs.filter(sign => sign.good === workflow.resource && sign.amount > 0 && o.view.owner[sign.tile] === o.player).map(sign => sign.tile)) : null
-  const need = deposits ? (tile: number) => deposits.has(tile) : NEEDS[type]?.(o)
+  const mine = workflow?.kind === 'extract' && !!workflow.food
+  const forecast = mine ? surveyedMineForecast(o.view, o.rules, type) : null
+  const need = mine ? null : NEEDS[type]?.(o)
   const radius = workflow && 'radius' in workflow ? workflow.radius : 0
   const serves = (x: number, y: number): boolean => (!need || !radius || area({ width: o.width, height: o.height }, { x, y }, radius).some(t => need(t)))
+    && (!forecast || forecast({ x, y }))
     && (workflow?.kind !== 'harvest' || o.harvestable(type, x, y))
   for (const anchor of anchors) {
     for (let r = 0; r <= 14; r++) {

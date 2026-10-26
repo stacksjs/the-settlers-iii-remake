@@ -7,7 +7,7 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, DEFAULT_START, economicAI, findBuildingSite, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, worldFromOriginal } from './engine'
+import { createSession, DEFAULT_START, economicAI, findBuildingSite, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, surveyedMineForecast, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 import { scene } from './scene'
@@ -552,11 +552,17 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (!ready || !session) return
       tool = kind
       if (kind && session.context.building.has(kind)) {
-        // Prefer a working harvest site, retaining legal ground as a fallback.
+        // Prefer known resources, retaining legal ground as a fallback.
         const c = castle(), found = c ? findBuildingSite(session, PLAYER, kind, c) : null
         if (found) cursor = found
-        const harvest = session.context.building.get(kind)!.workflow.kind === 'harvest'
-        report(found ? `${describe(kind, session.rules)} ${harvest && !observe(session, PLAYER).harvestable(kind, found.x, found.y) ? 'This site has no known reachable resources in its working area. Explore or choose another site.' : 'Choose open ground inside your border.'}` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
+        const work = session.context.building.get(kind)!.workflow
+        const harvest = work.kind === 'harvest', mine = work.kind === 'extract' && !!work.food
+        const warning = found && mine && !surveyedMineForecast(session.view(PLAYER), session.rules, kind)(found)
+          ? 'This site has no known matching deposit in reach. Send a geologist to survey or choose another site.'
+          : found && harvest && !observe(session, PLAYER).harvestable(kind, found.x, found.y)
+            ? 'This site has no known reachable resources in its working area. Explore or choose another site.'
+            : 'Choose open ground inside your border.'
+        report(found ? `${describe(kind, session.rules)} ${warning}` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
       }
       else if (kind === 'march') report('Click open ground to send your soldiers there, or an enemy tower or castle to attack it.')
       else if (kind?.startsWith('spell:')) report('Click where the intervention should fall. A priest walks within reach first, except for the Magic Eye.')

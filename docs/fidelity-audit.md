@@ -4,6 +4,12 @@ Reviewed 2026-10-21 against game commit `9c963955af732ee932fcf983d3c169d76565a48
 
 The current game is a playable settlement strategy prototype using original assets. It is not yet a close reproduction of The Settlers III. Browser stability and passing tests establish that the authored campaign works; they do not establish original-game parity. This audit reads implementation and primary material. It does not claim a side-by-side playthrough of the original executable or a measured fidelity percentage.
 
+## Update: surveyed mine-site recommendations (2026-10-25)
+
+The browser mine chooser now prefers legal sites within the existing extraction radius of the player's own live matching survey signs. It shares that public forecast with computer site selection. The search retains its nearest-ring ordering and a legal speculative fallback, which now warns when no matching deposit is known. It does not inspect hidden reserves or alter mining, food, timing, commands or save formats.
+
+The [mine placement receipt](roadmap/receipts/surveyed-mine-placement-2026-10-25.json) retains the failing public survey scenario, a normally constructed recommended mine producing physical ore after reload, foreign and expired knowledge checks, and browser controls. A separate actual rival match completed timber, storage, mining and smelting buildings but lost its castle to the computer. That playthrough exposed a barren mine suggestion; it establishes neither a human victory nor Gold mining fidelity.
+
 ## Update: original geologist and torso alignment (2026-10-25)
 
 The [geologist and clothing receipt](roadmap/receipts/original-geologist-and-torso-alignment-2026-10-25.json) records 119 original Roman geologist frames: six-direction movement and both survey actions, in the supplied remake's order. The scene chooses them from the real movement and duty work state, preserving the engineering survey duration. The reference 1.4:1.5 action ratio governs visual progress only. Reduced motion keeps the work image still while the task continues; a mid-survey restore preserves state and images. No original Gold timing is claimed.

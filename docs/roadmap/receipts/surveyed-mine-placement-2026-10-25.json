@@ -1,0 +1,214 @@
+{
+  "recordedAt": "2026-10-26T04:37:21.369836+00:00",
+  "base": "9f07c022ecbaf8cbfc34d40fb1aac5df475099a4",
+  "issue": 212,
+  "scope": "Browser mine-site recommendations and their public knowledge forecast. Engineering usability, not original Gold mining observations.",
+  "reproduction": {
+    "native": "Ordinary seed1 rival: suggested iron mine31,76 became active and exhausted without iron ore. Separate match later lost to rival; no human victory claim.",
+    "publicScenario": "Actual geologist surveyed iron48,40 and left. Mine48,40 legal; previous selector returned45,36 outside radius2.",
+    "unitRed": "0 pass,1 fail,8 assertions; received distance4 instead of <=2."
+  },
+  "sourceCorrection": [
+    "A public forecast reads only the player view, own live positive matching survey signs, explored ownership and existing extraction geometry.",
+    "Keyboard selector prefers known productive mine sites in existing nearest-ring order, retaining a legal speculative fallback.",
+    "Computer site selection and browser chooser share the forecast. No production, timing, reserve, rule, save, replay or installed-runtime changes.",
+    "Fallback message tells players to survey or choose another site before spending construction goods."
+  ],
+  "localChecks": {
+    "focused": "Final prepared forecast:5 passed,0 failed,63 assertions; actual construction and physical ore after restore, exact radius, invalid bounds, wrong/empty/expired signs, foreign knowledge, checksums and conservation.",
+    "browser": "28 steps passed, consoleErrors/failedRequests/collectionErrors empty; actual controls, warning, speculative build and save/reload.",
+    "types": "Final app/tools/STX type checks:258 template expressions,0errors and0warnings.",
+    "build": "Final production views build:1 page,no failures,21.82seconds.",
+    "fullUnit": "Final full rerun:366 passed,0 failed,23994 assertions,55 files,208.40seconds. Existing storage-cancellation replay passed2598.69ms with original5000ms budget and all12000/6000tick windows retained.",
+    "lint": "492 files,0 errors,0 warnings; final source scan passed.",
+    "performance": "The first shared implementation rescanned512 survey signs per candidate. Final forecast prepares the matching set once per search. A private10000candidate benchmark retains1410 matching sites; original4.06ms, prepared2.82ms. These are ad hoc engineering measurements, not a game performance guarantee."
+  },
+  "native": {
+    "url": "http://127.0.0.1:3459/",
+    "scenario": "Normal UI seed1 rival, reloaded final production bundle, paused0:11,44 population,1castle,30planks26stone. Saved normally; no goods spent to see warning.",
+    "capture": {
+      "file": "native-warning.jpg",
+      "sha256": "8149e685d57bd27e247f72009a823e918a65312e6710d08b866786f4473c4eaa"
+    },
+    "ax": {
+      "file": "native-warning.txt",
+      "sha256": "aeedb050bb8b5441af72f35746a79bc72f6d281e1afba6e7a4fafc655a4609ff"
+    },
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "finalCapture": {
+      "file": "native-final-warning.jpg",
+      "sha256": "38e04ec0a8533b08ee9bcc999c457d171ccc6f1cc9f1cdf96dd8e8ab65e42eb9",
+      "AXSha256": "70783e231ff23abe56be17436d7ee3a97d8285da65142789392b710c62acffc3"
+    }
+  },
+  "evidence": [
+    {
+      "file": "repro.ts",
+      "sha256": "da4dd070ece4e8f949fdaebbb082b4f8b76be99f55539ddc7bdd75f0c35b4f51"
+    },
+    {
+      "file": "red.log",
+      "sha256": "82d1ca71ccf34570118210c357d57f78e8edab05b41de743790b0d50801ebebd"
+    },
+    {
+      "file": "unit-red.log",
+      "sha256": "7479caef7647a2663be6331369eb119a72b62d6516b2511b37228112ce23fb10"
+    },
+    {
+      "file": "unit-expanded.log",
+      "sha256": "a60ff1a40f7b48ee194f1da37dfa07a91540557acbaecee5b423dc3a6c5e6caa"
+    },
+    {
+      "file": "browser-report.json",
+      "sha256": "0b713cf11d76f6a77d3056140d5b8c3b267656b022f3e4cc244914b489fa887d"
+    },
+    {
+      "file": "browser-media.json",
+      "sha256": "a565f46544cabf5653b4ca4fdb8fb0fd06240eef85dd2d7af4472b64adca0053"
+    },
+    {
+      "file": "types.log",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    {
+      "file": "types-tools-final.log",
+      "sha256": "6bff23649ffc1315fbe28aca53455888eb1c6c0dd6ab0bc8e0c7113e0c29c8d1"
+    },
+    {
+      "file": "build.log",
+      "sha256": "2e5d1d5db6e7790c8d055c6fe7237720c0340237b8320742fb8bc5fa881c8167"
+    },
+    {
+      "file": "unit.log",
+      "sha256": "af0bd2c5ad1e5515b07b1b8bd9db58799ff5b8f7692d5bb9ecbc1b5dfacff9fc"
+    },
+    {
+      "file": "storage-recovery-focused.log",
+      "sha256": "6687968394808bd626200f604e1766e2835ad286492160cd13b58ca36e072eaf"
+    },
+    {
+      "file": "forecast-benchmark.json",
+      "sha256": "b51a81f7675eb9bec1273ce0682f4ab48b1e01f64bdcd4233f6fc28d31417090"
+    },
+    {
+      "file": "forecast-prepared-benchmark.json",
+      "sha256": "77122d90e64ac82e438a33d635237d65e18c745025f66618692ced9ded9a8992"
+    },
+    {
+      "file": "unit-final-focused.log",
+      "sha256": "7e35ef23fe019502fe8e46ac6a1d53f8c9d6e08c0c02db2ae1590806a771548f"
+    },
+    {
+      "file": "unit-final.log",
+      "sha256": "0522ec73e56f504cc3be2bdf3b70fe3bbf62e2228b644ccb6ed11cef2bf37456"
+    },
+    {
+      "file": "types-final.log",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    {
+      "file": "lint-final.log",
+      "sha256": "aa69de228681e6321eb541487782764f8ecca045dc46ed0a78974f04c1ac4379"
+    },
+    {
+      "file": "build-final.log",
+      "sha256": "1e77f30a37a773855542964e50a02e16481ed7bf73c7a59596eed6a6b49c7d1c"
+    },
+    {
+      "file": "review.json",
+      "sha256": "1470f29c7ef3d84ed1ae6812f7da96974dbdbd57a8523915d26f2b3b61120579"
+    }
+  ],
+  "rules": {
+    "version": "0.13.0",
+    "digest": "546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931"
+  },
+  "remaining": [
+    "Committed CI and retained original diagnostics pending.",
+    "Survey signs describe last observed reserves and may become stale as mines work. Forecasts do not inspect hidden reserve changes.",
+    "Full Gold mining behavior, overall game fidelity, human-input rival victory and native presentation remain unqualified."
+  ],
+  "previousMainQualification": {
+    "recordedAt": "2026-10-26T04:40:48.588381+00:00",
+    "commit": "9f07c022ecbaf8cbfc34d40fb1aac5df475099a4",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40268507778",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12628280159,
+      "bytes": 21703,
+      "sha256": "e47a329fbf4de9ab66e4b3a969cdc2b78384ba4166f6bed6ee65c00a277e1ae0",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "10867a44eb61bace628f1281dcf0382d4e53562f2e44c0715554669e03421aa7",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "0f22db328cb78e025afe2525d6cee66d61aa92192518843342c0dc952bb0fec8",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "f08d513f4e7a470f000f214950d2eaf423419a1fd1064acf32ae6c59d5ea294e",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "7b8e1e294fb349d26829047ed00a20f7ac2442fe8f200e903e61e3200325b64e",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "27b3add008ec0e5aae1a166a8859b0f437611121de23f53e367d2fc3122dcb01",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "7bbf6f9255c7bd860526cd861ad9a14320b70083a4b94e6cf9dca91e3767f576",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "e4108594e7a379063b0d1f9506b983176cf95ff948ed885280c0169931b23352",
+        "noErrors": true
+      },
+      {
+        "suite": "storage-inspection",
+        "steps": 87,
+        "reportSha256": "084203d86d968003d4b31e28a2aa3195f1ea4a942ff71d4827017079fe1976c5",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "ad494a6968f47224ba8d4176228744c94c88689d623c2f434ccb37405ab096c2",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "8b7ef7f1a942c31f69f87d146859468c19e3f41b2f851dfcbf59b2994edec565",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "fadd719cf4f7944eb8bb12defddc958c022842dda5563a3d98cc755c6ed35daf",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 472,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
+  }
+}
