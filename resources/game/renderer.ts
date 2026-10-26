@@ -100,16 +100,23 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       const raster = new ImageData(surfaceWidth, surfaceHeight), pixels = new Uint32Array(raster.data.buffer)
       // Background/ETextureOrientation continuous UVs follow the land grid,
       // independently of the height-deformed projected geometry.
-      const rasterPoint = (p: Point, x: number, y: number) => ({ x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale, u: x * 16 - y * 8 + 8, v: y * 16 })
+      const rasterPoint = (p: Point, x: number, y: number) => {
+        const t = y * map.width + x
+        // Background.addPointToGeometry uses a north-height gradient and an
+        // explicit interior guard. Current sight provides steady-state 100/50/0
+        // reference weights; temporal fog dimming remains separate work.
+        const light = x > 0 && x < map.width - 2 && y > 0 && y < map.height - 2 && viewer.explored[t]
+          ? Math.max(0.4, 0.875 + (map.elevation[t - map.width]! - map.elevation[t]!) * 0.125) * (viewer.visible[t] ? 1 : 0.5) : 0
+        return { x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale, u: x * 16 - y * 8 + 8, v: y * 16, light }
+      }
       const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
       const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
       const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
         const [ax, ay] = a, [bx, by] = b, [cx2, cy2] = c
         if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
-        const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay), t = ay * map.width + ax
-        const explored = !!viewer.explored[t], delta = explored ? map.elevation[ay * map.width + ax]! - map.elevation[cy2 * map.width + cx2]! : 0
+        const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay)
         const ra = rasterPoint(pa, ax, ay), rb = rasterPoint(pb, bx, by), rc = rasterPoint(pc, cx2, cy2)
-        const sample = materials!.sampler(explored ? kind : 'unexplored', delta, !explored || !!viewer.visible[t], ra, rb, rc)
+        const sample = materials!.sampler(kind, ra, rb, rc)
         paintTriangle(pixels, surfaceWidth, surfaceHeight, ra, rb, rc, sample)
       }
       // Background.addTrianglesToGeometry emits the upward face first.
@@ -354,7 +361,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     /** Retained capacity and summed raster bytes drawn this frame, not RSS/GPU memory. */
     terrainCacheMemory: () => ({ entries: chunks.size, bytes: terrainBytes, inputBytes: terrainInputBytes, frameBytes: terrainFrameBytes, rebuiltChunks: terrainFrameBuilds, limit: TERRAIN_CACHE_BYTES }),
     terrainFrameMemory: () => ({ bytes: terrainFrame.width * terrainFrame.height * 4, limit: 8 * 1024 * 1024 }),
-    terrainMaterialMemory: () => materials?.memory() ?? { bytes: 0, limit: 2 * 1024 * 1024, entries: 0, shadeBytes: 0 },
+    terrainMaterialMemory: () => materials?.memory() ?? { bytes: 0, limit: 2 * 1024 * 1024, entries: 0 },
     dispose() { clearTinted(); clearChunks(); materials?.dispose(); materials = null; atlas = null; terrainSession = null },
     invalidate() { clearChunks() },
     pick(session: Session, clientX: number, clientY: number): Point | null {

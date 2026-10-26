@@ -41,7 +41,7 @@ try {
     const image = await readFile(capture)
     if (image.length < 24 || image.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || image.readUInt32BE(16) !== 900 * scale || image.readUInt32BE(20) !== 600 * scale) throw new Error('Terrain screenshot does not match the requested device-pixel dimensions')
     captures.push({ scale, screenshot: { sha256: Bun.SHA256.hash(image, 'hex'), bytes: image.length, width: image.readUInt32BE(16), height: image.readUInt32BE(20) } })
-    console.log(`Terrain reference UV, coverage, native materials, fog, overlap and resource checks passed at scale ${scale} (${value.checkedPixels} pixels).`)
+    console.log(`Terrain reference UV, vertex light, coverage, fog, overlap and resource checks passed at scale ${scale} (${value.checkedPixels} pixels).`)
   }
   await writeFile(resolve(shots, 'terrain-media.json'), `${JSON.stringify({ schemaVersion: 1, captures, scope: 'Production terrain renderer and independent exact source-texel/native-pattern checks in two real device-scale contexts. Not original Gold observations.', rasterPublication: 'withheld-pending-redistribution-evidence' }, null, 2)}\n`)
 }

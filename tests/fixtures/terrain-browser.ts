@@ -4,6 +4,7 @@ import type { MapFeature } from '../../resources/game/engine/map'
 import type { Session } from '../../resources/game/engine'
 import { createSession, describeMap, ROMAN_ENGINEERING as rules } from '../../resources/game/engine'
 import { createRenderer } from '../../resources/game/renderer'
+import { landscape, order, place, session as engineeringSession, until } from './engine'
 
 const result = document.querySelector('#result')!
 try {
@@ -25,10 +26,10 @@ try {
     if (session.checksum() !== checksum) throw new Error('Terrain painting changed the simulation')
     const frame = renderer.terrainFrameMemory(), material = renderer.terrainMaterialMemory(), cache = renderer.terrainCacheMemory()
     maximumFrameBytes = Math.max(maximumFrameBytes, frame.bytes); maximumMaterialBytes = Math.max(maximumMaterialBytes, material.bytes)
-    if (frame.bytes > frame.limit || material.bytes > material.limit || material.entries > 32 || material.shadeBytes > 34 * 256 * 3 * 4 || cache.bytes > cache.limit || cache.inputBytes > cache.entries * 35 * 35 * 5) throw new Error('Terrain rendering exceeded its resource budgets')
+    if (frame.bytes > frame.limit || material.bytes > material.limit || material.entries > 32 || cache.bytes > cache.limit || cache.inputBytes > cache.entries * 35 * 35 * 5) throw new Error('Terrain rendering exceeded its resource budgets')
   }
   const clear = (): void => {
-    if (renderer.terrainFrameMemory().bytes || renderer.terrainMaterialMemory().bytes || renderer.terrainMaterialMemory().shadeBytes || renderer.terrainCacheMemory().bytes || renderer.terrainCacheMemory().inputBytes) throw new Error('Disposed terrain retained derived resources')
+    if (renderer.terrainFrameMemory().bytes || renderer.terrainMaterialMemory().bytes || renderer.terrainCacheMemory().bytes || renderer.terrainCacheMemory().inputBytes) throw new Error('Disposed terrain retained derived resources')
   }
   const zooms = [{ zoom: 0.5, p: 1, q: 2 }, { zoom: 0.6, p: 3, q: 5 }, { zoom: 0.75, p: 3, q: 4 }, { zoom: 1, p: 1, q: 1 }, { zoom: 1.25, p: 5, q: 4 }, { zoom: 3, p: 3, q: 1 }]
   const cases = zooms.flatMap(value => [0, 0.25, 0.5].map(offset => ({ ...value, offset })))
@@ -49,47 +50,120 @@ try {
       check(read(x, y), x, y); checkedPixels++
     }
   }
-  const flat = make(); renderer.setAssets(empty)
+  // Background.addPointToGeometry gives a flat visible interior vertex
+  // 0.875 light. Multiplication of this authored color is integer-exact.
+  const lightSource = document.createElement('canvas'); lightSource.width = lightSource.height = 1
+  lightSource.getContext('2d')!.fillStyle = '#804020'; lightSource.getContext('2d')!.fillRect(0, 0, 1, 1)
+  const lightFrame: AtlasFrame = { key: 'terrain-grass', frame: 0, x: 0, y: 0, width: 1, height: 1, offsetX: 0, offsetY: 0 }
+  const flat = make()
+  const lightAtlas: Atlas = { image: await image(lightSource), frames: new Map([[lightFrame.key, [lightFrame]]]), playerSlots: [] }
+  renderer.setAssets(lightAtlas)
+  renderer.camera.zoom = 1; renderer.home({ x: 32, y: 32 }); draw(flat)
+  const flatLightPoint = renderer.screen({ x: 256, y: 288 }), flatLight = pixel(context, flatLightPoint.x, flatLightPoint.y)
+  if (flatLight.join() !== '112,56,28,255') throw new Error(`Reference flat terrain light: ${flatLight} instead of 112,56,28,255`)
+  checkedPixels++; lightSource.width = lightSource.height = 0
+
+  // Worked reference face: projected (256,284),(264,295),(248,297),
+  // vertex light 5/8,3/4,9/8. Its light is
+  // (960+40*dy-31*dx)/1536. The literals below cover only the four
+  // exact quarter-pixel backing centres at a viewport nearest tie.
+  const gradient = make([{ kind: 'elevation', x: 32, y: 32, radius: 0, amount: 2 }, { kind: 'elevation', x: 33, y: 33, radius: 0, amount: 1 }])
+  renderer.home({ x: 32, y: 32 }, 2); draw(gradient)
+  const gradientOrigin = renderer.screen({ x: 256, y: 284 })
+  const gradientSamples = [
+    { dx: 0, dy: 2, colors: ['87,43,22,255', '89,44,22,255', '86,43,21,255', '87,44,22,255'] },
+    { dx: 0, dy: 4, colors: ['94,47,23,255', '95,48,24,255', '92,46,23,255'] },
+    { dx: 0, dy: 6, colors: ['100,50,25,255', '102,51,25,255', '99,49,25,255', '101,50,25,255'] },
+    { dx: -1, dy: 4, colors: ['96,48,24,255', '98,49,24,255', '95,47,24,255'] },
+    { dx: 1, dy: 6, colors: ['98,49,24,255', '99,50,25,255', '96,48,24,255'] },
+    { dx: -2, dy: 6, colors: ['105,53,26,255', '107,54,27,255', '104,52,26,255', '106,53,26,255'] },
+    { dx: 2, dy: 8, colors: ['102,51,25,255', '103,52,26,255', '100,50,25,255', '102,51,26,255'] },
+  ]
+  for (const { dx, dy, colors } of gradientSamples) {
+    const actual = pixel(context, gradientOrigin.x + dx, gradientOrigin.y + dy)
+    if (!colors.includes(actual.join())) throw new Error(`Reference vertex gradient at${dx},${dy}: ${actual}`)
+    checkedPixels++
+  }
+  const ramp: MapFeature[] = []
+  for (let y = 0; y < 96; y++) for (let x = 0; x < 96; x++) ramp.push({ kind: 'elevation', x, y, radius: 0, amount: y * 4 })
+  const clamped = make(ramp); renderer.home({ x: 32, y: 32 }, 128); draw(clamped)
+  const clampOrigin = renderer.screen({ x: 256, y: 32 })
+  if (pixel(context, clampOrigin.x, clampOrigin.y).join() !== '51,26,13,255') throw new Error('Reference lower light clamp did not preserve 0.4')
+  checkedPixels++
+  const edge = make([], 'carrier', [{ x: 94, y: 32 }]); renderer.home({ x: 94, y: 32 }); draw(edge)
+  const edgeOrigin = renderer.screen({ x: 1248, y: 288 })
+  if (pixel(context, edgeOrigin.x, edgeOrigin.y + 2).join() !== '0,0,0,255') throw new Error('Reference map-edge light guard was not preserved')
+  checkedPixels++
+  for (const border of [
+    { at: { x: 0, y: 32 }, view: { x: -256, y: 288 }, colors: ['28,14,7,255', '31,16,8,255', '32,16,8,255', '35,17,9,255'] },
+    { at: { x: 32, y: 0 }, view: { x: 512, y: 0 }, colors: ['53,26,13,255', '59,30,15,255'] },
+    { at: { x: 32, y: 94 }, view: { x: -240, y: 846 }, colors: ['0,0,0,255'] },
+  ]) {
+    const borderSession = make([], 'carrier', [border.at]); renderer.home(border.at); draw(borderSession)
+    const point = renderer.screen(border.view), actual = pixel(context, point.x, point.y + 4)
+    if (!border.colors.includes(actual.join())) throw new Error(`Reference light at map border${border.at.x},${border.at.y}: ${actual}`)
+    checkedPixels++
+  }
+  renderer.home({ x: 70, y: 70 }); draw(flat)
+  const unseenOrigin = renderer.screen({ x: 560, y: 630 })
+  if (pixel(context, unseenOrigin.x, unseenOrigin.y).join() !== '0,0,0,255') throw new Error('Unexplored vertices did not have zero light')
+  checkedPixels++
+  const boundaryX = 32 + rules.visibility.settler, sight = flat.state.players[0]!
+  if (sight.visible[32 * 96 + boundaryX] !== 1 || sight.visible[33 * 96 + boundaryX] !== 1 || sight.explored[33 * 96 + boundaryX + 1] !== 0) throw new Error('Authored visibility boundary does not contain the required visible/visible/unexplored face')
+  renderer.home({ x: boundaryX, y: 32 }); draw(flat)
+  const sightOrigin = renderer.screen({ x: boundaryX * 16 - 256, y: 288 }), sightPixel = pixel(context, sightOrigin.x, sightOrigin.y + 4)
+  if (!['84,42,21,255', '81,40,20,255', '80,40,20,255', '77,39,19,255'].includes(sightPixel.join())) throw new Error(`Mixed visible/unexplored vertex interpolation: ${sightPixel}`)
+  checkedPixels++
+  // Actual diggers change the north-height dependency across the y=32 chunk
+  // boundary. A cached redraw must equal an explicit fresh renderer draw.
+  const grading = engineeringSession({ map: landscape([{ kind: 'elevation', x: 40, y: 31, radius: 3, amount: 6 }]), settlers: { carrier: 12 }, goods: { shovel: 2, plank: 30, stone: 30 } })
+  sessions.push(grading)
+  order(grading, 'settings', { settings: { builderLimit: 0, diggerLimit: 1, carrierRatio: 0 } })
+  place(grading, 'storage', { x: 40, y: 31 })
+  renderer.home({ x: 40, y: 32 }, grading.state.map.elevation[32 * 96 + 40]!); draw(grading)
+  const beforeGrade = grading.state.map.elevation.slice()
+  until(grading, () => grading.state.map.elevation.some((height, t) => Math.floor(t / 96) === 31 && height !== beforeGrade[t]), 2000)
+  draw(grading)
+  const cachedGrade = context.getImageData(0, 0, canvas.width, canvas.height).data
+  renderer.invalidate(); draw(grading)
+  if (!context.getImageData(0, 0, canvas.width, canvas.height).data.every((value, i) => value === cachedGrade[i])) throw new Error('Actual digger grading left stale north-neighbor light across the chunk boundary')
+  renderer.setAssets(empty)
   for (const { zoom, offset } of cases) {
     renderer.camera.zoom = zoom; renderer.home({ x: 32, y: 32 }); renderer.camera.x += offset; renderer.camera.y += offset; draw(flat)
     samplePatch(renderer.screen({ x: 256, y: 288 }), zoom, actual => {
-      if (actual.join() !== '111,148,82,255') throw new Error(`Flat four-chunk seam at zoom${zoom}/offset${offset}: ${actual}`)
+      if (actual.join() !== '97,130,72,255') throw new Error(`Flat four-chunk seam at zoom${zoom}/offset${offset}: ${actual}`)
     })
   }
   const elevated = make([{ kind: 'elevation', x: 32, y: 32, radius: 100000, amount: 128 }])
   renderer.camera.zoom = 0.6; renderer.home({ x: 32, y: 32 }, 128); draw(elevated)
-  samplePatch(renderer.screen({ x: 256, y: 32 }), 0.6, actual => { if (actual.join() !== '111,148,82,255') throw new Error('Raised terrain lost shared-edge coverage') })
+  samplePatch(renderer.screen({ x: 256, y: 32 }), 0.6, actual => { if (actual.join() !== '97,130,72,255') throw new Error('Raised terrain lost shared-edge coverage') })
   const mixed = make([{ kind: 'terrain', id: 'sand', x: 40, y: 32, radius: 8 }])
   for (const { zoom, offset } of cases) {
     renderer.camera.zoom = zoom; renderer.home({ x: 32, y: 32 }); renderer.camera.x += offset; renderer.camera.y += offset; draw(mixed)
     samplePatch(renderer.screen({ x: 256, y: 288 }), zoom, actual => {
-      if (actual[3] !== 255 || actual.some((value, channel) => channel < 3 && (value < [111, 148, 82][channel]! || value > [184, 173, 120][channel]!))) throw new Error(`Mixed-material coverage gap or additive brightening: ${actual}`)
+      if (actual[3] !== 255 || actual.some((value, channel) => channel < 3 && (value < [97, 130, 72][channel]! || value > [161, 151, 105][channel]!))) throw new Error(`Mixed-material coverage gap or additive brightening: ${actual}`)
     })
-  }
-  const opaque = (color: string, overlay?: string): number[] => {
-    const surface = document.createElement('canvas'); surface.width = surface.height = 1
-    const context = surface.getContext('2d')!; context.fillStyle = color; context.fillRect(0, 0, 1, 1)
-    if (overlay) { context.fillStyle = overlay; context.fillRect(0, 0, 1, 1) }
-    const value = [...context.getImageData(0, 0, 1, 1).data]; surface.width = surface.height = 0; return value
   }
   const overlap = make([{ kind: 'elevation', x: 40, y: 64, radius: 0, amount: 216 }, { kind: 'terrain', id: 'sand', x: 40, y: 64, radius: 0 }], 'carrier', [{ x: 16, y: 16 }, { x: 40, y: 64 }])
   renderer.camera.zoom = 1; renderer.home({ x: 16, y: 16 }); draw(overlap)
-  const overlapPoint = renderer.screen({ x: 128, y: 200 }), expectedOverlap = opaque('#b8ad78', 'rgba(255,248,220,0.35)')
-  if (pixel(context, overlapPoint.x, overlapPoint.y).join() !== expectedOverlap.join()) throw new Error(`Opaque elevated face did not replace lower ground: ${pixel(context, overlapPoint.x, overlapPoint.y)} instead of ${expectedOverlap}`)
+  // Exact quarter-pixel backing candidates for the known raised upward face.
+  // Vertex lights are 0.4,0.875,27.875; clamp only after RGB multiplication.
+  const overlapPoint = renderer.screen({ x: 128, y: 200 }), overlapCandidates = ['255,255,211,255', '255,255,213,255', '169,159,110,255', '172,161,112,255']
+  if (!overlapCandidates.includes(pixel(context, overlapPoint.x, overlapPoint.y).join())) throw new Error(`Opaque elevated face did not replace lower ground: ${pixel(context, overlapPoint.x, overlapPoint.y)} instead of ${overlapCandidates}`)
   checkedPixels++
   const folded = make([{ kind: 'elevation', x: 32, y: 32, radius: 0, amount: 216 }, { kind: 'elevation', x: 33, y: 33, radius: 0, amount: 216 }], 'carrier', [{ x: 32, y: 32 }, { x: 33, y: 33 }])
   renderer.home({ x: 32, y: 32 }, 216); draw(folded)
   const foldPoint = renderer.screen({ x: 260, y: -130 })
-  if (pixel(context, foldPoint.x, foldPoint.y).join() !== '111,148,82,255') throw new Error('Folded cell did not retain the reference upward/downward face order')
+  if (pixel(context, foldPoint.x, foldPoint.y).join() !== '46,61,34,255') throw new Error('Folded cell did not retain the reference upward/downward face order')
   checkedPixels++
   const crossing = make([{ kind: 'elevation', x: 31, y: 32, radius: 0, amount: 216 }, { kind: 'elevation', x: 32, y: 33, radius: 0, amount: 64 }, { kind: 'terrain', id: 'sand', x: 31, y: 32, radius: 0 }], 'carrier', [{ x: 31, y: 32 }, { x: 32, y: 33 }])
   renderer.home({ x: 31, y: 32 }, 216); renderer.camera.y -= 344; draw(crossing)
-  const crossingPoint = renderer.screen({ x: 250, y: 200 }), expectedCrossing = opaque('#6f9452', 'rgba(255,248,220,0.35)')
-  if (pixel(context, crossingPoint.x, crossingPoint.y).join() !== expectedCrossing.join()) throw new Error('Chunk grouping changed overlapping terrain row order')
+  const crossingPoint = renderer.screen({ x: 250, y: 200 }), crossingCandidates = ['57,75,42,255', '57,76,42,255']
+  if (!crossingCandidates.includes(pixel(context, crossingPoint.x, crossingPoint.y).join())) throw new Error('Chunk grouping changed overlapping terrain row order')
   checkedPixels++
   const fog = make([], 'geologist'); renderer.home({ x: 32, y: 32 }); draw(fog)
   fog.enqueue({ tick: 0, player: 1, seq: 0, type: 'specialists', profession: 'geologist', x: 3, y: 3, count: 1 }); fog.advance(1000); draw(fog)
-  const fogPoint = renderer.screen({ x: 256, y: 288 }), expectedFog = opaque('#6f9452', 'rgba(8,16,13,0.38)')
+  const fogPoint = renderer.screen({ x: 256, y: 288 }), expectedFog = [49, 65, 36, 255]
   if (pixel(context, fogPoint.x, fogPoint.y).join() !== expectedFog.join()) throw new Error('Explored terrain fog did not use opaque native material compositing')
   checkedPixels++
 
@@ -107,7 +181,7 @@ try {
     const session = make(height ? [{ kind: 'elevation', x: 32, y: 32, radius: 100000, amount: height }] : [], 'carrier', [{ x: 28, y: 32 }])
     renderer.camera.zoom = 1; renderer.home({ x: 32, y: 32 }, height); draw(session)
     const centre = renderer.screen({ x: 256, y: 288 - height * 2 })
-    for (const [dx, expected] of [[2, '137,39,50,255'], [-2, '85,39,38,255']] as const) {
+    for (const [dx, expected] of [[2, '120,34,44,255'], [-2, '74,34,33,255']] as const) {
       const actual = pixel(context, centre.x + dx, centre.y + 2)
       if (actual.join() !== expected) coordinateFailures.push(`height${height}/dx${dx}: ${actual} instead of ${expected}`)
       checkedPixels++
@@ -117,16 +191,16 @@ try {
   // (264,295), (248,297). The interior sample has raw UV texel (264,515).
   const sloped = make([{ kind: 'elevation', x: 32, y: 32, radius: 0, amount: 2 }, { kind: 'elevation', x: 33, y: 33, radius: 0, amount: 1 }])
   renderer.home({ x: 32, y: 32 }, 2); draw(sloped)
-  const slopedPoint = renderer.screen({ x: 256, y: 284 }), slopedExpected = opaque('rgb(111,32,39)', 'rgba(255,248,220,0.1)')
+  const slopedPoint = renderer.screen({ x: 256, y: 284 }), slopedCandidates = ['75,22,26,255', '74,21,26,255', '77,22,27,255', '76,22,27,255']
   const slopedActual = pixel(context, slopedPoint.x, slopedPoint.y + 2)
-  if (slopedActual.join() !== slopedExpected.join()) coordinateFailures.push(`unequal-height upward face: ${slopedActual} instead of ${slopedExpected}`)
+  if (!slopedCandidates.includes(slopedActual.join())) coordinateFailures.push(`unequal-height upward face: ${slopedActual} instead of ${slopedCandidates}`)
   checkedPixels++
   // The existing folded cell's downward face has negative projected area.
   // Its winning interior sample has u=268 and v=519 or 520 depending on the
   // viewport's exact nearest backing-pixel tie, not an arbitrary color range.
   renderer.home({ x: 32, y: 32 }, 216); draw(folded)
   const foldedPoint = renderer.screen({ x: 260, y: -130 }), foldedActual = pixel(context, foldedPoint.x, foldedPoint.y)
-  if (!['163,60,71,255', '163,67,76,255'].includes(foldedActual.join())) coordinateFailures.push(`folded downward face: ${foldedActual}`)
+  if (!['67,25,29,255', '67,28,31,255'].includes(foldedActual.join())) coordinateFailures.push(`folded downward face: ${foldedActual}`)
   checkedPixels++
   const collapsed = make([{ kind: 'elevation', x: 33, y: 33, radius: 0, amount: 4 }, { kind: 'elevation', x: 32, y: 33, radius: 0, amount: 5 }])
   renderer.home({ x: 32, y: 32 }); draw(collapsed)
@@ -166,7 +240,12 @@ try {
           field = document.createElement('canvas'); field.width = field.height = 256 * density
           const fill = field.getContext('2d')!; fill.imageSmoothingEnabled = false
           fill.setTransform(density, 0, 0, density * 9 / 16, (-centre.left - 8) * density, -centre.top * density)
-          fill.fillStyle = fill.createPattern(tile, 'repeat')!; fill.fillRect(centre.left + 8, centre.top * 16 / 9, 256, 256 * 16 / 9); fields.set(density, field)
+          fill.fillStyle = fill.createPattern(tile, 'repeat')!; fill.fillRect(centre.left + 8, centre.top * 16 / 9, 256, 256 * 16 / 9)
+          // Independent reference flat light is the exact rational 7/8.
+          // Convert to RGBA8 only after multiplying, before viewport sampling.
+          const lit = fill.getImageData(0, 0, field.width, field.height)
+          for (let i = 0; i < lit.data.length; i += 4) for (let c = 0; c < 3; c++) lit.data[i + c] = Math.floor((lit.data[i + c]! * 7 + 4) / 8)
+          fill.putImageData(lit, 0, 0); fields.set(density, field)
         }
         renderer.camera.zoom = zoom; renderer.home(centre.tile, height); renderer.camera.x += offset; renderer.camera.y += offset; draw(session)
         target.clearRect(0, 0, 800, 480); target.imageSmoothingEnabled = false
@@ -190,7 +269,7 @@ try {
             tied ||= us.length > 1 || vs.length > 1
             for (const sy of vs) for (const sx of us) {
               const i = (((sy % frame.height + frame.height) % frame.height) * frame.width + (sx % frame.width + frame.width) % frame.width) * 4
-              allowed.add([...sourceData.subarray(i, i + 4)].join())
+              allowed.add([...sourceData.subarray(i, i + 4)].map((n, c) => c < 3 ? Math.floor((n * 7 + 4) / 8) : n).join())
             }
           }
           if (!allowed.has(actual.join()) || !allowed.has(reference.join())) throw new Error(`Invalid reference UV texel at${x},${y}/zoom${zoom}/offset${offset}:actual${actual}/native${reference}/allowed${[...allowed]}/tie${tied}`)
@@ -226,6 +305,6 @@ try {
   if (renderer.terrainCacheMemory().rebuiltChunks !== 0) throw new Error('Unchanged actual visibility inputs caused repeated rasterization')
   renderer.dispose(); clear()
   for (const session of sessions) session.dispose()
-  result.textContent = JSON.stringify({ ok: true, deviceScale: ratio, checkedPixels, continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalPalettePreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle and exact supplied terrain texels across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
+  result.textContent = JSON.stringify({ ok: true, deviceScale: ratio, checkedPixels, referenceVertexLight: true, gradientSamples: 7, lowerLightClamp: true, saturationAfterInterpolation: true, referenceEdgeGuard: true, referenceEdgesTested: ['left', 'top', 'right', 'bottom'], mixedVisibilityFace: true, diggerNorthHaloInvalidation: true, cacheComparisonPixels: canvas.width * canvas.height, noTintCache: true, steadyVisibilityWeights: [0, 0.5, 1], rgba8Rounding: 'nearest, half upward after source RGB multiplication', continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalSourcePixelsPreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle with reference vertex-light equations and explicit RGBA8 rounding across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU texel and channel rounding tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
 }
 catch (error) { result.textContent = JSON.stringify({ ok: false, error: String(error) }) }

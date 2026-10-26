@@ -239,3 +239,11 @@ The browser now assigns continuous texture coordinates to grid vertices using th
 The browser regression includes literal authored texels on both face orientations, unequal vertex heights, a folded face with negative projected area and a collapsed face. An independent native Canvas transform checks all four imported materials across flat and raised terrain, negative coordinates, chunk junctions, camera offsets and zooms at actual 1x and 2x. The [continuous texture receipt](roadmap/receipts/browser-terrain-uv-2026-10-26.json) records the reproduction, source provenance and qualification status.
 
 This corrects continuous coordinates from the supplied remake. Full landscape identity and transition textures, reference vertex lighting, matched original Gold scenes and native presentation remain open. It does not establish original GPU sampling behavior at equidistant texels or complete Gold fidelity.
+
+## Reference terrain vertex lighting (2026-10-26)
+
+Terrain now follows the pinned reference's per-vertex north-height light, lower clamp and explicit map-edge guard. Light is interpolated over the actual projected face before multiplying the sampled source RGB. Final channels saturate and round to RGBA8 after multiplication. The previous per-face colored overlays and their shade cache have been removed.
+
+Visible, explored and unexplored vertices use the documented steady-state visibility weights of 1, 0.5 and 0. The renderer reads the existing simulation visibility layers without changing simulation state. An actual digger grading across the north edge of a terrain chunk verifies that cached lighting matches an explicit fresh redraw. Authored literal gradients, all four map edges, lower clamping, saturation, folded geometry and the original texture checks run at actual 1x and 2x. The [vertex-light receipt](roadmap/receipts/browser-terrain-light-2026-10-26.json) records the retained failure and qualification status.
+
+Reference fog also dims over time. That temporal behavior remains unimplemented, and these steady-state checks do not qualify it. Native GPU texel and channel-rounding ties, landscape transitions, matched Gold scenes and full native presentation remain open.

@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-26T22:33:56.504087+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/218",
+  "parentIssue": 88,
+  "status": "Source correction and focused gates passed; complete local browser suite and exact pushed-head CI pending",
+  "scope": "Reference remake per-vertex browser terrain lighting and documented steady-state visibility weights. Not original Gold observations, temporal fog dimming or native presentation qualification.",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/Background.java",
+        "sha256": "97ae86aecb3c00cd63767e9134f222f1ae9f59af80b59ab8fea1c68cdfe08ec2"
+      },
+      {
+        "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/background.frag",
+        "sha256": "fcbcf0fd42cf64a5ca51a7cf448f1b5cf3a8b54cd3fa4a2e28860ca59282263f"
+      },
+      {
+        "path": "jsettlers.common/src/main/java/jsettlers/common/CommonConstants.java",
+        "sha256": "c28dd4b8309a37f90edad39cbc184e6b99ff1d5fcfc3c6e42c6fd96a2bd80025"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/algorithms/fogofwar/FogOfWar.java",
+        "sha256": "89640aaf30c019eda0ea5fdb7e523bace0c9eb5a9722e80765dbf7d47c1504de"
+      }
+    ],
+    "light": "max(0.4,0.875+(northHeight-height)*0.125)",
+    "edgeGuard": "x>0 && x<width-2 && y>0 && y<height-2",
+    "visibilityWeights": {
+      "visible": 1,
+      "explored": 0.5,
+      "unexplored": 0
+    },
+    "fragment": "Multiply interpolated light by sampled source RGB, then convert to final RGBA8"
+  },
+  "reproduction": {
+    "sourceHead": "ed719525ef3cae229b339c4715dd64a2c7c596ff",
+    "command": "bun tests/browser/terrain.ts",
+    "actualFlat": [
+      128,
+      64,
+      32,
+      255
+    ],
+    "expectedFlat": [
+      112,
+      56,
+      28,
+      255
+    ],
+    "redLog": {
+      "sha256": "199fbb43f66f6513713e4857eab3d21b908b4364efe775640e551a4e6feb2f5a",
+      "bytes": 826
+    },
+    "redReport": {
+      "sha256": "b5563b6c34714ab4cc4d313a0be6ff335ef1ad0c2ebc8344283fa8a04ae5ac04",
+      "bytes": 1454
+    },
+    "rootCause": "The terrain used per-face colored overlays rather than interpolated source vertex brightness and RGB multiplication."
+  },
+  "implementation": [
+    "Compute north-height light independently for every actual grid vertex with the reference lower clamp and explicit boundary guard",
+    "Use existing actual face coefficients for light interpolation, including negative winding and collapsed no-paint geometry",
+    "Multiply raw source RGB after interpolation; saturate and round final RGBA8 channels, with half ties upward in this software renderer",
+    "Remove per-face colored overlays, the shade lookup cache and its obsolete diagnostic field",
+    "Read current visible/explored arrays without altering deterministic simulation state; actual north-neighbor inputs already participate in the one-vertex cache halo"
+  ],
+  "focusedBrowser": [
+    {
+      "deviceScale": 1,
+      "checkedPixels": 120354,
+      "referenceVertexLight": true,
+      "gradientSamples": 7,
+      "lowerLightClamp": true,
+      "saturationAfterInterpolation": true,
+      "referenceEdgeGuard": true,
+      "mixedVisibilityFace": true,
+      "diggerNorthHaloInvalidation": true,
+      "cacheComparisonPixels": 384000,
+      "steadyVisibilityWeights": [
+        0,
+        0.5,
+        1
+      ],
+      "rgba8Rounding": "nearest, half upward after source RGB multiplication",
+      "texturedCases": 360,
+      "maximumFrameBytes": 2958400,
+      "maximumMaterialBytes": 131072,
+      "sourceUnchanged": true,
+      "resourceBounds": true,
+      "disposal": true,
+      "checksumUnchanged": true
+    },
+    {
+      "deviceScale": 2,
+      "checkedPixels": 120354,
+      "referenceVertexLight": true,
+      "gradientSamples": 7,
+      "lowerLightClamp": true,
+      "saturationAfterInterpolation": true,
+      "referenceEdgeGuard": true,
+      "mixedVisibilityFace": true,
+      "diggerNorthHaloInvalidation": true,
+      "cacheComparisonPixels": 1536000,
+      "steadyVisibilityWeights": [
+        0,
+        0.5,
+        1
+      ],
+      "rgba8Rounding": "nearest, half upward after source RGB multiplication",
+      "texturedCases": 360,
+      "maximumFrameBytes": 2958400,
+      "maximumMaterialBytes": 131072,
+      "sourceUnchanged": true,
+      "resourceBounds": true,
+      "disposal": true,
+      "checksumUnchanged": true
+    }
+  ],
+  "independentExpectations": {
+    "flat": "Literal authored RGB (128,64,32) at 7/8 gives (112,56,28), without a channel rounding tie",
+    "gradient": "Worked face with projected(256,284),(264,295),(248,297), vertex light5/8,3/4,9/8 has L=(960+40*dy-31*dx)/1536; seven literal samples cover exact viewport nearest candidates",
+    "lowerClamp": "Public ramp increases height by4 per row, requiring0.4 instead of unclamped0.375; authored RGB gives51,26,13",
+    "edges": "All four map borders checked using literal zero-light or mixed-edge colors",
+    "saturation": "Known elevated face has vertex lights0.4,0.875,27.875; literal outputs prove saturation occurs after interpolation and multiplication",
+    "ties": "Only exact nearest backing centres and raw UV boundaries admit neighboring source candidates. No RGB tolerance, skipped pixels or arbitrary color interval. Final software RGBA8 half ties round upward. Native GPU quantization ties remain unqualified.",
+    "originalMaterials": "Independent native Canvas UV pattern followed by exact rational7/8 flat reference light; all four actual imported sources remain unchanged",
+    "grading": "Actual public construction settings and storage placement recruit a digger; its real leveling changes row31. Full cached output equals a fresh draw across the y32 chunk boundary."
+  },
+  "checks": {
+    "lint": {
+      "result": "passed",
+      "command": "./buddy lint",
+      "sha256": "d39133d7f1f8215a168e60674d0d020f9caefdfcf820b0337aedb42fc92f064a",
+      "bytes": 301
+    },
+    "types": {
+      "result": "passed",
+      "command": "bun run typecheck",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94",
+      "bytes": 543
+    },
+    "units": {
+      "result": "passed",
+      "command": "./buddy test --unit",
+      "tests": 395,
+      "files": 63,
+      "assertions": 75581,
+      "seconds": 228.76,
+      "sha256": "719f7d8fa5f9d8f9b7f57e6ad95cf195044ae403db6bd46a6e28170351c3ff02",
+      "bytes": 45083
+    },
+    "assets": {
+      "result": "passed",
+      "command": "bun run assets:verify",
+      "sha256": "97256177c37c1ac11b01f60462e7c1ec716f75b8d2ed4a4f95347b95cd285fd5",
+      "bytes": 331
+    },
+    "build": {
+      "result": "passed",
+      "command": "./buddy build views",
+      "sha256": "4e6981735bb51ad531ca8d5bb8a727517cdbcdc9f56af019f8d17fc20532ef07",
+      "bytes": 1366
+    },
+    "completeBrowser": {
+      "result": "running at record time",
+      "suites": 16,
+      "battleWaitMs": 600000
+    }
+  },
+  "manualBrowser": {
+    "url": "http://127.0.0.1:3464/",
+    "actions": [
+      "New settlement",
+      "Original tutorial map",
+      "Pause",
+      "Save",
+      "Load"
+    ],
+    "observed": "Saved settlement restored at 0:03 with 51 settlers and the original guard tower",
+    "actualScreenshot": {
+      "publication": "private",
+      "width": 1280,
+      "height": 720,
+      "sha256": "91fb5e698fd904067103eb0e1069bc205c0e36cdc53ff47a78bed3bcb1021fe7",
+      "bytes": 132192
+    },
+    "designReview": "Reference-led terrain correction within the existing game layout; no template, typography, theme, motion or control redesign."
+  },
+  "cohort": {
+    "stacks": "0.75.320",
+    "stx": "0.2.711",
+    "craft": "0.0.341",
+    "pantry": "0.11.130"
+  },
+  "upstream": "Owning source: game renderer. The existing verified framework cohort is retained.",
+  "publication": "Original rasters remain private; uploaded browser artifacts contain only explicitly allowed nonmedia diagnostics.",
+  "pending": [
+    "Complete local production browser suite",
+    "Exact pushed-head CI and original immutable artifact digest/CRC qualification"
+  ],
+  "remaining": [
+    "Reference temporal fog dimming",
+    "Full landscape identity and transition textures",
+    "Matched original Gold scenes and original GPU quantization",
+    "Native rendering and full campaign/platform/performance matrix"
+  ]
+}
