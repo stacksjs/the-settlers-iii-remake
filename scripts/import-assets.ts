@@ -3,10 +3,12 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
+import { originalPlayerSlots } from '../resources/game/engine/original'
+import { isPlayerSprite, playerColorReferences } from '../resources/game/player-colors'
 import { geologistImages, geologistReferencePaths } from '../resources/game/geologist-images'
 import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
 import { surveyReferencePaths, surveySigns } from '../resources/game/survey-signs'
-import { composeDatSprites, S3Dat } from './lib/s3-dat'
+import { S3Dat } from './lib/s3-dat'
 import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
 import { writeContentManifest } from './lib/content-provenance'
@@ -27,7 +29,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/engine/original.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -54,6 +56,10 @@ await getReference('README.md')
 await getReference('LICENSE.txt')
 const colorReferences = ['jsettlers.common/src/main/java/jsettlers/common/Color.java', 'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileType.java']
 for (const path of colorReferences) await getReference(path)
+const tutorialBytes = await readFile(resolve(source, 'Map/TUTORIAL/T1.MAP'))
+const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map/TUTORIAL/T1.MAP', tutorialBytes)
+const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
+for (const path of playerColorReferences) await getReference(path)
 const mappingPath = 'jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json'
 const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping?: number[], guiMapping?: number[] } | null)[]
 const datFiles = new Map<number, S3Dat>()
@@ -69,7 +75,7 @@ async function dat(file: number): Promise<S3Dat> {
   }
   return datFiles.get(file)!
 }
-const entries: { key: string, frame: number, source: { file: number, sequence: number, actualSequence: number, section: number, frame: number }, inputs: string[], selection: string[], sprite: Sprite }[] = []
+const entries: { key: string, frame: number, source: { file: number, sequence: number, actualSequence: number, section: number, frame: number }, inputs: string[], selection: string[], sprite: Sprite, torso?: string | null }[] = []
 // Sprites the demo data does not contain are listed in the manifest rather than substituted.
 const missing: { key: string, file: number, sequence: number, frame: number | null, reason: string }[] = []
 async function sequence(key: string, file: number, gold: number, frames: number[] | 'all', references: string[] = [], optional = false): Promise<void> {
@@ -152,23 +158,22 @@ const torsoReferences = [
   'jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java',
 ]
 for (const path of torsoReferences) await getReference(path)
-// This prototype palette is an explicit presentation choice. Original player
-// colors remain unverified; the DAT decoder preserves the source grayscale.
-const torsoTint = [0.88, 0.72, 0.34] as const
-for (const entry of entries.filter(entry => entry.key === 'worker' || entry.key === 'priest' || entry.key.startsWith('carry:') || entry.key.startsWith('soldier:') || entry.key.startsWith('strike:') || geologistImages.some(image => image.key === entry.key))) {
-  const worker = await dat(entry.source.file)
-  if (!worker.has(entry.source.actualSequence, 0x3112)) continue
-  const torsoFrames = worker.frames(entry.source.actualSequence, 0x3112)
-  if (!torsoFrames[entry.source.frame]) continue
-  const torso = worker.decode(torsoFrames[entry.source.frame]!, 'torso'), body = entry.sprite
-  entry.inputs.push(...torsoReferences.map(path => `reference:${path}`))
-  entry.selection.push(`${datInputs.get(entry.source.file)}:section=0x3112,demo-sequence=${entry.source.actualSequence},frame=${entry.source.frame},torso-tint=${torsoTint.join('/')},palette=prototype-unverified,composition=anchor-bounds-union`)
-  for (let y = 0; y < torso.height; y++) for (let x = 0; x < torso.width; x++) {
-    const from = (y * torso.width + x) * 4
-    for (let channel = 0; channel < 3; channel++) torso.data[from + channel] = Math.round(torso.data[from + channel]! * torsoTint[channel]!)
-  }
-  entry.sprite = composeDatSprites([body, torso])
+// Preserve bodies and grayscale clothing separately. The painter applies the
+// owning player's palette and gives opaque body pixels reference precedence.
+const clothing: typeof entries = []
+for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
+  entry.torso = null
+  const reader = await dat(entry.source.file)
+  if (!reader.has(entry.source.actualSequence, 0x3112)) continue
+  const at = reader.frames(entry.source.actualSequence, 0x3112)[entry.source.frame]
+  if (at === undefined) continue
+  entry.torso = `torso:${entry.key}`
+  entry.inputs.push(...torsoReferences.map(path => `reference:${path}`), ...playerColorReferences.map(path => `reference:${path}`))
+  entry.selection.push('body=untinted,player-color=reference-runtime-slot')
+  clothing.push({ key: entry.torso, frame: entry.frame, source: { ...entry.source, section: 0x3112 },
+    inputs: [...entry.inputs], selection: [`${datInputs.get(entry.source.file)}:section=0x3112,body-sequence=${entry.source.actualSequence},frame=${entry.source.frame},grayscale=original`], sprite: reader.decode(at, 'torso') })
 }
+entries.push(...clothing)
 for (const [key, index] of Object.entries({ grass: 0, water: 17, rock: 21, sand: 31 })) {
   const landscape = await dat(0), at = landscape.frames(index, 0x2412)[0]!
   entries.push({ key: `terrain-${key}`, frame: 0, source: { file: 0, sequence: index, actualSequence: index, section: 0x2412, frame: 0 },
@@ -179,7 +184,7 @@ let x = 1, y = 1, row = 0
 const records = entries.map(entry => {
   const { width: w, height: h, offsetX, offsetY } = entry.sprite
   if (x + w + 1 > width) { x = 1; y += row + 2; row = 0 }
-  const result = { key: entry.key, frame: entry.frame, x, y, width: w, height: h, offsetX, offsetY, source: entry.source, inputs: entry.inputs, selection: entry.selection }
+  const result = { key: entry.key, frame: entry.frame, x, y, width: w, height: h, offsetX, offsetY, source: entry.source, inputs: entry.inputs, selection: entry.selection, ...(entry.torso !== undefined ? { torso: entry.torso } : {}) }
   x += w + 2; row = Math.max(row, h)
   return result
 })
@@ -191,9 +196,9 @@ for (const [index, entry] of entries.entries()) {
 const atlasBytes = png.sync.write({ width, height, data: pixels })
 const atlasFile = `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`
 await Bun.write(resolve(output, atlasFile), atlasBytes)
-await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 1, atlas: atlasFile, width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
+await Bun.write(resolve(output, 'manifest.json'), JSON.stringify({ version: 2, playerSlots: [{ id: 'demo:Map/TUTORIAL/T1.MAP', digest: provenanceInputs.get(tutorialInput)!.sha256, slots: originalPlayerSlots(tutorial.players) }], atlas: atlasFile, width, height, source: { repository, revision, download, sha1, sha256 }, sprites: records, missing }, null, 2))
 addOutput(atlasFile, ['buildings', 'terrain', 'vegetation-and-deposits', 'settlers-and-soldiers', 'goods-and-wares'], entries.flatMap(entry => entry.inputs), entries.flatMap(entry => entry.selection))
-addOutput('manifest.json', ['generated-metadata'], entries.flatMap(entry => entry.inputs), ['Original atlas selectors, dimensions, displacements and pinned source identities'])
+addOutput('manifest.json', ['generated-metadata'], [tutorialInput, ...entries.flatMap(entry => entry.inputs)], ['Original atlas selectors, dimensions, displacements and pinned source identities'])
 console.log(`Converted ${records.length} original sprites into a ${width}x${height} transparent PNG atlas. ${missing.length} requested sprites are absent from the demo and listed in the manifest.`)
 
 // Individual composites let STX's construction catalog use the same original artwork.
@@ -260,9 +265,7 @@ await Bun.write(resolve(output, 'sounds.json'), JSON.stringify(soundFiles, null,
 addOutput('sounds.json', ['generated-metadata'], [soundInput], ['Names and source group selectors for six converted PCM WAV files'])
 // The demo's Roman tutorial map, decoded once so the browser can build an engine world from it.
 // Original codes are kept; resources/game/engine/original.ts maps them with reference-remake evidence.
-const tutorialBytes = await readFile(resolve(source, 'Map/TUTORIAL/T1.MAP'))
-const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map/TUTORIAL/T1.MAP', tutorialBytes)
-const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
+
 const layer = (values: ArrayLike<number>): string => Buffer.from(Uint8Array.from(values)).toString('base64')
 await mkdir(resolve(output, 'maps'), { recursive: true })
 await Bun.write(resolve(output, 'maps/t1.json'), JSON.stringify({

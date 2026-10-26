@@ -32,7 +32,7 @@ describe('overview map', () => {
     const enemy = PLAYER_RGB[2]!
     for (let i = 0; i < pixels.length; i += 4) expect([pixels[i], pixels[i + 1], pixels[i + 2]]).not.toEqual(enemy)
     // Rome's own castle is drawn.
-    expect(pixel(pixels, 96, 96, anchors.castle.x, anchors.castle.y)).toEqual([250, 240, 210])
+    expect(pixel(pixels, 96, 96, anchors.castle.x, anchors.castle.y)).toEqual([247, 16, 0])
   })
 
   test('switches between player colours, land and sea, and terrain, and between settler displays', () => {
@@ -44,8 +44,8 @@ describe('overview map', () => {
     const carrier = [...s.state.settlers.values()].find(p => p.owner === 1 && p.profession === 'carrier' && !p.inside)!
     const all = minimapPixels(o, { territory: 'simple', settlers: 'all', buildings: false })
     const military = minimapPixels(o, { territory: 'simple', settlers: 'military', buildings: false })
-    expect(pixel(all, 96, 96, carrier.x, carrier.y)).toEqual([255, 255, 255])
-    expect(pixel(military, 96, 96, carrier.x, carrier.y)).not.toEqual([255, 255, 255])
+    expect(pixel(all, 96, 96, carrier.x, carrier.y)).toEqual([247, 16, 0])
+    expect(pixel(military, 96, 96, carrier.x, carrier.y)).not.toEqual([247, 16, 0])
   })
 
   test('alerts point at their place only when the player may look there', () => {
@@ -57,4 +57,9 @@ describe('overview map', () => {
     expect(alertTarget(o, { entity: tower.id })).toBeNull()
     expect(alertTarget(o, {})).toBeNull()
   })
+})
+
+test('player identity uses the reference red and blue palette, rather than prototype minimap colors', () => {
+  const s = rivals(), o = observe(s, 1)
+  expect(pixel(minimapPixels(o, { territory: 'players', settlers: 'all', buildings: true }), 96, 96, anchors.castle.x, anchors.castle.y)).toEqual([247, 16, 0])
 })

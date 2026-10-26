@@ -1,3 +1,4 @@
+import { colorTorsoPixels, DEFAULT_PLAYER_SLOTS, playerCSS } from './player-colors'
 import type { Atlas, AtlasFrame } from './assets'
 import type { Point, Session } from './engine'
 import type { SceneItem } from './scene'
@@ -9,7 +10,6 @@ import { scene } from './scene'
 // player currently sees, matching the engine's player view.
 export interface Camera { x: number, y: number, zoom: number }
 const CHUNK = 32, CHUNK_SCALE = 2
-const PLAYER_COLORS = ['#000000', '#4a78d6', '#d1513f', '#4f9b4a', '#d6b13c', '#9a5bc4', '#3fb2b6', '#d27c34', '#c7c7c7']
 const TERRAIN_FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', moor: '#6b6447', snow: '#e8ecef', swamp: '#5d7347', water: '#3c7f8a' }
 // Terrain without an imported original texture is drawn as a flat colour until its media is converted.
 const TERRAIN_TEXTURE: Record<string, string> = { grass: 'terrain-grass', mountain: 'terrain-rock', sand: 'terrain-sand', desert: 'terrain-sand', water: 'terrain-water' }
@@ -22,6 +22,23 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   const camera: Camera = { x: 0, y: 0, zoom: 1 }
   const chunks = new Map<string, { canvas: HTMLCanvasElement, left: number, top: number, signature: string }>()
   let patterns: Map<string, CanvasPattern> | null = null
+  let playerSlots: readonly number[] = DEFAULT_PLAYER_SLOTS
+  const tinted = new Map<string, HTMLCanvasElement>(), tintLimit = 512
+  const clearTinted = (): void => { for (const surface of tinted.values()) { surface.width = 0; surface.height = 0 }; tinted.clear() }
+  function clothing(frame: AtlasFrame, slot: number): HTMLCanvasElement | null {
+    if (!atlas || !frame.width || !frame.height) return null
+    const key = `${frame.key}:${frame.frame}:${slot}`, cached = tinted.get(key)
+    if (cached) { tinted.delete(key); tinted.set(key, cached); return cached }
+    const surface = canvas.ownerDocument.createElement('canvas')
+    surface.width = frame.width; surface.height = frame.height
+    const context = surface.getContext('2d')!
+    context.drawImage(atlas.image, frame.x, frame.y, frame.width, frame.height, 0, 0, frame.width, frame.height)
+    const data = context.getImageData(0, 0, frame.width, frame.height)
+    data.data.set(colorTorsoPixels(data.data, slot)); context.putImageData(data, 0, 0)
+    if (tinted.size >= tintLimit) { const first = tinted.keys().next().value!; const old = tinted.get(first)!; old.width = 0; old.height = 0; tinted.delete(first) }
+    tinted.set(key, surface)
+    return surface
+  }
 
   function texturePatterns(target: CanvasRenderingContext2D): Map<string, CanvasPattern> {
     const result = new Map<string, CanvasPattern>()
@@ -74,7 +91,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         if (!edge) continue
         const p = at(x, y)
         g.fillStyle = '#1a1a14'; g.fillRect(p.x - 1.5, p.y - 6, 3, 6)
-        g.fillStyle = PLAYER_COLORS[owner % PLAYER_COLORS.length]!; g.fillRect(p.x - 1, p.y - 7, 2, 3)
+        g.fillStyle = playerCSS(playerSlots, owner); g.fillRect(p.x - 1, p.y - 7, 2, 3)
       }
     }
     return { canvas: surface, left, top: realTop }
@@ -181,13 +198,19 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       case 'settler':
         ctx!.fillStyle = 'rgba(20,30,20,0.35)'; ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 4 * z, 1.6 * z, 0, 0, Math.PI * 2); ctx!.fill()
         if (marked?.has(item.entity)) { ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = Math.max(1, z); ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 7 * z, 3 * z, 0, 0, Math.PI * 2); ctx!.stroke() }
-        if (item.progress === undefined) sprite(item.sprite, item.view, item.frame)
-        else {
-          // Strike sequences hold an equal run of frames per direction, twelve for blows and twenty-four for shots.
-          const per = Math.max(1, Math.floor((atlas!.frames.get(item.sprite)?.length ?? 6) / 6))
-          sprite(item.sprite, item.view, item.frame * per + Math.min(per - 1, Math.floor(item.progress * per)))
+        // Strike sequences hold equal runs per direction. Body and clothing
+        // resolve the same actual frame before either layer is painted.
+        const per = Math.max(1, Math.floor((atlas!.frames.get(item.sprite)?.length ?? 6) / 6))
+        const index = item.progress === undefined ? item.frame : item.frame * per + Math.min(per - 1, Math.floor(item.progress * per))
+        const body = frame(item.sprite, index)
+        const mask = body?.torso ? atlas!.frames.get(body.torso)?.find(mask => mask.frame === body.frame) : null
+        if (mask) {
+          const source = clothing(mask, playerSlots[item.owner - 1]!)
+          if (source) ctx!.drawImage(source, camera.x + (item.view.x + mask.offsetX) * z, camera.y + (item.view.y + mask.offsetY) * z, mask.width * z, mask.height * z)
         }
-        if (item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
+        // The reference gives opaque body pixels precedence over the mask.
+        sprite(item.sprite, item.view, index)
+        if (item.owner !== player) { ctx!.fillStyle = playerCSS(playerSlots, item.owner); ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
         else if (item.action === 'working' && item.health === undefined) { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
         if (item.health !== undefined) {
           // Soldiers show remaining health above their heads.
@@ -205,7 +228,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       }
       default: sprite(item.sprite, item.view, item.frame)
     }
-    if ((item.kind === 'building' || item.kind === 'site') && item.owner !== player) { ctx!.fillStyle = PLAYER_COLORS[item.owner % PLAYER_COLORS.length]!; ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }
+    if ((item.kind === 'building' || item.kind === 'site') && item.owner !== player) { ctx!.fillStyle = playerCSS(playerSlots, item.owner); ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }
     if (item.suspended) { ctx!.fillStyle = '#f0d58ccc'; ctx!.font = `${Math.round(9 * z)}px ui-sans-serif, system-ui`; ctx!.textAlign = 'center'; ctx!.fillText('II', p.x, p.y - 30 * z) }
   }
   function outline(session: Session, tiles: Point[], color: string, alpha: number): void {
@@ -237,7 +260,10 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     camera, resize, draw, home,
     /** Canvas coordinates of a view point under the current camera. */
     screen: toScreen,
-    setAssets(value: Atlas) { atlas = value; patterns = null; chunks.clear() },
+    setAssets(value: Atlas) { clearTinted(); atlas = value; patterns = null; chunks.clear() },
+    setPlayerSlots(slots: readonly number[]) { playerSlots = slots; chunks.clear() },
+    tintedFrameCount: () => tinted.size,
+    dispose() { clearTinted(); chunks.clear(); patterns = null; atlas = null },
     invalidate() { chunks.clear() },
     pick(session: Session, clientX: number, clientY: number): Point | null {
       const rect = canvas.getBoundingClientRect()

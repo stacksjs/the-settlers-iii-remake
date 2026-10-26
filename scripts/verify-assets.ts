@@ -1,3 +1,4 @@
+import { isPlayerSprite, validatePlayerSlotCatalog } from '../resources/game/player-colors'
 import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
@@ -9,12 +10,17 @@ import { contentPolicy } from '../docs/content/policy'
 import { inspectContentBundle } from './lib/content-provenance'
 
 const directory = resolve(import.meta.dir, '../public/assets/settlers-original')
-const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { version: number, atlas: string, width: number, height: number, source: { sha256: string }, sprites: AtlasFrame[], missing?: unknown[] }
+const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { version: number, atlas: string, width: number, height: number, source: { sha256: string }, sprites: AtlasFrame[], playerSlots: unknown, missing?: unknown[] }
 if (!/^sprites\.[a-f0-9]{64}\.png$/.test(manifest.atlas)) throw new Error('Invalid immutable atlas path')
 const atlasBytes = Buffer.from(await Bun.file(resolve(directory, manifest.atlas)).arrayBuffer())
 if (manifest.atlas !== `sprites.${Bun.SHA256.hash(atlasBytes, 'hex')}.png`) throw new Error('Atlas bytes differ from their content address')
 const atlas = png.sync.read(atlasBytes)
-if (manifest.version !== 1 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
+validatePlayerSlotCatalog(manifest.playerSlots)
+for (const body of manifest.sprites.filter(frame => isPlayerSprite(frame.key))) if (body.torso === undefined) throw new Error('Missing clothing-layer metadata')
+for (const frame of manifest.sprites) if (frame.torso && !manifest.sprites.some(mask => mask.key === frame.torso && mask.frame === frame.frame)) throw new Error(`Missing original clothing ${frame.key}:${frame.frame}`)
+for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('torso:'))) if (!manifest.sprites.some(body => body.key === mask.key.slice(6) && body.frame === mask.frame && body.torso === mask.key)) throw new Error(`Orphan original clothing ${mask.key}:${mask.frame}`)
+for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('torso:'))) for (let y = 0; y < mask.height; y++) for (let x = 0; x < mask.width; x++) { const at = ((mask.y + y) * atlas.width + mask.x + x) * 4; if (atlas.data[at] !== atlas.data[at + 1] || atlas.data[at] !== atlas.data[at + 2]) throw new Error('Original clothing is not grayscale') }
+if (manifest.version !== 2 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
 const buildings = ['castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'barracks', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse', 'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith']
 const goods = ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword']
 const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', 'terrain-grass', 'terrain-water', 'terrain-sand', 'terrain-rock']

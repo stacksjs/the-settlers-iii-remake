@@ -1,0 +1,193 @@
+{
+  "recordedAt": "2026-10-26T14:47:09.431250+00:00",
+  "issue": 211,
+  "base": "ac2923dfa0641aa9f4f5cafb1a21029ee3cc3c09",
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "scope": "Player-color presentation follows the supplied pinned remake. No original Gold runtime palette or native presentation equivalence claim.",
+  "referenceSources": [
+    {
+      "path": "jsettlers.logic/src/main/java/jsettlers/logic/player/Player.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/player/Player.java",
+      "gitBlob": "353532a050fd84dd66564a6232890e40a8f43ffa",
+      "bytes": 6677,
+      "sha256": "3b82110eadb48194a9d85d2f849128553d4926a423313508071b8d302d42b7d1"
+    },
+    {
+      "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapDrawContext.java",
+      "gitBlob": "29c237ac0e3b9372b4525cecf2d7043063f2578b",
+      "bytes": 14228,
+      "sha256": "e8c098a07c019ccf00dafb5761c4a862cf987f2d5a0c068d7de9f27b0dba9720"
+    },
+    {
+      "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "url": "https://raw.githubusercontent.com/paulwedeck/settlers-remake/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+      "gitBlob": "028ea16eb2640153b885b5e793cd5fa3f7c1e2b0",
+      "bytes": 1276,
+      "sha256": "0755f619652cf3db4b955ec0059a056bf827f5d208640305d799843e782b2e18"
+    }
+  ],
+  "palette": {
+    "matchedSlots": 32,
+    "editorDerived": 20,
+    "remakeAdditional": 12,
+    "sourceSha256": "e8c098a07c019ccf00dafb5761c4a862cf987f2d5a0c068d7de9f27b0dba9720"
+  },
+  "delivery": {
+    "manifestVersion": 2,
+    "totalFrames": 7614,
+    "movableBodies": 3647,
+    "grayscaleMasks": 3647,
+    "convertedFiles": 95,
+    "interfaceImages": 52,
+    "wavSounds": 6,
+    "atlasRGBABytes": 44949504,
+    "maskCache": {
+      "limit": 512,
+      "eviction": "LRU, release canvas backing storage",
+      "largestSourceMaskPixels": 1862,
+      "maximumPixelBytes": 3813376,
+      "clearedOn": [
+        "asset replacement",
+        "renderer disposal"
+      ]
+    },
+    "mapping": "Exact original content id and digest to retained zero-based source slots; explicit sequential defaults for generated and rival landscapes. Mapping is outside State and SaveEnvelope. Unavailable saved metadata blocks startup and preserves checkpoint.",
+    "currentOriginalCatalog": [
+      {
+        "id": "demo:Map/TUTORIAL/T1.MAP",
+        "digest": "395575b4f5d97e3d521003d18c3c574ad2b97ac22b17c4f7bd7efb63ed42be98",
+        "slots": [
+          0
+        ]
+      }
+    ],
+    "layers": "Original body RGBA and grayscale torso remain separate with signed anchors. Tint selected player intensity at runtime; paint opaque body above torso. Missing original layer remains body-only.",
+    "coherentIdentity": [
+      "settler clothing",
+      "border posts",
+      "foreign unit/building markers",
+      "minimap territory/settlers/buildings"
+    ]
+  },
+  "regressions": {
+    "independentOriginalLayers": 7294,
+    "browser": {
+      "ok": true,
+      "checkedPixels": 2664,
+      "checksumUnchanged": true,
+      "fog": true,
+      "originalSlots": true,
+      "saveRestore": true,
+      "unavailableSavedContentPreserved": true,
+      "bodyPrecedence": true,
+      "missingLayer": true,
+      "sourceMaskUnchanged": true,
+      "maximumCachedFrames": 512,
+      "assetReplacementAndDisposal": true,
+      "scope": "Production renderer with authored public-session actors and independent original-frame pixels."
+    },
+    "browserErrors": {
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": []
+    },
+    "legacyCompatibility": "Existing save envelope, rules profiles, simulation fields and replay checksums unchanged. Filtered source slot 7 retains gray for engine player 1 through original world creation, save/restore and replay.",
+    "invalidHarnessAttempts": "Earlier frame36 assumption and concurrent import attempt were rejected. Frozen published baseline frame0 then reproduced actual wrong color. Full unit run overlapping a destructive asset reimport was retained as invalid setup and rerun after import finished."
+  },
+  "localEvidence": {
+    "minimap-red.log": {
+      "bytes": 2152,
+      "sha256": "4b5b64d23062f4d844419ce59202af37f3cd5278928359cddf846423d3049577"
+    },
+    "renderer-valid-red-report.json": {
+      "bytes": 918,
+      "sha256": "01bdb8a9f67b551e8eba9039bc46606e52bffa54d9c0d65796dd98632d60e244"
+    },
+    "renderer-qualified.log": {
+      "bytes": 75,
+      "sha256": "dc10889c8b7ff40e471dd3a57c4b78200a2f3ebfa458b5361bc0123551a12a4c"
+    },
+    "all-layers.log": {
+      "bytes": 437,
+      "sha256": "8224dcf7a9cc1f6a0fa27667aa4d879856bb1a57cad64b555d2737550ca32210"
+    },
+    "types-final.log": {
+      "bytes": 543,
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94"
+    },
+    "lint-final.log": {
+      "bytes": 301,
+      "sha256": "64cbb959eb1b5e59b89bb7d8b6a684097160d37c2b55608de51c52372a135d52"
+    },
+    "assets-final.log": {
+      "bytes": 330,
+      "sha256": "daba0d1fa65b2327e235e8fa884cc265e4f1af07eadc806aa922e5a425f43300"
+    },
+    "build-final.log": {
+      "bytes": 1366,
+      "sha256": "5e5b56b13d37b49411a88da3798acd026d309bdf2382cc785e442965172d8755"
+    },
+    "palette-verification.json": {
+      "bytes": 143,
+      "sha256": "3928aff4824aa0e8f70ca56a3c05f029d52670e2ae49189125afcd8036aa9504"
+    },
+    "browser-restored-settlement.png": {
+      "bytes": 150502,
+      "sha256": "2a73645e732b9d7778063f470d934e61567a2048c782ed264a1ddac7126c7a89"
+    },
+    "unit-final.log": {
+      "bytes": 43092,
+      "sha256": "f9f04fb02b54ae1212b80a677d09dec21c288b4003d770aa03a27be97b158792"
+    },
+    "control-frame-final.log": {
+      "bytes": 126,
+      "sha256": "38d1f53f15cc4a175423cd8e11d1721e839cdad1057aa888559dcdc82e59f36b"
+    }
+  },
+  "nativeInputPreview": {
+    "url": "http://127.0.0.1:3460/",
+    "seed": 854236,
+    "actions": "Ordinary UI building placement, construction, save, full reload and pause.",
+    "observed": "38 settlers, two buildings, red clothes/borders/minimap, restored state.",
+    "screenshotPublication": "Local only; original-media redistribution remains unverified."
+  },
+  "unchanged": [
+    "simulation rules and timing",
+    "save and replay formats/checksums",
+    "fog and ownership rules",
+    "published dependency cohort"
+  ],
+  "remaining": [
+    "full original shadows and other profession/faction animations",
+    "Gold runtime observation",
+    "native application presentation",
+    "complete Gold campaign and gameplay parity"
+  ],
+  "checks": {
+    "unit": {
+      "pass": 377,
+      "fail": 0,
+      "assertions": 39577,
+      "files": 58,
+      "seconds": 353.19
+    },
+    "lint": {
+      "files": 496,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": "App, tooling and STX: 2 script blocks, 258 template expressions; zero errors/warnings.",
+    "assets": "7614 sprite frames, 52 interface images, 6 PCM WAV sounds, 95 converted files with complete provenance.",
+    "buildSeconds": 21.35,
+    "controlFrameBrowser": {
+      "steps": 72,
+      "errors": []
+    },
+    "playerColorBrowser": {
+      "steps": 2,
+      "independentSourcePixels": 2664,
+      "errors": []
+    }
+  }
+}

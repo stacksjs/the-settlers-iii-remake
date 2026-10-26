@@ -250,5 +250,94 @@
         "sha256": "239169b95f6360f2803cf534344e0dc275bad8eee189c089c0783dd2b62e34c5"
       }
     ]
+  },
+  "qualifiedDelivery": {
+    "recordedAt": "2026-10-26T14:38:59.649845+00:00",
+    "commit": "ac2923dfa0641aa9f4f5cafb1a21029ee3cc3c09",
+    "ci": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40338324023",
+    "conclusion": "success",
+    "originalArtifact": {
+      "id": 12658569337,
+      "bytes": 23585,
+      "sha256": "a58e977dff8889de9b4fff31c36c0f9e52238cd006de76db619eec3c54f3431b",
+      "matchedGithubDigest": true,
+      "allZipCrcsVerified": true
+    },
+    "suites": [
+      {
+        "suite": "campaign",
+        "steps": 58,
+        "reportSha256": "d9ad400a9c15e55c4e940b4256cd1dff62723e67af543ae8d2f3b6cffa20c972",
+        "noErrors": true
+      },
+      {
+        "suite": "control-frame",
+        "steps": 72,
+        "reportSha256": "8765401c229afe522c82ff9d0201a4e301595dc8ac67db36687a3d6bf72df284",
+        "noErrors": true
+      },
+      {
+        "suite": "resize",
+        "steps": 5,
+        "reportSha256": "e69fa886240e710526f9ab2dc0b1d251e628504cc331f8dabdc3664f945734a9",
+        "noErrors": true
+      },
+      {
+        "suite": "production",
+        "steps": 19,
+        "reportSha256": "bd3faa31be21be60e43720478979614f11d549b6c28ef0ec4385d11cef55b4be",
+        "noErrors": true
+      },
+      {
+        "suite": "selection",
+        "steps": 33,
+        "reportSha256": "fc9720db1ff9e25c6b5e9267815d737c6e888ce0bc3019216a8af186aa2cfef2",
+        "noErrors": true
+      },
+      {
+        "suite": "recruitment",
+        "steps": 68,
+        "reportSha256": "1807b426db9d4cccc36fcfb750ddc78df7794d815b8a57d2ec1b210f1d139bc5",
+        "noErrors": true
+      },
+      {
+        "suite": "working-area",
+        "steps": 57,
+        "reportSha256": "3466a40f2169b8a791b6a2dced57f8109e782590bcaf329a8c0a0a5c2022db2f",
+        "noErrors": true
+      },
+      {
+        "suite": "storage-inspection",
+        "steps": 87,
+        "reportSha256": "4beb960052022bb25f3ef010879f6c7084a9c4661a6c82b63b51afa2b18f274d",
+        "noErrors": true
+      },
+      {
+        "suite": "mine-placement",
+        "steps": 28,
+        "reportSha256": "a6e8a4b94e47989c360e5561f01758feac3def6a3afd6568c25edd8bdda92eb5",
+        "noErrors": true
+      },
+      {
+        "suite": "skirmish",
+        "steps": 26,
+        "reportSha256": "02f0d75a4efcf2497f067e48cf986c47d94ebafe8ac12b64fc3e9edbc2bb1864",
+        "noErrors": true
+      },
+      {
+        "suite": "rival-battle",
+        "steps": 46,
+        "reportSha256": "65d60afb4ac2a31bf7b7732feecbebf192fbced8670866a13a079077a893d215",
+        "noErrors": true
+      },
+      {
+        "suite": "checkpoints",
+        "steps": 1,
+        "reportSha256": "fdb390cbb5576f687c303dadf4bf518f6330c07de53ded6d96b144a0329ad22b",
+        "noErrors": true
+      }
+    ],
+    "totalSteps": 500,
+    "scope": "Exact game main CI non-media diagnostic artifact. Authored engineering browser scenarios, not Gold parity or native game qualification."
   }
 }

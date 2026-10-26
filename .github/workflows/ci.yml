@@ -52,6 +52,7 @@ jobs:
           bun tests/browser/skirmish.ts http://127.0.0.1:3450/
           bun tests/browser/rival-battle.ts http://127.0.0.1:3450/
           bun tests/browser/checkpoints.ts
+          bun tests/browser/player-colors.ts
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
       - name: Retain non-media browser diagnostics
@@ -83,5 +84,7 @@ jobs:
             storage/framework/runtime/shots/rival-battle.json
             storage/framework/runtime/shots/rival-battle-media.json
             storage/framework/runtime/shots/checkpoints.json
+            storage/framework/runtime/shots/player-colors.json
+            storage/framework/runtime/shots/player-colors-media.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

@@ -1,3 +1,5 @@
+import type { PlayerSlotCatalog } from './player-colors'
+import { DEFAULT_PLAYER_SLOTS, playerSlotsForContent } from './player-colors'
 import type { BrowserPlatform } from 'craft-native/browser'
 import type { Command, Point, Session } from './engine'
 import type { Renderer } from './renderer'
@@ -226,6 +228,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   let session: Session | null = null, selected: number | null = null, tool: string | null = null, cursor: Point | null = null
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
   let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
+  let playerCatalog: PlayerSlotCatalog = [], playerSlots: readonly number[] = DEFAULT_PLAYER_SLOTS
   let prototypeKept = false
   // Computer players act through the same command queue as the person playing.
   let computers: { ai: EconomicAI, sequence: { next: number } }[] = []
@@ -253,8 +256,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   /** Draws the overview map from the player's observation and frames the part of the land on screen. */
   const drawOverview = (): void => {
     const target = overview?.getContext('2d')
-    if (!overview || !target || !session) return
-    const { map } = session.state, size = minimapSize(map.width, map.height), image = new ImageData(minimapPixels(observe(session, PLAYER), minimap), size.width, size.height)
+    if (!overview || !target || !session || !assetsReady) return
+    const { map } = session.state, size = minimapSize(map.width, map.height), image = new ImageData(minimapPixels(observe(session, PLAYER), minimap, playerSlots), size.width, size.height)
     const scratch = document.createElement('canvas')
     scratch.width = size.width; scratch.height = size.height
     scratch.getContext('2d')!.putImageData(image, 0, 0)
@@ -300,7 +303,12 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     return s ? { x: s.x, y: s.y } : null
   }
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
+  const syncPlayerColors = (next: Session): void => {
+    playerSlots = playerSlotsForContent(next.identity.content, next.state.players.length, playerCatalog)
+    renderer.setPlayerSlots(playerSlots)
+  }
   const adopt = (next: Session): void => {
+    if (assetsReady) { try { syncPlayerColors(next) } catch (error) { next.dispose(); throw error } }
     session?.dispose(); session = next; selected = null; tool = null; thief = null; accumulator = 0
     troops = createTroops(() => session, PLAYER)
     const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
@@ -312,7 +320,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (ready && assetsReady && message.startsWith('Preparing')) message = 'Choose a building, then click open ground inside your border.'
     emit()
   }
-  void loadOriginalAssets().then(atlas => { if (disposed) return; renderer.setAssets(atlas); assetsReady = true; finishBoot() }).catch(error => { if (!disposed) report(error instanceof Error ? error.message : 'Could not load original game assets.') })
+  const assetsLoaded = loadOriginalAssets().then(atlas => { if (disposed) return false; renderer.setAssets(atlas); playerCatalog = atlas.playerSlots; assetsReady = true; drawOverview(); finishBoot(); return true }).catch(error => { if (!disposed) { assetsReady = false; report(error instanceof Error ? error.message : 'Could not load original game assets.') }; return false })
 
   const send = (type: string, fields: Record<string, unknown>): string | null => {
     if (!session) return 'The settlement is not ready.'
@@ -342,7 +350,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (disposed) return
       adopt(next); report('Saved settlement restored.')
     }
-    catch (error) { if (!disposed) report(error instanceof SaveError ? error.message : 'Could not restore the settlement.') }
+    catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not restore the settlement.') }
   }
   void createBrowserPlatform({ namespace: 'the-settlers-iii-remake' }).then(async host => {
     if (disposed) { host.dispose(); return }
@@ -352,20 +360,28 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       setIfAbsent: (key, value, signal) => host.call('Storage', 'setIfAbsent', [key, value], signal) as Promise<boolean>,
       compareAndSet: (key, expected, value, signal) => host.call('Storage', 'compareAndSet', [key, expected, value], signal) as Promise<boolean>,
     }, SAVE_PREFIX, LEGACY_SAVE_KEY)
+    // Resolve presentation before adopting saved content. An unavailable original
+    // mapping leaves its checkpoint intact instead of starting a replacement.
+    if (!await assetsLoaded || disposed) return
+    let resumed: Session | null = null
     try {
       const saved = await checkpoints.load()
       // The Riverlands prototype save stays untouched under its own key; it is never reinterpreted.
       prototypeKept = !!(await host.call('Storage', 'get', [PROTOTYPE_KEY], lifetime.signal))
-      if (saved && !disposed) { adopt(restore(saved, PUBLISHED_RULES)); message = 'Welcome back. Your settlement has been restored.' }
+      if (saved && !disposed) resumed = restore(saved, PUBLISHED_RULES)
     }
     catch (error) { if (!disposed) message = error instanceof SaveError ? `${error.message} A new settlement was started.` : 'Could not read the saved settlement. A new settlement was started.' }
     if (disposed) return
+    if (resumed) {
+      try { adopt(resumed); message = 'Welcome back. Your settlement has been restored.' }
+      catch (error) { report(error instanceof Error ? error.message : 'Could not restore player colors.'); return }
+    }
     if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true
     host.emit((type, payload) => { if (type === 'APP_STATE' && (payload as { state: string }).state === 'background') void persist() })
     finishBoot()
-  }).catch(() => {
-    if (disposed) return
+  }).catch(async () => {
+    if (!await assetsLoaded || disposed) return
     if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true; report('Device storage is unavailable. You can play, but this settlement cannot be saved.')
   })
@@ -678,7 +694,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (disposed) return
       // A last checkpoint is written before storage is released; the session itself stops now.
       const final = checkpoints && session && ready ? checkpoints.save(JSON.stringify(save(session))) : Promise.resolve()
-      disposed = true; clock.stop(); resize.disconnect(); session?.dispose()
+      disposed = true; clock.stop(); resize.disconnect(); session?.dispose(); renderer.dispose()
       void final.finally(() => { checkpoints?.dispose(); lifetime.abort(); platform?.dispose() })
     },
   }

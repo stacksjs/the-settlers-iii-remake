@@ -1,3 +1,5 @@
+import { DEFAULT_PLAYER_SLOTS, NEUTRAL_RGB, PLAYER_PALETTE, playerRGB } from './player-colors'
+import type { RGB } from './player-colors'
 import type { Observation, Point } from './engine'
 
 // The overview map (manual: Menus in the Game, The Overview Map). It is drawn
@@ -12,10 +14,8 @@ export interface MinimapOptions { territory: TerritoryMode, settlers: SettlerMod
 const TERRAIN: Record<string, [number, number, number]> = {
   grass: [86, 128, 58], water: [46, 86, 140], mountain: [118, 112, 104], desert: [196, 170, 112], moor: [96, 82, 58], swamp: [62, 82, 60], snow: [226, 230, 236], sand: [208, 190, 140],
 }
-type RGB = [number, number, number]
 const LAND: RGB = [96, 120, 70], SEA: RGB = [46, 86, 140], UNKNOWN: RGB = [10, 16, 14]
-export const PLAYER_RGB: [number, number, number][] = [[0, 0, 0], [214, 180, 92], [196, 72, 58], [70, 120, 200], [90, 170, 90], [170, 90, 170], [220, 140, 60], [80, 180, 180], [230, 230, 230]]
-const color = (player: number): [number, number, number] => PLAYER_RGB[player % PLAYER_RGB.length]!
+export const PLAYER_RGB = [NEUTRAL_RGB, ...PLAYER_PALETTE]
 
 /** Pixel size of the sheared overview for a map. */
 export const minimapSize = (width: number, height: number): { width: number, height: number } => ({ width: width + Math.ceil(height / 2), height })
@@ -24,9 +24,9 @@ export const toMinimap = (p: Point, height: number): Point => ({ x: p.x - Math.f
 export const fromMinimap = (p: Point, height: number): Point => ({ x: p.x + Math.floor(p.y / 2) - Math.ceil(height / 2), y: p.y })
 
 /** RGBA pixels of the overview map for one player's observation. */
-export function minimapPixels(o: Observation, options: MinimapOptions): Uint8ClampedArray<ArrayBuffer> {
+export function minimapPixels(o: Observation, options: MinimapOptions, slots: readonly number[] = DEFAULT_PLAYER_SLOTS): Uint8ClampedArray<ArrayBuffer> {
   const size = minimapSize(o.width, o.height), pixels = new Uint8ClampedArray(size.width * size.height * 4)
-  const put = (p: Point, rgb: [number, number, number], alpha = 255): void => {
+  const put = (p: Point, rgb: RGB, alpha = 255): void => {
     const at = toMinimap(p, o.height)
     if (at.x < 0 || at.y < 0 || at.x >= size.width || at.y >= size.height) return
     const i = (at.y * size.width + at.x) * 4
@@ -42,16 +42,16 @@ export function minimapPixels(o: Observation, options: MinimapOptions): Uint8Cla
       put({ x, y }, options.territory === 'topographic' ? TERRAIN[terrain] ?? LAND : water ? SEA : LAND)
       // Player colours show who holds explored land; the other modes leave the land itself.
       const owner = o.view.owner[t]!
-      if (options.territory === 'players' && owner && !water) put({ x, y }, color(owner), 150)
+      if (options.territory === 'players' && owner && !water) put({ x, y }, playerRGB(slots, owner), 150)
       // Fog: explored but not currently seen land is drawn darker.
       if (o.view.visible[t] !== 1) put({ x, y }, UNKNOWN, 90)
     }
   }
-  if (options.buildings) for (const b of o.view.buildings) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put({ x: b.x + dx!, y: b.y + dy! }, b.owner === o.player ? [250, 240, 210] : color(b.owner))
+  if (options.buildings) for (const b of o.view.buildings) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put({ x: b.x + dx!, y: b.y + dy! }, playerRGB(slots, b.owner))
   if (options.settlers !== 'none') {
     for (const s of o.view.settlers) {
       if (s.inside || (options.settlers === 'military' && s.rank === undefined)) continue
-      put({ x: s.x, y: s.y }, s.owner === o.player ? [255, 255, 255] : color(s.owner))
+      put({ x: s.x, y: s.y }, playerRGB(slots, s.owner))
     }
   }
   return pixels

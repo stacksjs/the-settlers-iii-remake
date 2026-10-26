@@ -28,6 +28,15 @@ const LANDSCAPE: Record<string, number[]> = {
 const HEIGHT_SCALE = 127 / 225
 const RESOURCES = ['fish', 'coal', 'ironore', 'goldore', 'gems', 'sulfur']
 const ROMAN = 0, FREE_CHOICE = 255
+const supportedOriginalCivilization = (civilization: number): boolean => civilization === ROMAN || civilization === FREE_CHOICE
+
+/** Roman v1 presentation slots keep source indices after unsupported players are omitted. */
+export function originalPlayerSlots(players: OriginalMapInput['players']): number[] {
+  const slots = players.filter(player => supportedOriginalCivilization(player.civilization)).map(player => player.index)
+  if (slots.some(slot => !Number.isInteger(slot) || slot < 0 || slot >= 32) || new Set(slots).size !== slots.length) throw new Error('Invalid original player slots')
+  return slots
+}
+
 const BUILDINGS: Record<string, string> = {
   STOCK: 'storage', LUMBERJACK: 'woodcutter', STONECUTTER: 'stonecutter', SAWMILL: 'sawmill', FORESTER: 'forester', COALMINE: 'coal-mine', GOLDMINE: 'gold-mine', IRONMINE: 'iron-mine',
   GOLDMELT: 'gold-smelter', Eisenschmelze: 'iron-smelter', TOOLSMITH: 'toolsmith', WEAPONSMITH: 'weaponsmith', TOWER: 'small-tower', Muehle: 'mill', CASTLE: 'castle', BAKER: 'bakery',
@@ -81,10 +90,9 @@ export function worldFromOriginal(rules: RulesProfile, input: OriginalMapInput):
       else note(`resource ${good} on mismatched terrain`)
     }
   }
-  const supported = (civ: number): boolean => civ === ROMAN || civ === FREE_CHOICE
   const players: PlayerSetup[] = [], numbering = new Map<number, number>()
   for (const p of input.players) {
-    if (!supported(p.civilization)) { note(`player ${p.index} civilization ${p.civilization} not implemented`); continue }
+    if (!supportedOriginalCivilization(p.civilization)) { note(`player ${p.index} civilization ${p.civilization} not implemented`); continue }
     numbering.set(p.index, players.length + 1)
     players.push({ name: p.name || `Player ${players.length + 1}`, civilization: 'roman', start: { x: p.startX, y: p.startY }, scenario: { buildings: [], settlers: [] } })
   }
