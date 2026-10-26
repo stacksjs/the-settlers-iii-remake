@@ -45,10 +45,17 @@ export class S3Dat {
   }
   private u16(offset: number): number { if (offset < 0 || offset + 2 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt16LE(offset) }
   private u32(offset: number): number { if (offset < 0 || offset + 4 > this.bytes.length) throw new Error('Truncated DAT data'); return this.bytes.readUInt32LE(offset) }
-  /** Whether a section holds a sequence; layers such as torsos exist only for some sequences. */
-  has(sequence: number, type = 0x106): boolean { return this.sections.get(type)?.[sequence] !== undefined }
+  private sequenceStart(sequence: number, type: number): number | undefined {
+    const section = this.sections.get(type)
+    // AdvancedDatFileReader aligns shorter torso tables to the last body
+    // sequences. Their absent prefix is not a different profession's clothing.
+    const shift = type === 0x3112 ? Math.max(0, (this.sections.get(0x106)?.length ?? 0) - (section?.length ?? 0)) : 0
+    return section?.[sequence - shift]
+  }
+  /** Whether a body sequence has the requested layer, including absent torso prefixes. */
+  has(sequence: number, type = 0x106): boolean { return this.sequenceStart(sequence, type) !== undefined }
   frames(sequence: number, type = 0x106): number[] {
-    const start = this.sections.get(type)?.[sequence]
+    const start = this.sequenceStart(sequence, type)
     if (start === undefined) throw new Error(`Missing DAT sequence ${type}:${sequence}`)
     if (type === 0x2412 || type === 0x11306) return [start]
     if (this.u32(start) !== 0x1402 || this.bytes[start + 4] !== 8) throw new Error('Invalid DAT sequence header')

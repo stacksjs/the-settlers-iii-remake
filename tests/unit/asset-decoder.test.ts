@@ -44,6 +44,24 @@ test('DAT torso decoding preserves the grayscale player-color layer and transpar
   }
 })
 
+test('a shorter torso table aligns to the last body sequences and leaves earlier bodies without a torso', () => {
+  const data = fixture()
+  data.writeUInt16LE(16, 100); data.writeUInt16LE(2, 102); data.writeUInt32LE(160, 108)
+  data.writeUInt32LE(112, 68)
+  data.writeUInt32LE(0x3112, 112); data.writeUInt16LE(12, 116); data.writeUInt16LE(1, 118); data.writeUInt32LE(212, 120)
+  data.writeUInt32LE(0x1402, 212); data[216] = 8; data[219] = 1; data.writeUInt32LE(12, 220)
+  data.writeUInt32LE(12, 224); data.writeUInt16LE(2, 228); data.writeUInt16LE(1, 230)
+  data.writeInt16LE(-1, 232); data.writeInt16LE(-2, 234); data.writeUInt16LE(0x8101, 236); data[238] = 15
+  const dat = new S3Dat(data)
+  expect(dat.has(0, 0x3112)).toBe(false)
+  expect(() => dat.frames(0, 0x3112)).toThrow('Missing DAT sequence')
+  expect(dat.has(1, 0x3112)).toBe(true)
+  expect(dat.frames(1, 0x3112)).toEqual([224])
+  expect([...dat.decode(224, 'torso').data]).toEqual([0, 0, 0, 0, 123, 123, 123, 255])
+  expect(dat.frames(0)).toEqual([173])
+  expect(dat.frames(1)).toEqual([173])
+})
+
 test('DAT clothing outside the body rectangle keeps its full bounds and signed anchor', () => {
   const body = { width: 2, height: 1, offsetX: -1, offsetY: -2, data: Buffer.from([255, 0, 0, 255, 0, 255, 0, 255]) }
   const torso = { width: 1, height: 2, offsetX: -2, offsetY: -3, data: Buffer.from([0, 0, 255, 255, 123, 123, 123, 255]) }

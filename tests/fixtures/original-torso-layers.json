@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "scope": "Raw table pointers independently aligned as the pinned AdvancedDatFileReader specifies; source grayscale layers, no player-palette or Gold runtime claim.",
+  "samples": [
+    {
+      "name": "carrier",
+      "path": "Gfx/Siedler3_10.f8007e01f.dat",
+      "datSha256": "1c74a23ebaedd4f62cf2dfcf79ec5e79e9d8e7d0bd5b2ee1ca4cdf1e7298b18f",
+      "bodyCount": 60,
+      "torsoCount": 60,
+      "prefix": 0,
+      "bodySequence": 0,
+      "rawIndex": 0,
+      "frameCount": 72,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 15,
+          "height": 32,
+          "offsetX": -7,
+          "offsetY": -28,
+          "pixelsSha256": "ce4dcb9d14cb693bed058f794085b8267122a1647142b2046b3c36f565814a16"
+        },
+        {
+          "frame": 71,
+          "width": 22,
+          "height": 34,
+          "offsetX": -9,
+          "offsetY": -29,
+          "pixelsSha256": "197350b1771ee3ecdf9df8f066232d68115d556f577b5877cbf86fe9645e103e"
+        }
+      ]
+    },
+    {
+      "name": "geologist",
+      "path": "Gfx/Siedler3_11.f8007e01f.dat",
+      "datSha256": "9e1db95c7adafe0dc75e953436da00170f78b8e0f332aa5d784f14f82f3daaff",
+      "bodyCount": 239,
+      "torsoCount": 226,
+      "prefix": 13,
+      "bodySequence": 37,
+      "rawIndex": 24,
+      "frameCount": 72,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 21,
+          "height": 33,
+          "offsetX": -16,
+          "offsetY": -20,
+          "pixelsSha256": "6065bd860e078279b6ccf4cf10b05c8ee5c45b1f5c833b90b155e632ced2edb0"
+        },
+        {
+          "frame": 71,
+          "width": 22,
+          "height": 35,
+          "offsetX": -15,
+          "offsetY": -21,
+          "pixelsSha256": "307ff9d8af30623725a0ec94fbcbec717b05a30894ce16318e7d41b6d5d7497d"
+        }
+      ]
+    },
+    {
+      "name": "priest",
+      "path": "Gfx/Siedler3_11.f8007e01f.dat",
+      "datSha256": "9e1db95c7adafe0dc75e953436da00170f78b8e0f332aa5d784f14f82f3daaff",
+      "bodyCount": 239,
+      "torsoCount": 226,
+      "prefix": 13,
+      "bodySequence": 195,
+      "rawIndex": 182,
+      "frameCount": 72,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 17,
+          "height": 31,
+          "offsetX": -8,
+          "offsetY": -27,
+          "pixelsSha256": "b3a88238ce7557a002d275ee48a440686081c3051fe525a63c044b71291a47e9"
+        },
+        {
+          "frame": 71,
+          "width": 16,
+          "height": 32,
+          "offsetX": -6,
+          "offsetY": -27,
+          "pixelsSha256": "6187ace68d5da1b087e233a6ea6c0f92a783d94235131e058af389c01f97f25d"
+        }
+      ]
+    },
+    {
+      "name": "swordsman-rank-1",
+      "path": "Gfx/Siedler3_12.f8007e01f.dat",
+      "datSha256": "91f7174597fec545e34d684a5a7ab3e1fb438dbe1142789051b2abfd5c92b335",
+      "bodyCount": 34,
+      "torsoCount": 25,
+      "prefix": 9,
+      "bodySequence": 9,
+      "rawIndex": 0,
+      "frameCount": 72,
+      "frames": [
+        {
+          "frame": 0,
+          "width": 30,
+          "height": 34,
+          "offsetX": -15,
+          "offsetY": -30,
+          "pixelsSha256": "f492a3073d2bbc30c6700b872e5bb2df1196249c2095c8b18a62193685994c6e"
+        },
+        {
+          "frame": 71,
+          "width": 20,
+          "height": 36,
+          "offsetX": -8,
+          "offsetY": -30,
+          "pixelsSha256": "12adba35bb30d1590ac5e4d60812cd468ab4bf3acb7a2de003a1100fd05ef181"
+        }
+      ]
+    }
+  ]
+}
