@@ -15,6 +15,18 @@ try {
   const sessions: Session[] = [], options = { player: 1, cursor: null, tool: null, selected: null, time: 0, reduceMotion: false, placement: null }
   const context = canvas.getContext('2d')!, ratio = canvas.width / canvas.getBoundingClientRect().width
   const pixel = (x: number, y: number): number[] => [...context.getImageData(Math.floor((x + 0.5) * ratio), Math.floor((y + 0.5) * ratio), 1, 1).data].slice(0, 3)
+  // Native Canvas compositors can quantize source-over differently from
+  // Math.round on floats. Compose independently decoded mask values through
+  // the browser itself, keeping the final pixel comparison exact on each host.
+  const expectedSurface = document.createElement('canvas'), maskSurface = document.createElement('canvas')
+  expectedSurface.width = maskSurface.width = expectedSurface.height = maskSurface.height = 1
+  const expectedContext = expectedSurface.getContext('2d')!, maskContext = maskSurface.getContext('2d')!
+  const composite = (ground: number[], alpha: number): number[] => {
+    expectedContext.putImageData(new ImageData(new Uint8ClampedArray([...ground, 255]), 1, 1), 0, 0)
+    maskContext.putImageData(new ImageData(new Uint8ClampedArray([0, 0, 0, alpha]), 1, 1), 0, 0)
+    expectedContext.drawImage(maskSurface, 0, 0)
+    return [...expectedContext.getImageData(0, 0, 1, 1).data].slice(0, 3)
+  }
   const poses = await fetch('/expected.json').then(response => response.json()) as { sprite: string, frame: number, samples: { x: number, y: number, alpha: number, groundX: number }[] }[]
   const make = (profession: string, terrain = 'grass'): Session => {
     const session = createSession({ rules, seed: 1, map: describeMap(rules, { width: 32, height: 32, base: terrain, features: [] }), players: [{ name: 'Rome', civilization: 'roman', start: { x: 16, y: 16 }, scenario: { buildings: [], settlers: [{ profession, x: 16, y: 16 }] } }] })
@@ -29,7 +41,7 @@ try {
     renderer.home({ x: 16, y: 16 }); renderer.draw(session, options)
     const origin = renderer.screen(body.view)
     for (const sample of pose.samples) {
-      const ground = pixel(origin.x + sample.groundX, origin.y + sample.y), expected = ground.map(value => Math.round(value * (255 - sample.alpha) / 255)), actual = pixel(origin.x + sample.x, origin.y + sample.y)
+      const ground = pixel(origin.x + sample.groundX, origin.y + sample.y), expected = composite(ground, sample.alpha), actual = pixel(origin.x + sample.x, origin.y + sample.y)
       if (actual.join() !== expected.join()) throw new Error(`Shadow ${body.sprite}:${body.frame} at ${sample.x},${sample.y}: ${actual} instead of ${expected}`)
       checked++
     }
@@ -59,7 +71,7 @@ try {
   ] }); sessions.push(fog)
   renderer.home({ x: 18, y: 16 }); renderer.draw(fog, options)
   const sample = poses.find(pose => pose.sprite === 'geologist' && pose.frame === 0)!.samples.find(sample => sample.alpha === 136 && sample.x < 0)!, enemy = renderer.screen({ x: 160, y: 144 }), visibleShadow = pixel(enemy.x + sample.x, enemy.y + sample.y)
-  if (visibleShadow.join() !== pixel(enemy.x + sample.x - 48, enemy.y + sample.y).map(value => Math.round(value * 119 / 255)).join()) throw new Error('Foreign source shadow was not visible before leaving sight')
+  if (visibleShadow.join() !== composite(pixel(enemy.x + sample.x - 48, enemy.y + sample.y), 136).join()) throw new Error('Foreign source shadow was not visible before leaving sight')
   fog.enqueue({ tick: 0, player: 1, seq: 0, type: 'specialists', profession: 'geologist', x: 3, y: 3, count: 1 }); fog.advance(1000)
   if (scene(fog, { player: 1 }).some(item => item.owner === 2 && (item.kind === 'shadow' || item.kind === 'settler'))) throw new Error('Foreign shadow leaked through fog')
   renderer.draw(fog, options)

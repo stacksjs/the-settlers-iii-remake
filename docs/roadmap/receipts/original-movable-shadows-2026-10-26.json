@@ -295,5 +295,18 @@
     "standards": "Source owner and explicit TypeScript module boundaries retained. No installed dependency/runtime edits. Renderer resources and layer validation reviewed.",
     "spec": "Original masks/selectors/alpha, independent mappings, read-only simulation, source depth and pixel/fog/lifecycle acceptance covered. Broader Gold/native scope remains open.",
     "findingFixed": "Shadow layers initially inherited the carrier goods property. A real carrying-scene regression failed, then shadow payload was reduced to visual pose/identity only. Full388tests and shadowbrowser rerun passed after the fix."
+  },
+  "ciFollowup": {
+    "run": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40363195211",
+    "conclusion": "failure",
+    "completedChecks": "Lint, types, import, 388 unit tests, asset verification, production build and all prior browser suites passed, including the full production-paced battle.",
+    "failure": "New shadow expectation rounded floating-point alpha blending differently from Linux Canvas: actual48,65,36 versus expected49,65,36.",
+    "correction": "Compose independent original shadow alpha over measured background with native Canvas source-over. Every final pixel remains an exact comparison; no tolerance and no production mask or renderer changes.",
+    "localResult": "All12673pixels,32poses and29surveyposes passed with native-compositor expectations.",
+    "scope": "Cross-platform test oracle correction, supplied-reference rendering remains separate from Gold runtime observations.",
+    "negativeControl": {
+      "ok": false,
+      "error": "Error: Shadow worker:0 at 7,-4: 111,148,82 instead of 52,69,38"
+    }
   }
 }
