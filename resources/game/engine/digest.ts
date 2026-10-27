@@ -24,6 +24,7 @@ export function touch(digest: ChunkDigest, width: number, tile: number): void {
 }
 
 const PRIME = 0x01000193, OFFSET = 0x811C9DC5
+const PRIME_SQUARED = Math.imul(PRIME, PRIME) >>> 0
 
 function chunkHash(state: State, players: Player[], chunk: number, columns: number): number {
   const map = state.map, cx = (chunk % columns) * CHUNK, cy = Math.floor(chunk / columns) * CHUNK
@@ -48,10 +49,13 @@ function combine(state: State, hashes: Uint32Array): string {
   const text = canonical(entities(state))
   for (let i = 0; i < text.length; i++) {
     const c = text.charCodeAt(i)
-    // Preserve the exact UTF-16 little-endian byte stream without two
-    // closure calls for every character of every recorded tick.
-    h = Math.imul(h ^ (c & 255), PRIME) >>> 0
-    h = Math.imul(h ^ (c >>> 8), PRIME) >>> 0
+    // The high byte is zero for Latin-1 characters. Its XOR is an identity,
+    // so both multiplications combine modulo 2^32 without dropping a byte.
+    if (c <= 255) h = Math.imul(h ^ c, PRIME_SQUARED) >>> 0
+    else {
+      h = Math.imul(h ^ (c & 255), PRIME) >>> 0
+      h = Math.imul(h ^ (c >>> 8), PRIME) >>> 0
+    }
   }
   return h.toString(16).padStart(8, '0')
 }
