@@ -1,6 +1,6 @@
 import type { Session } from '../../resources/game/engine'
 import { describe, expect, test } from 'bun:test'
-import { checksum, createSession, findStart, generateMap, PUBLISHED_RULES, restore, save, SAVE_VERSION } from '../../resources/game/engine'
+import { checksum, createSession, describeMap, findStart, generateMap, PUBLISHED_RULES, restore, save, SAVE_VERSION } from '../../resources/game/engine'
 import { anchors, landscape, order, place, rules } from '../fixtures/engine'
 
 /** Advances tick by tick, requiring the incremental checksum to equal a full recomputation every time. */
@@ -89,4 +89,13 @@ describe('incremental checksums', () => {
     expect(s.checksum()).toBe(checksum(s.state))
     expect(incremental).toBeLessThan(full / 5)
   }, 300_000)
+})
+
+test('the format-three checksum retains little-endian UTF-16 text including surrogate pairs', () => {
+  const s = createSession({ rules, seed: 5, map: describeMap(rules, { width: 8, height: 8, base: 'grass', features: [] }), players: [{ name: 'Romé 🏰', civilization: 'roman', controller: 'observer', start: { x: 4, y: 4 }, scenario: { buildings: [], settlers: [] } }] })
+  // Independent Python oracle: FNV over64*(eight zero layer bytes + fog3),
+  // then LE32(8,8,1,1912944901) followed by1564 canonical UTF-16-LE entity bytes.
+  expect(s.checksum()).toBe('d41b5e96')
+  expect(checksum(s.state)).toBe('d41b5e96')
+  s.dispose()
 })

@@ -110,12 +110,19 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         return { x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale, u: x * 16 - y * 8 + 8, v: y * 16, light }
       }
       const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
-      const terrainOf = (x: number, y: number): string => rules.terrain[map.terrain[y * map.width + x]!]!.id
+      const terrainOf = (x: number, y: number) => rules.terrain[map.terrain[y * map.width + x]!]!
       const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
         const [ax, ay] = a, [bx, by] = b, [cx2, cy2] = c
         if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
         const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay)
         const ra = rasterPoint(pa, ax, ay), rb = rasterPoint(pb, bx, by), rc = rasterPoint(pc, cx2, cy2)
+        if (kind.landscape && !kind.landscape.continuous) {
+          // Uniform face-local materials use CONTINUOS, without Background's
+          // cell phase. Mixed-face intersection selection remains separate.
+          ra.u = 8; ra.v = 0
+          if (by === ay) { rb.u = 24; rb.v = 0; rc.u = 16; rc.v = 16 }
+          else { rb.u = 16; rb.v = 16; rc.u = 0; rc.v = 16 }
+        }
         const sample = materials!.sampler(kind, ra, rb, rc)
         paintTriangle(pixels, surfaceWidth, surfaceHeight, ra, rb, rc, sample)
       }

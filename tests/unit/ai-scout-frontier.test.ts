@@ -77,14 +77,16 @@ test('a stricter client reachability view prevents an unusable fallback order', 
   expect(s.checksum()).toBe(before)
 })
 
-test('the existing rotation still waits when another home ray has unexplored land', async () => {
+test('an explored rotation still advances on reachable known frontier when another home ray has unseen land', async () => {
   const s = await captured(), o = observe(s, 1), before = s.checksum()
   const center = o.view.buildings.find(b => b.owner === 1 && b.type === 'castle')!
   const hidden = center.y * o.width + center.x + 30
   expect(o.explored(hidden)).toBe(true)
   // Withhold an east-ray tile; this turn's south-west ray is still complete.
   const limited = { ...o, explored: (tile: number) => tile !== hidden && o.explored(tile) }
-  expect(economicAI(1, { military: RIVAL_MILITARY }).decide(limited).some(c => c.type === 'move-soldiers')).toBe(false)
+  const command = economicAI(1, { military: RIVAL_MILITARY }).decide(limited).find(c => c.type === 'move-soldiers')!
+  expect(command).toBeDefined()
+  expect(limited.explored(coordinate(command, 'y') * o.width + coordinate(command, 'x'))).toBe(true)
   expect(s.checksum()).toBe(before)
 })
 
@@ -99,4 +101,35 @@ test('a genuinely fully explored map needs no frontier scouting order', () => {
   const o = observe(s, 1)
   expect(o.view.explored.every(tile => tile === 1)).toBe(true)
   expect(economicAI(1, { military: { ...RIVAL_MILITARY, scoutEvery: 80 } }).decide(o).some(c => c.type === 'move-soldiers')).toBe(false)
+})
+
+test('a failed ray march resumes at an observed reachable frontier without repeating the blocked destination', () => {
+  const s = createSession({ rules, seed: 5, map: describeMap(rules, { width: 96, height: 96, base: 'grass', features: Array.from({ length: 96 }, (_, x) => ({ kind: 'terrain' as const, id: 'water', x, y: 27, radius: 0 })) }), players: [{
+    name: 'Rome', civilization: 'roman', start: { x: 40, y: 40 }, scenario: { buildings: [{ type: 'small-tower', x: 40, y: 40 }], settlers: [{ profession: 'swordsman', x: 38, y: 48 }, { profession: 'swordsman', x: 39, y: 48 }] },
+  }] })
+  const policy = { ...RIVAL_MILITARY, scoutEvery: 80 }, ai = economicAI(1, { military: policy })
+  s.advance(480)
+  const initial = observe(s, 1), planned = ai.decide(initial).find(c => c.type === 'move-soldiers')!
+  expect(planned).toBeDefined()
+  expect(initial.explored(coordinate(planned, 'y') * initial.width + coordinate(planned, 'x'))).toBe(true)
+  // A prior ordinary player order can still fail. Recover from that state too.
+  const scout = initial.view.settlers.find(p => p.rank !== undefined && !p.inside)!
+  const first = { type: 'move-soldiers', soldiers: [scout.id], x: 40, y: 23 }
+  expect(s.enqueue({ ...first, type: 'move-soldiers', tick: s.state.tick, player: 1, seq: 0 })).toBeNull()
+  s.advance(480)
+  expect(s.view(1).settlers.some(p => p.diagnostic === 'unreachable')).toBe(true)
+  const o = observe(s, 1), next = ai.decide(o).find(c => c.type === 'move-soldiers')!
+  expect(next).toBeDefined()
+  const tile = coordinate(next, 'y') * o.width + coordinate(next, 'x')
+  expect(o.explored(tile)).toBe(true)
+  const ids = next.soldiers as number[]
+  expect(o.reachable(ids[0]!).has(tile)).toBe(true)
+  expect(s.enqueue({ ...next, type: 'move-soldiers', tick: s.state.tick, player: 1, seq: 1 })).toBeNull()
+  s.advance(160)
+  const copy = restore(JSON.parse(JSON.stringify(save(s))), PUBLISHED_RULES)
+  s.advance(2000); copy.advance(2000)
+  expect(s.view(1).explored.some((seen, t) => seen && !o.explored(t))).toBe(true)
+  expect(s.checksum()).toBe(copy.checksum())
+  expect(audit(s.context)).toEqual([])
+  s.dispose(); copy.dispose()
 })

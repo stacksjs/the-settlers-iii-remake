@@ -168,6 +168,7 @@ function siteLoop(ctx: Context, s: Settler, b: Building | undefined): void {
   if (b.suspended) { start(ctx, s, 'site', b.id, [{ op: 'work', ticks: 20 }]); return }
   if (s.profession === 'digger' && b.phase !== 'leveling') { release(ctx, s, 'levelled'); return }
   if (s.profession === 'builder' && b.phase !== 'building') { start(ctx, s, 'site', b.id, [{ op: 'work', ticks: 20 }]); return }
+  if (s.profession === 'builder' && !materials(ctx, b) && ctx.rules.constructionWaiting === 'release-idle') { release(ctx, s, 'waiting for construction materials'); return }
   if (s.profession === 'builder' && !materials(ctx, b)) { start(ctx, s, 'site', b.id, [{ op: 'work', ticks: 20 }]); return }
   start(ctx, s, 'site', b.id, siteSteps(ctx, b, s))
 }

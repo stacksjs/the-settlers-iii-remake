@@ -42,7 +42,9 @@ test('an explicit new-rules scenario resolves the captured crowd through movemen
   const legacy = restore(JSON.parse(new TextDecoder().decode(bytes)), PUBLISHED_RULES)
   // Construct a separate engineering scenario from the captured physical state.
   // Loading the original save above continues to select its frozen 0.10 rules.
-  const s = openSession(rules, structuredClone(legacy.state), { id: 'resting-rule-comparison', digest: Bun.SHA256.hash(bytes, 'hex') })
+  const state = structuredClone(legacy.state)
+  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = rules.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
+  const s = openSession(rules, state, { id: 'resting-rule-comparison', digest: Bun.SHA256.hash(bytes, 'hex') })
   const crowd = [...s.state.settlers.values()].filter(p => p.program?.kind === 'settle').map(p => ({ id: p.id, x: p.x, y: p.y }))
   const created = structuredClone(s.state.ledger)
   expect(crowd.length).toBe(12)

@@ -51,7 +51,7 @@ function describe(id: string, profile = rules): string {
   if (w.kind === 'harvest') return `A ${b.worker} fetches ${w.object === 'tree' ? 'trees' : 'stone'} within ${w.radius} tiles and returns ${w.output}.`
   if (w.kind === 'plant') return `A ${b.worker} plants saplings within ${w.radius} tiles.`
   if (w.kind === 'cultivate') return `A ${b.worker} sows fields and harvests ripe ${w.output}.`
-  if (w.kind === 'extract') return w.food ? `A miner digs ${w.output} from the deposit below. Prefers ${w.food.preferred}.` : `A ${b.worker} brings ${w.output} from nearby water.`
+  if (w.kind === 'extract') return w.food ? `A miner digs ${w.output} from the deposit below. Prefers ${w.food.preferred}.` : w.resource === 'water' ? 'A waterworker collects fresh water from rivers in the working area.' : 'A fisher catches fish from sea water in the working area.'
   if (w.kind === 'process') return `Turns ${Object.keys(w.inputs).join(' and ')} into ${Object.keys(w.outputs).join(' and ')}.`
   if (w.kind === 'craft') return `Forges ${b.id === 'weaponsmith' ? 'swords, spears and bows' : w.choices.length > 1 ? 'tools' : w.choices[0]} from iron and coal.`
   return b.name
@@ -195,7 +195,7 @@ function generatedSeed(session: Session): number | null {
 const RIVAL_SIZE = 128
 const RIVAL_GUARD: Record<string, number> = { swordsman: 4, bowman: 2 }
 /** The rival's declared military difficulty. */
-export const RIVAL_MILITARY = { attackAt: 8, scoutEvery: 1600 }
+export const RIVAL_MILITARY = { attackAt: 8, scoutEvery: 1600, scoutParty: 3 }
 
 /** Two Roman settlements on a wider generated landscape; the second is the economic computer player. */
 export function rivalSession(seed: number): Session {

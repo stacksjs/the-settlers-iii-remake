@@ -1,6 +1,7 @@
 import type { RulesProfile } from './rules'
 import type { PlayerScenario, PlayerSetup, ScenarioPile } from './session'
 import type { MapState } from './state'
+import { holdsResource } from './landscapes'
 import { emptyMap } from './map'
 
 // Turns a decoded original map into an engine world. Class mappings follow the
@@ -58,13 +59,22 @@ const GOODS: Record<string, string> = {
   SPADE: 'shovel', HAMMER: 'hammer', AXE: 'axe', PICK: 'pickaxe', SAW: 'saw', FISHINGROD: 'fishingrod', SWORD: 'sword', BOW: 'bow', SPEAR: 'spear', FLOUR: 'flour', PIG: 'pig', MEAT: 'meat', WATER: 'water', SCYTHE: 'scythe',
 }
 
+export class OriginalLandscapeError extends Error {
+  readonly code = 'unsupported-original-landscape'
+  constructor(readonly landscape: number, readonly tile: number, readonly x: number, readonly y: number) { super(`Unsupported original landscape ${landscape} at (${x}, ${y}).`) }
+}
+
 export interface OriginalWorld { map: MapState, players: PlayerSetup[], piles: ScenarioPile[], diagnostics: Record<string, number> }
 
 export function worldFromOriginal(rules: RulesProfile, input: OriginalMapInput): OriginalWorld {
   const size = input.area.size, map = emptyMap(size, size), diagnostics: Record<string, number> = {}
   const note = (key: string, n = 1): void => { diagnostics[key] = (diagnostics[key] ?? 0) + n }
   const terrain = new Map<number, number>()
-  for (const [id, codes] of Object.entries(LANDSCAPE)) {
+  const sourceCatalog = rules.terrain.some(t => t.landscape)
+  if (sourceCatalog) {
+    for (const [index, rule] of rules.terrain.entries()) if (rule.landscape?.originalCode !== undefined) terrain.set(rule.landscape.originalCode, index)
+  }
+  else for (const [id, codes] of Object.entries(LANDSCAPE)) {
     const index = rules.terrain.findIndex(t => t.id === id)
     if (index < 0) throw new RangeError(`Rules profile lacks terrain ${id}`)
     for (const code of codes) terrain.set(code, index)
@@ -73,6 +83,7 @@ export function worldFromOriginal(rules: RulesProfile, input: OriginalMapInput):
   for (let t = 0; t < size * size; t++) {
     const code = input.area.landscape[t]!
     const kind = terrain.get(code)
+    if (kind === undefined && sourceCatalog) throw new OriginalLandscapeError(code, t, t % size, Math.floor(t / size))
     if (kind === undefined) note(`landscape ${code} unmapped; drawn as grass`)
     map.terrain[t] = kind ?? terrain.get(16)!
     map.elevation[t] = Math.max(0, Math.min(255, Math.round(input.area.elevation[t]! * HEIGHT_SCALE)))
@@ -86,7 +97,7 @@ export function worldFromOriginal(rules: RulesProfile, input: OriginalMapInput):
       const good = RESOURCES[input.area.resourceType[t]!]
       const index = good ? rules.goods.indexOf(good) : -1
       if (index < 0) note(`resource ${good ?? input.area.resourceType[t]} not in the ${rules.id} profile`)
-      else if ((good === 'fish') === rules.terrain[map.terrain[t]!]!.water) { map.resource[t] = index + 1; map.resourceAmount[t] = amount }
+      else if (holdsResource(rules.terrain[map.terrain[t]!]!, good!)) { map.resource[t] = index + 1; map.resourceAmount[t] = amount }
       else note(`resource ${good} on mismatched terrain`)
     }
   }

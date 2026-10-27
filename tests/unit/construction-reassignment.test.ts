@@ -34,7 +34,11 @@ test('the captured 0.11 staffing save and replay retain their exact behavior', a
 test('current staffing controls recover actual idle builder hammers and equip a geologist', async () => {
   const legacy = await captured()
   // An explicit separate engineering scenario, not a silent save upgrade.
-  const s = openSession(rules, structuredClone(legacy.state), { id: 'crew-rule-comparison', digest: legacy.checksum() })
+  // This is an explicit current-rule scenario. Translate terrain names rather
+  // than reinterpreting the frozen profile's indices as the new catalog.
+  const state = structuredClone(legacy.state)
+  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = rules.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
+  const s = openSession(rules, state, { id: 'crew-rule-comparison', digest: legacy.checksum() })
   const created = structuredClone(s.state.ledger[1]!.created), recovered = s.state.ledger[1]!.recovered.hammer ?? 0
   const seq = next(s, 1)
   expect(s.enqueue({ tick: s.state.tick, player: 1, seq, type: 'settings', settings: { builderLimit: 2 } })).toBeNull()
@@ -121,9 +125,10 @@ test('a reduced cap keeps busy builders and their tools until the site finishes'
 })
 
 function fullGroundScenario(goods: string[] = ['log']) {
-  const map = describeMap(rules, { width: 32, height: 32, base: 'water', features: [{ kind: 'terrain', id: 'grass', x: 16, y: 16, radius: 14 }] })
+  const map = describeMap(rules, { width: 32, height: 32, base: 'water', features: [{ kind: 'terrain', id: 'grass', x: 16, y: 16, radius: 15 }] })
   const grass = rules.terrain.findIndex(t => t.id === 'grass')
   const layout = createSession({ rules, seed: 5, map, players: [{ name: 'Rome', civilization: 'roman', start: { x: 16, y: 16 }, settlers: {}, goods: {} }] })
+  // The source ground border needs one more shore tile than the old coarse profile.
   const storageSite = findBuildingSite(layout, 1, 'storage', { x: 16, y: 16 })
   expect(storageSite).not.toBeNull()
   layout.dispose()

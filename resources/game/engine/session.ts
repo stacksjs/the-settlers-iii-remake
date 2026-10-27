@@ -156,7 +156,7 @@ export function placementError(ctx: Context, owner: number, type: string, x: num
   for (const p of tiles) {
     const t = tileOf(ctx, p), kind = terrainAt(ctx, t).id
     if (ctx.index.buildingAt[t] || ctx.index.protectedAt[t]) return 'Another building is in the way.'
-    if (!buildable.includes(kind) && !rule.ground?.includes(kind)) return 'Choose clear, buildable ground.'
+    if (rule.footprintGround ? !rule.footprintGround.includes(kind) : !buildable.includes(kind) && !rule.ground?.includes(kind)) return 'Choose clear, buildable ground.'
     if (objectAt(ctx, t)) return 'Trees, stones or crops are in the way.'
     if (ctx.index.settlerAt[t]) return 'Settlers are standing on this site.'
     if (groundStackAt(ctx, t)) return 'Goods are lying on this site.'
@@ -165,7 +165,11 @@ export function placementError(ctx: Context, owner: number, type: string, x: num
   for (const p of kept) {
     const t = tileOf(ctx, p)
     if (ctx.index.buildingAt[t]) return 'Another building is too close.'
-    if (!terrainAt(ctx, t).walkable) return 'The building needs open ground around it.'
+    if (!terrainAt(ctx, t).walkable || (rule.footprintGround && !rule.footprintGround.includes(terrainAt(ctx, t).id))) return 'The building needs open ground around it.'
+  }
+  if (rule.footprintGround && rule.groundBorder) for (const [dx, dy] of rule.groundBorder) {
+    const px = x + dx, py = y + dy
+    if (inside(map, px, py) && !rule.footprintGround.includes(terrainAt(ctx, tileOf(ctx, { x: px, y: py })).id)) return 'The building needs suitable ground around its border.'
   }
   const doorTile = tileOf(ctx, { x: x + rule.door[0], y: y + rule.door[1] })
   if (objectAt(ctx, doorTile)?.blocks) return 'The entrance is blocked.'

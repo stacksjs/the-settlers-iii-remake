@@ -34,12 +34,14 @@ export function minimapPixels(o: Observation, options: MinimapOptions, slots: re
     else for (let c = 0; c < 3; c++) pixels[i + c] = Math.round((pixels[i + c]! * (255 - alpha) + rgb[c]! * alpha) / 255)
     pixels[i + 3] = 255
   }
+  const kinds = new Map(o.rules.terrain.map(t => [t.id, t]))
+  const colors = new Map(o.rules.terrain.filter(t => t.landscape).map(t => [t.id, t.landscape!.color.slice(1).match(/../g)!.map(c => Number.parseInt(c, 16)) as unknown as RGB]))
   for (let y = 0; y < o.height; y++) {
     for (let x = 0; x < o.width; x++) {
       const t = y * o.width + x, terrain = o.terrain(t)
       if (terrain === null) { put({ x, y }, UNKNOWN); continue }
-      const water = terrain === 'water'
-      put({ x, y }, options.territory === 'topographic' ? TERRAIN[terrain] ?? LAND : water ? SEA : LAND)
+      const water = kinds.get(terrain)?.water ?? false
+      put({ x, y }, options.territory === 'topographic' ? colors.get(terrain) ?? TERRAIN[terrain] ?? LAND : water ? SEA : LAND)
       // Player colours show who holds explored land; the other modes leave the land itself.
       const owner = o.view.owner[t]!
       if (options.territory === 'players' && owner && !water) put({ x, y }, playerRGB(slots, owner), 150)

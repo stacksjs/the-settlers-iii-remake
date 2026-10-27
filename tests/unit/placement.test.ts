@@ -6,7 +6,7 @@ function remoteClearing(clearing = true) {
   const castle = rules.buildings.find(b => b.id === 'castle')!
   const features = [...castle.footprint, ...castle.protected, castle.door, ...castle.piles.map(p => p.at), ...castle.builders]
     .map(([dx, dy]) => ({ kind: 'terrain' as const, id: 'grass', x: origin.x + dx!, y: origin.y + dy!, radius: 0 }))
-  if (clearing) features.push({ kind: 'terrain', id: 'grass', x: 60, y: 43, radius: 6 })
+  if (clearing) features.push({ kind: 'terrain', id: 'grass', x: 60, y: 43, radius: 7 })
   return createSession({ rules, seed: 5, map: describeMap(rules, { width: 96, height: 96, base: 'water', features }), players: [{ name: 'Rome', civilization: 'roman', start: origin, settlers: {}, goods: {} }] })
 }
 

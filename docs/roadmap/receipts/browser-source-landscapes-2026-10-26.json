@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-27T00:13:42.148612+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/219",
+  "parentIssue": 28,
+  "relatedIssues": [
+    20,
+    23,
+    33,
+    72,
+    74,
+    88,
+    92,
+    94
+  ],
+  "status": "Local source, unit and browser checks passed; pushed CI qualification pending",
+  "scope": "Pinned reference-remake landscape identities, source classifications, source materials and phase policies through the versioned Roman engineering profile. Not original Gold measurements, complete mixed-face transitions or native matched scenes.",
+  "reference": {
+    "repository": "https://github.com/paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "sourceManifest": "resources/game/engine/reference-landscapes.ts",
+    "generator": "scripts/reference-landscapes.ts",
+    "verification": "Normal asset conversion fetches six pinned source files, checks their hashes, reparses the original mappings/types/material positions and compares the generated catalog."
+  },
+  "catalog": {
+    "landscapes": 37,
+    "originalCodes": 29,
+    "uniqueMaterials": 32,
+    "faceLocalMaterials": 11,
+    "canonicalIdentity": "Existing MapState.terrain byte indices into RulesProfile.terrain; no parallel raw terrain layer",
+    "current": {
+      "id": "roman-engineering",
+      "version": "0.14.0",
+      "digest": "5537795777c5e5939e49abf8c82073ae7489f8e33c26a656f8b5ab71787e9c85"
+    },
+    "frozen013": {
+      "version": "0.13.0",
+      "digest": "546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931"
+    },
+    "checkpointFormat": "Existing versioned save/replay contracts; earlier profiles retain their original indices and behavior. Explicit authored new-rule comparison fixtures translate terrain names, never reinterpret old indices.",
+    "unsupported": "OriginalLandscapeError includes code, original landscape number, tile, x and y; current-source profiles do not silently substitute grass."
+  },
+  "simulation": [
+    "Sea depths remain distinct water/blocked terrain; rivers remain distinct nonwater/nonblocking land. Moor and snow source blocking flags are retained.",
+    "Fish resources are sea-only; ore resources require mountain or inner mountain border. Geologists and mineral depletion share those source groups.",
+    "Roman building origins, complete protected areas and outer ground border use the pinned XML sets. Mine origins require mountain or inner border.",
+    "Tree planting ground is grass or flattened grass; corn ground is grass/earth within two tiles, vines within one. Unobserved timings and movement costs remain U evidence.",
+    "Waterworkers collect rivers and fishers sea water through normal router-driven trips. Generated maps include freshwater branches without changing old-profile random generation.",
+    "Grassland Galore changes all five source desert variants through real commands, tracked checksums, save/restore and replay.",
+    "New versioned constructionWaiting policy returns material-starved builders to available work with their actual tools; frozen profiles keep their earlier wait loop."
+  ],
+  "planning": [
+    "AI resource predicates use source water/river/mountain groups through explored observations.",
+    "Extraction sites may use the normal working-area control; the AI moves work areas through accepted commands.",
+    "A city without room for its next producer can expand through normal towers while retaining the quarry budget.",
+    "Scouting uses rotating rays only for direction and chooses observed reachable frontier destinations, excluding hidden blocked destinations. The declared normal policy can send three real troops after reaching its army threshold. All groups preserve garrison guards.",
+    "AI behavior is an explicit engineering policy, not original Gold AI qualification."
+  ],
+  "rendering": {
+    "sourcePixels": "All 32 imported material images match every pixel from the independent pinned DAT reader.",
+    "rawMaterialBytes": 991232,
+    "materialBudgetBytes": 2097152,
+    "materialEntryLimit": 32,
+    "cacheAliases": "Shared source image keys reuse the same original pixel buffer; fallback colors remain distinct when they differ.",
+    "phase": "Continuous materials retain global source-grid UV phase. Uniform face-local materials retain source CONTINUOS orientation without cell phase. Existing per-vertex light and coverage are retained.",
+    "minimap": "The complete source terrain palette and water flags replace the coarse topographic fallback for current profiles.",
+    "missingProductionMaterials": "Original asset startup requires every source material; authored engineering renderer fixtures retain explicit fallback support."
+  },
+  "focused": {
+    "conversionRed": {
+      "sha256": "2cc8208f7d3b4b6b85e6e3f6ce7592ccb1a0c9efc7f968bbcde0b6b5c224a226",
+      "bytes": 1470
+    },
+    "waterworkRed": {
+      "sha256": "8755d55141e48687ef2d4f2cbb3de20d55c7abbc1a69cfe4cfca8c48b34d63d2",
+      "bytes": 1409
+    },
+    "browserMissingMaterialRed": {
+      "sha256": "981350d242aef18aabdc97171945e5a92a4bba0444e2cc148ec87bf5fc8a8d40",
+      "bytes": 785
+    },
+    "scoutUnseenTargetRed": {
+      "sha256": "1c3a7d10fd86c3dd11a46705015418824b88e7216c11bf1bce3e7f074e295c1b",
+      "bytes": 979
+    },
+    "normalRivalSimulation": {
+      "result": "passed",
+      "command": "bun test tests/unit/ai-scout-frontier.test.ts tests/unit/engine-ai.test.ts",
+      "evidence": {
+        "sha256": "ca43818ee75fcfaf1fbfd7ebe3338f1555115fdb20839657ce17c8258cb1d4f6",
+        "bytes": 1613
+      },
+      "requirements": "Normal 50,000 tick bound, physical ore/weapons, passive defeat, midgame restore, no injected stock or clocks"
+    },
+    "sourcePixelTest": {
+      "result": "passed",
+      "evidence": {
+        "sha256": "e96edaf6375658dbe07b525c10b61a3e0f4d60258bd11842fab2d76d313daf34",
+        "bytes": 441
+      }
+    },
+    "terrainBrowser": {
+      "result": "passed",
+      "evidence": {
+        "sha256": "f5b902d24a33b7afa8603edfe2c92e25f052440b3bec5cd8af212235edbd1e09",
+        "bytes": 228
+      },
+      "actualScales": [
+        1,
+        2
+      ],
+      "pixelChecksPerScale": 120506,
+      "sourceLandscapes": 37,
+      "sourceMaterials": 32,
+      "faceLocalMaterials": 11,
+      "literalFallbackColors": 4
+    }
+  },
+  "fixtureReview": [
+    "A source-valid outer ground border requires one more grass shore tile in the bounded full-ground and remote-clearance scenarios. Original placement ordering and all conservation assertions remain.",
+    "Resource exhaustion scenarios aim at their whole finite deposit through the normal work-area command when stricter ground moves the building.",
+    "The quarry reserve regression now checks an authored funding boundary with real piles and a pending site, independent of generated geography and completion tick."
+  ],
+  "manualBrowser": {
+    "url": "http://127.0.0.1:3465/",
+    "actions": [
+      "New settlement",
+      "Original tutorial map",
+      "Pause",
+      "Save",
+      "Load"
+    ],
+    "observed": "Original tutorial restored at 0:04 with 51 settlers and its source guard tower",
+    "screenshot": {
+      "publication": "private",
+      "width": 65536,
+      "height": 4292542531,
+      "sha256": "3a668fdda9e369ad865b3fbae3d250670069fcf079ef211b51e1f2f450ce9197",
+      "bytes": 132253
+    },
+    "uiChanges": [
+      "Topographic overview uses source colors for every source landscape identity.",
+      "Waterworker and fishing help distinguish rivers and sea water."
+    ],
+    "designReview": "Source-led terrain and overview correction inside the existing game interface. No styling-framework, font, motion or template change.",
+    "afterChecksumOptimization": {
+      "actions": [
+        "Reload the document and restore the earlier checkpoint",
+        "Pause",
+        "Save",
+        "Load"
+      ],
+      "observed": "Original tutorial restored at 0:17 with 51 settlers and its source guard tower",
+      "screenshot": {
+        "publication": "private",
+        "width": 65536,
+        "height": 4292542531,
+        "sha256": "4cb181a3d41434380fdb225d8d2e2907718e29caf0140b0a28ca34d13c1e3e3c",
+        "bytes": 132081
+      }
+    }
+  },
+  "toolingInterruption": {
+    "observed": "The local managed Bun executable disappeared during the first full gate. A roadmap child spawn and recruitment second viewport failed with ENOENT; completed browser steps had no execution errors.",
+    "recovery": "Normal pantry install bun.com@1.4.4 --no-save restored the declared tool. No source gate, clock or runtime patch was introduced. Units were rerun and remaining browser suites restarted in full.",
+    "qualification": "All gates must pass before this issue is closed; the failed attempts remain retained evidence."
+  },
+  "cohort": {
+    "stacks": "0.75.320",
+    "stx": "0.2.711",
+    "craft": "0.0.341",
+    "pantry": "0.11.130",
+    "bun": "1.4.4"
+  },
+  "owner": "Game catalog, importer, renderer and simulation/planning sources. No installed framework files are patched.",
+  "checks": {
+    "units": {
+      "result": "passed",
+      "command": "./buddy test --unit",
+      "sha256": "110dfbb603fc0032b9574a7d773e7705ee671439a5ef6669c020fe36ae3053fe",
+      "bytes": 46979,
+      "tests": 413,
+      "files": 64,
+      "assertions": 75794,
+      "seconds": 196.46
+    },
+    "types": {
+      "result": "passed",
+      "command": "bun run typecheck",
+      "sha256": "bbfd9474def7781551e95ffc4a74d0d915e6cfbc5c7bffd3a1c2cd2201907c94",
+      "bytes": 543
+    },
+    "lint": {
+      "result": "passed",
+      "command": "./buddy lint",
+      "sha256": "27282cf161f4a8c72e2054df1275e4b899aa5d8b5dd3d7d284e5a531781b1372",
+      "bytes": 301
+    },
+    "assets": {
+      "result": "passed",
+      "command": "bun run assets:verify",
+      "sha256": "657b301ef7c99745db7b793c611bf0f8fb621433bf995c806abf487f52d634a2",
+      "bytes": 331
+    },
+    "build": {
+      "result": "passed",
+      "command": "./buddy build views",
+      "sha256": "156f2f34a7ed7d427803060d1c0c2ebb1fe32d6d674d0575b820a83a62c485f4",
+      "bytes": 1366
+    },
+    "completeBrowser": {
+      "result": "passed",
+      "suites": 16,
+      "steps": 510,
+      "consoleRequestAndCollectionErrors": 0,
+      "qualification": {
+        "sha256": "3d5ccb60b3d5f902a5edbefed8e5e468504316effa64f1bdbebd82f2205d9072",
+        "bytes": 1528
+      },
+      "sourceNote": "Complete source-landscape browser gate passed before the checksum-preserving loop optimization. Current-code focused browser verification and fresh pushed CI qualification follow that optimization."
+    },
+    "afterChecksumOptimization": {
+      "result": "passed",
+      "commands": [
+        "bun tests/browser/checkpoints.ts",
+        "bun tests/browser/terrain.ts"
+      ],
+      "checkpointLog": {
+        "sha256": "f30c4e1d2b69d40aebac8c5c2188e2609f65d9ec7d7b9669d2e8619ec8535ec5",
+        "bytes": 106
+      },
+      "terrainLog": {
+        "sha256": "f5b902d24a33b7afa8603edfe2c92e25f052440b3bec5cd8af212235edbd1e09",
+        "bytes": 228
+      },
+      "terrainActualScales": [
+        1,
+        2
+      ],
+      "pixelChecksPerScale": 120506,
+      "maximumRawMaterialBytes": 991232,
+      "unicodeGoldenLog": {
+        "sha256": "f3931dff99065237329cedab4a330349e8a9453934984700fd676d95256506ca",
+        "bytes": 256
+      }
+    }
+  },
+  "publication": "Original rasters remain private. CI artifacts are restricted to explicitly allowed nonmedia diagnostics.",
+  "remaining": [
+    "Full mixed-face transition-atlas selection",
+    "Reference fog timing",
+    "Original Gold rule, timing, visual and audio measurements",
+    "True native rendering and the complete campaign/platform/performance qualification matrix"
+  ],
+  "checksumPerformance": {
+    "source": "resources/game/engine/digest.ts",
+    "observation": "The unchanged staffing replay timed out at 5,289.52 ms in a quiet run and 7,996.76 ms under concurrent load; no assertion failure.",
+    "profiling": "A retained Bun CPU profile identified combine and byte calls as about 30% of sampled execution. Profiling timings are not compared against unprofiled runs.",
+    "correction": "Inline the identical two little-endian UTF-16 FNV byte rounds for each canonical-text character. No cached state, reduced tick count, changed checksum format or raised test limit.",
+    "after": {
+      "isolatedStaffingReplayMs": 3728.53,
+      "fullSuiteStaffingReplayMs": 4174.19,
+      "unchangedLimitMs": 5000,
+      "asciiReplayChecksumBeforeAndAfter": "286a59af",
+      "independentUnicodeGolden": "d41b5e96"
+    },
+    "scope": "Engineering observations on this host; not a cross-platform performance qualification."
+  },
+  "localCompleteBrowser": {
+    "identity": {
+      "kind": "local complete browser-suite diagnostics"
+    },
+    "suiteCount": 16,
+    "steps": 510,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 4,
+        "steps": 72
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 621986.74275,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": 120506,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "sourceNote": "Complete source-landscape browser gate passed before the checksum-preserving loop optimization. Current-code focused browser verification and fresh pushed CI qualification follow that optimization."
+  },
+  "verifiedAt": "2026-10-27T00:38:14.869389+00:00",
+  "pending": [
+    "Fresh pushed-version CI success",
+    "Original immutable CI artifact digest/CRC and full-suite qualification"
+  ]
+}

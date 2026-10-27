@@ -40,7 +40,7 @@ describe('overview map', () => {
     const water = { x: 55, y: 42 }
     expect(pixel(minimapPixels(o, { territory: 'simple', settlers: 'none', buildings: false }), 96, 96, water.x, water.y)).toEqual([46, 86, 140])
     const topo = minimapPixels(o, { territory: 'topographic', settlers: 'none', buildings: false })
-    expect(pixel(topo, 96, 96, anchors.mountain.x, anchors.mountain.y)).toEqual([118, 112, 104])
+    expect(pixel(topo, 96, 96, anchors.mountain.x, anchors.mountain.y)).toEqual([92, 92, 92])
     const carrier = [...s.state.settlers.values()].find(p => p.owner === 1 && p.profession === 'carrier' && !p.inside)!
     const all = minimapPixels(o, { territory: 'simple', settlers: 'all', buildings: false })
     const military = minimapPixels(o, { territory: 'simple', settlers: 'military', buildings: false })

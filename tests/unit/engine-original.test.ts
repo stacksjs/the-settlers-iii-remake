@@ -16,9 +16,8 @@ describe('worlds from original maps', () => {
       expect(world.map.width).toBe(decoded.area.size)
       // Every landscape code the demo uses is classified; nothing silently becomes grass.
       expect(Object.keys(world.diagnostics).filter(k => k.startsWith('landscape'))).toEqual([])
-      const water = rules.terrain.findIndex(t => t.id === 'water')
-      const sea = [...decoded.area.landscape].filter(code => code <= 7 || (code >= 96 && code <= 99)).length
-      expect(world.map.terrain.filter(t => t === water).length).toBe(sea)
+      const sea = [...decoded.area.landscape].filter(code => code <= 7).length
+      expect(world.map.terrain.filter(t => rules.terrain[t]!.water).length).toBe(sea)
       expect(world.map.object.some(Boolean)).toBe(true)
       expect(world.map.resource.some(Boolean)).toBe(true)
       expect(Math.max(...world.map.elevation)).toBeLessThanOrEqual(Math.round(225 * 127 / 225))
@@ -38,7 +37,7 @@ describe('worlds from original maps', () => {
 
   test('unsupported civilizations and records are reported, not approximated', () => {
     const size = 32, area = { size, elevation: new Uint8Array(size * size).fill(90), landscape: new Uint8Array(size * size).fill(16), objects: new Uint8Array(size * size), resourceType: new Uint8Array(size * size), resourceAmount: new Uint8Array(size * size) }
-    area.landscape[5] = 250; area.objects[6] = 40; area.objects[7] = 70; area.objects[8] = 120; area.resourceType[9] = 4; area.resourceAmount[9] = 3
+    area.objects[6] = 40; area.objects[7] = 70; area.objects[8] = 120; area.resourceType[9] = 4; area.resourceAmount[9] = 3
     const world = worldFromOriginal(rules, {
       area,
       players: [{ index: 0, civilization: 3, startX: 5, startY: 5, name: 'Amazons' }, { index: 1, civilization: 0, startX: 20, startY: 20, name: 'Rome' }],
@@ -49,7 +48,7 @@ describe('worlds from original maps', () => {
     expect(world.players).toHaveLength(1)
     // Soldiers keep their class and rank, including those the map stations in a building.
     expect(world.players[0]!.scenario).toEqual({ buildings: [{ type: 'small-tower', x: 20, y: 20 }], settlers: [{ profession: 'bowman', x: 20, y: 20, rank: 2 }, { profession: 'carrier', x: 20, y: 21 }, { profession: 'swordsman', x: 20, y: 22, rank: 3 }] })
-    expect(world.diagnostics).toMatchObject({ 'landscape 250 unmapped; drawn as grass': 1, 'object 40 unclassified': 1, 'player 0 civilization 3 not implemented': 1, 'settler MAGE not represented': 1, 'settlers of unsupported players': 1, 'building WINEGROWER not in the roman-engineering profile': 1, 'pile WINE not in the roman-engineering profile': 1, 'resource gems not in the roman-engineering profile': 1 })
+    expect(world.diagnostics).toMatchObject({ 'object 40 unclassified': 1, 'player 0 civilization 3 not implemented': 1, 'settler MAGE not represented': 1, 'settlers of unsupported players': 1, 'building WINEGROWER not in the roman-engineering profile': 1, 'pile WINE not in the roman-engineering profile': 1, 'resource gems not in the roman-engineering profile': 1 })
     expect(world.map.elevation[0]).toBe(Math.round(90 * 127 / 225))
     expect(world.map.objectAmount[8]).toBe(6)
     expect(world.map.object[7]).toBe(rules.objects.findIndex(o => o.id === 'tree') + 1)

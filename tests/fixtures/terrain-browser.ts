@@ -1,3 +1,4 @@
+import { checkSourceLandscapes } from './landscape-browser'
 import type { Atlas, AtlasFrame } from '../../resources/game/assets'
 import { loadOriginalAssets } from '../../resources/game/assets'
 import type { MapFeature } from '../../resources/game/engine/map'
@@ -13,8 +14,12 @@ try {
   const sessions: Session[] = [], timings: number[] = []
   let checkedPixels = 0, maximumFrameBytes = 0, maximumMaterialBytes = 0
   const image = async (source: HTMLCanvasElement): Promise<HTMLImageElement> => { const value = new Image(); value.src = source.toDataURL(); await value.decode(); return value }
-  const blank = document.createElement('canvas'); blank.width = blank.height = 1
-  const empty: Atlas = { image: await image(blank), frames: new Map(), playerSlots: [] }
+  // Coverage/light regressions use explicit authored colors, independent of
+  // catalog fallback colors. Source-material checks below use the real atlas.
+  const blank = document.createElement('canvas'); blank.width = 2; blank.height = 1
+  const colors = blank.getContext('2d')!
+  colors.fillStyle = '#6f9452'; colors.fillRect(0, 0, 1, 1); colors.fillStyle = '#b8ad78'; colors.fillRect(1, 0, 1, 1)
+  const coverage: Atlas = { image: await image(blank), frames: new Map(['terrain-grass', 'terrain-sand'].map((key, x) => [key, [{ key, frame: 0, x, y: 0, width: 1, height: 1, offsetX: 0, offsetY: 0 }]])), playerSlots: [] }
   const make = (features: MapFeature[] = [], profession = 'carrier', starts = [{ x: 32, y: 32 }]): Session => {
     const session = createSession({ rules, seed: 1, map: describeMap(rules, { width: 96, height: 96, base: 'grass', features }), players: [{ name: 'Viewer', civilization: 'roman', start: starts[0]!, scenario: { buildings: [], settlers: starts.map(at => ({ profession, ...at })) } }] })
     sessions.push(session); return session
@@ -127,7 +132,7 @@ try {
   const cachedGrade = context.getImageData(0, 0, canvas.width, canvas.height).data
   renderer.invalidate(); draw(grading)
   if (!context.getImageData(0, 0, canvas.width, canvas.height).data.every((value, i) => value === cachedGrade[i])) throw new Error('Actual digger grading left stale north-neighbor light across the chunk boundary')
-  renderer.setAssets(empty)
+  renderer.setAssets(coverage)
   for (const { zoom, offset } of cases) {
     renderer.camera.zoom = zoom; renderer.home({ x: 32, y: 32 }); renderer.camera.x += offset; renderer.camera.y += offset; draw(flat)
     samplePatch(renderer.screen({ x: 256, y: 288 }), zoom, actual => {
@@ -210,6 +215,9 @@ try {
   // Native Canvas independently maps the reference UV plane to flat geometry:
   // x=u-8, y=v*9/16. It contains no mesh or production interpolation code.
   const original = await loadOriginalAssets(), terrain: Atlas = { ...original, frames: new Map([...original.frames].filter(([key]) => key.startsWith('terrain-'))) }
+  const sourceLandscapes = checkSourceLandscapes(canvas, original)
+  checkedPixels += sourceLandscapes.pixels
+  maximumMaterialBytes = Math.max(maximumMaterialBytes, sourceLandscapes.materialBytes)
   const checker = document.createElement('canvas'); checker.width = checker.height = 4
   const checkerContext = checker.getContext('2d')!
   for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { checkerContext.fillStyle = ['#fc2318', '#168eeb', '#f6e946', '#238d36'][(x + y) % 4]!; checkerContext.fillRect(x, y, 1, 1) }
@@ -300,11 +308,11 @@ try {
     if (!rejected) throw new Error(`Unsupported material ${failure} was silently accepted`)
     renderer.dispose(); clear(); invalid.width = invalid.height = 0
   }
-  renderer.setAssets(empty); renderer.camera.zoom = 1; renderer.home({ x: 32, y: 32 }); draw(flat)
+  renderer.setAssets(coverage); renderer.camera.zoom = 1; renderer.home({ x: 32, y: 32 }); draw(flat)
   flat.advance(rules.visibility.interval); draw(flat)
   if (renderer.terrainCacheMemory().rebuiltChunks !== 0) throw new Error('Unchanged actual visibility inputs caused repeated rasterization')
   renderer.dispose(); clear()
   for (const session of sessions) session.dispose()
-  result.textContent = JSON.stringify({ ok: true, deviceScale: ratio, checkedPixels, referenceVertexLight: true, gradientSamples: 7, lowerLightClamp: true, saturationAfterInterpolation: true, referenceEdgeGuard: true, referenceEdgesTested: ['left', 'top', 'right', 'bottom'], mixedVisibilityFace: true, diggerNorthHaloInvalidation: true, cacheComparisonPixels: canvas.width * canvas.height, noTintCache: true, steadyVisibilityWeights: [0, 0.5, 1], rgba8Rounding: 'nearest, half upward after source RGB multiplication', continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalSourcePixelsPreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle with reference vertex-light equations and explicit RGBA8 rounding across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU texel and channel rounding tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
+  result.textContent = JSON.stringify({ ok: true, sourceLandscapes, deviceScale: ratio, checkedPixels, referenceVertexLight: true, gradientSamples: 7, lowerLightClamp: true, saturationAfterInterpolation: true, referenceEdgeGuard: true, referenceEdgesTested: ['left', 'top', 'right', 'bottom'], mixedVisibilityFace: true, diggerNorthHaloInvalidation: true, cacheComparisonPixels: canvas.width * canvas.height, noTintCache: true, steadyVisibilityWeights: [0, 0.5, 1], rgba8Rounding: 'nearest, half upward after source RGB multiplication', continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalSourcePixelsPreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle with reference vertex-light equations and explicit RGBA8 rounding across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU texel and channel rounding tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
 }
 catch (error) { result.textContent = JSON.stringify({ ok: false, error: String(error) }) }

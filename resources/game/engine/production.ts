@@ -2,6 +2,7 @@ import type { Context } from './context'
 import type { Goods, Workflow } from './rules'
 import type { Building, Settler, Stack } from './state'
 import { changed, doorOf, emit, footprint, objectAt, passable, pointAt, record, room, ruleOf, terrainAt } from './context'
+import { holdsResource, suppliesWater, terrainIs } from './landscapes'
 import { area, DIRECTIONS, distance, indexOf, inside, neighbours } from './geometry'
 import { dropCargo, groundStackAt, slot } from './logistics'
 import { randomInt } from './random'
@@ -72,7 +73,7 @@ function plantable(ctx: Context, tile: number, owner: number): boolean {
  */
 function sowable(ctx: Context, tile: number, w: Extract<Workflow, { kind: 'cultivate' }>): boolean {
   const map = ctx.state.map, x = tile % map.width, y = Math.floor(tile / map.width)
-  if (w.ground && ![tile, ...neighbours(map, tile)].every(t => w.ground!.includes(terrainAt(ctx, t).id))) return false
+  if (w.ground && !(w.groundRadius ? area(map, pointAt(ctx, tile), w.groundRadius) : [tile, ...neighbours(map, tile)]).every(t => w.ground!.includes(terrainAt(ctx, t).id))) return false
   if (!w.slope) return true
   const at = (d: number): number | null => { const nx = x + DIRECTIONS[d]![0], ny = y + DIRECTIONS[d]![1]; return nx >= 0 && ny >= 0 && nx < map.width && ny < map.height ? ny * map.width + nx : null }
   const crop = (t: number | null): boolean => t !== null && [w.plant, w.ripe].includes(objectAt(ctx, t)?.id ?? '')
@@ -100,7 +101,7 @@ function outdoor(ctx: Context, b: Building, s: Settler, w: Workflow): string | n
   }
   if (w.kind === 'plant' || w.kind === 'cultivate') {
     const object = w.kind === 'plant' ? w.object : w.plant
-    const candidates = within(ctx, b, w.radius).filter(t => plantable(ctx, t, b.owner) && (w.kind !== 'cultivate' || sowable(ctx, t, w))).slice(0, 8)
+    const candidates = within(ctx, b, w.radius).filter(t => plantable(ctx, t, b.owner) && (w.kind === 'cultivate' ? sowable(ctx, t, w) : !terrainAt(ctx, t).landscape || terrainIs(terrainAt(ctx, t), 'grass'))).slice(0, 8)
     // Choose among the nearest free tiles so plantings spread out rather than filling one line.
     while (candidates.length) {
       const pick = candidates.splice(randomInt(ctx.state.random, candidates.length), 1)[0]!
@@ -111,7 +112,7 @@ function outdoor(ctx: Context, b: Building, s: Settler, w: Workflow): string | n
   if (w.kind === 'extract' && !w.food) {
     if (room(output(ctx, b, w.output)) < 1) return 'output-full'
     const map = ctx.state.map, resource = ctx.goodIndex.get(w.resource) ?? 0
-    const target = within(ctx, b, w.radius).find(t => terrainAt(ctx, t).water && (w.resource === 'water' || (map.resource[t] === resource && map.resourceAmount[t]! > 0)) && !ctx.state.claims.has(t) && reachable(ctx, s, door, t, true))
+    const target = within(ctx, b, w.radius).find(t => (w.resource === 'water' ? suppliesWater(terrainAt(ctx, t)) : terrainAt(ctx, t).water && map.resource[t] === resource && map.resourceAmount[t]! > 0) && !ctx.state.claims.has(t) && reachable(ctx, s, door, t, true))
     if (target === undefined) return 'no-resources'
     output(ctx, b, w.output).reservedIn++
     trip(ctx, b, s, target, true, w.work, 'extract', { resource: w.resource, output: w.output })
@@ -144,7 +145,7 @@ function indoor(ctx: Context, b: Building, w: Workflow): string | null {
     if (b.cycle === 0) {
       if (room(output(ctx, b, w.output)) < 1) return 'output-full'
       const map = ctx.state.map, resource = ctx.goodIndex.get(w.resource)!
-      const deposit = area(map, b, w.radius).filter(t => map.resource[t] === resource && map.resourceAmount[t]! > 0).sort((a, c) => map.resourceAmount[c]! - map.resourceAmount[a]! || a - c)[0]
+      const deposit = area(map, b, w.radius).filter(t => (!terrainAt(ctx, t).landscape || holdsResource(terrainAt(ctx, t), w.resource)) && map.resource[t] === resource && map.resourceAmount[t]! > 0).sort((a, c) => map.resourceAmount[c]! - map.resourceAmount[a]! || a - c)[0]
       if (deposit === undefined) { if (b.shortage !== 'exhausted') emit(ctx, { player: b.owner, type: 'exhausted', text: `${ruleOf(ctx, b).name} has exhausted its deposit`, entity: b.id }); return 'exhausted' }
       if (b.meals === 0) {
         const food = [w.food.preferred, ...w.food.accepted].find(g => input(ctx, b, g).amount > 0)

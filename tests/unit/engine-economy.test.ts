@@ -215,6 +215,10 @@ describe('natural resources', () => {
     const shoal = water()
     const quarry = place(s, 'stonecutter', anchors.granite)
     const fisher = place(s, 'fisher', anchors.water)
+    // Stricter source ground can move the hut. The normal control keeps this
+    // exhaustion scenario aimed at its finite patch instead of only its edge.
+    order(s, 'work-area', { building: quarry, ...anchors.granite })
+    order(s, 'work-area', { building: fisher, ...anchors.water })
     const stones = s.state.map.object.filter(o => o === s.context.objectIndex.get('stone')).length
     until(s, () => s.state.buildings.get(quarry)!.shortage === 'no-resources' && s.state.buildings.get(fisher)!.shortage === 'no-resources', 40_000)
     expect(s.state.ledger[1]!.produced.stone).toBe(stones)

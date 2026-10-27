@@ -2,11 +2,17 @@ import type { Point } from './geometry'
 import type { PlayerView, Session } from './session'
 import type { RulesProfile } from './rules'
 import type { Command, CommandResult, PlayerSettings } from './state'
+import { suppliesWater, terrainIs } from './landscapes'
 import { area, DIRECTIONS, distance, indexOf, neighbours } from './geometry'
 import { footprint } from './context'
 import { harvestableSite } from './production'
 import { surveyedMineForecast } from './placement'
 import { reachableTiles } from './routing'
+
+function terrainPredicate(o: Observation, group: 'sea' | 'river' | 'mountain'): (tile: number) => boolean {
+  const ids = new Set(o.rules.terrain.filter(t => group === 'sea' ? t.water : group === 'river' ? suppliesWater(t) : terrainIs(t, group)).map(t => t.id))
+  return tile => ids.has(o.terrain(tile) ?? '')
+}
 
 // A computer player is a client like any other: it reads what its player may
 // know and submits ordinary commands. It never touches simulation state, so it
@@ -82,8 +88,8 @@ const POLICY: Want[] = [
   { building: 'sawmill', count: 1, near: home },
   { building: 'forester', count: 1, near: o => find(o, t => o.object(t) === 'tree'), when: (_o, have) => have('woodcutter') > 0 },
   { building: 'small-residence', count: 1, near: home, when: (o, have) => have('sawmill') > 0 && (o.view.professions.carrier ?? 0) < 20 },
-  { building: 'fisher', count: 1, near: o => find(o, t => o.terrain(t) === 'water'), when: (_o, have) => have('sawmill') > 0 },
-  { building: 'waterworks', count: 1, near: o => find(o, t => o.terrain(t) === 'water'), when: (_o, have) => have('fisher') > 0 },
+  { building: 'fisher', count: 1, near: o => find(o, terrainPredicate(o, 'sea')), when: (_o, have) => have('sawmill') > 0 },
+  { building: 'waterworks', count: 1, near: o => find(o, terrainPredicate(o, 'river')), when: (_o, have) => have('fisher') > 0 },
   { building: 'grain-farm', count: 1, near: holdings, when: (_o, have) => have('waterworks') > 0 },
   { building: 'mill', count: 1, near: holdings, when: (_o, have) => have('grain-farm') > 0 },
   { building: 'bakery', count: 1, near: holdings, when: (_o, have) => have('mill') > 0 },
@@ -247,7 +253,7 @@ const constructionPlanks = (o: Observation, building: number): number => o.view.
  * attacks a military building it can see, and how often it sends a scout toward
  * land it has not explored. Engineering choices, not the original AI (S3-072).
  */
-export interface MilitaryPolicy { attackAt: number, scoutEvery: number }
+export interface MilitaryPolicy { attackAt: number, scoutEvery: number, scoutParty?: number }
 
 /** Weapons, a barracks and storage for the new goods, after the economy that feeds them. */
 const ARMS: Want[] = [
@@ -288,9 +294,11 @@ export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] 
   const targets = view.buildings.filter(b => b.owner !== o.player && b.phase === 'active' && rules.get(b.type)?.garrison)
     .sort((a, b) => distance(a, center) - distance(b, center) || a.id - b.id)
   if (targets.length && mine.length >= policy.attackAt) { orders.push({ type: 'attack', soldiers: movable.map(s => s.id), building: targets[0]!.id }); return orders }
-  // Scouting: one soldier walks toward the nearest unexplored land in a direction that turns with time.
+  // Scouting: the declared party approaches reachable explored frontier in a direction that turns with time.
   if (!targets.length && view.tick % policy.scoutEvery < (o.interval ?? 1)) {
-    const scout = (ready.length ? ready : movable).sort((a, b) => a.id - b.id)[0]!
+    const readyIds = new Set(ready.map(s => s.id))
+    const available = movable.slice().sort((a, b) => Number(!readyIds.has(a.id)) - Number(!readyIds.has(b.id)) || a.id - b.id)
+    const party = available.slice(0, mine.length >= policy.attackAt ? Math.max(1, Math.min(available.length, policy.scoutParty ?? 1)) : 1)
     const unknownOnRay = ([dx, dy]: readonly [number, number]): Point | null => {
       for (let step = 1; step < Math.max(o.width, o.height); step++) {
         const x = center.x + dx * step, y = center.y + dy * step
@@ -300,22 +308,22 @@ export function militaryOrders(o: Observation, policy: MilitaryPolicy): Order[] 
       return null
     }
     const ray = unknownOnRay(DIRECTIONS[Math.floor(view.tick / policy.scoutEvery) % 6]!)
-    if (ray) orders.push({ type: 'move-soldiers', soldiers: [scout.id], ...ray })
-    else if (DIRECTIONS.every(direction => unknownOnRay(direction) === null)) {
-      // Fixed rays leave off-axis areas unseen. Visit a known reachable edge
-      // instead, without inspecting the terrain or enemies beyond that edge.
-      const frontier: (Point & { tile: number })[] = []
-      for (let tile = 0; tile < o.width * o.height; tile++) if (o.explored(tile) && neighbours(o, tile).some(next => !o.explored(next))) frontier.push({ tile, x: tile % o.width, y: Math.floor(tile / o.width) })
-      const readyIds = new Set(ready.map(s => s.id))
-      const scouts = movable.slice().sort((a, b) => Number(!readyIds.has(a.id)) - Number(!readyIds.has(b.id)) || a.id - b.id)
-      const checked: ReadonlySet<number>[] = []
-      for (const candidate of scouts) {
-        if (!frontier.length || checked.some(region => region.has(at(candidate)))) continue
-        const region = o.reachable(candidate.id)
-        const target = frontier.filter(p => region.has(p.tile)).sort((a, b) => distance(a, candidate) - distance(b, candidate) || a.tile - b.tile)[0]
-        if (target) { orders.push({ type: 'move-soldiers', soldiers: [candidate.id], x: target.x, y: target.y }); break }
-        checked.push(region)
+    // A ray supplies direction only. Its first unseen tile may lie inside a
+    // building or beyond impassable ground. March to a known reachable edge
+    // so exploration never depends on the hidden destination being usable.
+    const frontier: (Point & { tile: number })[] = []
+    for (let tile = 0; tile < o.width * o.height; tile++) if (o.explored(tile) && neighbours(o, tile).some(next => !o.explored(next))) frontier.push({ tile, x: tile % o.width, y: Math.floor(tile / o.width) })
+    const checked: ReadonlySet<number>[] = []
+    for (const candidate of available) {
+      if (!frontier.length || checked.some(region => region.has(at(candidate)))) continue
+      const region = o.reachable(candidate.id)
+      const target = frontier.filter(p => region.has(p.tile) && p.tile !== at(candidate)).sort((a, b) => distance(a, ray ?? center) - distance(b, ray ?? center) || distance(a, candidate) - distance(b, candidate) || a.tile - b.tile)[0]
+      if (target) {
+        const escort = party.filter(s => region.has(at(s)))
+        const soldiers = [candidate.id, ...escort.filter(s => s.id !== candidate.id).map(s => s.id)].slice(0, party.length)
+        orders.push({ type: 'move-soldiers', soldiers, x: target.x, y: target.y }); break
       }
+      checked.push(region)
     }
   }
   return orders
@@ -349,6 +357,16 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         }
         orders.push(recovery)
       }
+      // Extraction may use a shifted working area, just as the player's
+      // ordinary control allows. A legal site need not sit on the river bank.
+      for (const b of o.view.buildings.filter(b => b.owner === o.player && !b.suspended)) {
+        const work = o.rules.buildings.find(rule => rule.id === b.type)?.workflow, resource = NEEDS[b.type]
+        if (work?.kind !== 'extract' || work.food || !resource) continue
+        const matches = resource(o)
+        if (area(o, b.workArea, work.radius).some(matches)) continue
+        const target = find(o, t => matches(t) && distance({ x: t % o.width, y: Math.floor(t / o.width) }, b) <= work.radius * 3, 1, { near: b, neutral: true })[0]
+        if (target) orders.push({ type: 'work-area', building: b.id, ...target })
+      }
       const hungry = diagnosis.some(d => d.kind === 'food'), shortHanded = diagnosis.some(d => d.kind === 'population'), blockedDelivery = diagnosis.some(d => d.kind === 'delivery')
       const sites = o.view.buildings.filter(b => b.owner === o.player && b.phase !== 'active').length
       // Survey known own and neutral mountains until coal and iron are known: the first geologist uses a hammer,
@@ -364,7 +382,8 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       if (!diagnosis.some(d => d.recovery?.type === 'dismiss') && missing && own(o, 'sawmill') > 0 && o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill' && b.phase === 'active') && (geologists.length === 0 ? offered(o, 'hammer') > awaited : idle)) {
         const occupied = new Set(o.view.buildings.flatMap(b => footprint(o.rules.buildings.find(rule => rule.id === b.type)!, b).map(p => indexOf(o, p.x, p.y))))
         const blocked = new Set(o.rules.objects.filter(object => object.blocks).map(object => object.id))
-        const mountain = find(o, t => o.terrain(t) === 'mountain' && !surveyedTiles.has(t) && !occupied.has(t) && !blocked.has(o.object(t) ?? ''), 1, { near: readyGeologist, neutral: true })[0]
+        const mountainTerrain = terrainPredicate(o, 'mountain')
+        const mountain = find(o, t => mountainTerrain(t) && !surveyedTiles.has(t) && !occupied.has(t) && !blocked.has(o.object(t) ?? ''), 1, { near: readyGeologist, neutral: true })[0]
         const walkable = new Set(o.rules.terrain.filter(t => t.walkable).map(t => t.id))
         const edge = find(o, t => walkable.has(o.terrain(t) ?? '') && !occupied.has(t) && !blocked.has(o.object(t) ?? '') && neighbours(o, t).some(next => !o.explored(next)), 1, { near: readyGeologist, neutral: true })[0]
         // Survey nearby mountains first, then reveal new land instead of cycling through distant expired signs.
@@ -407,7 +426,7 @@ export function economicAI(player: number, options: { interval?: number, maxSite
       const have = (type: string): number => own(o, type)
       // Hungry mines put the fisher first, and buildings without workers put a residence first, whatever the usual order.
       const timber: Want[] = !o.view.buildings.some(b => b.owner === o.player && b.type === 'sawmill') && (have('woodcutter') > 0 || free(o, 'log') > 0) ? [{ building: 'sawmill', count: 1, near: home }] : []
-      const ordered = [...timber, ...(blockedDelivery ? [{ building: 'storage', count: 1, near: holdings }] : []), ...(hungry ? [{ building: 'fisher', count: 1, near: (o: Observation) => find(o, t => o.terrain(t) === 'water') }] : []), ...(shortHanded ? [{ building: 'small-residence', count: 4, near: holdings }] : []), ...policy]
+      const ordered = [...timber, ...(blockedDelivery ? [{ building: 'storage', count: 1, near: holdings }] : []), ...(hungry ? [{ building: 'fisher', count: 1, near: (o: Observation) => find(o, terrainPredicate(o, 'sea')) }] : []), ...(shortHanded ? [{ building: 'small-residence', count: 4, near: holdings }] : []), ...policy]
       for (const want of ordered as Want[]) {
         if (have(want.building) >= want.count || (want.when && !want.when(o, have))) continue
         const anchors = want.near(o)
@@ -424,7 +443,7 @@ export function economicAI(player: number, options: { interval?: number, maxSite
         const explore = center ? { x: Math.max(0, Math.min(o.width - 1, center.x + rotation[0]! * 30)), y: Math.max(0, Math.min(o.height - 1, center.y + rotation[1]! * 30)) } : undefined
         // Neutral harvest anchors may be known before any workplace fits on
         // owned land. They still need expansion, just as undiscovered resources do.
-        const target = need && !anchors.some(p => o.view.owner[indexOf(o, p.x, p.y)] === o.player) ? beyond(o, need(o))[0] ?? explore : undefined
+        const target = need ? !anchors.some(p => o.view.owner[indexOf(o, p.x, p.y)] === o.player) ? beyond(o, need(o))[0] ?? explore : undefined : anchors.length ? explore : undefined
         if (target && canFund('small-tower') && have('small-tower') < 4 && !o.view.buildings.some(b => b.owner === o.player && b.type === 'small-tower' && b.phase !== 'active')) {
           const tower = placeNear(o, 'small-tower', borderToward(o, target))
           if (tower) { orders.push({ type: 'build', building: 'small-tower', ...tower }); break }
@@ -460,7 +479,7 @@ const STORED = ['log', 'plank', 'stone', 'coal', 'ironore', 'goldore', 'iron', '
 /** Resources a want depends on, so the AI can expand toward them when none lie inside its border. */
 const NEEDS: Record<string, (o: Observation) => (t: number) => boolean> = {
   woodcutter: o => t => o.object(t) === 'tree', stonecutter: o => t => o.object(t) === 'stone',
-  fisher: o => t => o.terrain(t) === 'water', waterworks: o => t => o.terrain(t) === 'water',
+  fisher: o => terrainPredicate(o, 'sea'), waterworks: o => terrainPredicate(o, 'river'),
 }
 
 /** A known resource without room for its workplace is expanded toward through ordinary pioneer orders. */
@@ -504,7 +523,9 @@ function placeNear(o: Observation, type: string, anchors: Point[]): Point | null
   const forecast = mine ? surveyedMineForecast(o.view, o.rules, type) : null
   const need = mine ? null : NEEDS[type]?.(o)
   const radius = workflow && 'radius' in workflow ? workflow.radius : 0
-  const serves = (x: number, y: number): boolean => (!need || !radius || area({ width: o.width, height: o.height }, { x, y }, radius).some(t => need(t)))
+  const workingReach = workflow?.kind === 'extract' && !workflow.food ? radius * 3 : radius
+  const shiftedResources = need && workingReach > radius ? find(o, need, o.width * o.height, { neutral: true }) : null
+  const serves = (x: number, y: number): boolean => (!need || !radius || (shiftedResources ? shiftedResources.some(p => distance(p, { x, y }) <= workingReach) : area(o, { x, y }, radius).some(need)))
     && (!forecast || forecast({ x, y }))
     && (workflow?.kind !== 'harvest' || o.harvestable(type, x, y))
   for (const anchor of anchors) {

@@ -1,3 +1,5 @@
+import type { TerrainRule } from './engine/rules'
+import { materialKey } from './engine/landscapes'
 import type { Atlas } from './assets'
 
 const FILL: Record<string, string> = { grass: '#6f9452', mountain: '#8b8a7f', sand: '#b8ad78', desert: '#c9b783', moor: '#6b6447', snow: '#e8ecef', swamp: '#5d7347', water: '#3c7f8a' }
@@ -14,10 +16,11 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
   const materials = new Map<string, Material>()
   let bytes = 0
   const release = (key: string): void => { bytes -= materials.get(key)!.pixels.byteLength; materials.delete(key) }
-  function material(kind: string): Material {
-    const key = kind, cached = materials.get(key)
+  function material(terrain: TerrainRule): Material {
+    const kind = terrain.id, selector = terrain.landscape ? materialKey(terrain.landscape.image) : TEXTURE[kind] ?? kind
+    const frame = atlas.frames.get(selector)?.[0], key = frame ? selector : `fallback:${terrain.landscape?.color ?? kind}`, cached = materials.get(key)
     if (cached) { materials.delete(key); materials.set(key, cached); return cached }
-    const frame = atlas.frames.get(Object.hasOwn(TEXTURE, kind) ? TEXTURE[kind]! : '')?.[0], surface = document.createElement('canvas')
+    const surface = document.createElement('canvas')
     try {
       if (frame?.width && frame.height) {
         const width = frame.width, height = frame.height
@@ -31,7 +34,7 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
       else {
         surface.width = surface.height = 1
         const context = surface.getContext('2d')!
-        context.fillStyle = Object.hasOwn(FILL, kind) ? FILL[kind]! : FILL.grass!; context.fillRect(0, 0, 1, 1)
+        context.fillStyle = terrain.landscape?.color ?? (Object.hasOwn(FILL, kind) ? FILL[kind]! : FILL.grass!); context.fillRect(0, 0, 1, 1)
       }
       const data = surface.getContext('2d')!.getImageData(0, 0, surface.width, surface.height).data
       // The converted original terrain sources are opaque rectangular tiles.
@@ -45,8 +48,8 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
     finally { surface.width = surface.height = 0 }
   }
   return {
-    sampler(kind: string, a: TerrainVertex, b: TerrainVertex, c: TerrainVertex): (x: number, y: number) => number {
-      if (typeof kind !== 'string' || ![a, b, c].every(p => [p.x, p.y, p.u, p.v, p.light].every(n => Number.isFinite(n) && Math.abs(n) <= 2 ** 24))) throw new RangeError('Invalid terrain material sampling')
+    sampler(terrain: TerrainRule, a: TerrainVertex, b: TerrainVertex, c: TerrainVertex): (x: number, y: number) => number {
+      if (typeof terrain.id !== 'string' || ![a, b, c].every(p => [p.x, p.y, p.u, p.v, p.light].every(n => Number.isFinite(n) && Math.abs(n) <= 2 ** 24))) throw new RangeError('Invalid terrain material sampling')
       const bx = b.x - a.x, by = b.y - a.y, cx = c.x - a.x, cy = c.y - a.y, area = bx * cy - by * cx
       // The raster skips collapsed faces. Do not divide by zero or allocate
       // materials for geometry with no coverage.
@@ -56,7 +59,7 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
       const u0 = a.u * area - ux * (a.x - 0.5) - uy * (a.y - 0.5), v0 = a.v * area - vx * (a.x - 0.5) - vy * (a.y - 0.5)
       const lx = (b.light - a.light) * cy - (c.light - a.light) * by, ly = (c.light - a.light) * bx - (b.light - a.light) * cx
       const l0 = a.light * area - lx * (a.x - 0.5) - ly * (a.y - 0.5)
-      const source = material(kind), opaque = 255 << shifts[3]!
+      const source = material(terrain), opaque = 255 << shifts[3]!
       return (x, y) => {
         const u = Math.floor((u0 + ux * x + uy * y) / area), v = Math.floor((v0 + vx * x + vy * y) / area)
         const pixel = source.pixels[((v % source.height + source.height) % source.height) * source.width + (u % source.width + source.width) % source.width]!

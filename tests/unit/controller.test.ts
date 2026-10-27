@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import { mapName, newSession, PLAYER, RIVAL_MILITARY, rivalSession, snapshot, status } from '../../resources/game/controller'
-import { audit, createSession, economicAI, PUBLISHED_RULES, restore, stepAI } from '../../resources/game/engine'
+import { audit, createSession, economicAI, describeMap, PUBLISHED_RULES, restore, stepAI } from '../../resources/game/engine'
 import { save } from '../../resources/game/engine'
 import { anchors, landscape, order, place, rules, session as fixtureSession, until } from '../fixtures/engine'
 import formatOne from '../fixtures/save-format-1.json'
@@ -11,7 +11,7 @@ test('building inspection follows the saved rules without inventing newer garris
   expect(snapshot(migrated, castle.id, '', 1).selected?.garrison).toBeNull()
 
   const older = PUBLISHED_RULES.find(profile => profile.version === '0.2.0')!
-  const session = createSession({ rules: older, seed: 5, map: landscape(), players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { plank: 10, stone: 10 } }] })
+  const session = createSession({ rules: older, seed: 5, map: describeMap(older, { width: 96, height: 96, base: 'grass', features: [] }), players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, goods: { plank: 10, stone: 10 } }] })
   const tower = place(session, 'small-tower', anchors.west)
   const restored = restore(structuredClone(save(session)), PUBLISHED_RULES)
   const before = restored.checksum()

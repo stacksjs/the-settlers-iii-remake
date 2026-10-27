@@ -2,6 +2,7 @@ import type { Context } from './context'
 import type { InterventionRule } from './rules'
 import type { Effect, Player, Settler } from './state'
 import { changed, emit, ledger, passable, pointAt, prune, record, tileOf } from './context'
+import { terrainIs } from './landscapes'
 import { area, distance } from './geometry'
 import { dropToGround } from './logistics'
 import { NO_ORDER } from './military'
@@ -88,9 +89,9 @@ function cast(ctx: Context, priest: Settler, rule: InterventionRule, tile: numbe
       (state.eyes ??= []).push({ player: player.id, tile, radius: rule.radius, until: state.tick + seconds })
       break
     case 'grassland-galore': {
-      const from = ctx.terrain.findIndex(t => t.id === rule.from), to = ctx.terrain.findIndex(t => t.id === rule.to)
+      const to = ctx.terrain.findIndex(t => t.id === rule.to)
       let n = 0
-      for (const t of area(state.map, target, rule.radius)) if (state.map.terrain[t] === from) { state.map.terrain[t] = to; changed(ctx, t); n++ }
+      for (const t of area(state.map, target, rule.radius)) if (terrainIs(ctx.terrain[state.map.terrain[t]!]!, rule.from!)) { state.map.terrain[t] = to; changed(ctx, t); n++ }
       if (n) state.navigation++
       detail = `${n} tiles of desert became grassland`
       break
@@ -131,9 +132,8 @@ function cast(ctx: Context, priest: Settler, rule: InterventionRule, tile: numbe
       break
     }
     case 'vanishing-resources': {
-      const mountain = ctx.terrain.findIndex(t => t.id === 'mountain')
       for (const t of area(state.map, target, rule.radius)) {
-        if (state.map.owner[t] === player.id || state.map.terrain[t] !== mountain || !state.map.resourceAmount[t]) continue
+        if (state.map.owner[t] === player.id || !terrainIs(ctx.terrain[state.map.terrain[t]!]!, 'mountain') || !state.map.resourceAmount[t]) continue
         state.map.resourceAmount[t] = Math.floor(state.map.resourceAmount[t]! * rule.percent! / 100)
         if (!state.map.resourceAmount[t]) state.map.resource[t] = 0
         changed(ctx, t)

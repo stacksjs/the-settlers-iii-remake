@@ -1,3 +1,4 @@
+import { landscapeId, referenceTerrain } from './landscapes'
 import { DIRECTIONS } from './geometry'
 import { REFERENCE_GEOMETRY } from './reference-geometry'
 import { digest } from './hash'
@@ -8,7 +9,11 @@ export interface Evidence { class: EvidenceClass, source: string, note: string, 
 export type Goods = Record<string, number>
 export type Offset = readonly [number, number]
 
-export interface TerrainRule { id: string, walkable: boolean, buildable: boolean, water: boolean, moveCost: number }
+export interface LandscapeRule {
+  name: string, image: number, color: string, water: boolean, blocking: boolean, originalCode?: number
+  continuous: boolean, period: number, groups: string[]
+}
+export interface TerrainRule { id: string, walkable: boolean, buildable: boolean, water: boolean, moveCost: number, landscape?: LandscapeRule }
 export interface ObjectRule { id: string, blocks: boolean, amount: number, grows?: { into: string, ticks: number } }
 /** Combat values per rank (index 0 is rank 1). Ranges are lattice steps; attackTicks is the time between blows or shots. */
 export interface SoldierRule { weapon: string, health: number[], strength: number[], range: [number, number], attackTicks: number, ranged: boolean }
@@ -24,7 +29,7 @@ export type Workflow =
     /** Plantings need a neighbour at least this many elevation units higher or lower, with no planting along that slope. */
     slope?: number
     /** Terrain the planted tile and its neighbours must all have. */
-    ground?: string[]
+    ground?: string[], groundRadius?: number
   }
   | { kind: 'extract', resource: string, output: string, work: number, radius: number, food?: MineFood }
   | { kind: 'craft', inputs: Goods, choices: string[], work: number }
@@ -35,8 +40,12 @@ export interface BuildingRule {
   footprint: Offset[], protected: Offset[], door: Offset, piles: Pile[], builders: Offset[]
   levelWork: number, buildWork: number, worker: string | null, inputs: Goods, outputs: Goods, workflow: Workflow
   storage?: { piles: number, capacity: number }, residents?: { count: number, interval: number }, territory?: number, vision: number, military?: boolean
-  /** Terrain the footprint must stand on; defaults to every buildable terrain. */
+  /** Required origin ground. Older profiles also use it to admit nonbuildable footprint tiles. */
   ground?: string[]
+  /** General site and protected-border ground; absent in older profiles. Mines constrain their origin separately. */
+  footprintGround?: string[]
+  /** Outer edge of the complete source protected area, tested against general ground. */
+  groundBorder?: Offset[]
   /** Soldiers a military building holds: infantry at the door, bowmen on the walls. */
   garrison?: { infantry: number, bowmen: number }
   /** A small temple turns delivered offerings into manna; a large temple brings priests. */
@@ -73,6 +82,8 @@ export interface RulesProfile {
   restingRouting?: 'reachable'
   /** Earlier profiles kept surplus construction professions after their caps fell. */
   constructionReassignment?: 'surplus-idle'
+  /** Earlier profiles kept builders waiting at material-starved sites while other sites had work. */
+  constructionWaiting?: 'release-idle'
   /** Earlier ground drops could merge compatible goods from different players. */
   groundPileMerging?: 'same-owner'
   /** Earlier profiles selected idle workers and tool offers before checking their work routes. */
@@ -134,7 +145,25 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   const amounts = (map: Goods, label: string): void => { for (const [id, n] of Object.entries(map)) { good(id, label); positive(n, `${label} ${id}`) } }
   for (const id of [...rules.tools, ...rules.foods]) good(id, 'tool/food list')
   if (!terrain.size || !rules.terrain.some(t => t.walkable) || !rules.terrain.some(t => t.buildable)) problems.push('Terrain needs walkable and buildable kinds')
-  for (const t of rules.terrain) { positive(t.moveCost, `terrain ${t.id} move cost`); if (t.buildable && !t.walkable) problems.push(`terrain ${t.id} is buildable but not walkable`) }
+  if (rules.terrain.length > 256) problems.push('Terrain exceeds the canonical byte-index capacity')
+  const sourceCodes = new Set<number>(), sourceNames = new Set<string>()
+  for (const t of rules.terrain) {
+    positive(t.moveCost, `terrain ${t.id} move cost`)
+    if (t.buildable && !t.walkable) problems.push(`terrain ${t.id} is buildable but not walkable`)
+    const s = t.landscape
+    if (!s) { if (rules.terrain.some(t => t.landscape)) problems.push(`terrain ${t.id} has no source identity`); continue }
+    if (!/^[A-Z][A-Z_0-9]*$/.test(s.name) || sourceNames.has(s.name)) problems.push(`terrain ${t.id} has an invalid or duplicate source identity`)
+    sourceNames.add(s.name)
+    if (!/^#[a-f0-9]{6}$/.test(s.color)) problems.push(`terrain ${t.id} has an invalid source color`)
+    positive(s.image, `terrain ${t.id} image`, true)
+    if (s.originalCode !== undefined) {
+      if (!Number.isInteger(s.originalCode) || s.originalCode < 0 || s.originalCode > 255 || sourceCodes.has(s.originalCode)) problems.push(`terrain ${t.id} has an invalid or duplicate original code`)
+      sourceCodes.add(s.originalCode)
+    }
+    if (t.water !== s.water || t.walkable === s.blocking || (s.water && !s.blocking)) problems.push(`terrain ${t.id} contradicts its source partition`)
+    if (![32, 64, 96, 128].includes(s.period) || (!s.continuous && s.period !== 32)) problems.push(`terrain ${t.id} has an invalid material phase`)
+    if (new Set(s.groups).size !== s.groups.length || s.groups.some(g => !['grass', 'mountain', 'desert', 'river'].includes(g))) problems.push(`terrain ${t.id} has invalid source groups`)
+  }
   for (const o of rules.objects) { positive(o.amount, `object ${o.id} amount`); if (o.grows) { positive(o.grows.ticks, `object ${o.id} growth`); if (!objects.has(o.grows.into) || o.grows.into === o.id) problems.push(`object ${o.id} grows into invalid ${o.grows.into}`) } }
   for (const p of rules.professions) if (p.tool !== null && !rules.tools.includes(p.tool)) problems.push(`profession ${p.id} needs unknown tool ${p.tool}`)
   for (const p of rules.professions) {
@@ -163,7 +192,7 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     if (w.kind === 'craft') for (const id of w.choices) if (!b.outputs[id]) problems.push(`${label} cannot store crafted ${id}`)
     if ((w.kind === 'harvest' || w.kind === 'plant') && !objects.has(w.object)) problems.push(`${label} uses unknown object ${w.object}`)
     if (w.kind === 'cultivate' && (!objects.has(w.plant) || !objects.has(w.ripe))) problems.push(`${label} uses unknown crop objects`)
-    if (w.kind === 'cultivate') { if (w.slope !== undefined) positive(w.slope, `${label} slope`); for (const id of w.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`) }
+    if (w.kind === 'cultivate') { if (w.groundRadius !== undefined) positive(w.groundRadius, `${label} ground radius`); if (w.slope !== undefined) positive(w.slope, `${label} slope`); for (const id of w.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`) }
     if (b.temple === 'small' && !b.inputs[rules.religion?.offering ?? '']) problems.push(`${label} needs a religion and an offering input`)
     if (b.heal) { positive(b.heal.radius, `${label} heal radius`); positive(b.heal.ticks, `${label} heal time`); if (cells.has(`${b.heal.spot[0]},${b.heal.spot[1]}`)) problems.push(`${label} heal spot lies in the footprint`) }
     if ((w.kind === 'harvest' || w.kind === 'cultivate' || w.kind === 'extract') && !b.outputs[w.output]) problems.push(`${label} cannot store ${w.output}`)
@@ -173,7 +202,7 @@ export function validateRules(rules: RulesProfile): RulesProfile {
     if (b.residents) { positive(b.residents.count, `${label} residents`); positive(b.residents.interval, `${label} resident interval`) }
     if (b.territory !== undefined) positive(b.territory, `${label} territory`)
     if (b.garrison && (!b.military || !Number.isInteger(b.garrison.infantry) || !Number.isInteger(b.garrison.bowmen) || b.garrison.infantry < 1 || b.garrison.bowmen < 0)) problems.push(`${label} garrison needs a military building with at least one infantry place`)
-    for (const id of b.ground ?? []) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`)
+    for (const id of [...b.ground ?? [], ...b.footprintGround ?? []]) if (!terrain.has(id)) problems.push(`${label} requires unknown terrain ${id}`)
   }
   positive(rules.tickRate, 'tick rate')
   const { wealth, ...military } = rules.military ?? {}
@@ -213,13 +242,14 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   if (rules.constructionOccupancy !== undefined && rules.constructionOccupancy !== 'current-and-next') problems.push('Unknown construction occupancy policy')
   if (rules.restingRouting !== undefined && rules.restingRouting !== 'reachable') problems.push('Unknown resting routing policy')
   if (rules.constructionReassignment !== undefined && rules.constructionReassignment !== 'surplus-idle') problems.push('Unknown construction reassignment policy')
+  if (rules.constructionWaiting !== undefined && rules.constructionWaiting !== 'release-idle') problems.push('Unknown construction waiting policy')
   if (rules.groundPileMerging !== undefined && rules.groundPileMerging !== 'same-owner') problems.push('Unknown ground pile merging policy')
   if (rules.staffingRouting !== undefined && rules.staffingRouting !== 'reachable') problems.push('Unknown staffing routing policy')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -257,7 +287,7 @@ const E = (source: string, note: string): Evidence => ({ class: 'E', source, not
 
 type Spec = Omit<BuildingRule, 'levelWork' | 'buildWork' | 'vision' | 'inputs' | 'outputs' | 'workflow' | 'footprint' | 'protected' | 'door' | 'piles' | 'builders'> & Partial<Pick<BuildingRule, 'inputs' | 'outputs' | 'workflow' | 'vision' | 'door'>>
 // Footprints, doors, pile positions and builder spots come from the pinned reference remake definitions.
-const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders'> => {
+const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders' | 'groundBorder'> => {
   const g = (REFERENCE_GEOMETRY as Record<string, (typeof REFERENCE_GEOMETRY)[keyof typeof REFERENCE_GEOMETRY]>)[id]
   if (!g) throw new RangeError(`No reference geometry for ${id}`)
   const piles: Pile[] = [
@@ -266,9 +296,17 @@ const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'd
   ]
   // The reference coal mine lists builder spots on its own blocked tiles; those cannot be reached and are dropped.
   const blocked = new Set(g.blocked.map(([x, y]) => `${x},${y}`))
-  return { footprint: g.blocked.map(o => o as Offset), protected: g.protected.map(o => o as Offset), door: g.door as Offset, piles, builders: g.builders.filter(([x, y]) => !blocked.has(`${x},${y}`)).map(o => o as Offset) }
+  const protectedArea = [...g.blocked, ...g.protected], area = new Set(protectedArea.map(([x, y]) => `${x},${y}`))
+  const border = new Map<string, Offset>()
+  for (const [x, y] of protectedArea) for (const [dx, dy] of DIRECTIONS) { const key = `${x + dx},${y + dy}`; if (!area.has(key)) border.set(key, [x + dx, y + dy]) }
+  return { groundBorder: [...border.values()], footprint: g.blocked.map(o => o as Offset), protected: g.protected.map(o => o as Offset), door: g.door as Offset, piles, builders: g.builders.filter(([x, y]) => !blocked.has(`${x},${y}`)).map(o => o as Offset) }
 }
-const define = (spec: Spec): BuildingRule => ({ ...geometry(spec.id), levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec })
+const define = (spec: Spec): BuildingRule => {
+  const source = REFERENCE_GEOMETRY[spec.id as keyof typeof REFERENCE_GEOMETRY]
+  const ground = source.ground.map(landscapeId)
+  return { ...geometry(spec.id), levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec,
+    ground: source.mine ? ['mountain', 'mountain-border'] : ground, footprintGround: ground }
+}
 const cost = (plank: number, stone: number): Goods => Object.fromEntries(Object.entries({ plank, stone }).filter(([, n]) => n > 0))
 const doorstep = (good: string): Goods => ({ [good]: 8 })
 const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 'meat', 'fish'].filter(id => id !== preferred), preferredCycles: 10, otherCycles: 2 })
@@ -283,23 +321,14 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.13.0',
+  version: '0.14.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
   goods: ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword', 'spear', 'bow', 'wine'],
   tools: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'],
   foods: ['bread', 'meat', 'fish'],
-  terrain: [
-    { id: 'grass', walkable: true, buildable: true, water: false, moveCost: 1 },
-    { id: 'mountain', walkable: true, buildable: false, water: false, moveCost: 2 },
-    { id: 'sand', walkable: true, buildable: true, water: false, moveCost: 1 },
-    { id: 'desert', walkable: true, buildable: false, water: false, moveCost: 1 },
-    { id: 'moor', walkable: true, buildable: false, water: false, moveCost: 2 },
-    { id: 'snow', walkable: true, buildable: false, water: false, moveCost: 2 },
-    { id: 'swamp', walkable: false, buildable: false, water: false, moveCost: 3 },
-    { id: 'water', walkable: false, buildable: false, water: true, moveCost: 1 },
-  ],
+  terrain: referenceTerrain(),
   objects: [
     { id: 'tree', blocks: true, amount: 1 },
     { id: 'sapling', blocks: true, amount: 1, grows: { into: 'tree', ticks: 2400 } },
@@ -339,21 +368,21 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     define({ id: 'stonecutter', name: "Stonecutter's hut", category: 'Building', cost: cost(2, 3), worker: 'stonecutter', outputs: doorstep('stone'), workflow: { kind: 'harvest', object: 'stone', output: 'stone', work: 80, radius: 7 } }),
     define({ id: 'sawmill', name: 'Sawmill', category: 'Building', cost: cost(3, 4), worker: 'sawyer', inputs: doorstep('log'), outputs: doorstep('plank'), workflow: { kind: 'process', inputs: { log: 1 }, outputs: { plank: 1 }, work: 50 } }),
     define({ id: 'fisher', name: "Fisherman's hut", category: 'Food', cost: cost(3, 2), worker: 'fisher', outputs: doorstep('fish'), workflow: { kind: 'extract', resource: 'fish', output: 'fish', work: 80, radius: 6 } }),
-    define({ id: 'grain-farm', name: 'Grain farm', category: 'Food', cost: cost(6, 6), worker: 'farmer', outputs: doorstep('grain'), workflow: { kind: 'cultivate', plant: 'field', ripe: 'ripe-grain', output: 'grain', work: 40, radius: 5 } }),
+    define({ id: 'grain-farm', name: 'Grain farm', category: 'Food', cost: cost(6, 6), worker: 'farmer', outputs: doorstep('grain'), workflow: { kind: 'cultivate', plant: 'field', ripe: 'ripe-grain', output: 'grain', work: 40, radius: 5, ground: ['grass', 'earth'], groundRadius: 2 } }),
     define({ id: 'waterworks', name: 'Waterworks', category: 'Food', cost: cost(3, 4), worker: 'waterworker', outputs: doorstep('water'), workflow: { kind: 'extract', resource: 'water', output: 'water', work: 50, radius: 5 } }),
     define({ id: 'mill', name: 'Grain mill', category: 'Food', cost: cost(3, 3), worker: 'miller', inputs: doorstep('grain'), outputs: doorstep('flour'), workflow: { kind: 'process', inputs: { grain: 1 }, outputs: { flour: 1 }, work: 50 } }),
     define({ id: 'bakery', name: 'Bakery', category: 'Food', cost: cost(4, 5), worker: 'baker', inputs: { flour: 8, water: 8 }, outputs: doorstep('bread'), workflow: { kind: 'process', inputs: { flour: 1, water: 1 }, outputs: { bread: 1 }, work: 60 } }),
     define({ id: 'pig-farm', name: 'Pig farm', category: 'Food', cost: cost(6, 6), worker: 'pigfarmer', inputs: { grain: 8, water: 8 }, outputs: doorstep('pig'), workflow: { kind: 'process', inputs: { grain: 1, water: 1 }, outputs: { pig: 1 }, work: 120 } }),
     define({ id: 'slaughterhouse', name: 'Slaughterhouse', category: 'Food', cost: cost(4, 4), worker: 'butcher', inputs: doorstep('pig'), outputs: doorstep('meat'), workflow: { kind: 'process', inputs: { pig: 1 }, outputs: { meat: 1 }, work: 60 } }),
-    define({ id: 'coal-mine', name: 'Coal mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('coal'), workflow: { kind: 'extract', resource: 'coal', output: 'coal', work: 70, radius: 2, food: meal('bread') }, ground: ['mountain'] }),
-    define({ id: 'iron-mine', name: 'Iron mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('ironore'), workflow: { kind: 'extract', resource: 'ironore', output: 'ironore', work: 70, radius: 2, food: meal('meat') }, ground: ['mountain'] }),
-    define({ id: 'gold-mine', name: 'Gold mine', category: 'Metal', cost: cost(5, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('goldore'), workflow: { kind: 'extract', resource: 'goldore', output: 'goldore', work: 70, radius: 2, food: meal('fish') }, ground: ['mountain'] }),
+    define({ id: 'coal-mine', name: 'Coal mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('coal'), workflow: { kind: 'extract', resource: 'coal', output: 'coal', work: 70, radius: 2, food: meal('bread') } }),
+    define({ id: 'iron-mine', name: 'Iron mine', category: 'Metal', cost: cost(4, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('ironore'), workflow: { kind: 'extract', resource: 'ironore', output: 'ironore', work: 70, radius: 2, food: meal('meat') } }),
+    define({ id: 'gold-mine', name: 'Gold mine', category: 'Metal', cost: cost(5, 1), worker: 'miner', inputs: { bread: 8, meat: 8, fish: 8 }, outputs: doorstep('goldore'), workflow: { kind: 'extract', resource: 'goldore', output: 'goldore', work: 70, radius: 2, food: meal('fish') } }),
     define({ id: 'iron-smelter', name: 'Iron smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { ironore: 8, coal: 8 }, outputs: doorstep('iron'), workflow: { kind: 'process', inputs: { ironore: 1, coal: 1 }, outputs: { iron: 1 }, work: 80 } }),
     define({ id: 'gold-smelter', name: 'Gold smelting works', category: 'Metal', cost: cost(4, 6), worker: 'smelter', inputs: { goldore: 8, coal: 8 }, outputs: doorstep('gold'), workflow: { kind: 'process', inputs: { goldore: 1, coal: 1 }, outputs: { gold: 1 }, work: 80 } }),
     define({ id: 'toolsmith', name: "Tool smith's works", category: 'Metal', cost: cost(3, 5), worker: 'toolsmith', inputs: { iron: 8, coal: 8 }, outputs: { hammer: 8, shovel: 8, axe: 8, saw: 8, pickaxe: 8, scythe: 8, fishingrod: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod'], work: 90 } }),
     define({ id: 'weaponsmith', name: "Weapon smith's works", category: 'Metal', cost: cost(5, 7), worker: 'weaponsmith', inputs: { iron: 8, coal: 8 }, outputs: { sword: 8, spear: 8, bow: 8 }, workflow: { kind: 'craft', inputs: { iron: 1, coal: 1 }, choices: ['sword', 'spear', 'bow'], work: 90 } }),
     define({ id: 'barracks', name: 'Barracks', category: 'Military', cost: cost(4, 5), worker: null, inputs: { sword: 8, spear: 8, bow: 8 } }),
-    define({ id: 'winery', name: 'Winery', category: 'Roman', cost: cost(4, 4), worker: 'winegrower', outputs: doorstep('wine'), workflow: { kind: 'cultivate', plant: 'vine', ripe: 'ripe-vine', output: 'wine', work: 40, radius: 4, slope: 2, ground: ['grass'] } }),
+    define({ id: 'winery', name: 'Winery', category: 'Roman', cost: cost(4, 4), worker: 'winegrower', outputs: doorstep('wine'), workflow: { kind: 'cultivate', plant: 'vine', ripe: 'ripe-vine', output: 'wine', work: 40, radius: 4, slope: 2, ground: ['grass', 'earth'], groundRadius: 1 } }),
     define({ id: 'charcoal-maker', name: "Charcoal maker's hut", category: 'Roman', cost: cost(3, 4), worker: 'charcoal-burner', inputs: doorstep('plank'), outputs: doorstep('coal'), workflow: { kind: 'process', inputs: { plank: 5 }, outputs: { coal: 1 }, work: 100 } }),
     define({ id: 'small-temple', name: 'Small temple', category: 'Roman', cost: cost(5, 8), worker: null, inputs: doorstep('wine'), temple: 'small', door: [7, 5] }),
     define({ id: 'large-temple', name: 'Large temple', category: 'Roman', cost: cost(8, 14), worker: null, temple: 'large' }),
@@ -370,6 +399,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   constructionOccupancy: 'current-and-next',
   restingRouting: 'reachable',
   constructionReassignment: 'surplus-idle',
+  constructionWaiting: 'release-idle',
   groundPileMerging: 'same-owner',
   staffingRouting: 'reachable',
   military: {
@@ -400,7 +430,11 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
     'tools': M(sources.jobs, 'Tool requirements: builders hammer, diggers shovel, woodcutter axe, stonecutter and miner pick, farmer scythe, fisherman rod, smiths hammer.', 'S3-031'),
-    'terrain': U('Terrain classes and traversal costs are placeholders until decoded landscape types are reconciled.', 'S3-026'),
+    'terrain': E(`${sources.reference}/jsettlers.common/src/main/java/jsettlers/common/landscape/ELandscapeType.java and OriginalLandscape.java`, 'All 37 source identities, 29 original codes, source partition flags, resource groups, material selectors and phase policies follow the pinned reference remake.'),
+    'constructionWaiting': E(sources.spec, 'Builders without materials return to the available crew, allowing earlier supplied sites to reuse their real tools instead of deadlocking behind a starved site.'),
+    'terrain.moveCost': U('Traversal costs are engineering placeholders, not original observations.', 'S3-026'),
+    'buildings.ground': E(`${sources.reference}/jsettlers.common/src/main/resources/jsettlers/common/buildings/roman and BuildingVariant.java#getRequiredGroundTypeAt`, 'Roman XML ground sets apply to sites and their protected border; mine origins require mountain or inner mountain border.'),
+    'production.ground': E(`${sources.reference}/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java`, 'Tree planting requires grass or flattened grass; corn requires grass or earth within two tiles and vines within one. Waterworkers collect rivers and fishers sea water.'),
     'objects': U('Tree regrowth, stone quantity and crop timing are unobserved.', 'S3-041'),
     'professions': M(sources.jobs, 'Occupation and tool pairing; specialist status follows the manual occupation descriptions.', 'S3-031'),
     'professions.geologist.tool': U('Geologist tool is not explicit in the manual text.', 'S3-048'),

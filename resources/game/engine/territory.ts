@@ -1,6 +1,7 @@
 import type { Context } from './context'
 import type { Building, Job, Op, Settler } from './state'
 import { available, changed, emit, nextId, pointAt, record, ruleOf, terrainAt, tileOf } from './context'
+import { terrainIs } from './landscapes'
 import { area, distance, neighbours } from './geometry'
 import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, start } from './settlers'
@@ -100,7 +101,7 @@ finishers.set('specialist', (ctx, s, program, _ok, reason) => {
 /** Geologists survey the tile they stand on, leaving a sign with the player's knowledge of the deposit. */
 effects.set('survey', (ctx, s) => {
   const tile = tileOf(ctx, s), map = ctx.state.map, player = ctx.state.players.find(p => p.id === s.owner)!
-  if (terrainAt(ctx, tile).id !== 'mountain') return true
+  if (!terrainIs(terrainAt(ctx, tile), 'mountain')) return true
   const good = map.resource[tile] ? ctx.rules.goods[map.resource[tile]! - 1]! : null
   player.signs = player.signs.filter(sign => sign.tile !== tile && sign.until > ctx.state.tick)
   player.signs.push({ tile, good, amount: good ? map.resourceAmount[tile]! : 0, until: ctx.state.tick + ctx.rules.survey.signTicks })
@@ -125,7 +126,7 @@ finishers.set('duty', (ctx, s, program, ok) => {
   const radius = s.profession === 'geologist' ? ctx.rules.survey.radius : ctx.rules.territory.pioneerRadius + 2
   const player = ctx.state.players.find(p => p.id === s.owner)!
   const surveyed = new Set(player.signs.filter(sign => sign.until > ctx.state.tick).map(sign => sign.tile))
-  const next = area(map, center, radius).filter(t => s.profession === 'geologist' ? terrainAt(ctx, t).id === 'mountain' && !surveyed.has(t) : borders(ctx, s.owner, t))
+  const next = area(map, center, radius).filter(t => s.profession === 'geologist' ? terrainIs(terrainAt(ctx, t), 'mountain') && !surveyed.has(t) : borders(ctx, s.owner, t))
     .sort((a, b) => distance(pointAt(ctx, a), s) - distance(pointAt(ctx, b), s) || a - b)
     .find(t => ctx.rules.specialistRouting !== 'reachable' || (enterable(ctx, t, 0, t) && route(ctx, tileOf(ctx, s), t).ok))
   if (next === undefined) { s.diagnostic = 'duty complete'; return }

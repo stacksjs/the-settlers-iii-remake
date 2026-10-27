@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
-import { audit, economicAI, observe, PUBLISHED_RULES, restore, save, stepAI } from '../../resources/game/engine'
-import { rivalSession, RIVAL_MILITARY } from '../../resources/game/controller'
+import { audit, createSession, describeMap, ROMAN_ENGINEERING as rules, economicAI, observe, PUBLISHED_RULES, restore, save, stepAI } from '../../resources/game/engine'
+import { RIVAL_MILITARY } from '../../resources/game/controller'
 
 // Public decisions and ordinary session execution catch budget loss and recovery.
 // They do not establish original AI difficulty or every generated map's economy.
@@ -38,16 +38,29 @@ test('the reserved budget becomes real quarried stone through ordinary explorati
   expect(copy.checksum()).toBe(s.checksum())
 }, 60000)
 
-test('ordinary expansion still builds a tower when spare stone covers the quarry and pending sites', () => {
-  const s = rivalSession(3), ais = [1, 2].map(player => economicAI(player, { military: RIVAL_MILITARY })), sequences = [{ next: 0 }, { next: 0 }]
-  while (s.state.tick < 400) {
-    for (let p = 0; p < 2; p++) stepAI(s, ais[p]!, sequences[p]!)
+test('ordinary expansion spends only stone remaining after the quarry and pending-site budgets', () => {
+  // A defined budget boundary, independent of a generated map's evolving
+  // shoreline, scouting route or the tick at which another site finishes.
+  // 3 quarry + 1 pending forester + 3 tower = 7 available stone.
+  // A carrier has already picked up one additional stone for the forester.
+  for (const stone of [7, 8]) {
+    const s = createSession({ rules, seed: 3, map: describeMap(rules, { width: 96, height: 96, base: 'grass', features: [] }), players: [{ name: 'Computer', civilization: 'roman', controller: 'computer', start: { x: 40, y: 40 }, goods: { plank: 10, stone, hammer: 2, shovel: 1 } }] })
+    expect(s.enqueue({ type: 'build', tick: 0, player: 1, seq: 0, building: 'forester', x: 31, y: 44 })).toBeNull()
     s.advance(1)
+    const before = s.checksum(), o = observe(s, 1), created = structuredClone(s.state.ledger[1]!.created)
+    expect(o.view.buildings.some(b => b.type === 'stonecutter')).toBe(false)
+    expect(o.view.buildings.some(b => b.type === 'forester' && b.phase !== 'active')).toBe(true)
+    expect(o.view.stacks.filter(stack => stack.good === 'stone' && stack.role === 'ground').reduce((sum, stack) => sum + stack.amount, 0)).toBe(stone - 1)
+    const orders = economicAI(1, { military: RIVAL_MILITARY }).decide(o), tower = orders.find(c => c.type === 'build' && c.building === 'small-tower')
+    expect(s.checksum()).toBe(before)
+    if (stone === 7) expect(orders.filter(c => c.type === 'build')).toEqual([])
+    else {
+      expect(tower).toBeDefined()
+      expect(s.enqueue({ ...tower!, type: 'build', tick: s.state.tick, player: 1, seq: 1 })).toBeNull()
+      s.advance(1)
+      expect(s.state.results.find(r => r.player === 1 && r.seq === 1)?.ok).toBe(true)
+    }
+    expect(s.state.ledger[1]!.created).toEqual(created)
+    expect(audit(s.context)).toEqual([]); s.dispose()
   }
-  const o = observe(s, 1)
-  expect(o.view.buildings.some(b => b.owner === 1 && b.type === 'stonecutter')).toBe(false)
-  expect(ais[0]!.decide(o).some(c => c.type === 'build' && c.building === 'small-tower')).toBe(true)
-  stepAI(s, ais[0]!, sequences[0]!); s.advance(1)
-  expect(s.state.results.find(r => r.player === 1 && r.tick === 400 && r.type === 'build')?.ok).toBe(true)
-  expect(audit(s.context)).toEqual([])
 })

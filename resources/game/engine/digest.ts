@@ -46,7 +46,13 @@ function combine(state: State, hashes: Uint32Array): string {
   word(state.map.width); word(state.map.height); word(hashes.length)
   for (let i = 0; i < hashes.length; i++) word(hashes[i]!)
   const text = canonical(entities(state))
-  for (let i = 0; i < text.length; i++) { const c = text.charCodeAt(i); byte(c); byte(c >> 8) }
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i)
+    // Preserve the exact UTF-16 little-endian byte stream without two
+    // closure calls for every character of every recorded tick.
+    h = Math.imul(h ^ (c & 255), PRIME) >>> 0
+    h = Math.imul(h ^ (c >>> 8), PRIME) >>> 0
+  }
   return h.toString(16).padStart(8, '0')
 }
 

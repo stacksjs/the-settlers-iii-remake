@@ -1,3 +1,5 @@
+import { REFERENCE_LANDSCAPES } from './engine/reference-landscapes'
+import { materialKey } from './engine/landscapes'
 import type { PlayerSlotCatalog } from './player-colors'
 import { isPlayerSprite, validatePlayerSlotCatalog } from './player-colors'
 import { geologistImages } from './geologist-images'
@@ -36,6 +38,7 @@ export async function loadOriginalAssets(): Promise<Atlas> {
   const manifest = await response.json() as { version: number, atlas: string, width: number, height: number, sprites: AtlasFrame[], playerSlots: unknown }
   if (manifest?.version !== 3 || !/^sprites\.[a-f0-9]{64}\.png$/.test(manifest.atlas) || !Array.isArray(manifest.sprites)) throw new Error('The game asset manifest is invalid.')
   const frames = indexAtlasFrames(manifest.sprites, manifest.width, manifest.height)
+  for (const key of new Set(REFERENCE_LANDSCAPES.map(source => materialKey(source.image)))) if (!frames.get(key)?.some(frame => frame.width && frame.height)) throw new Error(`Original terrain material is missing: ${key}`)
   const image = new Image()
   image.src = `/assets/settlers-original/${manifest.atlas}`
   await image.decode()

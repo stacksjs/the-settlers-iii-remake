@@ -1,3 +1,6 @@
+import { landscapeReferencePaths, parseLandscapes } from './reference-landscapes'
+import { LANDSCAPE_SOURCES, REFERENCE_LANDSCAPES } from '../resources/game/engine/reference-landscapes'
+import { materialKey } from '../resources/game/engine/landscapes'
 import type { Sprite } from './lib/s3-dat'
 import { Buffer } from 'node:buffer'
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
@@ -30,7 +33,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   provenanceInputs.set(id, { id, kind, path, bytes: bytes.length, sha256: new Bun.CryptoHasher('sha256').update(bytes).digest('hex'), ...extra })
   return id
 }
-const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/shadow-images.ts', 'resources/game/engine/original.ts', 'package.json', 'bun.lock']
+const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/shadow-images.ts', 'resources/game/engine/original.ts', 'scripts/reference-landscapes.ts', 'resources/game/engine/reference-landscapes.ts', 'resources/game/engine/landscapes.ts', 'package.json', 'bun.lock']
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -57,6 +60,12 @@ await getReference('README.md')
 await getReference('LICENSE.txt')
 const colorReferences = ['jsettlers.common/src/main/java/jsettlers/common/Color.java', 'jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/DatFileType.java']
 for (const path of colorReferences) await getReference(path)
+const landscapeSources = await Promise.all(landscapeReferencePaths.map(async path => {
+  const text = await getReference(path), expected = LANDSCAPE_SOURCES.find(source => source.path === path)
+  if (!expected || provenanceInputs.get(`reference:${path}`)?.sha256 !== expected.sha256) throw new Error(`Landscape source hash differs: ${path}`)
+  return text
+}))
+if (JSON.stringify(parseLandscapes(landscapeSources[0]!, landscapeSources[1]!, landscapeSources[2]!)) !== JSON.stringify(REFERENCE_LANDSCAPES)) throw new Error('Generated landscape catalog differs from pinned sources')
 const tutorialBytes = await readFile(resolve(source, 'Map/TUTORIAL/T1.MAP'))
 const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map/TUTORIAL/T1.MAP', tutorialBytes)
 const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
@@ -192,10 +201,10 @@ for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
     selection: [`${datInputs.get(entry.source.file)}:section=0x5982,body-sequence=${entry.source.actualSequence},physical-shadow-sequence=${layerSequence},frame=${entry.source.frame},alpha=136`], sprite: reader.decode(at, 'shadow') })
 }
 entries.push(...shadows)
-for (const [key, index] of Object.entries({ grass: 0, water: 17, rock: 21, sand: 31 })) {
+for (const index of new Set(REFERENCE_LANDSCAPES.map(source => source.image))) {
   const landscape = await dat(0), at = landscape.frames(index, 0x2412)[0]!
-  entries.push({ key: `terrain-${key}`, frame: 0, source: { file: 0, sequence: index, actualSequence: index, section: 0x2412, frame: 0 },
-    inputs: [datInputs.get(0)!], selection: [`${datInputs.get(0)}:section=0x2412,sequence=${index},frame=0,color=565`], sprite: landscape.decode(at, '565', 'landscape') })
+  entries.push({ key: materialKey(index), frame: 0, source: { file: 0, sequence: index, actualSequence: index, section: 0x2412, frame: 0 },
+    inputs: [datInputs.get(0)!, ...landscapeReferencePaths.map(path => `reference:${path}`)], selection: [`${datInputs.get(0)}:section=0x2412,sequence=${index},frame=0,color=565`], sprite: landscape.decode(at, '565', 'landscape') })
 }
 const width = 1024
 let x = 1, y = 1, row = 0

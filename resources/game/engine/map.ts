@@ -2,6 +2,7 @@ import type { Point } from './geometry'
 import type { RulesProfile } from './rules'
 import type { MapState } from './state'
 import { distance, indexOf, inside, toView, TILE_WIDTH } from './geometry'
+import { holdsResource, terrainIs } from './landscapes'
 import { randomInt, seedRandom } from './random'
 
 export const MAX_MAP_SIZE = 1024
@@ -48,7 +49,14 @@ export function describeMap(rules: RulesProfile, description: MapDescription): M
 export function generateMap(rules: RulesProfile, width: number, height: number, seed: number): MapState {
   const random = seedRandom(seed), features: MapFeature[] = []
   const at = (margin: number): Point => ({ x: margin + randomInt(random, width - margin * 2), y: margin + randomInt(random, height - margin * 2) })
-  for (let i = 0; i < Math.max(2, Math.floor(width * height / 2500)); i++) { const p = at(6); features.push({ kind: 'terrain', id: 'water', ...p, radius: 2 + randomInt(random, 4) }, { kind: 'resource', id: 'fish', ...p, radius: 3, amount: 20 }) }
+  const river = rules.terrain.find(t => terrainIs(t, 'river'))
+  for (let i = 0; i < Math.max(2, Math.floor(width * height / 2500)); i++) {
+    const p = at(6), radius = 2 + randomInt(random, 4)
+    features.push({ kind: 'terrain', id: 'water', ...p, radius }, { kind: 'resource', id: 'fish', ...p, radius: 3, amount: 20 })
+    // Generated maps are engineering scenarios. Give river workers a real
+    // freshwater branch; earlier profiles retain their original generation.
+    if (river) for (let dy = 1; dy <= 4 && p.y + radius + dy < height; dy++) features.push({ kind: 'terrain', id: river.id, x: p.x, y: p.y + radius + dy, radius: 0 })
+  }
   for (let i = 0; i < Math.max(2, Math.floor(width * height / 3000)); i++) {
     const p = at(8), ore = ['coal', 'ironore', 'goldore'][i % 3]!
     features.push({ kind: 'terrain', id: 'mountain', ...p, radius: 4 }, { kind: 'elevation', ...p, radius: 4, amount: 12 }, { kind: 'resource', id: ore, ...p, radius: 3, amount: 40 })
@@ -56,11 +64,12 @@ export function generateMap(rules: RulesProfile, width: number, height: number, 
   for (let i = 0; i < Math.max(3, Math.floor(width * height / 900)); i++) features.push({ kind: 'object', id: 'tree', ...at(3), radius: 3, density: 0.45 })
   for (let i = 0; i < Math.max(2, Math.floor(width * height / 2500)); i++) features.push({ kind: 'object', id: 'stone', ...at(4), radius: 1, density: 0.8 })
   const map = describeMap(rules, { width, height, base: 'grass', features, seed })
-  const water = rules.terrain.findIndex(t => t.id === 'water'), stone = rules.objects.findIndex(o => o.id === 'stone') + 1, tree = rules.objects.findIndex(o => o.id === 'tree') + 1
+  const stone = rules.objects.findIndex(o => o.id === 'stone') + 1, tree = rules.objects.findIndex(o => o.id === 'tree') + 1
   for (let tile = 0; tile < map.terrain.length; tile++) {
-    if (map.terrain[tile] === water || (rules.terrain[map.terrain[tile]!]!.id === 'mountain' && map.object[tile] === tree)) { map.object[tile] = 0; map.objectAmount[tile] = 0 }
-    if (map.terrain[tile] !== water && map.resource[tile] === rules.goods.indexOf('fish') + 1) { map.resource[tile] = 0; map.resourceAmount[tile] = 0 }
-    if (map.object[tile] === stone && map.terrain[tile] === water) map.object[tile] = 0
+    const kind = rules.terrain[map.terrain[tile]!]!
+    if (kind.water || !kind.walkable || (terrainIs(kind, 'mountain') && map.object[tile] === tree)) { map.object[tile] = 0; map.objectAmount[tile] = 0 }
+    if (map.resource[tile] && !holdsResource(kind, rules.goods[map.resource[tile]! - 1]!)) { map.resource[tile] = 0; map.resourceAmount[tile] = 0 }
+    if (map.object[tile] === stone && kind.water) map.object[tile] = 0
   }
   return map
 }
