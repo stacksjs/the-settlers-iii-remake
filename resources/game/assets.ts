@@ -4,6 +4,7 @@ import type { PlayerSlotCatalog } from './player-colors'
 import { isPlayerSprite, validatePlayerSlotCatalog } from './player-colors'
 import { geologistImages } from './geologist-images'
 import { surveySigns } from './survey-signs'
+import { borderPostImage } from './border-posts'
 
 export interface AtlasFrame { key: string, frame: number, x: number, y: number, width: number, height: number, offsetX: number, offsetY: number, torso?: string | null, shadow?: string | null }
 export interface Atlas { image: HTMLImageElement, frames: Map<string, AtlasFrame[]>, playerSlots: PlayerSlotCatalog }
@@ -52,5 +53,7 @@ export async function loadOriginalAssets(): Promise<Atlas> {
     const images = frames.get(expected.key)
     if (images?.length !== expected.frames || images.some((frame, index) => frame.frame !== index)) throw new Error(`Original geologist images are missing or invalid: ${expected.key}`)
   }
+  const post = frames.get(borderPostImage.key)
+  if (post?.length !== 1 || post[0]!.width !== 9 || post[0]!.height !== 12 || post[0]!.offsetX !== -3 || post[0]!.offsetY !== -8 || post[0]!.torso !== 'torso:border-post') throw new Error('Original territory border post is missing or invalid.')
   return { image, frames, playerSlots: validatePlayerSlotCatalog(manifest.playerSlots) }
 }

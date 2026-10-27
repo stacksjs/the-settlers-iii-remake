@@ -1375,5 +1375,111 @@
     "terrainTransitionCasesPerScale": 1256,
     "javaSelectorOracle": true,
     "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+  },
+  "finalCI": {
+    "identity": {
+      "kind": "original immutable CI ZIP, API digest and every CRC verified",
+      "head": "b8a5d187fdb71828e2cb725bed95c789e05619ae",
+      "runId": 40487039693,
+      "artifactId": 12727576159,
+      "archiveBytes": 35711,
+      "sha256": "824e2d6266ba74c2a4de40903b9749caad4314175340c69edf661cc6ded28387"
+    },
+    "suiteCount": 17,
+    "steps": 681,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      },
+      "restart-dialog": {
+        "reports": 3,
+        "steps": 135
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 611462.967339,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": {
+      "1": 128815,
+      "2": 131119
+    },
+    "observedWorldPixelChecksPerScale": {
+      "1": 772,
+      "2": 3076
+    },
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "units": {
+      "pass": 426,
+      "fail": 0,
+      "files": 65,
+      "elapsedSeconds": 328.7
+    }
   }
 }

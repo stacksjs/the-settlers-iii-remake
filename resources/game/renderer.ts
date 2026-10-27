@@ -133,18 +133,6 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       // Background.addTrianglesToGeometry emits the upward face first.
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { triangle([x, y], [x + 1, y + 1], [x, y + 1]); triangle([x, y], [x + 1, y], [x + 1, y + 1]) }
       g.putImageData(raster, 0, 0)
-      // Border posts mark tiles whose neighbour belongs to someone else.
-      for (let y = y0; y <= y1; y++) {
-        for (let x = x0; x <= x1; x++) {
-          const t = y * map.width + x, owner = map.owner[t]!
-          if (!owner || !viewer.explored[t]) continue
-          const edge = [[0, -1], [1, 0], [1, 1], [0, 1], [-1, 0], [-1, -1]].some(([dx, dy]) => { const nx = x + dx!, ny = y + dy!; return nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || map.owner[ny * map.width + nx] !== owner })
-          if (!edge) continue
-          const p = at(x, y)
-          g.fillStyle = '#1a1a14'; g.fillRect(p.x - 1.5, p.y - 6, 3, 6)
-          g.fillStyle = playerCSS(playerSlots, owner); g.fillRect(p.x - 1, p.y - 7, 2, 3)
-        }
-      }
       complete = true
       return { canvas: surface, left, top: realTop }
     }
@@ -168,6 +156,16 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     }
     else ctx!.drawImage(atlas.image, f.x, f.y, f.width, f.height, x, y, f.width * z, f.height * z)
     ctx!.globalAlpha = 1
+  }
+  function playerSprite(item: SceneItem, index: number): void {
+    const body = frame(item.sprite, index)
+    const mask = body?.torso ? atlas!.frames.get(body.torso)?.find(mask => mask.frame === body.frame) : null
+    if (mask) {
+      const source = clothing(mask, playerSlots[item.owner - 1]!)
+      if (source) ctx!.drawImage(source, camera.x + (item.view.x + mask.offsetX) * camera.zoom, camera.y + (item.view.y + mask.offsetY) * camera.zoom, mask.width * camera.zoom, mask.height * camera.zoom)
+    }
+    // The reference gives opaque body pixels precedence over the mask.
+    sprite(item.sprite, item.view, index)
   }
   const toScreen = (view: Point): Point => ({ x: camera.x + view.x * camera.zoom, y: camera.y + view.y * camera.zoom })
 
@@ -296,6 +294,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   function paint(item: SceneItem, player: number): void {
     const z = camera.zoom, p = toScreen(item.view)
     switch (item.kind) {
+      case 'border': playerSprite(item, item.frame); break
       case 'sapling': sprite(item.sprite, item.view, Math.floor((item.growth ?? 0) * (atlas!.frames.get('sapling')?.length ?? 1))); break
       case 'building': for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i); break
       case 'site': if (item.phase === 'building') for (let i = 0; i < (atlas!.frames.get(item.sprite)?.length ?? 0); i++) sprite(item.sprite, item.view, i, 1, Math.max(0.08, item.reveal ?? 0)); break
@@ -308,15 +307,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         if (marked?.has(item.entity)) { ctx!.strokeStyle = '#f2df9c'; ctx!.lineWidth = Math.max(1, z); ctx!.beginPath(); ctx!.ellipse(p.x, p.y, 7 * z, 3 * z, 0, 0, Math.PI * 2); ctx!.stroke() }
         // Strike sequences hold equal runs per direction. Body and clothing
         // resolve the same actual frame before either layer is painted.
-        const index = posedIndex(item)
-        const body = frame(item.sprite, index)
-        const mask = body?.torso ? atlas!.frames.get(body.torso)?.find(mask => mask.frame === body.frame) : null
-        if (mask) {
-          const source = clothing(mask, playerSlots[item.owner - 1]!)
-          if (source) ctx!.drawImage(source, camera.x + (item.view.x + mask.offsetX) * z, camera.y + (item.view.y + mask.offsetY) * z, mask.width * z, mask.height * z)
-        }
-        // The reference gives opaque body pixels precedence over the mask.
-        sprite(item.sprite, item.view, index)
+        playerSprite(item, posedIndex(item))
         if (item.owner !== player) { ctx!.fillStyle = playerCSS(playerSlots, item.owner); ctx!.fillRect(p.x - 2 * z, p.y - 34 * z, 4 * z, 2 * z) }
         else if (item.action === 'working' && item.health === undefined) { ctx!.fillStyle = '#f2df9c'; ctx!.fillRect(p.x - 0.5 * z, p.y - 36 * z, z, 3 * z) }
         if (item.health !== undefined) {

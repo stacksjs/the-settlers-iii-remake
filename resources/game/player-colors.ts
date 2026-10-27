@@ -98,5 +98,5 @@ export function colorTorsoPixels(gray: Uint8ClampedArray, slot: number): Uint8Cl
   return pixels
 }
 
-/** Movable keys whose source may provide a separate player-color layer. */
-export const isPlayerSprite = (key: string): boolean => key === 'worker' || key === 'priest' || key.startsWith('carry:') || key.startsWith('soldier:') || key.startsWith('strike:') || ['geologist', 'geologist-survey-1', 'geologist-survey-2'].includes(key)
+/** Original sprites whose source may provide a separate player-color layer. */
+export const isPlayerSprite = (key: string): boolean => key === 'border-post' || key === 'worker' || key === 'priest' || key.startsWith('carry:') || key.startsWith('soldier:') || key.startsWith('strike:') || ['geologist', 'geologist-survey-1', 'geologist-survey-2'].includes(key)

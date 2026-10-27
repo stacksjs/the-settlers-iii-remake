@@ -12,7 +12,7 @@ test('every player body and grayscale clothing frame preserves independent origi
   const manifest = await Bun.file(resolve(directory, 'manifest.json')).json() as { atlas: string, sprites: (AtlasFrame & { source: { file: number, actualSequence: number, frame: number, section: number } })[] }
   const atlas = png.sync.read(Buffer.from(await Bun.file(resolve(directory, manifest.atlas)).arrayBuffer())), files = new Map<number, Buffer>()
   const layers = manifest.sprites.filter(frame => isPlayerSprite(frame.key) || frame.key.startsWith('torso:'))
-  expect(layers).toHaveLength(7294)
+  expect(layers).toHaveLength(7296)
   for (const frame of layers) {
     const { file, actualSequence, section, frame: sourceFrame } = frame.source
     // The archive uses mixed-case filenames, including lowercase siedler3_10.

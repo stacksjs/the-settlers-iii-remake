@@ -3,13 +3,14 @@ import { toView } from './engine'
 import { geologistSurveyImage } from './geologist-images'
 import { surveyMarker } from './survey-signs'
 import { SHADOW_ROW_OFFSET } from './shadow-images'
+import { borderPostAt, borderPostImage } from './border-posts'
 import { perceivedAge, perceivedAmount, perceivedHeight, perceivedObject } from './engine/perception'
 
 // The scene is everything a player's screen shows, derived only from the
 // session and that player's sight. The canvas painter draws it; tests compare it
 // with the simulation. Each item is a live entity or a retained observation.
 export interface SceneItem {
-  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'shadow' | 'sign' | 'arrow'
+  kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'shadow' | 'sign' | 'arrow' | 'border'
   /** Sprite key and frame in the original atlas. Arrows have no sprite. */
   sprite: string, frame: number
   /** Projection and map-row depth are independent, as in MapObjectDrawer.getZ. */
@@ -48,6 +49,11 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const [xMin, xMax] = options.columns?.(y) ?? [0, map.width - 1]
     for (let x = Math.max(0, xMin); x <= Math.min(map.width - 1, xMax); x++) {
       const t = y * map.width + x, object = perceivedObject(map, viewer, t)
+      if (seen(t) && borderPostAt(map, rules, t)) {
+        // getZ(-0.1, y), with z_per_y = 1/(mapHeight*100),
+        // places these behind every ordinary map object, not inside terrain.
+        items.push({ kind: 'border', sprite: borderPostImage.key, frame: 0, view: toView(x, y, map.elevation[t]!), depth: y - map.height * 10, tile: t, entity: t, owner: map.owner[t]! })
+      }
       if (!object || !viewer.explored[t]) continue
       const rule = rules.objects[object - 1]!, view = toView(x, y, perceivedHeight(map, viewer, t))
       const age = perceivedAge(map, viewer, t, state.tick), growth = rule.grows ? Math.min(0.999, age / rule.grows.ticks) : 1

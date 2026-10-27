@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-27",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/225",
+  "owner": "stacksjs/the-settlers-iii-remake",
+  "scope": "Original territory-post importing, player-color composition, land boundaries, source background depth and current-sight presentation in the browser.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "evidenceClass": "E, pinned reference-remake implementation and original demo source pixels. Not original Gold runtime observations.",
+    "sources": [
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/MapObjectDrawer.java",
+        "bytes": 54712,
+        "sha256": "37a78c72811e5476d8498182f99c03fb125991a95ac0d77c1a0693dd6c1d0f4f"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/MapContent.java",
+        "bytes": 36471,
+        "sha256": "0c40e353d3302deee1c02386a8ba415db1c0f93241cc8c195de2c0beb8c79773"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/algorithms/borders/BordersThread.java",
+        "bytes": 4544,
+        "sha256": "36f2005c11b11f916de56cb2b495f2ff05163c433b2813e0bb77fe8b8f9f7f51"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "bytes": 80613,
+        "sha256": "a272fd68af10f699c8398a1a64180f46f68f9711856292af048e9a1437f81d03"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/landscape/LandscapeGrid.java",
+        "bytes": 17751,
+        "sha256": "68d4c4594d4f35d22c5d3fc3ca3153c85955e79cdebf39473bd4ec37e5f46e3c"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/SettlerImage.java",
+        "bytes": 7141,
+        "sha256": "67c0cfceab2612d3a88e51a5e1a302cafc86e3279553c9a1982f55bcc3a2f569"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/image/reader/AdvancedDatFileReader.java",
+        "bytes": 21077,
+        "sha256": "4db1d80e35e8661dd88bc1935774fd3dd7a69a2f3592aab66e74196ff70abd2e"
+      },
+      {
+        "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/unified.frag",
+        "bytes": 1276,
+        "sha256": "0755f619652cf3db4b955ec0059a056bf827f5d208640305d799843e782b2e18"
+      }
+    ]
+  },
+  "cohort": {
+    "stacks": "0.75.328",
+    "stx": "0.2.719",
+    "craft": "0.0.341",
+    "bun": "1.4.4+38afee6c8",
+    "changed": false
+  },
+  "sourceCorrection": [
+    "Replace the hand-drawn 3x7 terrain-chunk rectangles with the original DAT 13, Gold sequence 65, frame 0 body and its independently aligned flag layer.",
+    "Retain original 9x12 dimensions, signed (-3,-8) anchors, untinted body pixels and player-colored grayscale flag pixels.",
+    "Record physical torso selectors in imported layer metadata and provenance, including border flag physical sequence 2.",
+    "Put territory posts into the shared scene at y - mapHeight*10, equivalent to the reference getZ(-0.1,y) with z_per_y=1/(mapHeight*100).",
+    "Require current sight. Land-only six-neighbor boundaries ignore neutral tiles, blocked landscape and out-of-map neighbors.",
+    "Reuse player sprite composition and the existing 512-entry color cache, including replacement and disposal."
+  ],
+  "red": {
+    "baseline": "b8a5d187fdb71828e2cb725bed95c789e05619ae",
+    "tests": 3,
+    "failed": 3,
+    "checks": [
+      "Original border decision present in the scene",
+      "Current-sight loss and restoration",
+      "Independent source bitmap and signed anchors"
+    ]
+  },
+  "import": {
+    "frames": 11372,
+    "interfaceImages": 52,
+    "pcmAudio": 6,
+    "convertedProvenanceFiles": 95,
+    "bodyAndFlag": [
+      {
+        "key": "border-post",
+        "frame": 0,
+        "width": 9,
+        "height": 12,
+        "offsetX": -3,
+        "offsetY": -8,
+        "source": {
+          "file": 13,
+          "sequence": 65,
+          "actualSequence": 65,
+          "section": 262,
+          "frame": 0
+        },
+        "selection": [
+          "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x106,gold-sequence=65,demo-sequence=65,frame=0",
+          "body=untinted,player-color=reference-runtime-slot"
+        ]
+      },
+      {
+        "key": "torso:border-post",
+        "frame": 0,
+        "width": 9,
+        "height": 12,
+        "offsetX": -3,
+        "offsetY": -8,
+        "source": {
+          "file": 13,
+          "sequence": 65,
+          "actualSequence": 65,
+          "section": 12562,
+          "frame": 0,
+          "layerSequence": 2
+        },
+        "selection": [
+          "demo:Gfx/Siedler3_13.f8007e01f.dat:section=0x3112,body-sequence=65,physical-torso-sequence=2,frame=0,grayscale=original"
+        ]
+      }
+    ],
+    "atlas": {
+      "name": "sprites.6b92d9cc666baf3053d19bd3813849a93e4cbb4db920563a944b79541436dd68.png",
+      "bytes": 8753641,
+      "sha256": "6b92d9cc666baf3053d19bd3813849a93e4cbb4db920563a944b79541436dd68"
+    }
+  },
+  "checks": {
+    "lint": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": {
+      "app": true,
+      "tools": true,
+      "stxScripts": 2,
+      "templateExpressions": 262,
+      "errors": 0,
+      "warnings": 0
+    },
+    "originalAssets": true,
+    "units": {
+      "pass": 430,
+      "fail": 0,
+      "expectations": 76740,
+      "files": 66,
+      "elapsed": "283.98s"
+    },
+    "focused": {
+      "pass": 8,
+      "fail": 0,
+      "expectations": 50384,
+      "files": 3
+    },
+    "productionBuild": true
+  },
+  "browser": {
+    "identity": {
+      "kind": "local complete browser-suite diagnostics"
+    },
+    "suiteCount": 18,
+    "steps": 685,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      },
+      "restart-dialog": {
+        "reports": 3,
+        "steps": 135
+      },
+      "border-posts": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 613433.0457499999,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": {
+      "1": 128815,
+      "2": 131119
+    },
+    "observedWorldPixelChecksPerScale": {
+      "1": 772,
+      "2": 3076
+    },
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "borderPostPixelChecksPerScale": {
+      "1": 5236,
+      "2": 20944
+    },
+    "borderPostPalettes": 32,
+    "borderPostOcclusionPerScale": {
+      "1": 77,
+      "2": 308
+    },
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+  },
+  "pixelFixture": {
+    "palettes": 32,
+    "posts": 2,
+    "pixelsPerScale": {
+      "1": 5236,
+      "2": 20944
+    },
+    "treeOcclusionPixelsPerScale": {
+      "1": 77,
+      "2": 308
+    },
+    "raisedTerrainHeight": 13,
+    "nativeDeviceScales": [
+      1,
+      2
+    ],
+    "fogLossAndRestore": true,
+    "simulationChecksumsUnchanged": true,
+    "cacheReuseAndDisposal": true,
+    "authoredPublicSession": true,
+    "independentOriginalDecoder": true,
+    "rasterPublication": "withheld-pending-redistribution-evidence"
+  },
+  "uiReview": {
+    "brief": "Use original territory markers with reference colors, anchors, background depth and sight rules, preserving the existing game interface.",
+    "dials": {
+      "variance": 1,
+      "motion": 1,
+      "density": 9
+    },
+    "originalPixelsUsed": true,
+    "nearestSamplingAtNativeScales": true,
+    "existingPaletteAndPlayerSlotMapping": true,
+    "newAnimation": false,
+    "reducedMotionFixture": true,
+    "marketingAndFormChecks": "No marketing, form, typography or control-layout change."
+  },
+  "privateEvidence": {
+    "unit-red.log": {
+      "bytes": 2606,
+      "sha256": "bdba0ed87bf2cfbf281038be8e191b99b4784a5620456176f415a734c1d26c3a"
+    },
+    "focused-final.log": {
+      "bytes": 1033,
+      "sha256": "bd52a3de3d5238a6379f219d5ee564a84c91a56b4c63d5db9df65117d967ae6b"
+    },
+    "units-final.log": {
+      "bytes": 49696,
+      "sha256": "bc1196e65ae8a41af2a59fcd597908cd795e9ef37f8497519709b14b5e794662"
+    },
+    "lint-final.log": {
+      "bytes": 301,
+      "sha256": "c1efcc5ebb058305786383eb9ffe79b02fd0eb4df6efe578bf7ebd2a987b5678"
+    },
+    "types-final.log": {
+      "bytes": 543,
+      "sha256": "6bc3f3239a355bd2270a1b931a9e7b683767a7b4b4eba76b18f58f5bdb36e37c"
+    },
+    "assets-final.log": {
+      "bytes": 331,
+      "sha256": "4019f240a0560a967f847df5ee43fb1832915019aac26b71e02fb9a6727d3422"
+    },
+    "import-final.log": {
+      "bytes": 584,
+      "sha256": "280be63cf06d829f1b44e687f33d18273dc285caf9fb7564d627d857f43d3318"
+    },
+    "browser-final.log": {
+      "bytes": 229,
+      "sha256": "b3de3b03f8525aa8636d1c341880d495d0c57850245d77990c976a30c209b1c6"
+    },
+    "metadata-green.log": {
+      "bytes": 672,
+      "sha256": "920bb1445ed74bb190693221927263151bf664b6ed2b55e1b6baa8769b40e4a5"
+    },
+    "units-full.log": {
+      "bytes": 51319,
+      "sha256": "12babdabfde9bd65d2af4dd23423eb16e221bf64017c7a435a7efdaf3b02ba0c"
+    },
+    "units-metadata-shape-red.log": {
+      "bytes": 51509,
+      "sha256": "47a430fd517187a862d7995516e9bf4720887a6515c1c6a062a0de0b67bce4cf"
+    },
+    "build.log": {
+      "bytes": 1366,
+      "sha256": "8b48eff5052452400ddfcb92bf13e6abe2cbc08d986e93ce63f0c2a551abb3a4"
+    },
+    "production-before.jpg": {
+      "bytes": 166285,
+      "sha256": "f6d3ff07eee9f3e63a1a00400e77322173412cddea1b9399d41c16ca0d7c02be"
+    },
+    "production-before-centered.jpg": {
+      "bytes": 181838,
+      "sha256": "7e1b43e60f97b0c4a894498460f0a3f4f63899420f5e7f295b7029b245d0cb91"
+    },
+    "production-after.jpg": {
+      "bytes": 183848,
+      "sha256": "854e23f183d147bcd81b1c8de6af4ceac3c898e744bb87ce51af99812cdf4c1a"
+    }
+  },
+  "sourceFiles": {
+    "resources/game/border-posts.ts": {
+      "bytes": 1367,
+      "sha256": "282cb3272c35c3a1b56a23a3ce5ad4529249238d4847767b16ef14c4c8e553c9"
+    },
+    "resources/game/scene.ts": {
+      "bytes": 10879,
+      "sha256": "fe1ac49d66362b99c47a36acaba0f3550dc748c11b4b04ae73f7b577db7e0b66"
+    },
+    "resources/game/renderer.ts": {
+      "bytes": 26420,
+      "sha256": "4b179857ae3cd9aeeb548008d84ae066346460923643eb697d0feb5bc2f58981"
+    },
+    "resources/game/assets.ts": {
+      "bytes": 5327,
+      "sha256": "d5f5fb4ceb8df8f6a9c2097a846389e1730fb339e6cef8086488f08075767d27"
+    },
+    "resources/game/player-colors.ts": {
+      "bytes": 5263,
+      "sha256": "a212910fc835f0af30d41c323ac5a7f3e631333892e1611afeb684f6501459e5"
+    },
+    "scripts/import-assets.ts": {
+      "bytes": 28659,
+      "sha256": "ce278c1d0913d490db2e5744379551b585dc8def335af4b6157f9d57c2922984"
+    },
+    "tests/unit/border-posts.test.ts": {
+      "bytes": 5057,
+      "sha256": "b28323c3df3ed14b801222c00e2beee52b04f868653b08efcb02f94cca173b41"
+    },
+    "tests/unit/player-color-assets.test.ts": {
+      "bytes": 2427,
+      "sha256": "543e72eac0f36292acc134300f646818ff9977e764b2c98539814f89766322f4"
+    },
+    "tests/unit/original-geologist-assets.test.ts": {
+      "bytes": 2918,
+      "sha256": "2e4929b9354bd4d0d8078ed6feb586faa4cdf3a839c3f580add541c294cca8a9"
+    },
+    "tests/fixtures/border-post-browser.ts": {
+      "bytes": 5953,
+      "sha256": "0a3b0ca950af52e6f25dc604555e1a700abf7fbded97d1c00b0ca4b3fea346c7"
+    },
+    "tests/browser/border-posts.ts": {
+      "bytes": 5993,
+      "sha256": "c01fd01700201de135d1802c187faad7e3248d9ab6b0d435e354e56f510b6d3d"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 5083,
+      "sha256": "e74710226fb1b5948b53bc29452837e2e565a1cb655c46b1e82b7cc938627a91"
+    },
+    "bun.lock": {
+      "bytes": 66675,
+      "sha256": "ea9916c73e07a0a4d11f3fa0925c35dd9460dd701e6eb61f0d1fa5927c9484ec"
+    },
+    "pantry.lock": {
+      "bytes": 4412,
+      "sha256": "b4339d524bcbe10fb99b6762f1c130a45b4883b016b88ee16c0c1b77c66e3677"
+    }
+  },
+  "limits": [
+    "Territory ownership simulation, pioneer rates and building radii remain in their existing engineering profiles. This presentation correction does not establish Gold timing or balance.",
+    "Original rasters remain private/local. CI retains only the explicit diagnostic JSON and server-log allowlist.",
+    "Temporal fog dimming remains separate presentation work. This checks the original steady-state border policy, not its fade duration.",
+    "Native game presentation and the long native runtime probe remain separate, unqualified work."
+  ]
+}

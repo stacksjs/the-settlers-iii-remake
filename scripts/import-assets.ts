@@ -18,6 +18,7 @@ import { S3Dat } from './lib/s3-dat'
 import { decodeOriginalMap } from './lib/s3-map'
 import { verifiedDownload } from './lib/verified-download'
 import { writeContentManifest } from './lib/content-provenance'
+import { borderPostImage, borderReferencePaths } from '../resources/game/border-posts'
 import type { ContentCategory, ProvenanceInput, ProvenanceFile } from './lib/content-provenance'
 
 const root = resolve(import.meta.dir, '..')
@@ -36,6 +37,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
   return id
 }
 const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/shadow-images.ts', 'resources/game/engine/original.ts', 'scripts/reference-terrain.ts', 'resources/game/reference-terrain.ts', 'scripts/reference-landscapes.ts', 'resources/game/engine/reference-landscapes.ts', 'resources/game/engine/landscapes.ts', 'package.json', 'bun.lock']
+converterPaths.push('resources/game/border-posts.ts')
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -79,6 +81,7 @@ const tutorialInput = addInput('demo:Map/TUTORIAL/T1.MAP', 'original-file', 'Map
 const tutorial = decodeOriginalMap(new Uint8Array(tutorialBytes))
 for (const path of playerColorReferences) await getReference(path)
 for (const path of shadowReferencePaths) if (!provenanceInputs.has(`reference:${path}`)) await getReference(path)
+for (const path of borderReferencePaths) if (!provenanceInputs.has(`reference:${path}`)) await getReference(path)
 const mappingPath = 'jsettlers.graphics/src/main/resources/jsettlers/graphics/image/reader/versions/amazon_demo.json'
 const mappings = JSON.parse(await getReference(mappingPath)).datFileMappings as ({ settlersMapping?: number[], guiMapping?: number[] } | null)[]
 const datFiles = new Map<number, S3Dat>()
@@ -155,6 +158,7 @@ await sequence('sapling', 1, 22, 'all', [], true)
 await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
 // Vines: three growth steps then ripe grapes (reference MapObjectDrawer, objects file sequence 25).
 await sequence('vine', 1, 25, [0, 1, 2, 3], [], true)
+await sequence(borderPostImage.key, borderPostImage.file, borderPostImage.sequence, [borderPostImage.frame], borderReferencePaths.map(path => `reference:${path}`))
 for (const [i, seq] of [1, 2, 4, 7, 8, 16, 17].entries()) await sequence(`tree-${i}`, 1, seq, [0])
 await sequence('stone-deposit', 1, 31, [0, 4, 8])
 for (const path of surveyReferencePaths) await getReference(path)
@@ -184,13 +188,14 @@ for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
   entry.torso = null
   const reader = await dat(entry.source.file)
   if (!reader.has(entry.source.actualSequence, 0x3112)) continue
+  const layerSequence = reader.layerSequence(entry.source.actualSequence, 0x3112)!
   const at = reader.frames(entry.source.actualSequence, 0x3112)[entry.source.frame]
   if (at === undefined) continue
   entry.torso = `torso:${entry.key}`
   entry.inputs.push(...torsoReferences.map(path => `reference:${path}`), ...playerColorReferences.map(path => `reference:${path}`))
   entry.selection.push('body=untinted,player-color=reference-runtime-slot')
-  clothing.push({ key: entry.torso, frame: entry.frame, source: { ...entry.source, section: 0x3112 },
-    inputs: [...entry.inputs], selection: [`${datInputs.get(entry.source.file)}:section=0x3112,body-sequence=${entry.source.actualSequence},frame=${entry.source.frame},grayscale=original`], sprite: reader.decode(at, 'torso') })
+  clothing.push({ key: entry.torso, frame: entry.frame, source: { ...entry.source, section: 0x3112, layerSequence },
+    inputs: [...entry.inputs], selection: [`${datInputs.get(entry.source.file)}:section=0x3112,body-sequence=${entry.source.actualSequence},physical-torso-sequence=${layerSequence},frame=${entry.source.frame},grayscale=original`], sprite: reader.decode(at, 'torso') })
 }
 entries.push(...clothing)
 // Movable shadow mappings are identity for files 10/11/12 before the
@@ -198,7 +203,7 @@ entries.push(...clothing)
 const shadows: typeof entries = []
 for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
   entry.shadow = null
-  if (![10, 11, 12].includes(entry.source.file)) throw new Error(`Original movable shadow mapping is not implemented for DAT ${entry.source.file}`)
+  if (![10, 11, 12, 13].includes(entry.source.file)) throw new Error(`Original player sprite shadow mapping is not implemented for DAT ${entry.source.file}`)
   const reader = await dat(entry.source.file), layerSequence = reader.layerSequence(entry.source.actualSequence, 0x5982)
   if (layerSequence === null) continue
   const at = reader.frames(entry.source.actualSequence, 0x5982)[entry.source.frame]
