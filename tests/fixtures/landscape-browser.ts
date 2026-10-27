@@ -50,7 +50,7 @@ export function checkSourceLandscapes(canvas: HTMLCanvasElement, atlas: Atlas): 
       }
       finally { session.dispose() }
     }
-    if (materialBytes !== 991232 || materialEntries !== 32) throw new Error('Landscape aliases duplicated or evicted source material pixels')
+    if (materialBytes !== 991232 + 2048 || materialEntries !== 32) throw new Error('Landscape aliases duplicated or evicted source material pixels')
     renderer.setAssets({ ...atlas, frames: new Map() })
     for (const [id, expected] of [['grass', '18,96,18,255'], ['sand', '151,150,0,255'], ['river-1', '62,117,221,255'], ['water', '21,87,210,255']] as const) {
       const session = createSession({ rules, seed: 1, map: describeMap(rules, { width: 96, height: 96, base: id, features: [] }), players: [{ name: 'Viewer', civilization: 'roman', controller: 'observer', start: { x: 32, y: 32 }, scenario: { buildings: [], settlers: [] } }] })

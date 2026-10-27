@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-26",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/220",
+  "owner": "stacksjs/the-settlers-iii-remake",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "sources": [
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/Background.java",
+        "sha256": "97ae86aecb3c00cd63767e9134f222f1ae9f59af80b59ab8fea1c68cdfe08ec2"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/ETextureOrientation.java",
+        "sha256": "1e30553d1a8c894afed27ba8cff4c96af8903ad5ff9df3727f3fab682ebe2761"
+      },
+      {
+        "path": "jsettlers.graphics/src/main/java/jsettlers/graphics/map/draw/DrawConstants.java",
+        "sha256": "02c03b7777c464343d080c88644680468b2231ae3f6740f41321e5dee1cbe589"
+      },
+      {
+        "path": "go.graphics/src/main/java/go/graphics/TextureHandle.java",
+        "sha256": "bbc0e41f8453c72d373c82d3843096461384fda3445c538bc9aabf6aeed607ae"
+      },
+      {
+        "path": "go.graphics.swing/src/main/java/go/graphics/swing/opengl/LWJGLDrawContext.java",
+        "sha256": "71689b9e027515aaf2af7738e9a99e13a92109a9debfe1d84629ad095644beac"
+      },
+      {
+        "path": "go.graphics.swing/src/main/glsl/go/graphics/swing/gl33/background.frag",
+        "sha256": "fcbcf0fd42cf64a5ca51a7cf448f1b5cf3a8b54cd3fa4a2e28860ca59282263f"
+      }
+    ],
+    "evidenceClass": "E, reference-remake implementation, not original Gold observations"
+  },
+  "productionSource": "Game importer, source terrain face selector, virtual reference atlas and renderer. No framework/package source defect identified for this correction.",
+  "cohort": {
+    "stacks": "0.75.320",
+    "stx": "0.2.711",
+    "craft": "0.0.341",
+    "pantry": "0.11.130",
+    "ts-png": "0.1.10",
+    "bun": "1.4.4+38afee6c8",
+    "changed": false
+  },
+  "red": {
+    "baselineHead": "416bfa831562c931306675d952c8fef38726c24f",
+    "zoom": 2,
+    "actual": [
+      0,
+      127,
+      194,
+      255
+    ],
+    "expected": [
+      0,
+      141,
+      208,
+      255
+    ],
+    "sourceImage": 84,
+    "sourceUV": [
+      16,
+      24
+    ],
+    "checksumUnchanged": true,
+    "browserErrors": 0,
+    "initial100PercentScopeCorrection": "The first report did not account for final 2x-to-1x nearest-sampling ties. The maintained 200% regression pins a stable source texel; the unchanged previous renderer still fails it."
+  },
+  "assets": {
+    "referenceAtlasImages": 235,
+    "rgbaBytes": 1945600,
+    "independentDecoderBytesCompared": 1945600,
+    "convertedFrames": 11370,
+    "interfaceImages": 52,
+    "pcmWAV": 6,
+    "provenanceFiles": 95,
+    "pinnedCatalogFamilies": 41,
+    "directlyDeclaredFamilyImages": 160,
+    "selectedWithBaseImages": 184,
+    "shadowedByEarlierFamily": [
+      70,
+      71,
+      74,
+      75,
+      78,
+      79,
+      82,
+      83
+    ],
+    "atlasCells": 1024,
+    "occupiedCells": 639,
+    "overlap": {
+      "cell": [
+        30,
+        16
+      ],
+      "previous": 98,
+      "lastWriter": 105,
+      "policy": "Preserve pinned index-order overwrite, not an original Gold observation"
+    }
+  },
+  "local": {
+    "units": {
+      "passed": 417,
+      "failed": 0,
+      "expectations": 76623,
+      "files": 64,
+      "elapsedSeconds": 331.52
+    },
+    "lint": {
+      "files": 518,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": {
+      "application": true,
+      "tools": true,
+      "stxScripts": 2,
+      "stxExpressions": 258,
+      "errors": 0,
+      "warnings": 0
+    },
+    "assetIntegrity": true,
+    "build": {
+      "pages": 1,
+      "elapsedSeconds": 47.14
+    },
+    "terrain": {
+      "deviceScales": [
+        1,
+        2
+      ],
+      "pixelChecksPerScale": 128043,
+      "sourceLandscapes": {
+        "fallbackColors": 4,
+        "materialBytes": 993280,
+        "materialEntries": 32,
+        "landscapes": 37,
+        "materials": 32,
+        "pixels": 152,
+        "faceLocal": 11
+      },
+      "sourceTransitions": {
+        "terrainMutation": {
+          "changedTiles": 19,
+          "chunks": 4,
+          "cachedFreshAndRestoredMatch": true,
+          "comparedPixels": 384000,
+          "realTempleManna": true,
+          "checksumUnchangedByDrawing": true,
+          "disposal": true
+        },
+        "pixels": 7537,
+        "cases": 1256,
+        "families": 41,
+        "selectedImages": 184,
+        "nearEdges": 3768,
+        "equidistantTexelSamples": 2504,
+        "sourceImage": 84,
+        "sourceUV": [
+          16,
+          24
+        ],
+        "javaSelectorOracle": true,
+        "fullReferenceAtlasImages": 235,
+        "lastWritePolicy": "image105-overwrites-image98",
+        "maximumMaterialBytes": 501760,
+        "maximumMaterialEntries": 32,
+        "checksumUnchanged": true,
+        "disposal": true
+      },
+      "originalUVCasesUseCurrentRulesProfile": true,
+      "geometryOnlyAuthoredColorsUseFrozenProfile": "roman-engineering 0.13.0",
+      "consoleRequestAndCollectionErrors": 0
+    },
+    "completeBrowserGate": {
+      "identity": {
+        "kind": "local complete browser-suite diagnostics"
+      },
+      "suiteCount": 16,
+      "steps": 546,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 6,
+          "steps": 108
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 616641.378334,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": 128043,
+      "terrainTransitionCasesPerScale": 1256,
+      "javaSelectorOracle": true,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    },
+    "staffingReplayElapsedMs": 3378.25
+  },
+  "independentOracle": {
+    "method": "Pinned Java selection and phase code copied verbatim into a minimal probe; original ETextureOrientation and DrawConstants compiled unchanged. javac/java executed 1,256 image/UV goldens. Browser expected pixels use a separate Canvas-built complete reference atlas. Production resolver is never used for expected values.",
+    "generator": "scripts/reference-terrain-fixtures.ts",
+    "fixture": "tests/fixtures/terrain-transition-cases.json",
+    "fixtureSha256": "a8916b0bd8ca3a2f6934a5c8483605b0ad91228fda516d7b899a0b2fdc99a1b0"
+  },
+  "preservedContracts": [
+    "All published earlier rules identities, saves and replays",
+    "Current uniform continuous UV and light checks at flat and height13 geometry",
+    "Source coverage, fold, collapse, overlap and chunk ordering",
+    "32 material entries and 2097152-byte material budget, including the 2048-byte ownership map",
+    "64 MiB retained terrain raster budget and bounded frame staging",
+    "Disposal and unchanged simulation checksums on draw",
+    "Existing clocks, guards, full battle and replay windows"
+  ],
+  "remaining": {
+    "localCompleteBrowserGate": "passed, all 16 suites and full ten-minute rival battle",
+    "publishedCI": "pending",
+    "originalGoldRuntime": false,
+    "nativePresentationParity": false,
+    "temporalFogFading": false,
+    "rememberedWorldUnderFog": "Known source-fidelity gap, independently reproduced and tracked at #222"
+  },
+  "media": {
+    "publication": "Original rasters remain private. Numeric diagnostics and source metadata only.",
+    "localScreenshot": "/Users/chris/Code/settlers-js-hosting/evidence/mutator-stop-fix/mixed-terrain/tutorial-current.png",
+    "sha256": "cc9d222bd68ca87e6bb149e5d9ef9082261b84294c50d8b20684b011d8d2e4aa"
+  },
+  "review": {
+    "standards": "Owning game source, no dependencies or framework/runtime patches, bounded owned memory, unchanged earlier profiles, no newly generated user-visible dash separators.",
+    "spec": "All #220 local criteria covered, including Java selector oracle, current-profile uniform source UVs, real four-chunk terrain conversion and save/reload. Published CI qualification pending.",
+    "ui": "Current tutorial visually inspected at 1280x720. Existing six-viewport control-frame checks pass. Broader controls work remains open in #90."
+  }
+}

@@ -25,6 +25,12 @@ export function paintTriangle(data: Uint32Array, width: number, height: number, 
       else if (n < 0 || n === 0 && !edge.include) { right = left - 1; break }
     }
     let index = y * width + left
-    for (let x = left; x <= right; x++) data[index++] = sample(x, y)
+    for (let x = left; x <= right; x++) {
+      const pixel = sample(x, y)
+      // Original source tiles are opaque. A zero from an unallocated reference
+      // atlas cell has alpha zero and leaves the previous face untouched.
+      if (pixel !== 0) data[index] = pixel
+      index++
+    }
   }
 }

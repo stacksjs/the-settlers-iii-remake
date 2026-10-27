@@ -44,14 +44,14 @@ test('converted landscape and GUI PNGs retain independently decoded reference pi
   }
 })
 
-test('all 32 imported terrain materials preserve every independently decoded source pixel', async () => {
+test('all 235 reference atlas images preserve every independently decoded source pixel', async () => {
   const bytes = Buffer.from(await Bun.file(resolve(import.meta.dir, '../../storage/reference/demo/Gfx/siedler3_00.f8007e01f.dat')).arrayBuffer())
   const directory = resolve(import.meta.dir, '../../public/assets/settlers-original'), manifest = await Bun.file(resolve(directory, 'manifest.json')).json()
   const atlas = png.sync.read(Buffer.from(await Bun.file(resolve(directory, manifest.atlas)).arrayBuffer()))
-  // The complete literal selector set from ELandscapeType, not the generated catalog.
-  const images = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 31, 34, 35, 36, 217, 230]
+  // Background.addTextures writes each literal image index from 0 through 234.
+  const images = Array.from({ length: 235 }, (_, image) => image)
   const frames = manifest.sprites.filter((f: { key: string }) => f.key.startsWith('terrain-'))
-  expect(frames).toHaveLength(32)
+  expect(frames).toHaveLength(235)
   let materialBytes = 0
   for (const image of images) {
     const expected = referenceImage(bytes, referenceFrames(bytes, 0x2412, image)[0]!, false, 'landscape')
@@ -64,5 +64,5 @@ test('all 32 imported terrain materials preserve every independently decoded sou
     expect(data).toEqual(expected.data)
     materialBytes += data.length
   }
-  expect(materialBytes).toBe(991232)
+  expect(materialBytes).toBe(1945600)
 })

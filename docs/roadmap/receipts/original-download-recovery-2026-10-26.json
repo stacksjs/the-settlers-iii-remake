@@ -362,5 +362,98 @@
     },
     "lintAndTypesAfterCleanup": "Passed with 0 errors and 0 warnings.",
     "pending": "The published tracing cleanup still needs its own complete CI qualification."
+  },
+  "finalQualification": {
+    "identity": {
+      "kind": "original immutable CI ZIP, API digest and every CRC verified",
+      "head": "416bfa831562c931306675d952c8fef38726c24f",
+      "runId": 40438828794,
+      "artifactId": 12706133448,
+      "archiveBytes": 33659,
+      "sha256": "b41a5f86a6b2abf65da814b18d39de1913e1f3befde20bc46afc076bbbb48116"
+    },
+    "suiteCount": 16,
+    "steps": 546,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 611793.273324,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": 120506,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "units": {
+      "passed": 417,
+      "failed": 0,
+      "files": 64,
+      "elapsedSeconds": 309.44
+    }
   }
 }

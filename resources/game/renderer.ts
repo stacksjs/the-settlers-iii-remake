@@ -1,3 +1,4 @@
+import { sourceTerrainFace } from './terrain-faces'
 import { createTerrainMaterials } from './terrain-materials'
 import { paintTriangle } from './terrain-raster'
 import { colorTorsoPixels, DEFAULT_PLAYER_SLOTS, playerCSS } from './player-colors'
@@ -116,14 +117,15 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
         const pa = at(ax, ay), pb = at(bx, by), pc = at(cx2, cy2), kind = terrainOf(ax, ay)
         const ra = rasterPoint(pa, ax, ay), rb = rasterPoint(pb, bx, by), rc = rasterPoint(pc, cx2, cy2)
-        if (kind.landscape && !kind.landscape.continuous) {
-          // Uniform face-local materials use CONTINUOS, without Background's
-          // cell phase. Mixed-face intersection selection remains separate.
-          ra.u = 8; ra.v = 0
-          if (by === ay) { rb.u = 24; rb.v = 0; rc.u = 16; rc.v = 16 }
-          else { rb.u = 16; rb.v = 16; rc.u = 0; rc.v = 16 }
+        let image: number | undefined
+        const up = by !== ay, leftKind = up ? terrainOf(cx2, cy2) : kind, apexKind = up ? kind : terrainOf(cx2, cy2), rightKind = terrainOf(bx, by)
+        if (leftKind.landscape && apexKind.landscape && rightKind.landscape) {
+          const face = sourceTerrainFace(leftKind.landscape, apexKind.landscape, rightKind.landscape, ax, ay, up)
+          image = face.image
+          const vertices = [ra, rb, rc]
+          vertices.forEach((vertex, index) => { vertex.u = face.uv[index]!.u; vertex.v = face.uv[index]!.v })
         }
-        const sample = materials!.sampler(kind, ra, rb, rc)
+        const sample = materials!.sampler(image === undefined ? kind : leftKind, ra, rb, rc, image)
         paintTriangle(pixels, surfaceWidth, surfaceHeight, ra, rb, rc, sample)
       }
       // Background.addTrianglesToGeometry emits the upward face first.

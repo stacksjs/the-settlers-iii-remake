@@ -1,4 +1,4 @@
-import { REFERENCE_LANDSCAPES } from '../resources/game/engine/reference-landscapes'
+import { REFERENCE_TERRAIN } from '../resources/game/reference-terrain'
 import { materialKey } from '../resources/game/engine/landscapes'
 import { validatePlayerSlotCatalog } from '../resources/game/player-colors'
 import { Buffer } from 'node:buffer'
@@ -30,7 +30,7 @@ for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('shadow
 if (manifest.version !== 3 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
 const buildings = ['castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'barracks', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse', 'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith']
 const goods = ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword']
-const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', ...new Set(REFERENCE_LANDSCAPES.map(source => materialKey(source.image)))]
+const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', ...REFERENCE_TERRAIN.positions.map((_, image) => materialKey(image))]
 for (const expected of surveySigns) {
   const images = frames.get(expected.key) ?? []
   if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21)) throw new Error(`Invalid original survey frames ${expected.key}`)

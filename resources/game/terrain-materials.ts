@@ -1,3 +1,4 @@
+import { REFERENCE_TERRAIN } from './reference-terrain'
 import type { TerrainRule } from './engine/rules'
 import { materialKey } from './engine/landscapes'
 import type { Atlas } from './assets'
@@ -14,10 +15,10 @@ interface TerrainVertex { x: number, y: number, u: number, v: number, light: num
  */
 export function createTerrainMaterials(document: Document, atlas: Atlas) {
   const materials = new Map<string, Material>()
-  let bytes = 0
+  let bytes = 0, owners: Int16Array | null = null
   const release = (key: string): void => { bytes -= materials.get(key)!.pixels.byteLength; materials.delete(key) }
-  function material(terrain: TerrainRule): Material {
-    const kind = terrain.id, selector = terrain.landscape ? materialKey(terrain.landscape.image) : TEXTURE[kind] ?? kind
+  function material(terrain: TerrainRule, image = terrain.landscape?.image): Material {
+    const kind = terrain.id, selector = image !== undefined ? materialKey(image) : TEXTURE[kind] ?? kind
     const frame = atlas.frames.get(selector)?.[0], key = frame ? selector : `fallback:${terrain.landscape?.color ?? kind}`, cached = materials.get(key)
     if (cached) { materials.delete(key); materials.set(key, cached); return cached }
     const surface = document.createElement('canvas')
@@ -41,14 +42,35 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
       // Reject unsupported alpha instead of inventing ground beneath holes.
       for (let i = 3; i < data.length; i += 4) if (data[i] !== 255) throw new Error('Terrain material must preserve opaque source coverage')
       const value = { width: surface.width, height: surface.height, pixels: new Uint32Array(data.buffer, data.byteOffset, data.byteLength / 4) }
-      while (materials.size && (bytes + data.byteLength > MATERIAL_CACHE_BYTES || materials.size >= 32)) release(materials.keys().next().value!)
+      while (materials.size && (bytes + (owners?.byteLength ?? 0) + data.byteLength > MATERIAL_CACHE_BYTES || materials.size >= 32)) release(materials.keys().next().value!)
       materials.set(key, value); bytes += data.byteLength
       return value
     }
     finally { surface.width = surface.height = 0 }
   }
+  function referenceSampler(terrain: TerrainRule, image: number): (u: number, v: number) => number {
+    if (!owners) {
+      owners = new Int16Array(32 * 32).fill(-1)
+      REFERENCE_TERRAIN.positions.forEach(([x, y, size], index) => {
+        for (let dy = 0; dy < size; dy++) for (let dx = 0; dx < size; dx++) owners![(y + dy) * 32 + x + dx] = index
+      })
+      while (materials.size && bytes + owners.byteLength > MATERIAL_CACHE_BYTES) release(materials.keys().next().value!)
+    }
+    let lastImage = image, source = material(terrain, image)
+    return (u, v) => {
+      // LWJGLDrawContext uses CLAMP_TO_EDGE, not tile-local wrapping. The
+      // reference writes images in index order, so image105 owns image98's
+      // shared cell. Empty atlas cells preserve transparent source coverage.
+      u = Math.max(0, Math.min(1023, u)); v = Math.max(0, Math.min(1023, v))
+      const owner = owners![(v >> 5) * 32 + (u >> 5)]!
+      if (owner < 0) return 0
+      if (owner !== lastImage) { source = material(terrain, owner); lastImage = owner }
+      const position = REFERENCE_TERRAIN.positions[owner]!
+      return source.pixels[((v - position[1] * 32) % source.height) * source.width + (u - position[0] * 32) % source.width]!
+    }
+  }
   return {
-    sampler(terrain: TerrainRule, a: TerrainVertex, b: TerrainVertex, c: TerrainVertex): (x: number, y: number) => number {
+    sampler(terrain: TerrainRule, a: TerrainVertex, b: TerrainVertex, c: TerrainVertex, image?: number): (x: number, y: number) => number {
       if (typeof terrain.id !== 'string' || ![a, b, c].every(p => [p.x, p.y, p.u, p.v, p.light].every(n => Number.isFinite(n) && Math.abs(n) <= 2 ** 24))) throw new RangeError('Invalid terrain material sampling')
       const bx = b.x - a.x, by = b.y - a.y, cx = c.x - a.x, cy = c.y - a.y, area = bx * cy - by * cx
       // The raster skips collapsed faces. Do not divide by zero or allocate
@@ -59,10 +81,12 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
       const u0 = a.u * area - ux * (a.x - 0.5) - uy * (a.y - 0.5), v0 = a.v * area - vx * (a.x - 0.5) - vy * (a.y - 0.5)
       const lx = (b.light - a.light) * cy - (c.light - a.light) * by, ly = (c.light - a.light) * bx - (b.light - a.light) * cx
       const l0 = a.light * area - lx * (a.x - 0.5) - ly * (a.y - 0.5)
-      const source = material(terrain), opaque = 255 << shifts[3]!
+      const reference = image !== undefined && atlas.frames.has(materialKey(image)) ? referenceSampler(terrain, image) : null
+      const source = reference ? null : material(terrain, image), opaque = 255 << shifts[3]!
       return (x, y) => {
         const u = Math.floor((u0 + ux * x + uy * y) / area), v = Math.floor((v0 + vx * x + vy * y) / area)
-        const pixel = source.pixels[((v % source.height + source.height) % source.height) * source.width + (u % source.width + source.width) % source.width]!
+        const pixel = reference ? reference(u, v) : source!.pixels[((v % source!.height + source!.height) % source!.height) * source!.width + (u % source!.width + source!.width) % source!.width]!
+        if (pixel === 0) return 0
         // Match the reference fragment shader: interpolate light first, then
         // multiply source RGB. Saturate only the final RGBA8 channels.
         const light = Math.max(0, (l0 + lx * x + ly * y) / area)
@@ -71,7 +95,7 @@ export function createTerrainMaterials(document: Document, atlas: Atlas) {
           | Math.min(255, Math.round((pixel >>> shifts[2]! & 255) * light)) << shifts[2]!
       }
     },
-    memory: () => ({ bytes, limit: MATERIAL_CACHE_BYTES, entries: materials.size }),
-    dispose() { materials.clear(); bytes = 0 },
+    memory: () => ({ bytes: bytes + (owners?.byteLength ?? 0), limit: MATERIAL_CACHE_BYTES, entries: materials.size }),
+    dispose() { materials.clear(); bytes = 0; owners = null },
   }
 }

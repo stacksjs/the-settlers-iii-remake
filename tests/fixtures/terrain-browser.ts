@@ -1,9 +1,10 @@
 import { checkSourceLandscapes } from './landscape-browser'
+import { checkSourceTransitions } from './terrain-transitions-browser'
 import type { Atlas, AtlasFrame } from '../../resources/game/assets'
 import { loadOriginalAssets } from '../../resources/game/assets'
 import type { MapFeature } from '../../resources/game/engine/map'
 import type { Session } from '../../resources/game/engine'
-import { createSession, describeMap, ROMAN_ENGINEERING as rules } from '../../resources/game/engine'
+import { createSession, describeMap, rulesFor, ROMAN_ENGINEERING as rules } from '../../resources/game/engine'
 import { createRenderer } from '../../resources/game/renderer'
 import { landscape, order, place, session as engineeringSession, until } from './engine'
 
@@ -20,8 +21,11 @@ try {
   const colors = blank.getContext('2d')!
   colors.fillStyle = '#6f9452'; colors.fillRect(0, 0, 1, 1); colors.fillStyle = '#b8ad78'; colors.fillRect(1, 0, 1, 1)
   const coverage: Atlas = { image: await image(blank), frames: new Map(['terrain-grass', 'terrain-sand'].map((key, x) => [key, [{ key, frame: 0, x, y: 0, width: 1, height: 1, offsetX: 0, offsetY: 0 }]])), playerSlots: [] }
-  const make = (features: MapFeature[] = [], profession = 'carrier', starts = [{ x: 32, y: 32 }]): Session => {
-    const session = createSession({ rules, seed: 1, map: describeMap(rules, { width: 96, height: 96, base: 'grass', features }), players: [{ name: 'Viewer', civilization: 'roman', start: starts[0]!, scenario: { buildings: [], settlers: starts.map(at => ({ profession, ...at })) } }] })
+  // Freeze only authored geometry/color fixtures. Original texture/UV, source
+  // transition and actual gameplay mutation checks use the current profile.
+  const coverageRules = rulesFor({ id: 'roman-engineering', version: '0.13.0', digest: '546d722c064d653b3e0cccb5d5dcf217aa031e3abf0928f5a7e5da17aa184931' })!
+  const make = (features: MapFeature[] = [], profession = 'carrier', starts = [{ x: 32, y: 32 }], profile = coverageRules): Session => {
+    const session = createSession({ rules: profile, seed: 1, map: describeMap(profile, { width: 96, height: 96, base: 'grass', features }), players: [{ name: 'Viewer', civilization: 'roman', start: starts[0]!, scenario: { buildings: [], settlers: starts.map(at => ({ profession, ...at })) } }] })
     sessions.push(session); return session
   }
   const pixel = (target: CanvasRenderingContext2D, x: number, y: number): number[] => [...target.getImageData(Math.floor((x + 0.5) * ratio), Math.floor((y + 0.5) * ratio), 1, 1).data]
@@ -217,6 +221,8 @@ try {
   const original = await loadOriginalAssets(), terrain: Atlas = { ...original, frames: new Map([...original.frames].filter(([key]) => key.startsWith('terrain-'))) }
   const sourceLandscapes = checkSourceLandscapes(canvas, original)
   checkedPixels += sourceLandscapes.pixels
+  const sourceTransitions = checkSourceTransitions(canvas, original)
+  checkedPixels += sourceTransitions.pixels
   maximumMaterialBytes = Math.max(maximumMaterialBytes, sourceLandscapes.materialBytes)
   const checker = document.createElement('canvas'); checker.width = checker.height = 4
   const checkerContext = checker.getContext('2d')!
@@ -239,7 +245,7 @@ try {
     for (const centre of [{ tile: { x: 32, y: 32 }, x: 256, y: 288, left: 128, top: 160 }, { tile: { x: 16, y: 64 }, x: -256, y: 576, left: -384, top: 448 }]) for (const height of [0, 13]) {
       const features: MapFeature[] = kind === 'grass' ? [] : [{ kind: 'terrain', id: kind, ...centre.tile, radius: 3 }]
       if (height) features.push({ kind: 'elevation', ...centre.tile, radius: 100000, amount: height })
-      const session = make(features, 'carrier', [{ x: centre.tile.x - 4, y: centre.tile.y }])
+      const session = make(features, 'carrier', [{ x: centre.tile.x - 4, y: centre.tile.y }], rules)
       const fields = new Map<number, HTMLCanvasElement>()
       for (const { zoom, offset, p, q } of cases) {
         const density = zoom <= 0.5 ? 1 : 2
@@ -313,6 +319,6 @@ try {
   if (renderer.terrainCacheMemory().rebuiltChunks !== 0) throw new Error('Unchanged actual visibility inputs caused repeated rasterization')
   renderer.dispose(); clear()
   for (const session of sessions) session.dispose()
-  result.textContent = JSON.stringify({ ok: true, sourceLandscapes, deviceScale: ratio, checkedPixels, referenceVertexLight: true, gradientSamples: 7, lowerLightClamp: true, saturationAfterInterpolation: true, referenceEdgeGuard: true, referenceEdgesTested: ['left', 'top', 'right', 'bottom'], mixedVisibilityFace: true, diggerNorthHaloInvalidation: true, cacheComparisonPixels: canvas.width * canvas.height, noTintCache: true, steadyVisibilityWeights: [0, 0.5, 1], rgba8Rounding: 'nearest, half upward after source RGB multiplication', continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalSourcePixelsPreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle with reference vertex-light equations and explicit RGBA8 rounding across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU texel and channel rounding tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
+  result.textContent = JSON.stringify({ ok: true, sourceLandscapes, sourceTransitions, deviceScale: ratio, checkedPixels, referenceVertexLight: true, gradientSamples: 7, lowerLightClamp: true, saturationAfterInterpolation: true, referenceEdgeGuard: true, referenceEdgesTested: ['left', 'top', 'right', 'bottom'], mixedVisibilityFace: true, diggerNorthHaloInvalidation: true, cacheComparisonPixels: canvas.width * canvas.height, noTintCache: true, steadyVisibilityWeights: [0, 0.5, 1], rgba8Rounding: 'nearest, half upward after source RGB multiplication', continuousUV: true, literalFaceSamples: 6, textureHeights: [0, 13], unequalHeightInterpolation: true, foldedUV: true, collapsedFace: true, rawSourceNearest: true, uniformCases: cases.length, texturedCases, exactTexels, tiedTexels, differingTies, exactNonTieNativePattern: true, equidistantSourceCandidates: true, originalSourcePixelsPreserved: true, originalTextures: true, originalMaterialKinds: 4, negativeTextureCoordinates: true, unsupportedAlphaRejected: true, materialCapacityGuard: true, mixedMaterials: true, elevation: true, opaqueOverlap: true, sourceFaceOrder: true, crossChunkOcclusion: true, fog: true, sourceUnchanged: true, unchangedVisibilityWithoutRebuild: true, resourceBounds: true, disposal: true, checksumUnchanged: true, maximumFrameBytes, maximumMaterialBytes, timings, scope: 'Production browser renderer and public engineering sessions, independent reference-UV native material oracle with reference vertex-light equations and explicit RGBA8 rounding across flat and elevated ground. Equidistant texel boundaries are tested against their exact nearest source candidates, with no RGB tolerance; native GPU texel and channel rounding tie behavior is unqualified. Not original Gold runtime observations or full terrain-presentation parity.' })
 }
 catch (error) { result.textContent = JSON.stringify({ ok: false, error: String(error) }) }
