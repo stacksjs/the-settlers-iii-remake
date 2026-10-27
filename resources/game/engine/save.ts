@@ -1,6 +1,6 @@
 import type { RulesProfile } from './rules'
 import type { Session } from './session'
-import type { Building, Command, Eye, Job, Ledger, MapState, Op, Player, Projectile, Settler, Stack, State } from './state'
+import type { Building, Command, Eye, Job, Ledger, MapState, Op, Player, Projectile, Settler, Stack, State, WorldMemory } from './state'
 import { canonical } from './hash'
 import { fullChecksum } from './digest'
 import { MAX_MAP_SIZE } from './map'
@@ -9,6 +9,7 @@ import { MissionError, validateMission } from './mission'
 import { validRandomState } from './random'
 import { crafted, rulesIdentity } from './rules'
 import { openSession } from './session'
+import { playerEntities } from './perception'
 
 export const SAVE_FORMAT = 'settlers-iii-remake/session'
 export const SAVE_VERSION = 3
@@ -16,11 +17,13 @@ export const MAX_SAVE_BYTES = 64 * 1024 * 1024
 
 type LayerName = 'terrain' | 'elevation' | 'resource' | 'resourceAmount' | 'object' | 'objectAmount' | 'objectSince' | 'owner'
 const LAYERS: Record<LayerName, 1 | 2 | 4> = { terrain: 1, elevation: 1, resource: 1, resourceAmount: 2, object: 1, objectAmount: 2, objectSince: 4, owner: 1 }
+const MEMORY_LAYERS = { terrain: 1, elevation: 1, object: 1, amount: 2, age: 4 } as const
+type EncodedMemory = Pick<WorldMemory, 'buildings' | 'stacks' | 'signs'> & Record<keyof typeof MEMORY_LAYERS, string>
 
 export interface EncodedState {
   schema: 1, tick: number, random: number[], nextId: number, navigation: number
   map: { width: number, height: number, layers: Record<LayerName, string> }
-  players: (Omit<Player, 'explored' | 'visible'> & { explored: string, visible: string })[]
+  players: (Omit<Player, 'explored' | 'visible' | 'memory'> & { explored: string, visible: string, memory?: EncodedMemory })[]
   settlers: Settler[], buildings: Building[], stacks: Stack[], jobs: Job[]
   claims: [number, number][], growth: [number, number][], cooldowns: [string, number][]
   ledger: Record<string, Ledger>, events: State['events'], results: State['results'], pending: Command[]
@@ -111,10 +114,10 @@ function fnv(state: State, entities: string): string {
   return h.toString(16).padStart(8, '0')
 }
 
-function encodeEntities(state: State): Omit<EncodedState, 'map' | 'players'> & { players: Omit<Player, 'explored' | 'visible'>[] } {
+function encodeEntities(state: State) {
   return {
     schema: state.schema, tick: state.tick, random: [...state.random], nextId: state.nextId, navigation: state.navigation,
-    players: state.players.map(({ explored: _e, visible: _v, ...p }) => p),
+    players: state.players.map(playerEntities),
     settlers: [...state.settlers.values()], buildings: [...state.buildings.values()], stacks: [...state.stacks.values()], jobs: [...state.jobs.values()],
     claims: [...state.claims], growth: state.growth, cooldowns: [...state.cooldowns], ledger: Object.fromEntries(Object.entries(state.ledger)),
     events: state.events, results: state.results, pending: state.pending, mission: state.mission,
@@ -128,7 +131,7 @@ export function encodeState(state: State): EncodedState {
   return structuredClone({
     ...encodeEntities(state),
     map: { width: map.width, height: map.height, layers: Object.fromEntries((Object.keys(LAYERS) as LayerName[]).map(name => [name, encodeLayer(map[name], LAYERS[name])])) as Record<LayerName, string> },
-    players: state.players.map(p => ({ ...structuredClone({ ...p, explored: undefined, visible: undefined }), explored: encodeLayer(p.explored, 1), visible: encodeLayer(p.visible, 1) })) as EncodedState['players'],
+    players: state.players.map(p => ({ ...playerEntities(p), explored: encodeLayer(p.explored, 1), visible: encodeLayer(p.visible, 1), ...(p.memory ? { memory: { buildings: p.memory.buildings, stacks: p.memory.stacks, signs: p.memory.signs, ...Object.fromEntries(Object.entries(MEMORY_LAYERS).map(([name, width]) => [name, encodeLayer(p.memory![name as keyof typeof MEMORY_LAYERS], width)])) } } : {}) })) as EncodedState['players'],
   })
 }
 
@@ -140,6 +143,7 @@ const damaged = (detail: string): SaveError => new SaveError('damaged', `Saved g
 const isObject = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v)
 const int = (v: unknown, min: number, max: number): v is number => Number.isInteger(v) && (v as number) >= min && (v as number) <= max
 const str = (v: unknown, max = 200): v is string => typeof v === 'string' && v.length <= max
+const onlyKeys = (value: object, keys: readonly string[]): boolean => Object.keys(value).every(key => keys.includes(key))
 function list<T>(v: unknown, max: number, label: string): T[] { if (!Array.isArray(v) || v.length > max) throw damaged(`${label} list is malformed`); return v as T[] }
 function check(condition: unknown, detail: string): asserts condition { if (!condition) throw damaged(detail) }
 const goodsMap = (v: unknown, rules: RulesProfile, label: string, min = 0): void => { check(isObject(v) && Object.entries(v).every(([k, n]) => rules.goods.includes(k) && int(n, min, 1e9)), `${label} goods are malformed`) }
@@ -214,7 +218,36 @@ export function decodeState(envelope: SaveEnvelope, rules: RulesProfile): State 
       && (r.casts === undefined || (isObject(r.casts) && Object.entries(r.casts).every(([k, n]) => !!rules.religion?.interventions?.some(i => i.id === k) && int(n, 1, 1e6))))), `player ${p.id} religion is invalid`)
     const signs = list<Player['signs'][number]>(p.signs, 512, 'sign')
     check(signs.every(sign => isObject(sign) && tile(sign.tile) && (sign.good === null || good(sign.good)) && int(sign.amount, 0, 65535) && int(sign.until, 0, 0xFFFFFFFF)), `player ${p.id} signs are invalid`)
-    return { ...(p.delivered ? { delivered: structuredClone(p.delivered) } : {}), ...(r ? { religion: structuredClone(r) } : {}), id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored: decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible: decodeLayer(p.visible, size, 1, 'visible') as Uint8Array }
+    const explored = decodeLayer(p.explored, size, 1, 'explored') as Uint8Array, visible = decodeLayer(p.visible, size, 1, 'visible') as Uint8Array
+    let memory: WorldMemory | undefined
+    if (rules.worldMemory) {
+      check(isObject(p.memory), `player ${p.id} has no observed world`)
+      check(onlyKeys(p.memory, [...Object.keys(MEMORY_LAYERS), 'buildings', 'stacks', 'signs']), `player ${p.id} remembered world has unknown fields`)
+      const fields = Object.fromEntries(Object.entries(MEMORY_LAYERS).map(([name, width]) => [name, decodeLayer(p.memory![name as keyof typeof MEMORY_LAYERS], size, width, `remembered ${name}`)])) as unknown as Pick<WorldMemory, keyof typeof MEMORY_LAYERS>
+      const fieldLayers = Object.values(fields)
+      for (let t = 0; t < size; t++) {
+        check(explored[t]! <= 1 && visible[t]! <= explored[t]!, `player ${p.id} sight is invalid`)
+        check(fields.terrain[t]! < rules.terrain.length && fields.object[t]! <= rules.objects.length && fields.age[t]! <= e.tick, `player ${p.id} remembered tile ${t} is invalid`)
+        if (!explored[t] || visible[t]) check(fieldLayers.every(layer => layer[t] === 0), `player ${p.id} remembers a tile that is not hidden`)
+      }
+      const rememberedBuildings = list<WorldMemory['buildings'][number]>(p.memory.buildings, 100_000, 'remembered building'), rememberedStacks = list<WorldMemory['stacks'][number]>(p.memory.stacks, 200_000, 'remembered stack')
+      const knownIds = new Set<number>()
+      const rememberedId = (value: unknown): boolean => { if (!int(value, 1, e.nextId - 1) || knownIds.has(value)) return false; knownIds.add(value); return true }
+      for (const b of rememberedBuildings) {
+        check(isObject(b) && onlyKeys(b, ['id', 'owner', 'type', 'x', 'y', 'phase', 'workRemaining', 'elevation']) && rememberedId(b.id) && owner(b.owner) && int(b.x, 0, width - 1) && int(b.y, 0, height - 1) && int(b.elevation, 0, 255) && int(b.workRemaining, 0, 1e6) && ['active', 'leveling', 'building'].includes(b.phase), 'remembered building is invalid')
+        const rule = rules.buildings.find(rule => rule.id === b.type)
+        check(rule && rule.footprint.every(([dx, dy]) => int(b.x + dx, 0, width - 1) && int(b.y + dy, 0, height - 1) && !visible[(b.y + dy) * width + b.x + dx]) && rule.footprint.some(([dx, dy]) => explored[(b.y + dy) * width + b.x + dx]), 'remembered building sight is invalid')
+      }
+      for (const st of rememberedStacks) check(isObject(st) && onlyKeys(st, ['id', 'owner', 'tile', 'good', 'amount', 'elevation']) && rememberedId(st.id) && owner(st.owner) && tile(st.tile) && explored[st.tile] && !visible[st.tile] && good(st.good) && int(st.amount, 1, 1e9) && int(st.elevation, 0, 255), 'remembered stack is invalid')
+      const rememberedSigns = list<WorldMemory['signs'][number]>(p.memory.signs, size, 'remembered sign'), signTiles = new Set<number>()
+      for (const sign of rememberedSigns) {
+        check(isObject(sign) && onlyKeys(sign, ['tile', 'good', 'amount', 'elevation']) && tile(sign.tile) && !signTiles.has(sign.tile) && explored[sign.tile] && !visible[sign.tile] && (sign.good === null || good(sign.good)) && int(sign.amount, 0, 65535) && int(sign.elevation, 0, 255), 'remembered sign is invalid')
+        signTiles.add(sign.tile)
+      }
+      memory = { ...fields, buildings: structuredClone(rememberedBuildings), stacks: structuredClone(rememberedStacks), signs: structuredClone(rememberedSigns) }
+    }
+    else check(p.memory === undefined, `player ${p.id} memory does not belong to these rules`)
+    return { ...(p.delivered ? { delivered: structuredClone(p.delivered) } : {}), ...(r ? { religion: structuredClone(r) } : {}), ...(memory ? { memory } : {}), id: p.id, name: p.name, civilization: p.civilization, controller: p.controller, settings: structuredClone(s), signs: structuredClone(signs), craftCursor: p.craftCursor, explored, visible }
   })
   const buildings = list<Building>(e.buildings, 100_000, 'building')
   const buildingIds = new Set<number>()

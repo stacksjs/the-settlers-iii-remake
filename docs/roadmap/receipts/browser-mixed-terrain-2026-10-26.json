@@ -278,7 +278,7 @@
   ],
   "remaining": {
     "localCompleteBrowserGate": "passed, all 16 suites and full ten-minute rival battle",
-    "publishedCI": "pending",
+    "publishedCI": "passed and original diagnostic ZIP qualified",
     "originalGoldRuntime": false,
     "nativePresentationParity": false,
     "temporalFogFading": false,
@@ -291,7 +291,102 @@
   },
   "review": {
     "standards": "Owning game source, no dependencies or framework/runtime patches, bounded owned memory, unchanged earlier profiles, no newly generated user-visible dash separators.",
-    "spec": "All #220 local criteria covered, including Java selector oracle, current-profile uniform source UVs, real four-chunk terrain conversion and save/reload. Published CI qualification pending.",
+    "spec": "All #220 criteria covered locally and in the qualified published CI run. #222 retains the independent remembered-world gap.",
     "ui": "Current tutorial visually inspected at 1280x720. Existing six-viewport control-frame checks pass. Broader controls work remains open in #90."
+  },
+  "publishedQualification": {
+    "identity": {
+      "kind": "original immutable CI ZIP, API digest and every CRC verified",
+      "head": "3cbc7d7515f489e5f737c2a907a1825956abe0a3",
+      "runId": 40452629794,
+      "artifactId": 12711943364,
+      "archiveBytes": 33854,
+      "sha256": "3608787dd440dbf41eec6a4c885bc9a1567ed7ebfc7abaa0c4d1979b52ba7cb8"
+    },
+    "suiteCount": 16,
+    "steps": 546,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 611306.905757,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": 128043,
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "units": {
+      "passed": 417,
+      "failed": 0,
+      "files": 64,
+      "elapsedSeconds": 308.34
+    }
   }
 }

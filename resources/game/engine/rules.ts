@@ -73,6 +73,8 @@ export interface RulesProfile {
   demolition: { refundFraction: [number, number] }
   territory: { pioneerWork: number, pioneerRadius: number }
   visibility: { settler: number, interval: number }
+  /** Earlier profiles draw explored fields from the live world. */
+  worldMemory?: 'last-seen'
   survey: { radius: number, work: number, signTicks: number }
   /** Absent in earlier profiles, whose duty loop chose the nearest tile even when blocked. */
   specialistRouting?: 'reachable'
@@ -245,11 +247,12 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   if (rules.constructionWaiting !== undefined && rules.constructionWaiting !== 'release-idle') problems.push('Unknown construction waiting policy')
   if (rules.groundPileMerging !== undefined && rules.groundPileMerging !== 'same-owner') problems.push('Unknown ground pile merging policy')
   if (rules.staffingRouting !== undefined && rules.staffingRouting !== 'reachable') problems.push('Unknown staffing routing policy')
+  if (rules.worldMemory !== undefined && rules.worldMemory !== 'last-seen') problems.push('Unknown observed-world policy')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.worldMemory ? ['worldMemory'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -321,7 +324,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.14.0',
+  version: '0.15.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -394,6 +397,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   demolition: { refundFraction: [1, 2] },
   territory: { pioneerWork: 30, pioneerRadius: 1 },
   visibility: { settler: 5, interval: 10 },
+  worldMemory: 'last-seen',
   survey: { radius: 3, work: 30, signTicks: 6000 },
   specialistRouting: 'reachable',
   constructionOccupancy: 'current-and-next',
@@ -427,6 +431,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'constructionReassignment': E('https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/PartitionManager.java', 'Return surplus jobless builders and diggers to carriers through physical tool recovery. The pinned remake reconciles profession caps periodically and drops the real tool; this engineering profile uses its existing staffing cadence and absolute limits. Exact original Gold timing and percentage behavior remain unobserved. See issue204.'),
     'groundPileMerging': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/205', 'A physical ground drop merges only into a compatible pile owned by the dropping player. This protects per-player conservation without transferring or granting goods. Exact original Gold ground-pile behavior remains unobserved.'),
     'staffingRouting': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/206', 'Choose idle skilled workers and real tool/carrier pairs whose routes to the actual work destination succeed through the ordinary movement router. Unreachable workers remain where they are. This is engineering staffing behavior, not an original Gold observation.'),
+    'worldMemory': E('https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/algorithms/fogofwar/FogOfWar.java', 'Freeze landscape, height and persistent map-object poses on loss of sight, as recordHidden and HiddenMapObject do. Renewed sight clears the snapshot. Current building visibility still uses this engine\'s any-footprint policy. Supported objects are its trees, stone, growing plants, building poses, piles and survey-marker poses. Player forecasts use the same router with remembered terrain and obstruction inputs, while actual movement still reads the world. Fleeting settlers, effects and airborne arrows are not remembered. This is pinned remake evidence, not original Gold observations.'),
     'tickRate': U('Original clock rate and speed settings are unobserved; 20 ticks per second is an engineering choice.', 'S3-002'),
     'goods': M(sources.jobs, 'Roman goods named by the occupations and production chains; complete catalog requires decoded content.', 'S3-007'),
     'tools': M(sources.jobs, 'Tool requirements: builders hammer, diggers shovel, woodcutter axe, stonecutter and miner pick, farmer scythe, fisherman rod, smiths hammer.', 'S3-031'),

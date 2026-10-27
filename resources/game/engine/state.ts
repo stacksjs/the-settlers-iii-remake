@@ -32,10 +32,20 @@ export interface PlayerSettings {
   distribution?: Record<string, Record<string, number>>
 }
 export interface Sign { tile: number, good: string | null, amount: number, until: number }
+/** Frozen presentation only. Hidden inventories, jobs and diagnostics are never retained. */
+export interface RememberedBuilding { id: number, owner: number, type: string, x: number, y: number, phase: Building['phase'], workRemaining: number, elevation: number }
+export interface RememberedStack { id: number, owner: number, tile: number, good: string, amount: number, elevation: number }
+export interface RememberedSign { tile: number, good: string | null, amount: number, elevation: number }
+export interface WorldMemory {
+  terrain: Uint8Array, elevation: Uint8Array, object: Uint8Array, amount: Uint16Array, age: Uint32Array
+  buildings: RememberedBuilding[], stacks: RememberedStack[], signs: RememberedSign[]
+}
 export interface Player {
   id: number, name: string, civilization: string, controller: 'human' | 'computer' | 'observer'
   settings: PlayerSettings
   explored: Uint8Array, visible: Uint8Array
+  /** Only populated while explored land is outside sight. Absent in earlier profiles. */
+  memory?: WorldMemory
   signs: Sign[]
   craftCursor: number
   /** Manna and promotion progress, once a rules profile has religion. Levels count promotions per soldier class. */

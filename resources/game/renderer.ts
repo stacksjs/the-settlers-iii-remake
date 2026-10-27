@@ -7,10 +7,11 @@ import type { Point, Session } from './engine'
 import type { SceneItem } from './scene'
 import { pick, toView } from './engine'
 import { scene } from './scene'
+import { perceivedHeight, perceivedTerrain } from './engine/perception'
 
 // Presentation reads the session and the viewing player's sight. It never
-// changes simulation state, and foreign entities are drawn only where the
-// player currently sees, matching the engine's player view.
+// changes simulation state. Foreign units require current sight; persistent
+// objects outside sight use the player's retained observations.
 export interface Camera { x: number, y: number, zoom: number }
 const CHUNK = 32
 const TERRAIN_CACHE_BYTES = 64 * 1024 * 1024
@@ -56,13 +57,14 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     return surface
   }
 
-  function chunkBounds(session: Session, cx: number, cy: number) {
+  function chunkBounds(session: Session, player: number, cx: number, cy: number) {
     const { map } = session.state
+    const viewer = session.state.players.find(p => p.id === player)!
     const x0 = cx * CHUNK, y0 = cy * CHUNK, x1 = Math.min(map.width - 1, x0 + CHUNK), y1 = Math.min(map.height - 1, y0 + CHUNK)
     const left = x0 * 16 - y1 * 8 - 16, right = x1 * 16 - y0 * 8 + 16
     let minY = Infinity, maxY = -Infinity
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-      const viewY = y * 9 - map.elevation[y * map.width + x]! * 2
+      const viewY = y * 9 - perceivedHeight(map, viewer, y * map.width + x) * 2
       minY = Math.min(minY, viewY); maxY = Math.max(maxY, viewY)
     }
     const realTop = Math.floor((minY - 16) * chunkScale) / chunkScale, bottom = Math.ceil((maxY + 16) * chunkScale) / chunkScale
@@ -73,18 +75,18 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   // neighboring ownership used by border posts; comparison has no hash collisions.
   function terrainInputs(session: Session, player: number, bounds: ReturnType<typeof chunkBounds>, previous?: Uint8Array): Uint8Array {
     const { map } = session.state, viewer = session.state.players.find(p => p.id === player)!
-    const fields = [map.terrain, map.elevation, map.owner, viewer.explored, viewer.visible]
+    const fields = [(t: number) => perceivedTerrain(map, viewer, t), (t: number) => perceivedHeight(map, viewer, t), (t: number) => map.owner[t]!, (t: number) => viewer.explored[t]!, (t: number) => viewer.visible[t]!]
     const x0 = Math.max(0, bounds.x0 - 1), x1 = Math.min(map.width - 1, bounds.x1 + 1), y0 = Math.max(0, bounds.y0 - 1), y1 = Math.min(map.height - 1, bounds.y1 + 1)
     const length = (x1 - x0 + 1) * (y1 - y0 + 1) * fields.length
     let index = 0, same = previous?.length === length
     if (same) {
       compare: for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) for (const field of fields) {
-        if (previous![index++] !== field[y * map.width + x]) { same = false; break compare }
+        if (previous![index++] !== field(y * map.width + x)) { same = false; break compare }
       }
       if (same) return previous!
     }
     const value = new Uint8Array(length); index = 0
-    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) for (const field of fields) value[index++] = field[y * map.width + x]!
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) for (const field of fields) value[index++] = field(y * map.width + x)
     return value
   }
   function renderChunk(session: Session, player: number, bounds: ReturnType<typeof chunkBounds>) {
@@ -107,11 +109,11 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         // explicit interior guard. Current sight provides steady-state 100/50/0
         // reference weights; temporal fog dimming remains separate work.
         const light = x > 0 && x < map.width - 2 && y > 0 && y < map.height - 2 && viewer.explored[t]
-          ? Math.max(0.4, 0.875 + (map.elevation[t - map.width]! - map.elevation[t]!) * 0.125) * (viewer.visible[t] ? 1 : 0.5) : 0
+          ? Math.max(0.4, 0.875 + (perceivedHeight(map, viewer, t - map.width) - perceivedHeight(map, viewer, t)) * 0.125) * (viewer.visible[t] ? 1 : 0.5) : 0
         return { x: (p.x - left) * chunkScale, y: (p.y - realTop) * chunkScale, u: x * 16 - y * 8 + 8, v: y * 16, light }
       }
-      const at = (x: number, y: number): Point => toView(x, y, map.elevation[y * map.width + x]!)
-      const terrainOf = (x: number, y: number) => rules.terrain[map.terrain[y * map.width + x]!]!
+      const at = (x: number, y: number): Point => toView(x, y, perceivedHeight(map, viewer, y * map.width + x))
+      const terrainOf = (x: number, y: number) => rules.terrain[perceivedTerrain(map, viewer, y * map.width + x)]!
       const triangle = (a: [number, number], b: [number, number], c: [number, number]): void => {
         const [ax, ay] = a, [bx, by] = b, [cx2, cy2] = c
         if (Math.max(ax, bx, cx2) >= map.width || Math.max(ay, by, cy2) >= map.height) return
@@ -211,7 +213,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
         const right = Math.min(map.width - 1, cx * CHUNK + CHUNK) * 16 - cy * CHUNK * 8 + 16
         const sx0 = camera.x + left * z, sx1 = camera.x + right * z, sy1 = camera.y + (Math.min(map.height - 1, cy * CHUNK + CHUNK) * 9 + 16) * z, sy0 = camera.y + (cy * CHUNK * 9 - 520) * z
         if (sx1 < 0 || sx0 > width || sy1 < 0 || sy0 > height) continue
-        const bounds = chunkBounds(session, cx, cy)
+        const bounds = chunkBounds(session, options.player, cx, cy)
         if (camera.y + bounds.bottom * z < 0 || camera.y + bounds.realTop * z > height) continue
         visible.push({ key: `${cx}:${cy}`, bounds })
       }
@@ -263,8 +265,9 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     for (const b of state.buildings.values()) {
       if (options.selected !== b.id && b.phase !== 'leveling') continue
       const rule = rules.buildings.find(r => r.id === b.type)!, selected = options.selected === b.id
-      if (b.owner === options.player || rule.footprint.some(([dx, dy]) => viewer.visible[(b.y + dy) * map.width + b.x + dx])) outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
-      if (selected && 'radius' in rule.workflow) ring(session, options.tool === `work-area:${b.id}` && options.cursor ? options.cursor : b.workArea, rule.workflow.radius)
+      if (b.owner !== options.player && !rule.footprint.some(([dx, dy]) => viewer.visible[(b.y + dy) * map.width + b.x + dx])) continue
+      outline(session, rule.footprint.map(([dx, dy]) => ({ x: b.x + dx, y: b.y + dy })), selected ? '#f3dd94' : '#d9c48a', selected ? 0.28 : 0.16)
+      if (selected && b.owner === options.player && 'radius' in rule.workflow) ring(session, options.tool === `work-area:${b.id}` && options.cursor ? options.cursor : b.workArea, rule.workflow.radius)
     }
     marked = options.marked ?? null
     for (const item of items) paint(item, options.player)
@@ -279,7 +282,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       if (options.tool && session.context.building.has(options.tool)) {
         const rule = session.context.building.get(options.tool)!, allowed = options.placement === null
         outline(session, rule.footprint.map(([dx, dy]) => ({ x: c.x + dx, y: c.y + dy })), allowed ? '#f2df9c' : '#e4765a', 0.3)
-        if (allowed) sprite(`building:${options.tool}`, toView(c.x, c.y, map.elevation[c.y * map.width + c.x] ?? 0), 0, 0.55)
+        if (allowed) sprite(`building:${options.tool}`, toView(c.x, c.y, perceivedHeight(map, viewer, c.y * map.width + c.x)), 0, 0.55)
       }
       else outline(session, [c], '#f2df9c', 0.25)
     }
@@ -337,23 +340,25 @@ export function createRenderer(canvas: HTMLCanvasElement) {
   }
   function outline(session: Session, tiles: Point[], color: string, alpha: number): void {
     const { map } = session.state, z = camera.zoom
+    const viewer = session.state.players.find(p => p.id === terrainPlayer)!
     ctx!.fillStyle = color; ctx!.strokeStyle = color; ctx!.lineWidth = Math.max(1, z * 0.8)
     for (const t of tiles) {
       if (t.x < 0 || t.y < 0 || t.x >= map.width || t.y >= map.height) continue
-      const p = toScreen(toView(t.x, t.y, map.elevation[t.y * map.width + t.x]!))
+      const p = toScreen(toView(t.x, t.y, perceivedHeight(map, viewer, t.y * map.width + t.x)))
       ctx!.beginPath(); ctx!.moveTo(p.x - 8 * z, p.y); ctx!.lineTo(p.x, p.y - 4.5 * z); ctx!.lineTo(p.x + 8 * z, p.y); ctx!.lineTo(p.x, p.y + 4.5 * z); ctx!.closePath()
       ctx!.globalAlpha = alpha; ctx!.fill(); ctx!.globalAlpha = Math.min(1, alpha * 3); ctx!.stroke(); ctx!.globalAlpha = 1
     }
   }
   function ring(session: Session, center: Point, radius: number): void {
     const { map } = session.state, z = camera.zoom
+    const viewer = session.state.players.find(p => p.id === terrainPlayer)!
     ctx!.fillStyle = '#f2df9c'
     for (let y = center.y - radius; y <= center.y + radius; y++) {
       for (let x = center.x - radius; x <= center.x + radius; x++) {
         if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue
         const dx = x - center.x, dy = y - center.y, d = (dx >= 0) === (dy >= 0) ? Math.max(Math.abs(dx), Math.abs(dy)) : Math.abs(dx) + Math.abs(dy)
         if (d !== radius) continue
-        const p = toScreen(toView(x, y, map.elevation[y * map.width + x]!))
+        const p = toScreen(toView(x, y, perceivedHeight(map, viewer, y * map.width + x)))
         ctx!.beginPath(); ctx!.arc(p.x, p.y, 1.6 * z, 0, Math.PI * 2); ctx!.fill()
       }
     }
@@ -375,7 +380,8 @@ export function createRenderer(canvas: HTMLCanvasElement) {
     invalidate() { clearChunks() },
     pick(session: Session, clientX: number, clientY: number): Point | null {
       const rect = canvas.getBoundingClientRect()
-      return pick(session.state.map, (clientX - rect.left - camera.x) / camera.zoom, (clientY - rect.top - camera.y) / camera.zoom)
+      const viewer = session.state.players.find(p => p.id === terrainPlayer) ?? session.state.players[0]!
+      return pick(session.state.map, (clientX - rect.left - camera.x) / camera.zoom, (clientY - rect.top - camera.y) / camera.zoom, tile => perceivedHeight(session.state.map, viewer, tile))
     },
   }
 }

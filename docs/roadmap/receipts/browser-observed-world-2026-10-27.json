@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "issue": 222,
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "scope": "Player-owned last-seen world and known forecasts. Pinned remake evidence, not original Gold observations.",
+  "reference": {
+    "repository": "paulwedeck/settlers-remake",
+    "revision": "6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0",
+    "files": [
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/algorithms/fogofwar/FogOfWar.java",
+        "sha256": "89640aaf30c019eda0ea5fdb7e523bace0c9eb5a9722e80765dbf7d47c1504de"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/logic/map/grid/MainGrid.java",
+        "sha256": "a272fd68af10f699c8398a1a64180f46f68f9711856292af048e9a1437f81d03"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/algorithms/fogofwar/HiddenMapObjectCreator.java",
+        "sha256": "65dbe734f58f7665f4f6a76802902b1993ed78101a7c8a5f57d1930b4e8771fa"
+      },
+      {
+        "path": "jsettlers.logic/src/main/java/jsettlers/algorithms/fogofwar/HiddenMapObject.java",
+        "sha256": "0cad5d364410420f557a5dc39036a1b182b294da872dcd5e6f98f8192a842995"
+      },
+      {
+        "path": "jsettlers.common/src/main/java/jsettlers/common/mapobject/EMapObjectType.java",
+        "sha256": "d58c4864ae5d9690c0eefe2ffb1fcbd9d3c241468ba063c98ca00a9c26a7d502"
+      }
+    ]
+  },
+  "rules": {
+    "id": "roman-engineering",
+    "version": "0.15.0",
+    "digest": "f9f2adad01804a09836577c6732a1b79e9c79ea7c02327a40b00a076117bd912",
+    "preservedPreviousVersion": "0.14.0",
+    "preservedPreviousDigest": "5537795777c5e5939e49abf8c82073ae7489f8e33c26a656f8b5ab71787e9c85",
+    "oldHistoryFabricated": false
+  },
+  "behavior": {
+    "denseFields": [
+      "landscape",
+      "elevation",
+      "object type",
+      "quantity",
+      "age at loss of sight"
+    ],
+    "poses": [
+      "buildings and construction progress",
+      "piles",
+      "survey markers"
+    ],
+    "capture": [
+      "loss of sight",
+      "explicit first mission exploration grant"
+    ],
+    "refresh": "Renewed sight clears snapshots and reads the real world.",
+    "initialUnexplored": "Public observations return null. The reference graphics grid reads live never-observed geometry with zero vertex light.",
+    "ownership": "Live tile ownership follows the maintained reference.",
+    "buildingVisibility": "Existing any-footprint sight policy retained.",
+    "surveyKnowledge": "Marker pose freezes; private survey knowledge keeps its existing expiry.",
+    "transientUnitsAndEffectsRemembered": false
+  },
+  "ownership": {
+    "denseBytesPerTilePerPlayer": 9,
+    "mapLimit": 1024,
+    "playerLimit": 20,
+    "saveLimitBytes": 67108864,
+    "terrainCacheLimitBytes": 67108864,
+    "materialLimitBytes": 2097152,
+    "materialEntryLimit": 32,
+    "canonicalState": "Caller-owned after session disposal, as before."
+  },
+  "red": {
+    "ok": false,
+    "before": {
+      "tick": 210,
+      "visible": 0,
+      "explored": 1,
+      "terrain": "desert",
+      "pixel": [
+        79,
+        60,
+        21,
+        255
+      ]
+    },
+    "after": {
+      "tick": 211,
+      "visible": 0,
+      "explored": 1,
+      "terrain": "grass",
+      "pixel": [
+        50,
+        53,
+        4,
+        255
+      ]
+    },
+    "checksumUnchangedByPainting": true,
+    "disposal": true,
+    "scope": "Real troop movement and rival intervention through public setup and commands, normal production renderer and original atlas. No visibility, terrain, faith or clock mutation. Reference-remake remembered-landscape behavior, not Gold observations."
+  },
+  "local": {
+    "units": {
+      "passed": 426,
+      "failed": 0,
+      "expectations": 76711,
+      "files": 65,
+      "seconds": 320.72
+    },
+    "staffingReplayMilliseconds": 3417.45,
+    "staffingReplayGuardMilliseconds": 5000,
+    "lint": {
+      "files": 523,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": {
+      "application": true,
+      "tools": true,
+      "stxScripts": 2,
+      "stxExpressions": 258,
+      "errors": 0,
+      "warnings": 0
+    },
+    "assets": {
+      "spriteFrames": 11370,
+      "interfaceImages": 52,
+      "pcmWAV": 6,
+      "provenanceFiles": 95
+    },
+    "build": {
+      "pages": 1,
+      "seconds": 55.73
+    },
+    "focusedBrowser": {
+      "1": {
+        "ok": true,
+        "deviceScale": 1,
+        "pixels": 772,
+        "realScoutAndIntervention": true,
+        "lateFirstDraw": true,
+        "saveReload": true,
+        "checksumUnchangedByPainting": true,
+        "disposal": true,
+        "grading": {
+          "pixels": 768,
+          "realDiggerGrading": true,
+          "cachedFreshAndRestored": true,
+          "pickingUsesDisplayedHeight": true
+        }
+      },
+      "2": {
+        "ok": true,
+        "deviceScale": 2,
+        "pixels": 3076,
+        "realScoutAndIntervention": true,
+        "lateFirstDraw": true,
+        "saveReload": true,
+        "checksumUnchangedByPainting": true,
+        "disposal": true,
+        "grading": {
+          "pixels": 3072,
+          "realDiggerGrading": true,
+          "cachedFreshAndRestored": true,
+          "pickingUsesDisplayedHeight": true
+        }
+      }
+    },
+    "fullBrowserGate": {
+      "identity": {
+        "kind": "local complete browser-suite diagnostics"
+      },
+      "suiteCount": 16,
+      "steps": 546,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 6,
+          "steps": 108
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 615516.5605,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": {
+        "1": 128815,
+        "2": 131119
+      },
+      "observedWorldPixelChecksPerScale": {
+        "1": 772,
+        "2": 3076
+      },
+      "terrainTransitionCasesPerScale": 1256,
+      "javaSelectorOracle": true,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    }
+  },
+  "visualReview": {
+    "kind": "Fresh original T1 tutorial on the production server, paused through real controls",
+    "screenshot": {
+      "format": "JPEG",
+      "sha256": "aa42ee66e27979f914ee6f3488488d9b7bbdb6a2a2bcd2d7549274239415af71",
+      "bytes": 132308,
+      "width": 1280,
+      "height": 720
+    },
+    "rasterPublication": "withheld-pending-redistribution-evidence",
+    "keyboardFollowup": 224
+  },
+  "limits": [
+    "Exact temporal fog fading remains unqualified.",
+    "Original Gold executable observations are unavailable.",
+    "Native parity and unsupported reference object kinds remain separate work."
+  ],
+  "ci": "pending source publication"
+}

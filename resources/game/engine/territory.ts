@@ -7,6 +7,7 @@ import { cancelJob, dropCargo, dropToGround } from './logistics'
 import { changeProfession, effects, finishers, start } from './settlers'
 import { completions, population } from './workforce'
 import { enterable, route } from './routing'
+import { rememberWorld } from './perception'
 
 /** Claims land for a military building. Tiles already owned by another player are never taken here; capture belongs to combat. */
 export function claim(ctx: Context, b: Building): void {
@@ -145,6 +146,7 @@ export function updateVisibility(ctx: Context): void {
     // A Magic Eye keeps its land in sight until it closes.
     for (const eye of ctx.state.eyes ?? []) if (eye.player === player.id && eye.until > ctx.state.tick) mark(pointAt(ctx, eye.tile), eye.radius)
     if (player.controller === 'observer') visible.fill(1)
+    rememberWorld(ctx, player, visible)
     for (let t = 0; t < visible.length; t++) {
       if (visible[t] === player.visible[t] && (!visible[t] || player.explored[t])) continue
       player.visible[t] = visible[t]!

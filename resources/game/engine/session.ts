@@ -18,6 +18,7 @@ import { crafted, rulesIdentity, validateRules } from './rules'
 import { spawn, tickSettler } from './settlers'
 import { dismiss, dispatch, updateVisibility } from './territory'
 import { complete, release, staff } from './workforce'
+import { createWorldMemory } from './perception'
 
 /** Buildings and settlers a scenario places for one player, instead of the default start. */
 /** Scenario soldiers may name their rank; it defaults to the first. */
@@ -53,7 +54,7 @@ export function createState(setup: SessionSetup): State {
   for (const [name, array] of Object.entries(map)) if (ArrayBuffer.isView(array) && (array as unknown as ArrayLike<number>).length !== size) throw new RangeError(`Map layer ${name} has the wrong size`)
   return {
     schema: 1, tick: 0, random: seedRandom(setup.seed), nextId: 1, map,
-    players: setup.players.map((p, i) => ({ id: i + 1, name: p.name, civilization: p.civilization, controller: p.controller ?? 'human', settings: { ...defaultSettings(rules), ...p.settings }, explored: new Uint8Array(size), visible: new Uint8Array(size), signs: [], craftCursor: 0 })),
+    players: setup.players.map((p, i) => ({ id: i + 1, name: p.name, civilization: p.civilization, controller: p.controller ?? 'human', settings: { ...defaultSettings(rules), ...p.settings }, explored: new Uint8Array(size), visible: new Uint8Array(size), ...(rules.worldMemory ? { memory: createWorldMemory(size) } : {}), signs: [], craftCursor: 0 })),
     settlers: new Map(), buildings: new Map(), stacks: new Map(), jobs: new Map(), claims: new Map(), growth: [], ledger: {}, events: [], results: [], cooldowns: new Map(), pending: [], navigation: 0,
     mission: setup.mission ? startMission(validateMission(setup.mission, { players: setup.players.length, width: map.width, height: map.height, goods: rules.goods, buildings: rules.buildings.map(b => b.id) }), setup.players.length) : null,
   }
@@ -360,6 +361,8 @@ const COMMAND_TYPES = new Set(['build', 'demolish', 'suspend', 'work-area', 'set
 export interface PlayerView {
   tick: number, player: number, width: number, height: number
   explored: Uint8Array, visible: Uint8Array, owner: Uint8Array
+  /** Frozen map poses, without live inventories, availability or diagnostics. */
+  remembered?: Pick<NonNullable<Player['memory']>, 'buildings' | 'stacks' | 'signs'>
   settlers: (Pick<Settler, 'id' | 'owner' | 'profession' | 'x' | 'y' | 'next' | 'step' | 'stepTicks' | 'dir' | 'action' | 'cargo' | 'inside' | 'tool' | 'diagnostic'> & { rank?: number, health?: number, busy?: boolean })[]
   /** Garrison counts are known for the player's own buildings only. */
   buildings: (Pick<Building, 'id' | 'owner' | 'type' | 'x' | 'y' | 'phase' | 'suspended' | 'shortage' | 'worker' | 'levelRemaining' | 'workRemaining' | 'workArea' | 'cycle'> & { door: number, garrison?: number, residentsRemaining?: number })[]
@@ -392,6 +395,7 @@ export interface Session {
 
 export function openSession(rules: RulesProfile, state: State, content: { id: string, digest: string }): Session {
   validateRules(rules)
+  if (state.players.some(player => !!player.memory !== !!rules.worldMemory)) throw new TypeError('The world observation history does not belong to these rules.')
   const context = createContext(rules, state)
   let disposed = false
   const identity = { rules: rulesIdentity(rules), content }
@@ -464,7 +468,8 @@ export function view(ctx: Context, playerId: number): PlayerView {
     // Other players' thieves pass for carriers until this player's soldiers have seen through them.
     settlers: [...state.settlers.values()].filter(s => own(s.owner) || (!s.inside && seen(tileOf(ctx, s)))).map(s => ({ id: s.id, owner: s.owner, profession: s.thief && !own(s.owner) && !s.thief.uncovered.includes(playerId) ? 'carrier' : s.profession, x: s.x, y: s.y, next: s.next, step: s.step, stepTicks: s.stepTicks, dir: s.dir, action: s.action, cargo: s.cargo, inside: s.inside, tool: s.tool, diagnostic: own(s.owner) ? s.diagnostic : null, ...(own(s.owner) ? { busy: !!s.program } : {}), ...(s.soldier ? { rank: s.soldier.rank, health: s.soldier.health } : {}) })),
     buildings: [...state.buildings.values()].filter(b => own(b.owner) || footprint(ruleOf(ctx, b), b).some(p => seen(tileOf(ctx, p)))).map(b => ({ id: b.id, owner: b.owner, type: b.type, x: b.x, y: b.y, phase: b.phase, suspended: own(b.owner) && b.suspended, shortage: own(b.owner) ? b.shortage : null, worker: own(b.owner) ? b.worker : 0, levelRemaining: b.levelRemaining, workRemaining: b.workRemaining, workArea: own(b.owner) ? b.workArea : { x: b.x, y: b.y }, cycle: own(b.owner) ? b.cycle : 0, door: doorOf(ctx, b), ...(own(b.owner) && ruleOf(ctx, b).garrison ? { garrison: garrisonCount(ctx, b) } : {}), ...(own(b.owner) && ruleOf(ctx, b).residents ? { residentsRemaining: Math.max(0, ruleOf(ctx, b).residents!.count - b.residents) } : {}) })),
-    stacks: [...state.stacks.values()].filter(s => s.amount > 0 && (own(s.owner) || seen(s.tile))).map(s => ({ id: s.id, owner: s.owner, tile: s.tile, building: s.building, role: s.role, good: s.good, amount: s.amount, capacity: s.capacity, ...(own(s.owner) ? { available: available(s) } : {}) })),
+    stacks: [...state.stacks.values()].filter(s => s.amount > 0 && (seen(s.tile) || (!player.memory && own(s.owner)))).map(s => ({ id: s.id, owner: s.owner, tile: s.tile, building: s.building, role: s.role, good: s.good, amount: s.amount, capacity: s.capacity, ...(own(s.owner) ? { available: available(s) } : {}) })),
+    ...(player.memory ? { remembered: structuredClone({ buildings: player.memory.buildings, stacks: player.memory.stacks, signs: player.memory.signs }) } : {}),
     projectiles: (state.projectiles ?? []).filter(p => seen(p.from) || seen(p.to)).map(p => ({ from: p.from, to: p.to, fired: p.fired, arrives: p.arrives })),
     goods, professions, population: people,
     signs: player.signs.filter(sign => sign.until > state.tick),

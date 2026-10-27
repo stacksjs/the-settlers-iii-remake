@@ -1,8 +1,11 @@
 import type { Context } from './context'
+import type { ObjectRule, TerrainRule } from './rules'
 import { passable, terrainAt } from './context'
 import { distance, neighbours, pointOf } from './geometry'
 
 export type Route = { ok: true, path: number[], cost: number, expanded: number } | { ok: false, reason: 'unreachable' | 'search-limit' | 'invalid', expanded: number }
+/** Read-only prospective knowledge. Actual movement omits this and uses the world. */
+export interface RoutingSurface { height: (tile: number) => number, terrain: (tile: number) => TerrainRule, object: (tile: number) => ObjectRule | null, building: (tile: number) => boolean }
 export interface RouteOptions {
   /** Owner whose territory restricts the route; 0 allows any land. */
   territory?: number
@@ -13,24 +16,27 @@ export interface RouteOptions {
   /** Accept any tile adjacent to the goal when the goal itself is blocked (trees, stones). */
   adjacent?: boolean
   limit?: number
+  surface?: RoutingSurface
 }
 
 /** Ticks to step between two neighbouring tiles, or Infinity when the climb is too steep. */
-export function stepCost(ctx: Context, from: number, to: number): number {
-  const { movement } = ctx.rules, climb = Math.abs(ctx.state.map.elevation[to]! - ctx.state.map.elevation[from]!)
+export function stepCost(ctx: Context, from: number, to: number, surface?: RoutingSurface): number {
+  const { movement } = ctx.rules, climb = Math.abs(surface ? surface.height(to) - surface.height(from) : ctx.state.map.elevation[to]! - ctx.state.map.elevation[from]!)
   if (climb > movement.maxClimb) return Infinity
-  return movement.ticksPerStep * terrainAt(ctx, to).moveCost + climb * movement.slopeTicks
+  return movement.ticksPerStep * (surface ? surface.terrain(to) : terrainAt(ctx, to)).moveCost + climb * movement.slopeTicks
 }
+const traversable = (ctx: Context, tile: number, surface?: RoutingSurface): boolean => surface ? surface.terrain(tile).walkable && !surface.object(tile)?.blocks && !surface.building(tile) : passable(ctx, tile)
 
-export function enterable(ctx: Context, tile: number, territory = 0, goal = -1): boolean {
+export function enterable(ctx: Context, tile: number, territory = 0, goal = -1, surface?: RoutingSurface): boolean {
   if (territory && ctx.state.map.owner[tile] !== territory) return false
+  if (surface) return traversable(ctx, tile, surface)
   if (passable(ctx, tile)) return true
   // A building door is reachable even though the footprint is not.
   return tile === goal && terrainAt(ctx, tile).walkable && ctx.index.buildingAt[tile] === 0 && !(ctx.objects[ctx.state.map.object[tile]! - 1]?.blocks)
 }
 
 /** One bounded component pass through the router's ordinary traversable edges. */
-export function reachableTiles(ctx: Context, from: number, options: Pick<RouteOptions, 'territory' | 'avoid' | 'allowed'> = {}): ReadonlySet<number> {
+export function reachableTiles(ctx: Context, from: number, options: Pick<RouteOptions, 'territory' | 'avoid' | 'allowed' | 'surface'> = {}): ReadonlySet<number> {
   const map = ctx.state.map, allowed = (tile: number): boolean => options.allowed?.(tile) ?? true
   const found = new Set<number>()
   if (!Number.isInteger(from) || from < 0 || from >= map.width * map.height || !allowed(from)) return found
@@ -39,7 +45,7 @@ export function reachableTiles(ctx: Context, from: number, options: Pick<RouteOp
   for (let i = 0; i < queue.length; i++) {
     const tile = queue[i]!
     for (const next of neighbours(map, tile)) {
-      if (found.has(next) || !allowed(next) || options.avoid?.has(next) || !enterable(ctx, next, options.territory) || !Number.isFinite(stepCost(ctx, tile, next))) continue
+      if (found.has(next) || !allowed(next) || options.avoid?.has(next) || !enterable(ctx, next, options.territory, -1, options.surface) || !Number.isFinite(stepCost(ctx, tile, next, options.surface))) continue
       found.add(next); queue.push(next)
     }
   }
@@ -53,8 +59,8 @@ export function route(ctx: Context, from: number, goal: number, options: RouteOp
   const limit = options.limit ?? ctx.rules.movement.searchLimit, territory = options.territory ?? 0
   const allowed = (tile: number): boolean => options.allowed?.(tile) ?? true
   if (!allowed(from)) return { ok: false, reason: 'unreachable', expanded: 0 }
-  const goals = new Set<number>(options.adjacent ? neighbours(map, goal).filter(t => allowed(t) && (t === from || enterable(ctx, t, territory))) : [goal])
-  if (options.adjacent && passable(ctx, goal) && allowed(goal)) goals.add(goal)
+  const goals = new Set<number>(options.adjacent ? neighbours(map, goal).filter(t => allowed(t) && (t === from || enterable(ctx, t, territory, -1, options.surface))) : [goal])
+  if (options.adjacent && traversable(ctx, goal, options.surface) && allowed(goal)) goals.add(goal)
   if (goals.has(from)) return { ok: true, path: [], cost: 0, expanded: 0 }
   const target = pointOf(map, goal), minimum = ctx.rules.movement.ticksPerStep
   const g = new Map<number, number>([[from, 0]]), parent = new Map<number, number>()
@@ -92,8 +98,8 @@ export function route(ctx: Context, from: number, goal: number, options: RouteOp
     }
     if (++expanded > limit) return { ok: false, reason: 'search-limit', expanded }
     for (const next of neighbours(map, tile)) {
-      if (!allowed(next) || options.avoid?.has(next) || !(goals.has(next) ? enterable(ctx, next, territory, next) : enterable(ctx, next, territory))) continue
-      const step = stepCost(ctx, tile, next)
+      if (!allowed(next) || options.avoid?.has(next) || !enterable(ctx, next, territory, goals.has(next) ? next : -1, options.surface)) continue
+      const step = stepCost(ctx, tile, next, options.surface)
       if (step === Infinity) continue
       const total = cost + step
       if (total < (g.get(next) ?? Infinity)) { g.set(next, total); parent.set(next, tile); const e = estimate(next); push([total + e, e, next]) }

@@ -37,14 +37,15 @@ test('the frozen 0.10 captured rest/save/replay keeps its exact previous behavio
   expect(audit(s.context)).toEqual([])
 })
 
-test('an explicit new-rules scenario resolves the captured crowd through movement without grants', async () => {
+test('the published 0.14 comparison resolves the captured crowd through movement without grants', async () => {
   const bytes = await Bun.file(new URL('../fixtures/rest-neutral-tile.json', import.meta.url)).arrayBuffer()
   const legacy = restore(JSON.parse(new TextDecoder().decode(bytes)), PUBLISHED_RULES)
-  // Construct a separate engineering scenario from the captured physical state.
-  // Loading the original save above continues to select its frozen 0.10 rules.
+  // Retain this pre-memory comparison without inventing observations for a
+  // captured old state. The ordinary opening above exercises current rules.
+  const comparison = PUBLISHED_RULES.find(profile => profile.version === '0.14.0')!
   const state = structuredClone(legacy.state)
-  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = rules.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
-  const s = openSession(rules, state, { id: 'resting-rule-comparison', digest: Bun.SHA256.hash(bytes, 'hex') })
+  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = comparison.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
+  const s = openSession(comparison, state, { id: 'resting-rule-comparison', digest: Bun.SHA256.hash(bytes, 'hex') })
   const crowd = [...s.state.settlers.values()].filter(p => p.program?.kind === 'settle').map(p => ({ id: p.id, x: p.x, y: p.y }))
   const created = structuredClone(s.state.ledger)
   expect(crowd.length).toBe(12)

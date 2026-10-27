@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "scope": "Upstream Buddy source fixes, published SDK/native artifacts and development-toolchain lock adoption.",
+  "source": {
+    "repository": "stacksjs/buddy",
+    "commits": [
+      "cd08af457a3d080587c4ac62a776a40d424f0f90",
+      "bc2e8ac3ff0e3474cb6d8d8acbf75b7c01439ede",
+      "4ab9d052a5b1c890367d0486f56c134f2c6269cd",
+      "bcf46e4606c7f8311f466a0f1ff3a5ce85bd3b49"
+    ],
+    "releaseCommit": "98b2c570bddba7a28da3fc23eada297557eff2b9",
+    "version": "0.11.15",
+    "command": "bun run release:patch",
+    "issues": [
+      1459,
+      1460,
+      1461
+    ]
+  },
+  "checks": {
+    "sourceCI": {
+      "run": 40459216246,
+      "conclusion": "success"
+    },
+    "releaseCI": {
+      "run": 40459383206,
+      "conclusion": "success"
+    },
+    "release": {
+      "run": 40459384011,
+      "conclusion": "success"
+    },
+    "units": {
+      "passed": 2454,
+      "failed": 0,
+      "expectations": 5477,
+      "files": 156
+    },
+    "lint": true,
+    "types": true,
+    "documentation": true,
+    "sdkBuild": true,
+    "nativeConsumerPreloadGuard": true
+  },
+  "registry": {
+    "name": "@buddysh/buddy",
+    "version": "0.11.15",
+    "gitHead": null,
+    "latest": "0.11.15",
+    "bytes": 944218,
+    "integrity": "sha512-WmUre1Ihvv1dSPnglRSVzFDV7+/UvrB6kySC4Une2UDgrPYg57RRnsBlmv/zvWd8F00lDohkZ53gDWR06q3jVw==",
+    "sha256": "b07217b9c8f94b020c9d0603c8a2e83e48a3714f08672443d4e6678ec6e6c1ce",
+    "verifiedSHA1": true
+  },
+  "originalReleaseAssets": {
+    "ok": true,
+    "tag": "v0.11.15",
+    "commit": "98b2c570bddba7a28da3fc23eada297557eff2b9",
+    "assets": [
+      {
+        "name": "buddy-darwin-arm64.zip",
+        "bytes": 24749612,
+        "sha256": "bf8b35dcca162992919ae358622209b42f77366de57a9982f7775acecb857122",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "buddy-darwin-x64.zip",
+        "bytes": 27293096,
+        "sha256": "326012da0dfe956328d920c15beacd1660132e97f3e6211836666c684954cd98",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "buddy-linux-arm64.zip",
+        "bytes": 36473743,
+        "sha256": "9366d40292af9901e604bfdba46dc3a269f31df2dbc0e876fa3182a932179c04",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "buddy-linux-x64.zip",
+        "bytes": 36754389,
+        "sha256": "a6090849ec5fbe6e61f307167fc19b6d84c7bedea14d71444011813e6311e274",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "buddy-windows-x64.zip",
+        "bytes": 39122374,
+        "sha256": "d196ba047ff76c05dd4cdc531dd0aff896f4ce106cc93c497f97c87160cf895a",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "checksums.txt",
+        "bytes": 438,
+        "sha256": "b61a698f2c91c68d60626aafbdcede864dd08e3d55f57c23002a564440b2b4cb",
+        "apiDigestVerified": true
+      },
+      {
+        "name": "release-manifest.json",
+        "bytes": 1138,
+        "sha256": "fedbb9718b167cf5e98b903ece139585ff0e905d3dff335099993126c3b4c1f8",
+        "apiDigestVerified": true
+      }
+    ],
+    "checksumsAndAllCRCsVerified": true,
+    "sdkEntrypointsAndFilePolicyVerified": true
+  },
+  "installedConsumers": {
+    "sdk": {
+      "ok": true,
+      "module": "/Users/chris/Code/settlers-js-hosting/evidence/mutator-stop-fix/buddy-owned-manifests/installed-v0.11.15/node_modules/@buddysh/buddy/dist/src/index.js",
+      "results": [
+        {
+          "root": "/Users/chris/Code/the-settlers-iii-remake-release-verification",
+          "manifests": 18,
+          "paths": [
+            ".github/workflows/buddy-bot.yml",
+            ".github/workflows/ci.yml",
+            ".github/workflows/deploy.yml",
+            ".github/workflows/labeler.yml",
+            ".github/workflows/preview.yml",
+            ".github/workflows/release.yml",
+            "cloud/Dockerfile",
+            "deps.yaml",
+            "package.json",
+            "pantry.lock",
+            "storage/framework/Dockerfile",
+            "storage/framework/api/package.json",
+            "storage/framework/cloud/package.json",
+            "storage/framework/libs/components/stx/package.json",
+            "storage/framework/orm/package.json",
+            "storage/framework/package.json",
+            "storage/framework/server/Dockerfile",
+            "storage/framework/server/package.json"
+          ],
+          "linkedInstalledDefaultsExcluded": true,
+          "actualGitWorkingTree": true
+        },
+        {
+          "root": "/Users/chris/Code/stacks",
+          "manifests": 126,
+          "paths": [
+            ".github/workflows/browser-extension-release.yml",
+            ".github/workflows/buddy-bot.yml",
+            ".github/workflows/ci.yml",
+            ".github/workflows/desktop-app-store.yml",
+            ".github/workflows/export-size.yml",
+            ".github/workflows/integration-sunset-probe.yml",
+            ".github/workflows/labeler.yml",
+            ".github/workflows/lighthouse.yml",
+            ".github/workflows/memory-benchmark.yml",
+            ".github/workflows/mobile-packed-contract.yml",
+            ".github/workflows/native-cache-replay.yml",
+            ".github/workflows/release-ownership-diagnostic.yml",
+            ".github/workflows/release.yml",
+            ".github/workflows/resize-app-server.yml",
+            ".github/workflows/routing-benchmark.yml",
+            ".github/workflows/shared-cookie-diagnostic.yml",
+            ".github/workflows/startup-benchmark.yml",
+            "bench/routing/package.json",
+            "cloud/Dockerfile",
+            "deps.yml",
+            "package.json",
+            "pantry.lock",
+            "storage/framework/Dockerfile",
+            "storage/framework/api/package.json",
+            "storage/framework/cloud/package.json",
+            "storage/framework/core/action-runner/package.json",
+            "storage/framework/core/actions/package.json",
+            "storage/framework/core/ai/package.json",
+            "storage/framework/core/alias/package.json",
+            "storage/framework/core/analytics/package.json",
+            "storage/framework/core/api/package.json",
+            "storage/framework/core/arrays/package.json",
+            "storage/framework/core/audio/package.json",
+            "storage/framework/core/auth/package.json",
+            "storage/framework/core/browser-extension/package.json",
+            "storage/framework/core/browser/package.json",
+            "storage/framework/core/buddy/package.json",
+            "storage/framework/core/cache/package.json",
+            "storage/framework/core/calendar-api/package.json",
+            "storage/framework/core/charts/package.json",
+            "storage/framework/core/chat/package.json",
+            "storage/framework/core/cli/package.json",
+            "storage/framework/core/cloud/package.json",
+            "storage/framework/core/cloud/src/cloud/router-layer/nodejs/package.json",
+            "storage/framework/core/cms/package.json",
+            "storage/framework/core/collections/package.json",
+            "storage/framework/core/commerce/package.json",
+            "storage/framework/core/composables/package.json",
+            "storage/framework/core/config/package.json",
+            "storage/framework/core/cron/package.json",
+            "storage/framework/core/database/package.json",
+            "storage/framework/core/datetime/package.json",
+            "storage/framework/core/defaults/ide/vscode/package.json",
+            "storage/framework/core/defaults/package.json",
+            "storage/framework/core/deploy/package.json",
+            "storage/framework/core/desktop/package.json",
+            "storage/framework/core/development/package.json",
+            "storage/framework/core/dns/package.json",
+            "storage/framework/core/docs/package.json",
+            "storage/framework/core/email/package.json",
+            "storage/framework/core/enums/package.json",
+            "storage/framework/core/env/package.json",
+            "storage/framework/core/error-handling/package.json",
+            "storage/framework/core/events/package.json",
+            "storage/framework/core/faker/package.json",
+            "storage/framework/core/feature-flags/package.json",
+            "storage/framework/core/features/package.json",
+            "storage/framework/core/forms/package.json",
+            "storage/framework/core/git/package.json",
+            "storage/framework/core/github/package.json",
+            "storage/framework/core/health/package.json",
+            "storage/framework/core/http/package.json",
+            "storage/framework/core/i18n/package.json",
+            "storage/framework/core/image/package.json",
+            "storage/framework/core/lint/package.json",
+            "storage/framework/core/logging/package.json",
+            "storage/framework/core/mobile/package.json",
+            "storage/framework/core/model-meta/package.json",
+            "storage/framework/core/newsletter/package.json",
+            "storage/framework/core/notifications/package.json",
+            "storage/framework/core/objects/package.json",
+            "storage/framework/core/orm/package.json",
+            "storage/framework/core/package.json",
+            "storage/framework/core/pagination/package.json",
+            "storage/framework/core/path/package.json",
+            "storage/framework/core/payments/package.json",
+            "storage/framework/core/push/package.json",
+            "storage/framework/core/query-builder/package.json",
+            "storage/framework/core/queue/package.json",
+            "storage/framework/core/realtime/package.json",
+            "storage/framework/core/registry/package.json",
+            "storage/framework/core/repl/package.json",
+            "storage/framework/core/router/package.json",
+            "storage/framework/core/scheduler/package.json",
+            "storage/framework/core/search-engine/package.json",
+            "storage/framework/core/security/package.json",
+            "storage/framework/core/server/package.json",
+            "storage/framework/core/shell/package.json",
+            "storage/framework/core/sites/package.json",
+            "storage/framework/core/skills/package.json",
+            "storage/framework/core/slug/package.json",
+            "storage/framework/core/sms/package.json",
+            "storage/framework/core/socials/package.json",
+            "storage/framework/core/storage/package.json",
+            "storage/framework/core/strings/package.json",
+            "storage/framework/core/testing/package.json",
+            "storage/framework/core/tinker/package.json",
+            "storage/framework/core/tunnel/package.json",
+            "storage/framework/core/types/package.json",
+            "storage/framework/core/ui/package.json",
+            "storage/framework/core/utils/package.json",
+            "storage/framework/core/validation/package.json",
+            "storage/framework/core/video/package.json",
+            "storage/framework/core/whois/package.json",
+            "storage/framework/defaults/ide/vscode/package.json",
+            "storage/framework/docs/package.json",
+            "storage/framework/libs/components/stx/package.json",
+            "storage/framework/libs/packages/hello-world-components/package.json",
+            "storage/framework/libs/packages/hello-world-elements/package.json",
+            "storage/framework/libs/packages/hello-world-fx/package.json",
+            "storage/framework/orm/package.json",
+            "storage/framework/package.json",
+            "storage/framework/server/Dockerfile",
+            "storage/framework/server/package.json",
+            "storage/logs/ts-css-guidance-validation/published-docs-consumer-39110295245/consumer/package.json",
+            "storage/logs/ts-css-guidance-validation/published-docs-consumer-39113818298/consumer/package.json"
+          ],
+          "linkedInstalledDefaultsExcluded": false,
+          "actualGitWorkingTree": true
+        }
+      ]
+    },
+    "registryUpdates": {
+      "installedAliasesProposed": false,
+      "updateCount": 22
+    },
+    "native": {
+      "platform": "darwin-arm64",
+      "compilerRuntime": "1.3.14",
+      "originalReleaseArchive": true,
+      "versionAndDoctorInActualGame": true,
+      "maintainedThrowingConsumerPreloadCheck": true
+    }
+  },
+  "adoption": {
+    "kind": "development-toolchain-lock",
+    "duplicateDirectDependenciesAdded": false,
+    "game": {
+      "commit": "cb8481863fb49c78fa6f0accdadd7acd47ff5980",
+      "lockSHA256": "d089b387bfe597be953c81d07e3301d001ca808b78d8b17420b27ebf3f7358af",
+      "frozenInstall": true,
+      "ordinaryLocalCLI": "0.11.15",
+      "ci": {
+        "identity": {
+          "kind": "original immutable CI ZIP, API digest and every CRC verified",
+          "head": "cb8481863fb49c78fa6f0accdadd7acd47ff5980",
+          "runId": 40460562983,
+          "artifactId": 12715133070,
+          "archiveBytes": 33813,
+          "sha256": "1d7819c0ce6fa62ef236e44e65eae94367d40ae940f6dee16f17b023b908b348"
+        },
+        "suiteCount": 16,
+        "steps": 546,
+        "suites": {
+          "campaign": {
+            "reports": 1,
+            "steps": 58
+          },
+          "control-frame": {
+            "reports": 6,
+            "steps": 108
+          },
+          "resize": {
+            "reports": 1,
+            "steps": 5
+          },
+          "production": {
+            "reports": 1,
+            "steps": 19
+          },
+          "selection": {
+            "reports": 1,
+            "steps": 33
+          },
+          "recruitment": {
+            "reports": 2,
+            "steps": 68
+          },
+          "working-area": {
+            "reports": 1,
+            "steps": 57
+          },
+          "storage-inspection": {
+            "reports": 1,
+            "steps": 87
+          },
+          "mine-placement": {
+            "reports": 1,
+            "steps": 28
+          },
+          "skirmish": {
+            "reports": 1,
+            "steps": 26
+          },
+          "rival-battle": {
+            "reports": 1,
+            "steps": 46
+          },
+          "checkpoints": {
+            "reports": 1,
+            "steps": 1
+          },
+          "player-colors": {
+            "reports": 1,
+            "steps": 2
+          },
+          "shadows": {
+            "reports": 1,
+            "steps": 2
+          },
+          "terrain-cache": {
+            "reports": 1,
+            "steps": 2
+          },
+          "terrain": {
+            "reports": 2,
+            "steps": 4
+          }
+        },
+        "consoleRequestAndCollectionErrors": 0,
+        "battleElapsedMs": 610884.044907,
+        "battleWaitMs": 600000,
+        "terrainScales": [
+          1,
+          2
+        ],
+        "terrainPixelChecksPerScale": 128043,
+        "terrainTransitionCasesPerScale": 1256,
+        "javaSelectorOracle": true,
+        "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+        "units": {
+          "passed": 417,
+          "failed": 0,
+          "files": 64,
+          "seconds": 284.78
+        }
+      }
+    },
+    "stacks": {
+      "commit": "997e75c71afe0408fe796b5612065da8feb3d2ea",
+      "lockSHA256": "88cb91a96ee64318a6c9c29543df8dd0ba543f1de97e88c84dcafdc5aea63dd4",
+      "frozenInstall": true,
+      "ordinaryLocalCLI": "0.11.15",
+      "lintFiles": 5291,
+      "lintErrors": 0,
+      "lintWarnings": 0,
+      "ci": {
+        "run": 40460651756,
+        "conclusion": "success"
+      },
+      "primaryCheckoutInstalled": true
+    }
+  },
+  "applicationWorkflow": {
+    "run": 40460582346,
+    "conclusion": "success",
+    "updatePullRequest": 223,
+    "lockfileRegeneration": true,
+    "missingTargetGuardPreserved": true
+  },
+  "retainedFailures": {
+    "run": 40450092261,
+    "attempts": [
+      1,
+      2,
+      3
+    ],
+    "note": "Earlier retries used the old CLI selected by the transitive application lock. The qualified run is a new dispatch from the adopted lockfile."
+  },
+  "publication": "No original-game raster content is included."
+}

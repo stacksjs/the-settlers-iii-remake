@@ -75,13 +75,13 @@ export function generateMap(rules: RulesProfile, width: number, height: number, 
 }
 
 /** Picks the tile whose elevated projection is nearest to a view point. */
-export function pick(map: MapState, viewX: number, viewY: number): Point | null {
+export function pick(map: MapState, viewX: number, viewY: number, height: (tile: number) => number = tile => map.elevation[tile]!): Point | null {
   let best: Point | null = null, bestError = Infinity
   const row = Math.round(viewY / 9)
   for (let y = row - 2; y <= row + Math.ceil(255 * 2 / 9) + 2; y++) {
     for (let x = Math.floor((viewX + y * 8) / TILE_WIDTH) - 1; x <= Math.ceil((viewX + y * 8) / TILE_WIDTH) + 1; x++) {
       if (!inside(map, x, y)) continue
-      const view = toView(x, y, map.elevation[indexOf(map, x, y)]!)
+      const view = toView(x, y, height(indexOf(map, x, y)))
       const error = ((view.x - viewX) / TILE_WIDTH) ** 2 + ((view.y - viewY) / 9) ** 2
       if (error < bestError - 1e-9) { bestError = error; best = { x, y } }
     }

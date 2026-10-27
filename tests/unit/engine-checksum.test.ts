@@ -92,7 +92,9 @@ describe('incremental checksums', () => {
 })
 
 test('the format-three checksum retains little-endian UTF-16 text including surrogate pairs', () => {
-  const s = createSession({ rules, seed: 5, map: describeMap(rules, { width: 8, height: 8, base: 'grass', features: [] }), players: [{ name: 'Romé 🏰', civilization: 'roman', controller: 'observer', start: { x: 4, y: 4 }, scenario: { buildings: [], settlers: [] } }] })
+  // Keep the independently derived pre-memory oracle and its original rules.
+  const original = PUBLISHED_RULES.find(profile => profile.version === '0.14.0')!
+  const s = createSession({ rules: original, seed: 5, map: describeMap(original, { width: 8, height: 8, base: 'grass', features: [] }), players: [{ name: 'Romé 🏰', civilization: 'roman', controller: 'observer', start: { x: 4, y: 4 }, scenario: { buildings: [], settlers: [] } }] })
   // Independent Python oracle: FNV over64*(eight zero layer bytes + fog3),
   // then LE32(8,8,1,1912944901) followed by1564 canonical UTF-16-LE entity bytes.
   expect(s.checksum()).toBe('d41b5e96')

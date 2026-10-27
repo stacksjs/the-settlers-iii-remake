@@ -49,7 +49,7 @@ export function minimapPixels(o: Observation, options: MinimapOptions, slots: re
       if (o.view.visible[t] !== 1) put({ x, y }, UNKNOWN, 90)
     }
   }
-  if (options.buildings) for (const b of o.view.buildings) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put({ x: b.x + dx!, y: b.y + dy! }, playerRGB(slots, b.owner))
+  if (options.buildings) for (const b of [...o.view.buildings, ...(o.view.remembered?.buildings ?? [])]) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) put({ x: b.x + dx!, y: b.y + dy! }, playerRGB(slots, b.owner))
   if (options.settlers !== 'none') {
     for (const s of o.view.settlers) {
       if (s.inside || (options.settlers === 'military' && s.rank === undefined)) continue

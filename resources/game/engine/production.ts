@@ -7,6 +7,8 @@ import { area, DIRECTIONS, distance, indexOf, inside, neighbours } from './geome
 import { dropCargo, groundStackAt, slot } from './logistics'
 import { randomInt } from './random'
 import { enterable, route } from './routing'
+import type { RoutingSurface } from './routing'
+import { perceivedRouting } from './perception'
 import { effects, finishers, start } from './settlers'
 import { commute, release } from './workforce'
 
@@ -47,7 +49,7 @@ function reachable(ctx: Context, s: Settler, from: number, tile: number, adjacen
 }
 
 /** A read-only forecast for a legal proposed site, using the worker's router and only explored land. */
-export function harvestableSite(ctx: Context, owner: number, type: string, x: number, y: number, explored: (tile: number) => boolean): boolean {
+export function harvestableSite(ctx: Context, owner: number, type: string, x: number, y: number, explored: (tile: number) => boolean, surface: RoutingSurface | undefined = perceivedRouting(ctx, ctx.state.players[owner - 1]!)): boolean {
   const rule = ctx.building.get(type), map = ctx.state.map, work = rule?.workflow
   if (!rule || work?.kind !== 'harvest') return false
   const tiles = footprint(rule, { x, y }), door = { x: x + rule.door[0], y: y + rule.door[1] }
@@ -56,9 +58,9 @@ export function harvestableSite(ctx: Context, owner: number, type: string, x: nu
   if (map.owner[from] !== owner) return false
   const site = new Set(tiles.map(p => indexOf(map, p.x, p.y)))
   const allowed = (tile: number): boolean => explored(tile) && !site.has(tile)
-  return area(map, { x, y }, work.radius).some(tile => explored(tile) && (map.owner[tile] === owner || map.owner[tile] === 0) && objectAt(ctx, tile)?.id === work.object
-    && neighbours(map, tile).some(next => allowed(next) && enterable(ctx, next, owner, next))
-    && route(ctx, from, tile, { adjacent: true, territory: owner, limit: 4000, allowed }).ok)
+  return area(map, { x, y }, work.radius).some(tile => explored(tile) && (map.owner[tile] === owner || map.owner[tile] === 0) && (surface ? surface.object(tile) : objectAt(ctx, tile))?.id === work.object
+    && neighbours(map, tile).some(next => allowed(next) && enterable(ctx, next, owner, next, surface))
+    && route(ctx, from, tile, { adjacent: true, territory: owner, limit: 4000, allowed, surface }).ok)
 }
 
 function plantable(ctx: Context, tile: number, owner: number): boolean {

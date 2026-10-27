@@ -1,5 +1,6 @@
 import type { Player, State } from './state'
 import { canonical } from './hash'
+import { playerEntities } from './perception'
 
 // The state checksum (save format 3 onward). Map and fog layers are hashed in
 // square chunks; the checksum combines the chunk hashes with the canonical
@@ -34,7 +35,14 @@ function chunkHash(state: State, players: Player[], chunk: number, columns: numb
     for (let x = cx; x < Math.min(cx + CHUNK, map.width); x++) {
       const t = y * map.width + x
       for (const name of LAYERS) { const v = map[name][t]!; byte(v); if (v > 255) { byte(v >> 8); byte(v >> 16); byte(v >> 24) } }
-      for (const p of players) byte(p.explored[t]! | (p.visible[t]! << 1))
+      for (const p of players) {
+        byte(p.explored[t]! | (p.visible[t]! << 1))
+        if (p.memory) {
+          byte(p.memory.terrain[t]!); byte(p.memory.elevation[t]!); byte(p.memory.object[t]!)
+          const amount = p.memory.amount[t]!, age = p.memory.age[t]!
+          byte(amount); byte(amount >>> 8); byte(age); byte(age >>> 8); byte(age >>> 16); byte(age >>> 24)
+        }
+      }
     }
   }
   return h
@@ -64,7 +72,7 @@ function combine(state: State, hashes: Uint32Array): string {
 export function entities(state: State) {
   return {
     schema: state.schema, tick: state.tick, random: [...state.random], nextId: state.nextId, navigation: state.navigation,
-    players: state.players.map(({ explored: _e, visible: _v, ...p }) => p),
+    players: state.players.map(playerEntities),
     settlers: [...state.settlers.values()], buildings: [...state.buildings.values()], stacks: [...state.stacks.values()], jobs: [...state.jobs.values()],
     claims: [...state.claims], growth: state.growth, cooldowns: [...state.cooldowns], ledger: Object.fromEntries(Object.entries(state.ledger)),
     events: state.events, results: state.results, pending: state.pending, mission: state.mission,

@@ -31,14 +31,15 @@ test('the captured 0.11 staffing save and replay retain their exact behavior', a
   expect(audit(s.context)).toEqual([])
 }, 30000)
 
-test('current staffing controls recover actual idle builder hammers and equip a geologist', async () => {
+test('published 0.14 staffing controls recover actual idle builder hammers and equip a geologist', async () => {
   const legacy = await captured()
-  // An explicit separate engineering scenario, not a silent save upgrade.
-  // This is an explicit current-rule scenario. Translate terrain names rather
-  // than reinterpreting the frozen profile's indices as the new catalog.
+  // Retain this pre-memory engineering comparison under its published rules.
+  // A captured old world has no last-seen history to reinterpret under 0.15.
+  // The ordinary four-site opening below exercises freshly created current rules.
+  const comparison = PUBLISHED_RULES.find(profile => profile.version === '0.14.0')!
   const state = structuredClone(legacy.state)
-  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = rules.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
-  const s = openSession(rules, state, { id: 'crew-rule-comparison', digest: legacy.checksum() })
+  for (let tile = 0; tile < state.map.terrain.length; tile++) state.map.terrain[tile] = comparison.terrain.findIndex(t => t.id === legacy.rules.terrain[state.map.terrain[tile]!]!.id)
+  const s = openSession(comparison, state, { id: 'crew-rule-comparison', digest: legacy.checksum() })
   const created = structuredClone(s.state.ledger[1]!.created), recovered = s.state.ledger[1]!.recovered.hammer ?? 0
   const seq = next(s, 1)
   expect(s.enqueue({ tick: s.state.tick, player: 1, seq, type: 'settings', settings: { builderLimit: 2 } })).toBeNull()

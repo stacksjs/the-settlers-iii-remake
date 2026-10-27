@@ -8,6 +8,8 @@ import { footprint } from './context'
 import { harvestableSite } from './production'
 import { surveyedMineForecast } from './placement'
 import { reachableTiles } from './routing'
+import { perceivedHeight, perceivedObject, perceivedRouting, perceivedTerrain } from './perception'
+import type { RoutingSurface } from './routing'
 
 function terrainPredicate(o: Observation, group: 'sea' | 'river' | 'mountain'): (tile: number) => boolean {
   const ids = new Set(o.rules.terrain.filter(t => group === 'sea' ? t.water : group === 'river' ? suppliesWater(t) : terrainIs(t, group)).map(t => t.id))
@@ -29,6 +31,7 @@ export interface Observation {
   rules: RulesProfile
   explored: (tile: number) => boolean
   terrain: (tile: number) => string | null
+  elevation: (tile: number) => number | null
   object: (tile: number) => string | null
   placement: (type: string, x: number, y: number) => string | null
   /** Whether a worker at a legal proposed site can reach a known own or neutral harvest target. */
@@ -40,16 +43,19 @@ export interface Observation {
 export function observe(session: Session, player: number): Observation {
   const view = session.view(player), { map } = session.state, rules = session.rules
   const explored = (t: number): boolean => view.explored[t] === 1
+  const viewer = session.state.players[player - 1]!
+  let surface: RoutingSurface | null | undefined
+  const knownSurface = (): RoutingSurface | undefined => { if (surface === undefined) surface = perceivedRouting(session.context, viewer) ?? null; return surface ?? undefined }
   return {
     view, player, width: map.width, height: map.height, explored, settings: structuredClone(session.state.players[player - 1]!.settings), rules,
-    terrain: t => (explored(t) ? rules.terrain[map.terrain[t]!]!.id : null),
-    // Objects on explored tiles are what the player last saw there; the engine keeps no separate memory yet.
-    object: t => (explored(t) && map.object[t] ? rules.objects[map.object[t]! - 1]!.id : null),
+    terrain: t => (explored(t) ? rules.terrain[perceivedTerrain(map, viewer, t)]!.id : null),
+    elevation: t => (explored(t) ? perceivedHeight(map, viewer, t) : null),
+    object: t => (explored(t) && perceivedObject(map, viewer, t) ? rules.objects[perceivedObject(map, viewer, t) - 1]!.id : null),
     placement: (type, x, y) => session.placement(player, type, x, y),
-    harvestable: (type, x, y) => harvestableSite(session.context, player, type, x, y, explored),
+    harvestable: (type, x, y) => harvestableSite(session.context, player, type, x, y, explored, knownSurface()),
     reachable: id => {
       const soldier = view.settlers.find(s => s.id === id && s.owner === player && s.rank !== undefined)
-      return soldier ? reachableTiles(session.context, indexOf(map, soldier.x, soldier.y), { allowed: explored }) : new Set<number>()
+      return soldier ? reachableTiles(session.context, indexOf(map, soldier.x, soldier.y), { allowed: explored, surface: knownSurface() }) : new Set<number>()
     },
   }
 }
