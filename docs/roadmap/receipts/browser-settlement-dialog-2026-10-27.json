@@ -1,0 +1,1379 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-27",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/224",
+  "scope": "Production browser settlement confirmation, owning STX pointer correction, framework release-preflight correction and verified downstream package adoption.",
+  "behavior": [
+    "Use the maintained Dialog, DialogBackdrop, DialogPanel and DialogTitle components.",
+    "Initial seed focus, named modal semantics, native Tab/Shift+Tab containment, Escape/cancel/outside-click opener restoration.",
+    "Native input editing and invalid-seed feedback retain focus; successful replacement focuses the map and persists the replacement checkpoint.",
+    "Retain the original control-frame selectors, viewport scrolling and reduced-motion behavior.",
+    "Improve confirmation paragraph spacing, viewport bounds, seed placeholder contrast and focus visibility."
+  ],
+  "uiReview": {
+    "brief": "Keep the existing dense game HUD and original-media presentation while making settlement confirmation accessible and usable on short or narrow screens.",
+    "dials": {
+      "variance": 1,
+      "motion": 1,
+      "density": 9
+    },
+    "maintainedComponents": true,
+    "oneExistingThemeAndAccentAndRadius": true,
+    "desktopActionsStayOnOneLine": true,
+    "shortScreenKeyboardControlsScrollIntoView": true,
+    "reducedMotionCovered": true,
+    "invalidInputFeedbackCovered": true,
+    "noRawDOMOrWindowInSTXScript": true,
+    "contrastRatios": {
+      "placeholder": 6.417,
+      "primaryButton": 8.575,
+      "focusRing": 8.141
+    },
+    "newDecorativeAnimation": false,
+    "marketingPageChecks": "Not applicable to an in-game confirmation; no hero, promotional cards or invented media added."
+  },
+  "cohort": {
+    "stacks": "0.75.328",
+    "stx": "0.2.719",
+    "craft": "0.0.341",
+    "pantry": "0.11.130",
+    "ts-png": "0.1.10",
+    "bun": "1.4.4+38afee6c8",
+    "buddy": "0.11.15"
+  },
+  "upstream": {
+    "stx": {
+      "issue": "https://github.com/stacksjs/stx/issues/2124",
+      "sourceCommit": "fdb0bba537556df0b51fc170dddee5c7e1cb4740",
+      "releaseCommit": "fa846981f6bf598f8b16abc284357a9c6f4ca645",
+      "version": "0.2.719",
+      "checks": {
+        "fullTests": {
+          "pass": 17245,
+          "skip": 34,
+          "fail": 0,
+          "expectations": 48854,
+          "files": 1371,
+          "elapsedSeconds": 648.31,
+          "bun": "1.4.4+38afee6c8"
+        },
+        "pointerRegression": {
+          "pass": 2,
+          "fail": 0,
+          "ciRuntime": "1.4.2+744846f84"
+        },
+        "preflight": {
+          "passed": true,
+          "focusedTests": 324
+        },
+        "lint": {
+          "exitCode": 0,
+          "errors": 0,
+          "existingWarnings": 254
+        },
+        "format": {
+          "exitCode": 0
+        }
+      },
+      "ci": {
+        "url": "https://github.com/stacksjs/stx/actions/runs/40470097422",
+        "head": "fa846981f6bf598f8b16abc284357a9c6f4ca645",
+        "conclusion": "success"
+      },
+      "releaser": {
+        "url": "https://github.com/stacksjs/stx/actions/runs/40470098101",
+        "head": "fa846981f6bf598f8b16abc284357a9c6f4ca645",
+        "conclusion": "success"
+      },
+      "registry": {
+        "version": "0.2.719",
+        "releaseCommit": "fa846981f6bf598f8b16abc284357a9c6f4ca645",
+        "packages": [
+          {
+            "name": "@stacksjs/stx",
+            "version": "0.2.719",
+            "bytes": 2311942,
+            "integrity": "sha512-XEZIF2rLzNweJjIaA0g37EEfItQdb0T+DybnwFxLXB3CaP+noDgR43EK457DKD9JA2ILzydES1IwfJsI2amx4g==",
+            "shasum": "a3705afdbf68d1455a72219861fdfa252433faf1",
+            "sha256": "d11cb904df22fe36ce633c8a3d9241582e3244d71afd72d0405d2bb03099f1d5",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/components",
+            "version": "0.2.719",
+            "bytes": 570451,
+            "integrity": "sha512-aFWdJMaQw5TRIi9twMmOb80HBl+K2Io2/5WZiN1lzXyPEK4hlDhJwq2O+4UNFLhlIUYY2BPRSgAZbwgtADUq6w==",
+            "shasum": "d8b72740a6a26f899cbe169db959a36541cb4dd3",
+            "sha256": "3e5e1254feaac3a883b68ae01314efc3e37dcf5a8c841a6d7e4b26c3550aa047",
+            "gitHead": null,
+            "sourceCorrection": true
+          },
+          {
+            "name": "bun-plugin-stx",
+            "version": "0.2.719",
+            "bytes": 126644,
+            "integrity": "sha512-8V2qsMTWCX6+sSRM9df9HwxuOeIJDZGysS1gfjKca+AoBLxtcwcR4u/vDcNrBQ0WmlPrsf7wkWUsrmJfP3YK4w==",
+            "shasum": "80d9be5e9bdc8a60f8c547e6b81c5d7815cec14c",
+            "sha256": "0f43744fcc60177bb5ca469bcd5168b21ee4cc5bce16a8891678bda764147261",
+            "gitHead": null
+          },
+          {
+            "name": "stx-router",
+            "version": "0.2.719",
+            "bytes": 84392,
+            "integrity": "sha512-6tc1d3+HQhXSd10ZW/UKW7W+C7W+/s54JJj7TQ8+o60msLYofgl94UhqwUVr9dzr6CwRwk9I1fMFfGUTU6s3qw==",
+            "shasum": "dfeca01d00fea44aa10f9707d01d7fd561f69236",
+            "sha256": "9013307f2a296e7992bfc9b22f27c3632bb10180c597f58b6e4ac72e05d78b80",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/desktop",
+            "version": "0.2.719",
+            "bytes": 109460,
+            "integrity": "sha512-WWJSBnGg6L4x7Bs0kktMye70o8qwb2ao/1qKi5A2y0o06nSz4KeYT0Za2pNLL4QL2QJo6Kxr9d1bh80R9/u1Jw==",
+            "shasum": "b340d1d9d848f11637552e735235f0c39cb23ed0",
+            "sha256": "56467404d25d74bd56ecf94f181883f9ccd6369f5f680dda735b7430c518cf05",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/sanitizer",
+            "version": "0.2.719",
+            "bytes": 4742,
+            "integrity": "sha512-G1V8os70vIs7GrjqMVkd5vMlcT2GGDxSC9xVjfEbUnNXwTdSwGZ2qF3EEZfb9+Bs+P6WmBgMdVnbIX5H84CiEw==",
+            "shasum": "bae20a53b819c0a5eb2e9e531ffaa8e5d69be938",
+            "sha256": "cf5b0614d5a8fd9ff14d7f8de8817b59c1fcd985f9431ab2bbf99156cebe1016",
+            "gitHead": null
+          }
+        ],
+        "checks": [
+          "public metadata identity",
+          "original tarball SHA512 and SHA1",
+          "archive manifest identity and cohort",
+          "published DialogPanel source correction"
+        ]
+      },
+      "originalReleaseAssets": [
+        {
+          "name": "release-manifest.json",
+          "bytes": 195,
+          "sha256": "013ff4e1c5803fd6b8abf150b0a3c997628bc4670a6c691680ca17ab8a8f5ae6",
+          "apiDigestVerified": true,
+          "allZipCRCsVerified": false
+        },
+        {
+          "name": "stacks-devtools-0.2.719.zip",
+          "bytes": 15021,
+          "sha256": "8780550d2a9b5986e0edbf34b6c2de4a82925ee0491464c8665e510e1111daa8",
+          "apiDigestVerified": true,
+          "allZipCRCsVerified": true
+        }
+      ],
+      "sourceCorrection": "Full-screen panel layout passes outside pointer events through; the actual panel remains interactive. Real native pointer regressions compile owning components and actual ts-css for centered panels and sheets.",
+      "separateMarketplaceWorkflow": {
+        "url": "https://github.com/stacksjs/stx/actions/runs/40470098069",
+        "head": "fa846981f6bf598f8b16abc284357a9c6f4ca645",
+        "conclusion": "failure",
+        "issue": "https://github.com/stacksjs/stx/issues/2125",
+        "blocker": "Missing VSCE_PAT publisher credential. No bypass or successful Marketplace publication is claimed."
+      }
+    },
+    "stacks": {
+      "issue": "https://github.com/stacksjs/stacks/issues/3021",
+      "adoptionCommit": "323556c4e2abf3bdcdb7939bedef90429341f3c6",
+      "sourceCommit": "ecb865743b26b6b6425bac518d34a92f26f05545",
+      "releaseCommit": "27b448ff4a7f5bac07f7b813ee47c88bbe88bfd2",
+      "version": "0.75.328",
+      "sourceCorrection": "Discover declarations:check through registered release-preflight scripts and regenerate canonical runtime inventory from the upgraded compiler.",
+      "checks": {
+        "publicPreflightCanonicalAndPushTargetTests": {
+          "pass": 36,
+          "fail": 0,
+          "expectations": 77
+        },
+        "adoptionFocusedTests": {
+          "pass": 1202,
+          "fail": 0,
+          "files": 27
+        },
+        "lint": {
+          "files": 5291,
+          "errors": 0,
+          "warnings": 0
+        },
+        "types": true,
+        "canonicalFreshness": true,
+        "lockfileConsistency": true
+      },
+      "ci": {
+        "url": "https://github.com/stacksjs/stacks/actions/runs/40475488417",
+        "head": "27b448ff4a7f5bac07f7b813ee47c88bbe88bfd2",
+        "conclusion": "success"
+      },
+      "releaser": {
+        "url": "https://github.com/stacksjs/stacks/actions/runs/40475488546",
+        "head": "27b448ff4a7f5bac07f7b813ee47c88bbe88bfd2",
+        "conclusion": "success"
+      },
+      "registry": {
+        "version": "0.75.328",
+        "releaseCommit": "27b448ff4a7f5bac07f7b813ee47c88bbe88bfd2",
+        "packages": [
+          {
+            "name": "@stacksjs/slug",
+            "version": "0.75.328",
+            "bytes": 2908,
+            "integrity": "sha512-n6K8ntY5VeGsyiu4FkomV/p3fI2b8LI5wxrmGjDrdZhgEHPOpNrL8vP4cm2aNheJQH5M7stbu2GI+qGC6+S4kg==",
+            "shasum": "13ce4b197d3cd1ea0a194ef3a516f37985cb04eb",
+            "sha256": "9104ba774e124d748bbcce9d302622fb4047b82c742d680f64cc37c5cef57b7d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/commerce",
+            "version": "0.75.328",
+            "bytes": 188625,
+            "integrity": "sha512-BKhXJnAWTt4NKfXyD7YkL/gvlp6EyZwQKXcPoamSL5irteEmMKMEvrfwXwC155ybbNzh2RDh9VA4vbwqhnh48Q==",
+            "shasum": "66957fe6e7208fca0ef65d876e89674d9574a3eb",
+            "sha256": "50b816ea24bf2fe11a1a25eb2f4abcb53140a9f86587c5be1148c4971157fd6b",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/ui",
+            "version": "0.75.328",
+            "bytes": 7792,
+            "integrity": "sha512-BMkT5aKcY/AXH10lLHCvq1Jk6xH0s6iL8wTCuiE2FVqv0/xyFhXATcugWKDPC1kA7ciiwFe1uztICdchJ1nWlA==",
+            "shasum": "82bcc931e3947ecbef9397cf7250dea6ead408b5",
+            "sha256": "414cdb9480afd941565844eab885138fdd5af19e0be0cb1e48ffc340dff86d90",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/database",
+            "version": "0.75.328",
+            "bytes": 227890,
+            "integrity": "sha512-cC1K46fTAGTy+iTGw9YZNFsvsBHpQ+17ycBkdsMlO1n7hq4LGYKZbZGYb77jGN9yzo9tIJNYkrG3y2k8imRB2w==",
+            "shasum": "58fab8894e50ba7ca84918a2b7b86669cd9666f8",
+            "sha256": "f4b3ef02082623130c4938aacee73357d5e48d6143a8a2f9e8e3a5e5449c33b9",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/pagination",
+            "version": "0.75.328",
+            "bytes": 3953,
+            "integrity": "sha512-j+6m6FjY26Rpw+iOqz4RhPpnlx80qSNnUxB9repfxnjgbbPliVCKVf8rPwxRPW1UcLNFL0y2I4dx8bfmCPvpMw==",
+            "shasum": "b64b095a05d0e088f14b79b10cb41c2fac5283e5",
+            "sha256": "ab5711825fdf5a1153a4f4a8db86ac1338421127b4dafc8766b23a4ffcc9559d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/error-handling",
+            "version": "0.75.328",
+            "bytes": 37521,
+            "integrity": "sha512-VlYYckJ8VEKYC/M810xU9N/73NYLZYAqGRLtDNujqx6oXslhtCWA+Y9QNxDjMyn7RK09QlS9dhWFH/8tkKPWtw==",
+            "shasum": "3860e768c3d6b8322802115c1b0bbe9488211a44",
+            "sha256": "640f0b49df4ebb0463ff45683181c19f2b2b8e8a7311f08d424445ab5935e1fc",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/video",
+            "version": "0.75.328",
+            "bytes": 8878,
+            "integrity": "sha512-Vrjoe8d7x5rZmiW0i19EdYDLMaVmq2sy7t5ONiSME7hyemk1tdSBCEs0vl9zAWSVlVT6h7yKtdVq+Jh1X8AXpg==",
+            "shasum": "2b78dc873e277c6485ef777dc245d6f1b55e5fe2",
+            "sha256": "5dcc99310c224434e724373f55142890b2421b5f33eb5eb47daf26b4c7c2a1ab",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/payments",
+            "version": "0.75.328",
+            "bytes": 71338,
+            "integrity": "sha512-cnLQxMMcp+HwdUIG9M2R9bfpUKUfPk9RwqpESpiUAyb5p/Y+L6jcfR0hUS4kYT/0te8Nfpmupe/+vEwQo9d7fA==",
+            "shasum": "46b174cd50a8ccdccba3e0a9efed50f5ede0730d",
+            "sha256": "65293776b669c3d6f5d8e798b649f148726acee2c1ad171aab9c56fa23b9e674",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/alias",
+            "version": "0.75.328",
+            "bytes": 4300,
+            "integrity": "sha512-x5HPzcXOaw/LhPQ7Wb4dzZhSBHqivrFtj1JvYvXkYDDzZ64vDWLeyyeEfDdiaaIC3Rn2kOEcwcULQWFsIPm2NQ==",
+            "shasum": "2d8fcd6cf3d2ced62e94bf58d3250ea328f07f53",
+            "sha256": "ccd08865cde75b4f137f83ce479e0586ed1a1f0fd811d8fecd2c76c8c811a29a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/tinker",
+            "version": "0.75.328",
+            "bytes": 12228,
+            "integrity": "sha512-VIcv8F34MjdAbNBpddUrB6oY9Wz5oC9th73JbnN+TMdMsytLsbAfjX6Eold1hCLulwkjKEnSzVVDjcmuYVwnAg==",
+            "shasum": "444aff8dc4eaf8305b490c1d6fe3c73c3491ad84",
+            "sha256": "e57717f1d2fcd3c9a4cacf68b045c2433da1d071cea932444769f91a50be561f",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/lint",
+            "version": "0.75.328",
+            "bytes": 3057,
+            "integrity": "sha512-pjBBUeCAsyFg++XMUbbje503nS2NOTetp8Qw4nBzaFImcdcRaldJ0LQCMrnPVISrA0g5KWMJl1CZIwjP1rFluA==",
+            "shasum": "a728f7154c86d20a003c076ba9cf50ecf07f8da8",
+            "sha256": "6fc4dbf028ec6d6964e6f53815e9487fc0bc2c3ee196ed6120feda531a91dce4",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/strings",
+            "version": "0.75.328",
+            "bytes": 19872,
+            "integrity": "sha512-rRBb0KePYNu161YTO/j4Lc/98gYS3++GHVcavKAW2tJ/iuMbNZApy81H2+hSl8ACMavRZkJpVdKVq9i1r0tEuA==",
+            "shasum": "86d3cc72ea00f3571a3d7b12257c4277ec32afec",
+            "sha256": "5be38675927035c23732ea8c7b3d7f46d710bb562aeeb2689217120a486bc137",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/types",
+            "version": "0.75.328",
+            "bytes": 75539,
+            "integrity": "sha512-FhVfUv+p8keSU/cVl5Nd5QMQsM50hZBfKyRaNNYcv2RiQnzRKTc8cPgvUAwA7/ZH3VcyijbzGXM5/7bd/4cK0w==",
+            "shasum": "fe64c8bf20ac8c67f7c0a32dc185248deca4b93b",
+            "sha256": "87eb63a0ed166cdaaa6424e60b59b191c67d6babcc2b5ea02f06f3ed78c57a38",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/composables",
+            "version": "0.75.328",
+            "bytes": 83495,
+            "integrity": "sha512-OIWuHkxCcckbV4XwCyDgionMbn5Xn1aQ10VcSotL1zOj839QknU0aVwRPEVxkomg5tJxVxFnt71qoWwioyHa9g==",
+            "shasum": "1f5351e37b2ad094e4b1fe99287bdf4a4d149da2",
+            "sha256": "89e29e1df67f4dcfe63fb39987fe0554cec05960c47aaaa7cee2a96a43076e44",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/forms",
+            "version": "0.75.328",
+            "bytes": 12788,
+            "integrity": "sha512-RK392UEviWzZL90fXUmHgtOoxDbOaQi7eQFB9pUOKPbZ0B5JOFhbkGvBj4CkmsanPkscTjDlgn0uF0J0qsunfw==",
+            "shasum": "3575f7897f7994abeae242d34ebe8934cfaf5de9",
+            "sha256": "a1dfdc33603886709accf7b491ef81552ace983aea3624ff5def2f262c092113",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/cache",
+            "version": "0.75.328",
+            "bytes": 9664,
+            "integrity": "sha512-QbJMC2OYcksD+uuGfTV93I7hJ+WlNKdnyDcGGPtXEeZPX9hWD3OE/iHfm/BG3/3C9BGrtA46IveDNtWWNR+K1Q==",
+            "shasum": "0e3b7bb512e330bb6e134ec5a8aa9c62d81897d6",
+            "sha256": "1ae06f8043414a0de6a1897990e263b1494952e74dc5b6f8aa82c9c46649497e",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/chat",
+            "version": "0.75.328",
+            "bytes": 37660,
+            "integrity": "sha512-QRPa7kQFzD501ZSAtTJjhEPJBTLIbGL9TEPudmVioM/j/4sU/L0l5MkYNbGU2uvEsPu0iasX5mEqu+vcFa86vQ==",
+            "shasum": "433a77ecbd5a732a5b41c4381512a52dee4223d1",
+            "sha256": "80bd1be128baa4c1fb700950a347a3c1ca3decd864d770a2d78ea2f384532fac",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/search-engine",
+            "version": "0.75.328",
+            "bytes": 16996,
+            "integrity": "sha512-yTRbiE8Ya5liooIzIIMMIzJ8o2ceVRJNffCbfBNmKP8g6BLOpi9q+q9xyB4A0gOAwnRFvvr/tBjOATqdam+o8g==",
+            "shasum": "31585bc558e9007961bbe32e77c2ec8af39c0ed5",
+            "sha256": "620a5ff650e4b8069d3d522935141ed7c760acb5c566290a7fb8f9b44bf8fead",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/sms",
+            "version": "0.75.328",
+            "bytes": 14734,
+            "integrity": "sha512-2YOco/ut8g34F0mu+dmssVZqptsc1T9Mwm7Ss+2g/e74yo9vMp8aASAL/UkoDL9oUKIzqZkFG4wTpH0dVEQn5Q==",
+            "shasum": "1b4bdeb2fd825341a32a0e2de48e4c718de4f416",
+            "sha256": "45be4c8e5aab45f138583bf5c110b81bd8afe947e500c90e341380a4e5da9577",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/config",
+            "version": "0.75.328",
+            "bytes": 29785,
+            "integrity": "sha512-WvB7wEZtTjrwOsfb+t8oB1PKrKOIVg+u/ncu14s0KQSxnagOkD2HPA3oBFkKGeR0QBzsR4E4AZeZ/2DNiDOn9w==",
+            "shasum": "688406fc2c7060d5c9a9d89158f1a3ff928ad893",
+            "sha256": "2a70f59777cae6911bda513a4c69baf4c82d43fea6aa04c890c4a0df3ce7f923",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/security",
+            "version": "0.75.328",
+            "bytes": 14068,
+            "integrity": "sha512-vSsmgqqqlYqxW9F6AklLkHGbDry3XqJy2yMReeYj7S4l0vpbdTS1r2tS0ftJPxiud12YnCKqlYTEOSw4Hdge+A==",
+            "shasum": "51ad8b39f4850f93983c3dbb2639f569b8c9294a",
+            "sha256": "1d0e3ccdbb000e974e06afc41bd791386425748c2cde19c17b0a187996b27e4e",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/auth",
+            "version": "0.75.328",
+            "bytes": 122485,
+            "integrity": "sha512-flJyY/PoWqInN3zV3MbeGdzlskLBQom/0AK8oDZPWbzfyPOrQUOlOTTNCVnsZQujVVOHOrn3UE0qSGPPlQhkvw==",
+            "shasum": "91deb7078267cbb668d84e9d0af29b2997bd72f2",
+            "sha256": "2997ca7035ba97c52b5cd703f113ff7e80d1c43d3a04b37360c06b5d4ab095ef",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/datetime",
+            "version": "0.75.328",
+            "bytes": 13413,
+            "integrity": "sha512-X8dlCB9IpezTcHXTgxL4ZBavSTQ58/4MV4Z7FvuCdWAbHpBFN97eRqxjvv+2fQnjT/OAY60a9h/iFsFg8t7XHA==",
+            "shasum": "840ff1a5d2b6bf8ffdf4d447ff753c38c715634a",
+            "sha256": "017b6ca6ad5c1bdf3a843e6227519304fcb7cc460485b2b909f101c190fc13af",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/shell",
+            "version": "0.75.328",
+            "bytes": 3149,
+            "integrity": "sha512-/Xurjixt57Y6lOVrc5TYoogge7X3mYG0iuIaFNhnj9YfibInsfpUgTMwbjM56dGYY88UvgSts5e6kHFAiDT0ZQ==",
+            "shasum": "021c1773204f281350656a71d7d1381587485e2a",
+            "sha256": "0098afcd6f88e1d4866d0cd2986badc24a475b0aaddd44be37c4d6f841573c87",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/health",
+            "version": "0.75.328",
+            "bytes": 2272,
+            "integrity": "sha512-+xLv2Kb0aIhRLKghxD2NhzP14LYCeSzRW+Jlt19r+B9yPXtA8GSMvLHdcNzUBqCPLOsMCAR9Y3gMDmZjoBCaPA==",
+            "shasum": "1594d5231635a7caca3ae1d7833d7ad742f3f038",
+            "sha256": "b9c6c465328bb3f40b542f998fb555189018c17be69d2a11a6ae471b8cf2c79d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/path",
+            "version": "0.75.328",
+            "bytes": 19117,
+            "integrity": "sha512-NQ6OqrYyGeVNk6gmhlUELkZ3rVr1BBumsZh8ooiwW9mfzX/3vgPSDWYME0yS/O9d64HZ/RDp4mDJd6YiV9vVXQ==",
+            "shasum": "e93a484e0bba917b493c92e6422e194c20fab895",
+            "sha256": "87ac2d0caa4cd4ed5a040a0024bd9a51161737e1ce548a45f71fe1d6694eaab0",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/feature-flags",
+            "version": "0.75.328",
+            "bytes": 9006,
+            "integrity": "sha512-GiHdyRC/O2MI7ylFXP8m9aNM/ITAeEMZITq1paYNx9RkS6tYx061ouOuUQIFYzr0qVPJS1lSKF+3Ti+u4JcDDA==",
+            "shasum": "57ff8f7f76eae91fcda3c8ca86ee11a07d9e7d4f",
+            "sha256": "b21365b12b9d36bb5614999a2d836ae7e90fcb08c07da1e2f8f5c69d365a5ff7",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/enums",
+            "version": "0.75.328",
+            "bytes": 5550,
+            "integrity": "sha512-dLid7jp0sBC7wOvkcxS5+r95Jtrc0XYC0lH7iUOwCWB4jfSx30vCjRZO0PYcYXcA4al3clKfV7IDKmx18sRRlA==",
+            "shasum": "d952c59f816ea2dcca93966a39d13e75bcf6e4e6",
+            "sha256": "d37d7a1bdfc730ab1eb113b365b889034b797bae40799e7ee1a9ec0f025f7ba9",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/features",
+            "version": "0.75.328",
+            "bytes": 6192,
+            "integrity": "sha512-0cX/KbPAKJ3n93j45PiyhWUxgT5f05kuDT5X7Nw2OfGsOILy72BUxzRiLoVabl8maUtTJDw5vFTZVKBngvPs5w==",
+            "shasum": "7bf5e2b6f66c931ed6a32f2c9208abec3fa1165b",
+            "sha256": "30b3f3d06324764e6536962f3a79b0525a8650aa8a6152fd30efc52fa884ed7f",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/repl",
+            "version": "0.75.328",
+            "bytes": 3331,
+            "integrity": "sha512-5KAMnmV+W87svsrF9SVWXyjEHP0l0hcPu2lh8wJu9H+CXd5SwD+7TeR1Exr11sfdIPLgqlBOUCDkVuuS00DZ0A==",
+            "shasum": "80df530fee186fb55e7919ab01b0addfc4d224a3",
+            "sha256": "a3ebe08bf83fa4ff7f356fb13d29ee8ea29a805ef8b15fdc943ef9047068ec61",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/charts",
+            "version": "0.75.328",
+            "bytes": 9437,
+            "integrity": "sha512-ScdSAeGqSlUz5CqObUhoaOSQxEabPM3Dqvc1caW6GCLVchgmKvJv8UUJFQn0MHAXp5xwyEBBlLf5nIpMMOCpAw==",
+            "shasum": "43cbdb452e45fcb035dc54c21aa3d5a2738e4201",
+            "sha256": "1414a03731411bbf0c4746f434f60d1630db47643877d9b8aeff9370e08654e6",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/scheduler",
+            "version": "0.75.328",
+            "bytes": 12740,
+            "integrity": "sha512-bMuAv8Z7tUv7YvJK1AH5cDF1Zd2O+68AEksBz+Rrvt8HJ+zrhoehg5rn9mXwRTSf6IKoDu3smf2MVNP0Zqepug==",
+            "shasum": "b39b9c406fba9c1c842acd6044e23cc52e130eab",
+            "sha256": "981e3ad3d1c774575f1ea83cd4eb701ae8975645dc408ead97fbad891890da74",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/browser-extension",
+            "version": "0.75.328",
+            "bytes": 43300,
+            "integrity": "sha512-ePyPA3MhoSQP973qvHmc7Ktl1HgcMu9f7/YuvQGmF038kv8byl7o4l2AmKe8LGXXVOJJmGH3e1YpBxbuywXZuQ==",
+            "shasum": "349bf6459e6de9d5ec0b5f526fc4b847d9b4c646",
+            "sha256": "09178df50de4f17ce8fd98215928a1d4f798e00e36ac0b93ca1784b2c05f2bce",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/objects",
+            "version": "0.75.328",
+            "bytes": 5661,
+            "integrity": "sha512-0r/NQBGdBhsxkf1DAHecq3r/5o1i5L2v/nCVTGEZvfOgFKsn58ra38y4fyNEUG5W6gjirz3d0Qq7gc/qcTN9Lg==",
+            "shasum": "bb016acf7fc53df08421e2cfc2f7969eb3cb870b",
+            "sha256": "c2cab669a6d96cb3a8b4e502c34919e5fa5a8958a120fee67f5b9e48dbc1b8d9",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/desktop-build",
+            "version": "0.75.328",
+            "bytes": 36602,
+            "integrity": "sha512-twVr60e85VE1oUI4HmooN6erQ63TxhxMhUrEpaBery+Wv2sDYabe/nKd1I5onRZnNbduSA4YAyvutr1FESEaig==",
+            "shasum": "4ea576b9b768e65544f906b9520279ed92e91168",
+            "sha256": "f3303e81af2b1234793d20f6057058acd44ed80408dd42d15c95bc3069938d5d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/server",
+            "version": "0.75.328",
+            "bytes": 29912,
+            "integrity": "sha512-EQSPB/+46dBo25oZSnMpUgVae8WXG/HzgZl3J1AH+o0EJya8b+Tn5lSEjECoxkynPU1vX3R1fQkcJkQDnOYOMw==",
+            "shasum": "9a30295fe7d75cc59958d43fa54791bc757847e3",
+            "sha256": "f86c2ab03d36331add05907120bf61fc1f43d83fc23acf707e36886e41914f87",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/buddy",
+            "version": "0.75.328",
+            "bytes": 381874,
+            "integrity": "sha512-vJAJGVwy740gy9VHbtf2ccE2M7duDuNsQAuPxqbHPRAR50g2LXmZ1Ii6ftSDBwtAu4o76Juz+2LhlY1oMRvyxw==",
+            "shasum": "8d5606e5686e7f1e3c7928548c86f2374816d62d",
+            "sha256": "9b2084c7b7330dd2953aa9948327de2f98bd83a8ddce13e26131b85d959041c9",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/faker",
+            "version": "0.75.328",
+            "bytes": 5366,
+            "integrity": "sha512-ffBWBpqQu0uTsS77n9aJtxoJxQd9OAKU5JEBDOeZZ+e71TuFGchn2006iEUIKkKikAlWLK6UP/3A5TZ1Kgmi3w==",
+            "shasum": "e27b5f3247ba263f7fde7ae50014cbef4a4257f1",
+            "sha256": "d7601b3eb5b5dcc55f916390691b6bbe5bf9ded564bc51485de8395d6129a4b3",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/utils",
+            "version": "0.75.328",
+            "bytes": 29599,
+            "integrity": "sha512-g/oZZHm8GemPS2BOWsu+CHkdrgFWKobKcpMp9Vj/pOc17Mxv+KRk8QJBqdkJPlvy3oxbB/nHo0gn9zTgBI44mQ==",
+            "shasum": "e39192f87cc00c995602e5322a0df85f4ce25d8b",
+            "sha256": "d286529fa5f1f2c97c8a211b5f63f57280b4d3778e80ec016a17f9f74c49c0d0",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/docs",
+            "version": "0.75.328",
+            "bytes": 2855,
+            "integrity": "sha512-tzn/HfE3pJRmB3pZeA9IHwtWLcVEtjOnVEQOiU4ZFWTL7V6PuSuQFKAzBsIB5H8Bcq049xF4Q4+SLfJmOeElzA==",
+            "shasum": "43975674e6c855a4415ff14c3be5b8ba8020b66e",
+            "sha256": "cab61ffa9d2cb82bbe9cb6ed8f766444d87981990efdf3d8ac102160726ba443",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/cli",
+            "version": "0.75.328",
+            "bytes": 23870,
+            "integrity": "sha512-7T0thA9BQG2E+fozgzkrsepdk6SSphM5iHUegk6HISqyNIJ7fQmfONQzW8j7s48sKzgiCzH85WnNMKYocdJsFQ==",
+            "shasum": "270ab963a2d6ef426858fc920897f902f4c74196",
+            "sha256": "a4be962d606d7de5b602d10d74e0f026e5de8fdae834fd05adab26bb34dda53d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/whois",
+            "version": "0.75.328",
+            "bytes": 11539,
+            "integrity": "sha512-ppnLdU0kbcSZxv2MSSNRTjHEF+6G30WrlgpoJb6y7yxK7DvNnVSNCFgOWPtn0llQb7z/Nd/SPlZjyg7EE9nb4Q==",
+            "shasum": "62dc1f75175cb10520b737bd8db94794f83a8f49",
+            "sha256": "b78b4cc4ffd533454d438872ba71b715dc3ea64cca6e1a40e0a8f1df7beddb75",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/image",
+            "version": "0.75.328",
+            "bytes": 15148,
+            "integrity": "sha512-+Up4e+5B4IkmQ+fyOLf/Rm1x/BIXUkXU2wSvXuG31UJjXtJcp4dnL7jaxX1atb3k9TmU6Mi8y5+J+L7qOipmmg==",
+            "shasum": "376e9cc8acfbf13c776ff7a2473de26e52552919",
+            "sha256": "7e867101a9e8a18911f9c597506a39bbfc107d776a93c27f3bb93c35ce4cee24",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/storage",
+            "version": "0.75.328",
+            "bytes": 71470,
+            "integrity": "sha512-YupT53Im+jzWHhg0ErEP0qjHzmN8aoGSGwJcNiRBVkPNF87qpD/MCcy8Gf/c15Dmo4m8RknPhJmjxTnVsNo/dw==",
+            "shasum": "d3cd998ab49122b0a726a2bd2ba08a25ee239bf0",
+            "sha256": "cd24c346bac0c4f3e83017319649439e122da92609713d3e43ab965556ca4fe3",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/action-runner",
+            "version": "0.75.328",
+            "bytes": 2687,
+            "integrity": "sha512-G0jZURN9HaJmybjC75u7slDfSnuxei08MMEIjjv02Pc4hq1J2IKLrIF+ftLpPtjYRP4HtR7OTCTHS2PZk/tIcw==",
+            "shasum": "2f8aa823012b619e2a1278991d6b80afde1dd8b5",
+            "sha256": "3d387d20d98e3f7c96b71d1d3db774567d2495f7d77281c5a36a52904490ff03",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/env",
+            "version": "0.75.328",
+            "bytes": 35780,
+            "integrity": "sha512-VQ5UG9f1j2JPXDcGuygbUlcqztXGb157ItwxllCkWezuipX3IF1ZH/9UnwMqjImY6xb78mLp9A4ev4mgoXPn3g==",
+            "shasum": "bbebb999b82b171df88010bb256d099a9b41b48c",
+            "sha256": "32f16e2dc2424e0222a0a6cc3b32791b5d346ecf0db0fc2caa7850ce840c196a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/realtime",
+            "version": "0.75.328",
+            "bytes": 10379,
+            "integrity": "sha512-3XhnFmWSSobz5D9h+XU2BTPxH3OhVULaWjvkZagFdz+1IMMdu3T51F8YiDP2SVbVXy6zGE/kvXNvDQQxoCriQg==",
+            "shasum": "1966ac34dab7440f7fee66683991626cdf446d69",
+            "sha256": "7ffc6d45d22fa6c2bd15d81505e42956bbe5aa7c574353955540bf4d185140e8",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/tunnel",
+            "version": "0.75.328",
+            "bytes": 2958,
+            "integrity": "sha512-ev3TmbfREF2mnnbKaU9uLe2cTHM7PuMB4csbqBtVHCuNLyUKSUCiWya/BMc7dBEGos5W/dlOpnW+iC09xLnZ4Q==",
+            "shasum": "289f86187aadb1fc64b3253ddc39502b1cae80a6",
+            "sha256": "69b520db8ff135557b019f1c3fdb7bad0753b715a4f5e6c92419d7962d366a5d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/testing",
+            "version": "0.75.328",
+            "bytes": 31030,
+            "integrity": "sha512-WdtLvRqK04NvgZt0pShDsNPPvVnooGfONx01APtP/7db92ewypdE9KuQrYam9o35ZaW0azuQSSY1D9ZI1Zti1A==",
+            "shasum": "1f865c25a637b78ff6e92e452191205b23c4e58c",
+            "sha256": "36a965dd4df649d948dd25383efc7900dc832d3dbe163bef21b0c67b8a56a6cf",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/sites",
+            "version": "0.75.328",
+            "bytes": 8542,
+            "integrity": "sha512-Ir+W0Ublr/54cKwQd0UhfD5QjwzaeyRQs+F6uxdPy0caxxrCh8ZTS8zb351NAqfCKbs/L0vyXbckSDPwCraNrQ==",
+            "shasum": "a3e66500c0424d8f0aa7584328d765a12a9814ae",
+            "sha256": "de3b21ac7c8575cb0fdfe38ab3a3ea7da9b01a101d99fd0fc18406bc31d0775d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/defaults",
+            "version": "0.75.328",
+            "bytes": 4907237,
+            "integrity": "sha512-wtowhmVDtgaTH9l1v8Ui+6MmHYYWuWl+oVAuwIFSLNuxms/e7Rl3+iEXmnShi34FLCl8OFtfuVDv7+gi/sS+fg==",
+            "shasum": "4ac1dcf706d06152c662124a371bd73851aacced",
+            "sha256": "7e8a89ed982d3e58a5516418b8c824b05d13413c920011687a6a325f38b6049f",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/push",
+            "version": "0.75.328",
+            "bytes": 11762,
+            "integrity": "sha512-Bb7HTdu+QEqy4dpCzSFRBttMxd1csz7OURRg0MBj1UXREcw87GqKUChpeq+pE48WmDvqALgmxwjsFcsmKcjnjg==",
+            "shasum": "7d1a10d4e050eaf99f1d2dbb9873b15c0f1f2bd9",
+            "sha256": "d6a2956e1c9318a58a20fc90ea24f20240c50c3f25c4fe9d234a8fd689a66371",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/browser",
+            "version": "0.75.328",
+            "bytes": 26075,
+            "integrity": "sha512-sB6RSrcmu311ndca0fqH5JBVgpxtEsMlWY9gCf27rCVl8tuUvKAr5YtMiXDqr+CZmktmzdDAHnzXXaJ/LvUIww==",
+            "shasum": "a34e495b9caabfa8d37addc624d7c033b7143571",
+            "sha256": "58f2e3fcf39be54e37ae1bdc4937f1acc0b5dbeef007784dd3c3e4fdab6bd756",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/calendar-api",
+            "version": "0.75.328",
+            "bytes": 7133,
+            "integrity": "sha512-6Kro5kW0US5VgE0aIG4WAmXbLerzt/nRj7i8/7YrMxM8PotaiM6isMb1hekDEk0cS8Jz+ZlRv6XSvfUUrLRAHg==",
+            "shasum": "c2a5a1f758b63a838e717ca59c27f9c332c21838",
+            "sha256": "81931c3623c9fef8814e08c90169d6827beda9fb12ca1cbb66ec14a29ac98d47",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/audio",
+            "version": "0.75.328",
+            "bytes": 7908,
+            "integrity": "sha512-I99FI2dob2AqU0xDnzlo4ATwnPQEzUcUfERsMJfmHgo9jMvPf5v9IZ4NVF8v1fnzM5Ek1PxlAYhWg9jgLXRyoQ==",
+            "shasum": "2b76408dc4188f62969860684fa64fc53c31e2df",
+            "sha256": "2c17b3e59be9a45f1d5cc47317f0b9cd858b4f20078f89a1d7dc718ad125dd83",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/github",
+            "version": "0.75.328",
+            "bytes": 14374,
+            "integrity": "sha512-SDMmAjLP+teDcytV7G7XCGyyWdcP1zCcr1ikvQw95MNzUJplQ3eVpsHG14J+43Lvbz3LGaDjDDe97jql85zhTQ==",
+            "shasum": "7f10818ab7e01564bafc68d21e72cfff73653f1a",
+            "sha256": "b90e57ec9a6b541307d09c6e03fdc7c476bdc84eb86fd8fb00836d8dca8e3c43",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/cms",
+            "version": "0.75.328",
+            "bytes": 42734,
+            "integrity": "sha512-FlKwQaWAt4tDw2cKmjD0T8oErmVffX1iUowCj4F1HWBEX0Y9hHwEqS24ypJMjoQNJagI7B1bxst1ejQGGcz5Zg==",
+            "shasum": "307e70b86c1f66ec91616ea1bd1a47585b4d8ce6",
+            "sha256": "02801840b7cd12f78cd844c668e50662ec8edb0fda822fbf35c40c082ac7619d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/http",
+            "version": "0.75.328",
+            "bytes": 4969,
+            "integrity": "sha512-DElnFzgviJ8bEzXp2U+KhVOmuzwSq7w5NFWKr/Qeq9h4gaB0U4NSwfOyJy/hAgShWuIabgNyvwMBorl0erwOtw==",
+            "shasum": "893aae3f0d2a9090b7364e9130f67592f46d0b9b",
+            "sha256": "79541fa37729db4be7bfde3c208dd49e507d71fbb1bdaee51ba3d70d11dc6f29",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/mobile",
+            "version": "0.75.328",
+            "bytes": 85920,
+            "integrity": "sha512-8i1LzJe00BtVBiDQkjnHRykDJkgTa+KSJOrBGJwr0C1wmv8ypABzZQ/Gwvq7I6L2FRrkPuTDVDXdkwFrFDphhg==",
+            "shasum": "347cec9bafc6142e5592f061d32968b4b1a281cc",
+            "sha256": "07a38cce8bcd90d4261c8af4c0156f3eea5cc63524bc5f82d674acb55b8d9654",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/ai",
+            "version": "0.75.328",
+            "bytes": 57003,
+            "integrity": "sha512-7AaSoaGWMfa3vmJNQaw9XjRKSlz+hE2kys8IaiwNBR5R6h7bm73xbjOchw4rnFCc6bF91wRss/eVkzbF8uZGpA==",
+            "shasum": "b3bde39a586fc31628e4173d0dc08c7d0a60fddc",
+            "sha256": "b4357ea5a42c932102f724d1c3aea26632587ac0a5fdc0aa0a177217a327d58a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/arrays",
+            "version": "0.75.328",
+            "bytes": 12573,
+            "integrity": "sha512-EunQfWZ/EMvi1y05O5VuTNITb9TmVob7w7wvptZCiY0LMBsc9zHXOcpwv3+L3Xg+Dah2i44VZzavBRlq87bqqA==",
+            "shasum": "88c5d8cfad08df973aa2936b6ef6780c82895729",
+            "sha256": "aa8156384df5094273367e7b1f5b01b4c6b37c48053f9cf9c5c2e1db7386054a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/cloud",
+            "version": "0.75.328",
+            "bytes": 29865,
+            "integrity": "sha512-+MH1zIT/9QoNLuBEyi+bp46NQduMoLh2T/jGJuNQuoFKUQ+XNz9g554UyLNQCD9IF5gvs/jAXArMnnqtayybng==",
+            "shasum": "e800631eb76f7317651e507a30f2f853f3c56e76",
+            "sha256": "2d26ed0ebffba2c6581f454b232e84fc1fa4a00a8ed3352454e755e24e3b7335",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/actions",
+            "version": "0.75.328",
+            "bytes": 216708,
+            "integrity": "sha512-PPGfWDPogQjCtbD0rJF9x5IwYGK3+T1hrsR4OyoMbFojLmd4KwCoVBD8OagokDOuDs4zKbeUQj65GIFU/OQ7hQ==",
+            "shasum": "4779c813d833a5768b7d55976e1859bad3ac776c",
+            "sha256": "5a873649fa80c455f50b4ca2a48d5c0b60db9d5979672dd4bf6fbe5b7629d21b",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/queue",
+            "version": "0.75.328",
+            "bytes": 57759,
+            "integrity": "sha512-RJznBX4EJd9pmxzixsiHIzD7zMJu0bedc3XJFbky2dVct18K2VurCNKLxB/eYYpCg4vHtx6RVMNgYpK9FzVJhQ==",
+            "shasum": "59a5215340f8ff8e08d680b7c24dc696c52a8eaf",
+            "sha256": "32b938e23b123c8331f591366d83327ab283a981655c69db656e2e28055cea63",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/registry",
+            "version": "0.75.328",
+            "bytes": 2207,
+            "integrity": "sha512-qmCVrKH+pkUKnm/VeIogdmRYLRce9w+PXRLZ0uv31edxDDc8yp5zgK9MHT9c0Swf8XvyC9EE1oTO9ef8jx4syg==",
+            "shasum": "796d8bb6f9b1aafb2d89eb328615d14c6e871bcc",
+            "sha256": "13de0b80d98db8dd5b8f064a58689c6f1a20e4fa55c7794be79557e248b4c136",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/api",
+            "version": "0.75.328",
+            "bytes": 16641,
+            "integrity": "sha512-Ubf46eF+DX3Pbl5/1dmC3QxWh0ZsTmM2fH+EvJqlm4BON+rzej0YT8Se/n7q4pu4IVFseyRezO4bTqkSYspwaA==",
+            "shasum": "f75493fadff1195d1e5a1522811db3838afe298c",
+            "sha256": "378cbb7f684ae2c16633813d436edb469c76731c1a92ea05472e00370e3de741",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/skills",
+            "version": "0.75.328",
+            "bytes": 11542,
+            "integrity": "sha512-2T/miwlh9PXvDC/S4hvfrs9zJhpDvWQuOSf+LBWNOMQWCyZ6zoZHXOUbKDiUO2aAZ3WHXsmPnngJ4ZUuXj7AUA==",
+            "shasum": "f05a2e611fad41773b412aa6adfcbde2054b363e",
+            "sha256": "c6f19ff9e278f82cf3a122964362e1a6e651117a447db5977e0aa7a301c825f9",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/socials",
+            "version": "0.75.328",
+            "bytes": 36521,
+            "integrity": "sha512-i16NWrkvAJlsFpn/WdFQUePHZzzpGhKXsdyWCypM3ROXddDPP4o5fJDtqe2iWdwRGI7i94r8myIGpxfSzWdYuQ==",
+            "shasum": "7d6e8361265ca72622ab3e17cf6f4f992d30b5a1",
+            "sha256": "18a3f188b848d794b2da0cadc2a7cfbe41e2f09224e7111a15627b1b724f9b64",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/orm",
+            "version": "0.75.328",
+            "bytes": 170268,
+            "integrity": "sha512-VoT96/ypgmeBJXfrNqwTeOa3nkvF18A4Z5iTS7JcKJfFY/gU7NM48etXb+oUWim9SB1iJJgeYhCrMr3x0OEDpw==",
+            "shasum": "1dd539a2ce8aff142948ae37269591ff2d24f9bc",
+            "sha256": "d2c78169d6a81bb4f6d4789d00b6249def540107789b1fd96d3b72ba84c7ca70",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/build",
+            "version": "0.75.328",
+            "bytes": 108814,
+            "integrity": "sha512-b0ycAvNzoZV0oo5bIuMALqe2pKtokrpLrAELxhgrGmEnHBxOPt/AJQ/0DZ6KXJmCr1GFPP0dMhOAObSbBXOmow==",
+            "shasum": "c3571974715f3ffe83866c2cdde61551410d8ea9",
+            "sha256": "d3fa181761a992e376f819198864e84892309df7c1d7f11c6cd3c72e76a38f9a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/newsletter",
+            "version": "0.75.328",
+            "bytes": 12385,
+            "integrity": "sha512-mVHOfg6w1UN9PW6uHGf9AbeemDUBKr+AM7TaAmT2hdJEj+0eg2vBOmOlpCuaU8ZRkDrY5Eyosju0CSAXAQQWxg==",
+            "shasum": "90398dc04669d461c55abced18ceaf6c29c1d8f0",
+            "sha256": "b69bbdf10c1866b421a2eae7b3ba52d7a37ac8445b52aa41786e3f6d35b33d66",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/events",
+            "version": "0.75.328",
+            "bytes": 12979,
+            "integrity": "sha512-iuwbET8u5aNy5o8RF1RtdNfsqlr9YrHfRYUt7qresd31Q46kfT1eqI0l3CFHok/P6LJRWuMJHcGXANbZH1hPaA==",
+            "shasum": "e152c79f1511248a4da1f80dbdf4715ed9d05aea",
+            "sha256": "2a746a4e1d785ad3c566791321f60de4287107116ec254263d2cff91e4b4f131",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/i18n",
+            "version": "0.75.328",
+            "bytes": 21220,
+            "integrity": "sha512-fWbM2tzFK4qWg+CEW/fWTSh9vQRWuzhRdiRadh7hDQ63UgX6oQD00w818X17tHRh95eJtGMVfIFBuL6DbdC0gA==",
+            "shasum": "8b26532c4275c2fa0ecdafb664a90bedef19f388",
+            "sha256": "f82104f8fdf06767aab777732c560ebf8a1ce99749c246b76a05b05e90f6506d",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/dns",
+            "version": "0.75.328",
+            "bytes": 7251,
+            "integrity": "sha512-fT/iDTBDpt+Z4bTsdshLm+hh9NN3FBmFXoKul1IbdD4mPZXBrv1BgOySA/Kc8XaU0FEycxjX5Cxnx/IZKyNrpQ==",
+            "shasum": "ff853fddfc0ce4a75785d3c6c5997bb4508bc1e6",
+            "sha256": "bda50abff930f5159ed05303b951bc0e67a7a8856a26c9dec76da0516474baa7",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/collections",
+            "version": "0.75.328",
+            "bytes": 2799,
+            "integrity": "sha512-2/EJjkiB/sRubUfr1OmZcW0TYMlbhRETJ28cviT69DzrV98kzjAXHSoBrTev87T5Sa/V3j5M7UpZP3R24khq1w==",
+            "shasum": "20fd4c42a6dcba9e58b905d19a39ed1d371709d2",
+            "sha256": "5922da9eadd61cf07b9982d889ffe7a66fc4f4f972c41d70e34e085ac2542152",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/query-builder",
+            "version": "0.75.328",
+            "bytes": 6512,
+            "integrity": "sha512-U8LbjRjB8R/XfbFATnpkPmUYnNgMNbaEOCV/VYwZpnlN64ED6iOWIcwXI67+2jTHYMzR/Ou1qTGP+GhVteMIEQ==",
+            "shasum": "f59a66d2743ce13bd39c65b29f9792c45bad2f26",
+            "sha256": "af4a73616da02f8369c6837f2418279d1ef519a73b230f8736ea933eb52795d6",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/logging",
+            "version": "0.75.328",
+            "bytes": 10955,
+            "integrity": "sha512-acCxPgywK0jW92Lyyp7+hwEZxkwbq28MZmOerDVJI7HiFRmNEYD3RSn+lIq4pc72//yBUlKTqcxQmMeZtb4WNQ==",
+            "shasum": "1f6cb860168a0da149c80e7ec504b37074c73d22",
+            "sha256": "899757d98ebe428e5ed1f38b891e5673c174b710dcbe1a95c84edd1e5b653bfc",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/notifications",
+            "version": "0.75.328",
+            "bytes": 29315,
+            "integrity": "sha512-3uecgBiwtIX/+i+UTZSj6Z4GVs/hVywZak1abMKixniW/TgsgN1MXm3jjXcTA/95Bvthf1RMkMz1cjgCsT0aeA==",
+            "shasum": "d6f78951692fe8248f033f2dc1eaa6b1383ad7da",
+            "sha256": "afb2b86b6012ee825ecaf70bcde0509684a48a97d3dc5614602304dffddad134",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/model-meta",
+            "version": "0.75.328",
+            "bytes": 5309,
+            "integrity": "sha512-WsdO96Ign5PWlZ/HorjZhyvrTxgreNocoSc4b6Tm0cj+cJzoTHDN1LI4I2FEdgdLoElkglG0REc42e9AoK6deg==",
+            "shasum": "9493327189d27cca2f0d86926a62f2b6a48fceea",
+            "sha256": "7b1d1cf06fbe4438436f97b9c07f82a11c487b44d22c9e0589e8bbdbf17e2242",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/email",
+            "version": "0.75.328",
+            "bytes": 51207,
+            "integrity": "sha512-IiQtQOAMKBIJYqMFz81p76lae4Sib/Vaq4vi5CAu+Mwy3mXwahN1omZVYXnfl3AHTqE55G+92BuRI4KudGloEw==",
+            "shasum": "3b5a791e1902f9d3722f59a29b872268c0967f83",
+            "sha256": "6447562571930294fc67cc694cd93e2cb8b76a7d2d129d15185add59c0d24494",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/git",
+            "version": "0.75.328",
+            "bytes": 3636,
+            "integrity": "sha512-oykKHY7k7liMj24Z1AjrUyaU1Gxkpj3NoUquBDfrlAZ/CC50GGS35JFw9R+x8uz7UmvvXVmRpd3lrENMLKZAaw==",
+            "shasum": "f4a319fb6b3a5c10ad12dd24a3af173407423b6f",
+            "sha256": "05a1e608f3dff46411b6b19a752a25146426f63e441276b3675e42d7bc3fca1a",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/validation",
+            "version": "0.75.328",
+            "bytes": 16402,
+            "integrity": "sha512-DhF0HV1WxKTifIT2xCEZMx45c/uLVSmXqjiDyuwFwe692rWurTz3CqIQMABfSOSDy/57nXHvogisID0EJK9lZg==",
+            "shasum": "d0a5a0553e820e3517b8b2c2cb9da9671c6570f9",
+            "sha256": "189a4807cfd77825563616121c9e54765bfc1bf00a3808f5671df1724f8e1272",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/cron",
+            "version": "0.75.328",
+            "bytes": 5364,
+            "integrity": "sha512-X8s+yYw06LbU/mGwrqJpY7MnYfqHiPVIUsx5PqcosP3e+Xm/nrsOFnU2QNHJG9biT+jO21Oydq7ET/sPmK83Lg==",
+            "shasum": "90e737c70adbf878212a0ca2476da684db7278ff",
+            "sha256": "b8e2c08ca424e13f212ad81f330047859c9cec3c9fe8a6c5dcc7094d50e621fa",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/analytics",
+            "version": "0.75.328",
+            "bytes": 8001,
+            "integrity": "sha512-PCx+BmeJspEnZw9TEfNyrXhmJiVM2WNHu6OouYCrwf9Yizd5kIJlAbkjMk/2yCSMZoFxQxiBwwaeMizyQJhN1g==",
+            "shasum": "b4b0f7a1444f59b142ef42e616a0082664ddd014",
+            "sha256": "f952225c1f4caa123b6917237c8dad9f63fad6e201cbbde6656bfe17b1b3bd75",
+            "gitHead": null
+          },
+          {
+            "name": "@stacksjs/router",
+            "version": "0.75.328",
+            "bytes": 73934,
+            "integrity": "sha512-YnOjoZAf9xQaAiZ2RtXS962oq64dRhRVcyjnDbIH0vAZjynCS9KOJ9oQT3nw7Srn73Sl2WCMiUMk6j71z1QyRg==",
+            "shasum": "b19fa0b8bb653c0d2b212e667d46f48ba06fa099",
+            "sha256": "76f4f245abdfdc1cc5a7b964b65922ab1c3386d410ec535cd674a5efa37d30b9",
+            "gitHead": null
+          }
+        ],
+        "packageCount": 85,
+        "checks": [
+          "public metadata and archive manifest identity",
+          "every original archive SHA512 and SHA1",
+          "installable dependency protocols and compatible framework cohort",
+          "verified STX frontend cohort",
+          "published declaration preflight correction"
+        ]
+      },
+      "originalCLIAssets": {
+        "version": "0.75.328",
+        "commit": "27b448ff4a7f5bac07f7b813ee47c88bbe88bfd2",
+        "apiDigestsAndReleaseManifestVerified": true,
+        "assets": [
+          {
+            "name": "buddy-darwin-arm64.zip",
+            "bytes": 47207960,
+            "sha256": "95c416ef70d7f1ba305941a781b888af0de24fda740b55e6b533371fac42da04",
+            "zipCrcsVerified": true
+          },
+          {
+            "name": "buddy-darwin-x64.zip",
+            "bytes": 49655682,
+            "sha256": "65bf9d2ef01a16c1a751d74a19213d69586e4b185c32c08e68beab217569078d",
+            "zipCrcsVerified": true
+          },
+          {
+            "name": "buddy-linux-arm64.zip",
+            "bytes": 57860336,
+            "sha256": "f6930acde86cab4e9ae2d824d24366f2568ab59359f53c5ff65118e97e8a8ba3",
+            "zipCrcsVerified": true
+          },
+          {
+            "name": "buddy-linux-x64.zip",
+            "bytes": 57995264,
+            "sha256": "adedec5703f93864c088dd8f9fd4691e5059282349a7b57d1dd0b92413616893",
+            "zipCrcsVerified": true
+          },
+          {
+            "name": "buddy-windows-x64.zip",
+            "bytes": 60925553,
+            "sha256": "0592906b4d18ad11389afe6f1ea083c5d8513434a54d458f7bcf3ad0ee96deb6",
+            "zipCrcsVerified": true
+          },
+          {
+            "name": "release-manifest.json",
+            "bytes": 994,
+            "sha256": "98aa4721bc2eadc79cb360c7a618f4d640dfbd2ebebcd3ab6fb3fd60e892ede3",
+            "zipCrcsVerified": false
+          }
+        ]
+      },
+      "nativeCLIConsumer": {
+        "platform": "darwin-arm64",
+        "executedInGameDirectory": true,
+        "output": "buddy/0.75.328 stacks/0.75.328 darwin-arm64 bun-v1.4.4"
+      },
+      "previousUnpublishedAttempt": {
+        "version": "0.75.327",
+        "reason": "Canonical inventory freshness rejected by CI before publication. Historical failed run and tag retained; no retagging or bypass."
+      }
+    }
+  },
+  "game": {
+    "normalUpgrade": "./buddy upgrade --version 0.75.328",
+    "frozenBunInstall": true,
+    "frozenPantryInstall": true,
+    "installedDialogPanelMatchesOwningSource": true,
+    "units": {
+      "pass": 426,
+      "fail": 0,
+      "files": 65,
+      "expectations": 76711,
+      "elapsedSeconds": 313.88
+    },
+    "lint": {
+      "files": 524,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": {
+      "app": true,
+      "tools": true,
+      "stxScripts": 2,
+      "templateExpressions": 262,
+      "errors": 0,
+      "warnings": 0
+    },
+    "originalAssets": {
+      "frames": 11370,
+      "interfaceImages": 52,
+      "pcmAudio": 6,
+      "provenanceFiles": 95
+    },
+    "productionBuild": {
+      "pages": 1,
+      "elapsedSeconds": 42.81
+    },
+    "focusedDialogBrowser": {
+      "reports": 3,
+      "steps": 135,
+      "errors": 0,
+      "media": {
+        "schemaVersion": 1,
+        "captures": [
+          {
+            "viewport": {
+              "width": 1280,
+              "height": 720,
+              "scale": 1,
+              "reducedMotion": false
+            },
+            "screenshot": {
+              "sha256": "f3f2e72619926e933ff3abbf7ce981ac8ee142a63ed32057877ad647b254d839",
+              "bytes": 310342,
+              "width": 1280,
+              "height": 720
+            }
+          },
+          {
+            "viewport": {
+              "width": 812,
+              "height": 375,
+              "scale": 2,
+              "reducedMotion": true
+            },
+            "screenshot": {
+              "sha256": "5b26138034b60ff1b99c181d1c209daedb47102f0ff4287b89d3bdeed052c976",
+              "bytes": 344502,
+              "width": 1624,
+              "height": 750
+            }
+          },
+          {
+            "viewport": {
+              "width": 320,
+              "height": 568,
+              "scale": 1,
+              "reducedMotion": true
+            },
+            "screenshot": {
+              "sha256": "ca6015a8de649960b1f884bdbeaf665358094baa5518f6b60ebf712effeadbf9",
+              "bytes": 67019,
+              "width": 320,
+              "height": 568
+            }
+          }
+        ],
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    },
+    "manualProductionReview": {
+      "outsideClickRestoresOpener": true,
+      "seedPlaceholderForeground": "rgb(167, 180, 165)",
+      "panelBackground": "rgb(26, 49, 40)",
+      "desktopAndShortAndNarrowCapturesReviewed": true,
+      "saveRestoredAcrossSDKUpgrade": {
+        "seed": 2,
+        "scenario": "computer rival",
+        "buildings": 5,
+        "population": 44,
+        "pausedAt": "2:17",
+        "log": 7,
+        "plank": 28,
+        "stone": 22,
+        "completed": [
+          "woodcutter",
+          "forester",
+          "stonecutter",
+          "sawmill"
+        ]
+      },
+      "workingAreaRecovery": {
+        "building": "woodcutter",
+        "oldArea": [
+          29,
+          46
+        ],
+        "oldStatus": "Nothing left in the working area",
+        "newArea": [
+          48,
+          50
+        ],
+        "pausedAt": "5:12",
+        "log": 16,
+        "woodcutterOutput": 7,
+        "woodcutterOutputCapacity": 8,
+        "status": "Working",
+        "normalUserSpeed": "4x",
+        "saved": true
+      },
+      "limits": "Supplementary normal UI playthrough, not a complete human victory or Gold rules/timing qualification."
+    }
+  },
+  "checksums": {
+    "gameFiles": {
+      "bun.lock": {
+        "bytes": 66675,
+        "sha256": "ea9916c73e07a0a4d11f3fa0925c35dd9460dd701e6eb61f0d1fa5927c9484ec"
+      },
+      "pantry.lock": {
+        "bytes": 4412,
+        "sha256": "b4339d524bcbe10fb99b6762f1c130a45b4883b016b88ee16c0c1b77c66e3677"
+      },
+      "package.json": {
+        "bytes": 4342,
+        "sha256": "f3bd8674e83b50cea08c0637fbdf56a58b0a59bf596e9ac386efc47d5cffdff6"
+      },
+      "resources/views/index.stx": {
+        "bytes": 49044,
+        "sha256": "c5a033a5c6e3c63b344309c58ebacc38c3eb59ec3bc43e0725d0bae0375e45c2"
+      },
+      "tests/browser/restart-dialog.ts": {
+        "bytes": 10751,
+        "sha256": "6e6480cffdce9c51874c5d1473e683ca7634dfecd827ae37a3686d0faf96beb6"
+      },
+      ".github/workflows/ci.yml": {
+        "bytes": 4909,
+        "sha256": "bcf222dca44333174a822eff646650c600770f6ed5eca68f58d8146d81bb98fe"
+      }
+    },
+    "privateLocalEvidence": {
+      "game-final-lint.log": {
+        "bytes": 301,
+        "sha256": "0997a93ee09dcd37157e797047e282d6653fe2d07bf732a411f5ea378c00390f"
+      },
+      "game-final-types.log": {
+        "bytes": 543,
+        "sha256": "6bc3f3239a355bd2270a1b931a9e7b683767a7b4b4eba76b18f58f5bdb36e37c"
+      },
+      "game-final-assets.log": {
+        "bytes": 331,
+        "sha256": "ccd0cd983844062a5d5a9066ec01224b09db8f8ce7ab9bd1f55496c212902ce7"
+      },
+      "game-final-units.log": {
+        "bytes": 49308,
+        "sha256": "0a3998b0f93b6574cce072b14054bacc99870871bb5e60658d1e86ec57dd839f"
+      },
+      "game-build.log": {
+        "bytes": 1366,
+        "sha256": "adc93e258c5e54206b6fa3e9cc7ba64ec23cadc806b7128e7756f0194c855fb7"
+      },
+      "game-upgrade.log": {
+        "bytes": 4420,
+        "sha256": "60bfeb1a366c4ba1251d5d9ba311b4d37b535bb3c0aa087aa77b1141596905f2"
+      },
+      "game-pantry-refresh.log": {
+        "bytes": 180,
+        "sha256": "fcb2d8d08ab116f94613de11d3ff2ad2dc5cabbf1123fd57c9594d95bc0e980f"
+      },
+      "game-pantry-frozen.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "game-final-frozen.log": {
+        "bytes": 180,
+        "sha256": "d33b2f3c457da96b2b2a2b7622b4da711c657b7b2db41af316bad18ca2178ebc"
+      },
+      "game-installed-cohort.log": {
+        "bytes": 399,
+        "sha256": "a44970191aebe4b36e155ab91433c4f84a98daade37f426eb2e62b63990cde11"
+      },
+      "framework-native-consumer-version.log": {
+        "bytes": 55,
+        "sha256": "b3b2c67ea7413cfc466f55048623664cf3df08fadb99068b21ff055bb20b4a0c"
+      },
+      "game-dialog-green.log": {
+        "bytes": 292,
+        "sha256": "2b0f179c98e6cdd02636428650f4e41f1cdd664f6d7bd27a6fdfe8e883ac5aa1"
+      },
+      "production-dialog.jpg": {
+        "bytes": 107621,
+        "sha256": "815712033a6bc316ae5cddc9d0500f81cd208664a18cc418eb638628053af14b"
+      },
+      "production-wood-recovery.jpg": {
+        "bytes": 140450,
+        "sha256": "b54c9b1b837bc4eb492d023ff6089c7a2250bbceaedaa28680b07000e401f469"
+      },
+      "source-red.log": {
+        "bytes": 2422,
+        "sha256": "713618be95bc4341d12b5e16c72aaad1292b504f2df06ab635772411c6312580"
+      },
+      "source-green.log": {
+        "bytes": 2701,
+        "sha256": "4a7ada9af2bc1353b6ca4d2dd2f55d705082bb11e5a65a532aa83834ee82a979"
+      },
+      "ci-bun-pointer.log": {
+        "bytes": 1091,
+        "sha256": "0069f29d9ea8907dc1586c721b65cb108c26adde84a6e8c747006439229a17b5"
+      }
+    }
+  },
+  "limits": [
+    "Original media remains private/local. CI publishes only explicit diagnostic JSON and server-log paths, with no original rasters.",
+    "The separate VS Code Marketplace publication needs its existing publisher credential. STX package/DevTools and Stacks npm/native CLI release gates succeeded.",
+    "This UI correction does not establish original Gold rules or timing, all-seed victory, complete campaigns or native game presentation."
+  ],
+  "localFullBrowser": {
+    "identity": {
+      "kind": "local complete browser-suite diagnostics"
+    },
+    "suiteCount": 17,
+    "steps": 681,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      },
+      "restart-dialog": {
+        "reports": 3,
+        "steps": 135
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 615555.653292,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": {
+      "1": 128815,
+      "2": 131119
+    },
+    "observedWorldPixelChecksPerScale": {
+      "1": 772,
+      "2": 3076
+    },
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+  }
+}

@@ -56,6 +56,7 @@ jobs:
           bun tests/browser/shadows.ts
           bun tests/browser/terrain-cache.ts
           bun tests/browser/terrain.ts
+          bun tests/browser/restart-dialog.ts http://127.0.0.1:3450/
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
       - name: Retain non-media browser diagnostics
@@ -95,5 +96,7 @@ jobs:
             storage/framework/runtime/shots/terrain-cache-media.json
             storage/framework/runtime/shots/terrain.json
             storage/framework/runtime/shots/terrain-media.json
+            storage/framework/runtime/shots/restart-dialog.json
+            storage/framework/runtime/shots/restart-dialog-media.json
             storage/framework/runtime/browser-server.log
           if-no-files-found: ignore

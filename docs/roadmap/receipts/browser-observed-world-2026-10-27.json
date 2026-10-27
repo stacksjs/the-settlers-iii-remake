@@ -277,5 +277,106 @@
     "Original Gold executable observations are unavailable.",
     "Native parity and unsupported reference object kinds remain separate work."
   ],
-  "ci": "pending source publication"
+  "ci": {
+    "identity": {
+      "kind": "original immutable CI ZIP, API digest and every CRC verified",
+      "head": "07ea4d1fb3bbf4adbda410b146a215b9f616a33e",
+      "runId": 40465598559,
+      "artifactId": 12717311168,
+      "archiveBytes": 33996,
+      "sha256": "89f82fb24c52b5529de13782d5afde4e72228850ad91c0b4e2b57573cde19f97"
+    },
+    "suiteCount": 16,
+    "steps": 546,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 611229.527778,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": {
+      "1": 128815,
+      "2": 131119
+    },
+    "observedWorldPixelChecksPerScale": {
+      "1": 772,
+      "2": 3076
+    },
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "units": {
+      "passed": 426,
+      "failed": 0,
+      "files": 65,
+      "seconds": 316.57
+    }
+  }
 }
