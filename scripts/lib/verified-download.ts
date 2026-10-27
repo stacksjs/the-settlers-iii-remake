@@ -7,12 +7,16 @@ class DownloadResponseError extends Error {
 /** Inactivity is measured between headers/received bytes, not total transfer time. */
 async function transfer(url: string, deadline: AbortSignal, idleTimeoutMs: number): Promise<ArrayBuffer> {
   const request = new AbortController(), signal = AbortSignal.any([deadline, request.signal])
+  const started = performance.now()
   let phase = 'response headers', received = 0, timer: ReturnType<typeof setTimeout> | undefined
   let reader: ReadableStreamDefaultReader<Uint8Array> | undefined
   let body: ReadableStream<Uint8Array> | null = null
   const watch = (): void => {
     clearTimeout(timer)
-    timer = setTimeout(() => request.abort(new Error(`Demo transfer stalled awaiting ${phase} (${received} bytes received)`)), idleTimeoutMs)
+    timer = setTimeout(() => {
+      console.warn(`[DEBUG-download-221] Inactivity at ${Math.round(performance.now() - started)}ms: ${phase}, ${received} bytes`)
+      request.abort(new Error(`Demo transfer stalled awaiting ${phase} (${received} bytes received)`))
+    }, idleTimeoutMs)
   }
   try {
     watch()
@@ -33,12 +37,19 @@ async function transfer(url: string, deadline: AbortSignal, idleTimeoutMs: numbe
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength }
     return bytes.buffer
   }
+  catch (error) {
+    if (deadline.aborted) throw new Error(`Demo total download deadline reached during ${phase} after ${received} bytes (${Math.round(performance.now() - started)}ms)`, { cause: error })
+    throw error
+  }
   finally {
     clearTimeout(timer)
+    const stalled = request.signal.aborted
+    if (stalled) console.warn(`[DEBUG-download-221] Retiring at ${Math.round(performance.now() - started)}ms: ${phase}, ${received} bytes`)
     request.abort()
     try { if (reader) await reader.cancel(); else await body?.cancel() }
     catch { /* A transport failure can already have closed its reader. */ }
     reader?.releaseLock()
+    if (stalled) console.warn(`[DEBUG-download-221] Retired at ${Math.round(performance.now() - started)}ms`)
   }
 }
 
@@ -54,9 +65,9 @@ export async function verifiedDownload(path: string, url: string, expectedSha256
     // One deadline covers every attempt; retries never relax byte verification.
     const signal = AbortSignal.timeout(120000)
     for (let attempt = 0; ; attempt++) {
-      try { bytes = await transfer(url, signal, idleTimeoutMs); break }
+      try { bytes = await transfer(url, signal, idleTimeoutMs); signal.throwIfAborted(); break }
       catch (error) {
-        signal.throwIfAborted()
+        if (signal.aborted) throw error
         const retryable = error instanceof DownloadResponseError ? [500, 502, 503, 504].includes(error.status) : !(error instanceof RangeError)
         if (!retryable || attempt === 2) throw error
         console.warn(`Original demo transfer attempt ${attempt + 1} failed; retrying within the original deadline: ${String(error)}`)
