@@ -350,8 +350,106 @@
     "sourceNote": "Complete source-landscape browser gate passed before the checksum-preserving loop optimization. Current-code focused browser verification and fresh pushed CI qualification follow that optimization."
   },
   "verifiedAt": "2026-10-27T00:38:14.869389+00:00",
-  "pending": [
-    "Fresh pushed-version CI success",
-    "Original immutable CI artifact digest/CRC and full-suite qualification"
-  ]
+  "pending": [],
+  "finalQualification": {
+    "verifiedAt": "2026-10-27T01:06:55.578079+00:00",
+    "status": "Published implementation passed all gates and original artifact qualification.",
+    "runUrl": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40427819467",
+    "runAttempt": 2,
+    "initialAttempt": "The original demo download reached the unchanged 120000ms deadline before conversion or tests. A normal rerun of the unchanged version downloaded and verified the same pinned archive successfully.",
+    "units": {
+      "pass": 413,
+      "fail": 0,
+      "files": 64,
+      "seconds": 253.9
+    },
+    "browser": {
+      "identity": {
+        "kind": "original immutable CI ZIP, API digest and every CRC verified",
+        "head": "0b389bd949497f02379c887f9da2f3bab4ac7e22",
+        "runId": 40427819467,
+        "artifactId": 12701402846,
+        "archiveBytes": 32567,
+        "sha256": "82e55dcb7d7cd80ca32eb6ecd8e254cee3bafd23e7f3cf63fe8ff66318b51935"
+      },
+      "suiteCount": 16,
+      "steps": 510,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 4,
+          "steps": 72
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 610752.970528,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": 120506,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    },
+    "issue": "Closed as completed after qualification. Mixed-face transition selection continues in issue 220."
+  }
 }

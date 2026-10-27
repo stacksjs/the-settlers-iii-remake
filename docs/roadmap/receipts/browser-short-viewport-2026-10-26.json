@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-27T01:08:58.164169+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/90",
+  "status": "Local correction passed. Publication and full CI qualification pending.",
+  "sourceBase": "0b389bd949497f02379c887f9da2f3bab4ac7e22",
+  "reproductions": [
+    {
+      "case": "812x375",
+      "failure": "The world extends below the visible viewport",
+      "rootCause": "A 650px game-shell minimum overrides the dynamic viewport height while the original HUD scales against the actual viewport."
+    },
+    {
+      "case": "812x375",
+      "failure": "Production figures are clipped by the original content opening",
+      "rootCause": "The four-column table cannot fit a narrow source-art opening."
+    },
+    {
+      "case": "812x375",
+      "failure": "Map caption and settlement dispatch overlap on the short viewport",
+      "rootCause": "Vertical overlay offsets occupy the same band after the world correctly fits the available height."
+    },
+    {
+      "case": "812x375",
+      "failure": "Settlement details require horizontal scrolling to read their labels",
+      "rootCause": "Long headings retain their minimum word width inside a narrow source-art opening."
+    }
+  ],
+  "implementation": [
+    "The desktop shell uses the real dynamic viewport height. The existing portrait layout remains a vertically scrollable game.",
+    "The production table retains its table and column/row headers, while narrow content openings show Stock, Made and Used beside each figure in vertically arranged rows.",
+    "Long labels wrap only within narrow original openings. Larger layouts retain their existing text flow and source-art geometry.",
+    "Short desktop layouts place the caption near the top and compact the dispatch padding so their text no longer overlaps.",
+    "The maintained control-frame gate now covers two additional short viewports and rejects world overflow, mismatched HUD/world height, escaped figures, horizontal label scrolling and overlapping overlays."
+  ],
+  "localChecks": {
+    "lint": {
+      "files": 513,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": "Application, tools and STX passed; 258 template expressions and two scripts, zero errors/warnings.",
+    "productionBuild": "Passed after scoping long-label wrapping to narrow panels; 36.36 seconds, one generated page.",
+    "browser": {
+      "status": "passed",
+      "counts": {
+        "control-frame": {
+          "reports": 6,
+          "steps": 108
+        },
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        }
+      },
+      "steps": 190,
+      "errors": 0,
+      "scope": "Focused production UI browser gates after the final correction, including scoped narrow-label wrapping. Full 16-suite CI required after publishing."
+    }
+  },
+  "layouts": [
+    {
+      "viewport": "812x375",
+      "steps": 18,
+      "measured": {
+        "profile": 480,
+        "viewport": "812x375",
+        "panel": {
+          "width": 68.28125,
+          "height": 169.703125
+        },
+        "world": {
+          "top": 134,
+          "bottom": 375,
+          "height": 241
+        },
+        "pageHeight": 375,
+        "viewportHeight": 375,
+        "captionBottom": 222,
+        "dispatchTop": 298.40625,
+        "productionWidth": 47.234375,
+        "contentWidth": 59.234375,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    },
+    {
+      "viewport": "1024x600",
+      "steps": 18,
+      "measured": {
+        "profile": 480,
+        "viewport": "1024x600",
+        "panel": {
+          "width": 132.03125,
+          "height": 328.140625
+        },
+        "world": {
+          "top": 134,
+          "bottom": 600,
+          "height": 466
+        },
+        "pageHeight": 600,
+        "viewportHeight": 600,
+        "captionBottom": 222,
+        "dispatchTop": 523.40625,
+        "productionWidth": 102.546875,
+        "contentWidth": 114.546875,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    },
+    {
+      "viewport": "1280x720",
+      "steps": 18,
+      "measured": {
+        "profile": 480,
+        "viewport": "1280x720",
+        "panel": {
+          "width": 166.03125,
+          "height": 412.640625
+        },
+        "world": {
+          "top": 134,
+          "bottom": 720,
+          "height": 586
+        },
+        "pageHeight": 720,
+        "viewportHeight": 720,
+        "captionBottom": 393.34375,
+        "dispatchTop": 617.40625,
+        "productionWidth": 132.046875,
+        "contentWidth": 144.046875,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    },
+    {
+      "viewport": "1280x850",
+      "steps": 18,
+      "measured": {
+        "profile": 600,
+        "viewport": "1280x850",
+        "panel": {
+          "width": 210.015625,
+          "height": 513.125
+        },
+        "world": {
+          "top": 134,
+          "bottom": 850,
+          "height": 716
+        },
+        "pageHeight": 850,
+        "viewportHeight": 850,
+        "captionBottom": 422.859375,
+        "dispatchTop": 747.40625,
+        "productionWidth": 175.34375,
+        "contentWidth": 187.34375,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    },
+    {
+      "viewport": "1440x960",
+      "steps": 18,
+      "measured": {
+        "profile": 768,
+        "viewport": "1440x960",
+        "panel": {
+          "width": 232.953125,
+          "height": 586.703125
+        },
+        "world": {
+          "top": 134,
+          "bottom": 960,
+          "height": 826
+        },
+        "pageHeight": 960,
+        "viewportHeight": 960,
+        "captionBottom": 459.28125,
+        "dispatchTop": 857.40625,
+        "productionWidth": 200.453125,
+        "contentWidth": 212.453125,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    },
+    {
+      "viewport": "320x568",
+      "steps": 18,
+      "measured": {
+        "profile": 768,
+        "viewport": "320x568",
+        "panel": {
+          "width": 207.578125,
+          "height": 522.78125
+        },
+        "world": {
+          "top": -430,
+          "bottom": -10,
+          "height": 420
+        },
+        "pageHeight": 1332,
+        "viewportHeight": 568,
+        "captionBottom": -283,
+        "dispatchTop": -113.1875,
+        "productionWidth": 177.3125,
+        "contentWidth": 189.3125,
+        "openingsContained": true,
+        "fixedControlsDuringScroll": true
+      }
+    }
+  ],
+  "visualReview": {
+    "shortLandscape": "812x375 current production raster inspected locally.",
+    "controlFrames": {
+      "schemaVersion": 1,
+      "rasterPublication": "withheld-pending-redistribution-evidence",
+      "captures": [
+        {
+          "viewport": "812x375",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "154dab61d332d5261a09eedc0fca960db799fc7eb508b51091f3b6fdcc528f5e",
+            "bytes": 280877,
+            "width": 812,
+            "height": 375
+          }
+        },
+        {
+          "viewport": "1024x600",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "3711383ba8fe6658cb80bfaee8eb87997bc7601355e681285c49b8c10779d7cd",
+            "bytes": 392985,
+            "width": 1024,
+            "height": 600
+          }
+        },
+        {
+          "viewport": "1280x720",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "9978b90137aa5d8e3d0fba202dee12dd48aa2e72f902f2714d7adf9a292dec48",
+            "bytes": 501875,
+            "width": 1280,
+            "height": 720
+          }
+        },
+        {
+          "viewport": "1280x850",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "314dd7cb16cdbc3a067c8abdffe39b4dc94161fa947312998b57f497e0450437",
+            "bytes": 535888,
+            "width": 1280,
+            "height": 850
+          }
+        },
+        {
+          "viewport": "1440x960",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "7c81031ddb04c63bd0f11ebc1b401feb398adf675f5e65af884a61ccf3f43715",
+            "bytes": 604004,
+            "width": 1440,
+            "height": 960
+          }
+        },
+        {
+          "viewport": "320x568",
+          "browserExitCode": 0,
+          "screenshot": {
+            "sha256": "a75bedecc4f5f6679bd2cb5da12a26d0a83640efb5a4515721c6a5aadebaa77e",
+            "bytes": 185566,
+            "width": 320,
+            "height": 568
+          }
+        }
+      ]
+    },
+    "rasterPublication": "Original-media raster bytes remain private; hashes and dimensions do not provide public visual inspection."
+  },
+  "designReview": {
+    "scope": "Targeted usability correction to dense original-art game controls.",
+    "preserved": [
+      "Original frame and minimap geometry and image selectors",
+      "Dark palette, fonts, route, navigation labels and input fields",
+      "Existing reduced-motion behavior and visible keyboard focus"
+    ],
+    "verified": [
+      "All six original-frame/guide profiles including keyboard scrolling and launcher-focus restoration",
+      "Normal campaign save/reload, production controls and three real canvas resizes",
+      "No new dependencies, icons or animation libraries",
+      "No new em-dash or separator en-dash in user-visible strings"
+    ]
+  },
+  "limits": [
+    "This is partial progress on issue 90, not complete localization, accessibility or touch acceptance.",
+    "Small landscape screens still scale the original HUD; complete touch target sizing remains separate.",
+    "Original Gold runtime behavior and native presentation remain unqualified.",
+    "Full 16-suite browser CI and its original artifact must pass on the published correction."
+  ]
+}
