@@ -307,5 +307,100 @@
     "Small landscape screens still scale the original HUD; complete touch target sizing remains separate.",
     "Original Gold runtime behavior and native presentation remain unqualified.",
     "Full 16-suite browser CI and its original artifact must pass on the published correction."
-  ]
+  ],
+  "finalQualification": {
+    "verifiedAt": "2026-10-27T01:37:06.085407+00:00",
+    "status": "Published UI correction passed full CI and original artifact qualification.",
+    "runUrl": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40430967030",
+    "runAttempt": 2,
+    "initialAttempt": "The original archive download reached its existing two-minute deadline. A normal unchanged rerun succeeded. The recovery defect is tracked separately in issue 221.",
+    "browser": {
+      "identity": {
+        "kind": "original immutable CI ZIP, API digest and every CRC verified",
+        "head": "bba15d229ec03acaef66115d2d3b62f1e4f8f1de",
+        "runId": 40430967030,
+        "artifactId": 12702368709,
+        "archiveBytes": 33617,
+        "sha256": "dbf5133c386d440bfe0429446a221c9456d27842f4785503e2ea029bc2238234"
+      },
+      "suiteCount": 16,
+      "steps": 546,
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "control-frame": {
+          "reports": 6,
+          "steps": 108
+        },
+        "resize": {
+          "reports": 1,
+          "steps": 5
+        },
+        "production": {
+          "reports": 1,
+          "steps": 19
+        },
+        "selection": {
+          "reports": 1,
+          "steps": 33
+        },
+        "recruitment": {
+          "reports": 2,
+          "steps": 68
+        },
+        "working-area": {
+          "reports": 1,
+          "steps": 57
+        },
+        "storage-inspection": {
+          "reports": 1,
+          "steps": 87
+        },
+        "mine-placement": {
+          "reports": 1,
+          "steps": 28
+        },
+        "skirmish": {
+          "reports": 1,
+          "steps": 26
+        },
+        "rival-battle": {
+          "reports": 1,
+          "steps": 46
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "player-colors": {
+          "reports": 1,
+          "steps": 2
+        },
+        "shadows": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain-cache": {
+          "reports": 1,
+          "steps": 2
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "consoleRequestAndCollectionErrors": 0,
+      "battleElapsedMs": 609819.423285,
+      "battleWaitMs": 600000,
+      "terrainScales": [
+        1,
+        2
+      ],
+      "terrainPixelChecksPerScale": 120506,
+      "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+    },
+    "issue": "Issue 90 remains open for complete localization, accessibility, touch and native acceptance."
+  }
 }

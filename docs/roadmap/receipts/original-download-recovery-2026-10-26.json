@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-27T01:54:19.593886+00:00",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/221",
+  "parentIssue": 20,
+  "relatedIssues": [
+    90,
+    100,
+    219
+  ],
+  "status": "Local source correction and all application checks passed. Publication and full CI qualification pending.",
+  "sourceOwner": "stacksjs/the-settlers-iii-remake",
+  "base": "bba15d229ec03acaef66115d2d3b62f1e4f8f1de",
+  "files": [
+    "scripts/lib/verified-download.ts",
+    "tests/unit/verified-download.test.ts"
+  ],
+  "failure": {
+    "ciRuns": [
+      "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40427819467",
+      "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40430967030"
+    ],
+    "ciObservation": "First attempts hit the unchanged 120000ms original archive download deadline. Normal unchanged reruns succeeded.",
+    "sourceCause": "Only selected HTTP response statuses entered recovery. Connection/read exceptions escaped the retry loop, and an inactive transfer could consume the whole deadline.",
+    "realDefaultReproduction": {
+      "ok": false,
+      "requests": 1,
+      "canceled": 1,
+      "elapsedMs": 12013.737125,
+      "outputExists": false,
+      "error": "TypeError: ECONNRESET: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()"
+    },
+    "fastRegression": "A real partial HTTP response with a healthy second response available failed after 3,000 ms without recovery. The old function was exercised through the existing public download interface."
+  },
+  "implementation": {
+    "totalDeadlineMs": 120000,
+    "maximumAttempts": 3,
+    "backoffMs": [
+      1000,
+      2000
+    ],
+    "maximumInactivityMs": 30000,
+    "policy": "Callers may shorten inactivity, but cannot extend either guard. Inactivity resets on received nonempty byte chunks rather than total elapsed transfer time.",
+    "recovery": "Retry the same URL for transient HTTP server responses, transport/read failures or inactive headers/body. No mirror or cache substitution.",
+    "integrity": "Complete bytes are hashed before writing. Different attempts never share body chunks. Permanent HTTP failures, checksum mismatches and corrupt cached data remain terminal.",
+    "resources": "Each retired request is aborted; readers/body streams and inactivity timers are canceled/released in cleanup.",
+    "diagnostics": "Retry diagnostics retain the attempt and transport error or stalled phase/received-byte count."
+  },
+  "realHTTPValidation": {
+    "tests": 9,
+    "failed": 0,
+    "assertions": 36,
+    "focusedSeconds": 9.93,
+    "cases": [
+      "Fresh and cached verification",
+      "Corrupt download and cached data rejected",
+      "Transient HTTP response recovery",
+      "Three-attempt HTTP exhaustion",
+      "Permanent statuses and invalid successful bytes stay terminal",
+      "Partial body stall discards unpublished bytes and retires its stream",
+      "Header stall recovers",
+      "Steady progress lasts beyond the inactivity interval",
+      "Persistent inactivity stops after three attempts and rejects any policy extension"
+    ],
+    "clock": "Real HTTP servers and real timers. No clock or fetch mocks. Existing unit-test deadlines remain unchanged.",
+    "productionDefaults": {
+      "ok": true,
+      "requests": 2,
+      "canceled": 1,
+      "elapsedMs": 64091.181666000004,
+      "fileVerified": true
+    },
+    "coldOriginalArchive": {
+      "ok": true,
+      "url": "https://archive.org/download/S3aDemoUs/s3a_demo_us.exe",
+      "coldInput": true,
+      "options": "Production defaults: 120000ms overall, 30000ms inactivity, three attempts.",
+      "bytes": 50875904,
+      "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65",
+      "elapsedMs": 37866.713625,
+      "source": "Public verifiedDownload, no substitute URL or cached input",
+      "privateProbeCopy": "Removed after verification. The existing original source archive remains unchanged."
+    }
+  },
+  "checksumPerformance": {
+    "issue": 100,
+    "sourceCommit": "fcac3b14dd0bb98ac72c4ea24e31a4770d8bb1de",
+    "sourceFile": "resources/game/engine/digest.ts",
+    "rootCause": "CPU profiling of the retained 5,000-tick staffing/save/replay scenario put 39.2% of self samples on its two per-character FNV multiplication lines.",
+    "correction": "When a UTF-16 high byte is zero, combine both FNV rounds with the squared prime modulo 2^32. Retain the two-round path for all other code units.",
+    "format": "Unchanged little-endian UTF-16 checksum bytes. No cached values, rule/profile changes, shorter replays or changed deadlines.",
+    "independentArithmetic": {
+      "prime": 16777619,
+      "squaredPrime": 637696617,
+      "hashStates": 16,
+      "codeUnitsPerState": 65536,
+      "equalComparisons": 1048576,
+      "method": "Independent integer arithmetic modulo 2^32 over every UTF-16 code unit and boundary/seeded hash states. No game timers or cached checksums."
+    },
+    "traceChecksumBeforeAndAfter": "286a59af",
+    "unicodeGoldenBeforeAndAfter": "d41b5e96",
+    "originalUnitDeadlineMs": 5000,
+    "isolatedBeforeMs": 4965.89,
+    "focusedAfterMs": 2633.72,
+    "fullGateAfterMs": 2594.63,
+    "profiledScenarioBeforeMs": 6207.533959,
+    "profiledScenarioAfterMs": 2851.378292,
+    "performanceLimit": "Observed local measurements under varying host load, not a universal speedup or new platform budget.",
+    "focusedTests": {
+      "passed": 13,
+      "failed": 0,
+      "assertions": 68
+    }
+  },
+  "localChecks": {
+    "originalAssets": "The normal importer regenerated 11,167 sprite frames, 52 UI images, 6 WAV sounds and 95 files with current converter provenance. All bytes and source selectors were verified.",
+    "lint": {
+      "files": 514,
+      "errors": 0,
+      "warnings": 0
+    },
+    "types": "Application, tools and STX checks passed: 258 template expressions and 2 scripts, with 0 errors and 0 warnings.",
+    "units": {
+      "passed": 417,
+      "failed": 0,
+      "assertions": 75811,
+      "files": 64,
+      "seconds": 220.46
+    },
+    "build": {
+      "pages": 1,
+      "seconds": 32.44,
+      "status": "passed"
+    },
+    "browser": {
+      "status": "passed",
+      "suites": {
+        "campaign": {
+          "reports": 1,
+          "steps": 58
+        },
+        "checkpoints": {
+          "reports": 1,
+          "steps": 1
+        },
+        "terrain": {
+          "reports": 2,
+          "steps": 4
+        }
+      },
+      "steps": 63,
+      "consoleRequestAndCollectionErrors": 0,
+      "terrainPixelChecksPerScale": 120506,
+      "actualTerrainScales": [
+        1,
+        2
+      ],
+      "scope": "Current compiled production campaign and checkpoint/terrain browser fixtures after download recovery and checksum optimization. The complete 16-suite CI gate remains required after publishing."
+    }
+  },
+  "retainedFailedAttempt": {
+    "units": {
+      "passed": 416,
+      "failed": 1,
+      "assertions": 75811,
+      "seconds": 319.36
+    },
+    "failure": "The existing staffing/save/replay test took 5,324.86 ms and exceeded its unchanged 5,000 ms limit. That run is retained as a failure. Later success follows the profiled source optimization.",
+    "hostObservation": "Concurrent host load was high; correctness and timing were rechecked without changing guards."
+  },
+  "evidence": [
+    {
+      "path": "red-report.json",
+      "bytes": 266,
+      "sha256": "3e0a3a4292f6b5683bf8d0319d2b95fe5cd30ea559be805254a075d6418a3771"
+    },
+    {
+      "path": "unit-red.log",
+      "bytes": 1027,
+      "sha256": "2367304834c7bfb0f34a4e3a51176c2beacf1e10076096e1852807d0eab7cd03"
+    },
+    {
+      "path": "unit-green.log",
+      "bytes": 1954,
+      "sha256": "7b5a56a78a976b36ce4b2dbee0f09808f9083e938a2198dc6b087bd9b0a00604"
+    },
+    {
+      "path": "production-green-report.json",
+      "bytes": 109,
+      "sha256": "516641db72bbdf8f53aa447a91cc12e813a4a50f6af3fc222aa9186ed7f52031"
+    },
+    {
+      "path": "cold-report.json",
+      "bytes": 508,
+      "sha256": "0c5ee1544fdf3ce6f2364afb3e02cb8c421896ad14fb56663031bb63acf38bb0"
+    },
+    {
+      "path": "units.log",
+      "bytes": 49260,
+      "sha256": "1d4c55b3a630e4041944a12f1f0fe4103e76fd5791bb17a0bf568e510bb743a4"
+    },
+    {
+      "path": "units-checksum.log",
+      "bytes": 48344,
+      "sha256": "476c07e2da67c2a18c9c8feaca5a5c4827dee5236eed2a35e66bad8a12e5ef58"
+    },
+    {
+      "path": "checksum-profile/before.log",
+      "bytes": 152,
+      "sha256": "c936e51fed1bbe0e54c2ae23a384e9f8a4aa592b126fce06efa94b7ad420d9d8"
+    },
+    {
+      "path": "checksum-profile/after.log",
+      "bytes": 159,
+      "sha256": "6cf0ac51fd1243219e70bd9ca4a64111fdae76f1af9a4c7d82d28f5d9ed90f31"
+    },
+    {
+      "path": "checksum-profile/algebra-proof.json",
+      "bytes": 289,
+      "sha256": "c3014ea23ad759441134dcc53fe7884f214f81e3b0e4f0074cb960a107722358"
+    },
+    {
+      "path": "checksum-profile/before.cpuprofile.md",
+      "bytes": 318755,
+      "sha256": "3129f45319a61751bfd2f2cdbf830c2b61c9bdc6df62e82515241bfdc3a7a1cb"
+    },
+    {
+      "path": "checksum-profile/after.cpuprofile.md",
+      "bytes": 231062,
+      "sha256": "b54245a08a39ca0817e23509bd90115adb0e037c88b35c36208c785042dbc4c4"
+    },
+    {
+      "path": "local-browser-qualification.json",
+      "bytes": 570,
+      "sha256": "c96756a2ce86d0cc7972590966d78f1715b767e0132b0f8f48fcee09274310ae"
+    }
+  ],
+  "pending": [
+    "Normal main publication",
+    "Fresh full CI success and original immutable diagnostic artifact qualification"
+  ],
+  "limits": [
+    "Exhausted source availability fails rather than accepting unverified bytes.",
+    "This correction does not establish original Gold rules, complete mixed-face materials, native presentation or finished platform performance budgets.",
+    "The previous UI correction is separately qualified in its own receipt. Issue 90 remains open."
+  ]
+}
