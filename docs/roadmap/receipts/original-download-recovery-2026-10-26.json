@@ -243,5 +243,124 @@
     "Exhausted source availability fails rather than accepting unverified bytes.",
     "This correction does not establish original Gold rules, complete mixed-face materials, native presentation or finished platform performance budgets.",
     "The previous UI correction is separately qualified in its own receipt. Issue 90 remains open."
-  ]
+  ],
+  "followupValidation": {
+    "recordedAt": "2026-10-27T02:30:27.358482+00:00",
+    "firstPublishedAttempt": {
+      "runUrl": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40435447817",
+      "status": "Failed at the original archive total deadline before conversion/tests.",
+      "evidenceLimit": "That log lacks phase and byte counts, so it does not establish whether the origin was idle or making slow progress. The recovery gap is independently reproduced by the real HTTP tests."
+    },
+    "diagnosticRun": {
+      "url": "https://github.com/stacksjs/the-settlers-iii-remake/actions/runs/40436491319",
+      "status": "All gates passed with original artifact qualification. Temporary tracing is removed in the follow-up source change.",
+      "browser": {
+        "identity": {
+          "kind": "original immutable CI ZIP, API digest and every CRC verified",
+          "head": "44ddb2420c528281c7db96ba163c49fde0abd8a0",
+          "runId": 40436491319,
+          "artifactId": 12704864190,
+          "archiveBytes": 33606,
+          "sha256": "a900274c9c45883bd7d47bf51ce5c1b87355da5b1b0ca0cad5612579bb1ef4a1"
+        },
+        "suiteCount": 16,
+        "steps": 546,
+        "suites": {
+          "campaign": {
+            "reports": 1,
+            "steps": 58
+          },
+          "control-frame": {
+            "reports": 6,
+            "steps": 108
+          },
+          "resize": {
+            "reports": 1,
+            "steps": 5
+          },
+          "production": {
+            "reports": 1,
+            "steps": 19
+          },
+          "selection": {
+            "reports": 1,
+            "steps": 33
+          },
+          "recruitment": {
+            "reports": 2,
+            "steps": 68
+          },
+          "working-area": {
+            "reports": 1,
+            "steps": 57
+          },
+          "storage-inspection": {
+            "reports": 1,
+            "steps": 87
+          },
+          "mine-placement": {
+            "reports": 1,
+            "steps": 28
+          },
+          "skirmish": {
+            "reports": 1,
+            "steps": 26
+          },
+          "rival-battle": {
+            "reports": 1,
+            "steps": 46
+          },
+          "checkpoints": {
+            "reports": 1,
+            "steps": 1
+          },
+          "player-colors": {
+            "reports": 1,
+            "steps": 2
+          },
+          "shadows": {
+            "reports": 1,
+            "steps": 2
+          },
+          "terrain-cache": {
+            "reports": 1,
+            "steps": 2
+          },
+          "terrain": {
+            "reports": 2,
+            "steps": 4
+          }
+        },
+        "consoleRequestAndCollectionErrors": 0,
+        "battleElapsedMs": 611748.083062,
+        "battleWaitMs": 600000,
+        "terrainScales": [
+          1,
+          2
+        ],
+        "terrainPixelChecksPerScale": 120506,
+        "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof."
+      }
+    },
+    "cleanup": "Temporary tracing removed. Total-deadline errors retain the phase and received-byte count, and the deadline is checked again after transfer cleanup.",
+    "defaultOverallDeadline": {
+      "ok": true,
+      "requests": 1,
+      "elapsedMs": 120002.35775,
+      "cleanupObservedMs": 12.10175000000163,
+      "canceled": true,
+      "outputExists": false,
+      "error": "Error: Demo total download deadline reached during response body after 4493 bytes (120001ms)",
+      "policy": "Unmodified production120000ms overall and30000ms inactivity. Actual HTTP continuously sends bytes, so only the overall guard should end it."
+    },
+    "localDirectAndRedirectedCancellation": "Controller and combined signals aborted actual direct and redirected HTTP bodies in about 100 ms, including after real GC. This does not reproduce a platform cancellation defect.",
+    "focusedTestsAfterCleanup": {
+      "passed": 9,
+      "failed": 0,
+      "assertions": 36,
+      "seconds": 9.98
+    },
+    "lintAndTypesAfterCleanup": "Passed with 0 errors and 0 warnings.",
+    "pending": "The published tracing cleanup still needs its own complete CI qualification."
+  }
 }

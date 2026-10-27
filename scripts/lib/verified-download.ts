@@ -13,10 +13,7 @@ async function transfer(url: string, deadline: AbortSignal, idleTimeoutMs: numbe
   let body: ReadableStream<Uint8Array> | null = null
   const watch = (): void => {
     clearTimeout(timer)
-    timer = setTimeout(() => {
-      console.warn(`[DEBUG-download-221] Inactivity at ${Math.round(performance.now() - started)}ms: ${phase}, ${received} bytes`)
-      request.abort(new Error(`Demo transfer stalled awaiting ${phase} (${received} bytes received)`))
-    }, idleTimeoutMs)
+    timer = setTimeout(() => request.abort(new Error(`Demo transfer stalled awaiting ${phase} (${received} bytes received)`)), idleTimeoutMs)
   }
   try {
     watch()
@@ -43,13 +40,10 @@ async function transfer(url: string, deadline: AbortSignal, idleTimeoutMs: numbe
   }
   finally {
     clearTimeout(timer)
-    const stalled = request.signal.aborted
-    if (stalled) console.warn(`[DEBUG-download-221] Retiring at ${Math.round(performance.now() - started)}ms: ${phase}, ${received} bytes`)
     request.abort()
     try { if (reader) await reader.cancel(); else await body?.cancel() }
     catch { /* A transport failure can already have closed its reader. */ }
     reader?.releaseLock()
-    if (stalled) console.warn(`[DEBUG-download-221] Retired at ${Math.round(performance.now() - started)}ms`)
   }
 }
 
