@@ -1,0 +1,365 @@
+<script client>
+import { catalog, mountGame, snapshot } from '../game/controller'
+import { controlLayout } from '../game/control-layout'
+import { chooseMenu, initialMenu, LABELS, menuImage, MENUS, openMenu } from '../game/menus'
+import type { Game } from '../game/controller'
+import { parseMapSeed } from '../game/setup'
+
+const map = useRef<HTMLCanvasElement>('island')
+const overview = useRef<HTMLCanvasElement>('overview')
+const guideButton = useRef<HTMLButtonElement>('guideButton')
+const seedInput = useRef<HTMLInputElement>('seedInput')
+const tearDownButton = useRef<HTMLButtonElement>('tearDownButton')
+const settlementDetails = useRef<HTMLElement>('settlementDetails')
+const inspectedBuilding = useRef<HTMLElement>('inspectedBuilding')
+const TERRITORY = ['players', 'simple', 'topographic'] as const
+const SETTLERS = ['all', 'military', 'none'] as const
+function nextTerritory(): void { const at = TERRITORY.indexOf(view().minimap.territory); game?.overview({ territory: TERRITORY[(at + 1) % TERRITORY.length] }) }
+function nextSettlers(): void { const at = SETTLERS.indexOf(view().minimap.settlers); game?.overview({ settlers: SETTLERS[(at + 1) % SETTLERS.length] }) }
+const view = state(snapshot(null, null, 'Preparing your settlement...', 1))
+const selectedTool = state('')
+const menu = state(initialMenu())
+const mains = Object.keys(MENUS)
+const subs = derived(() => [...MENUS[menu().main]])
+const showGuide = state(false)
+function closeGuide(): void { showGuide.set(false); guideButton.current?.focus() }
+const confirmRestart = state(false)
+const demolition = state<ReturnType<Game['demolition']>>(null)
+function requestDemolition(): void { demolition.set(game?.demolition() ?? null) }
+function cancelDemolition(): void {
+  demolition.set(null)
+  void nextTick(() => { if (!tearDownButton.current?.isConnected) map.current?.focus() })
+}
+function confirmDemolition(): void {
+  const target = demolition()
+  demolition.set(null)
+  target?.confirm()
+  void nextTick(() => map.current?.focus())
+}
+const seedDraft = state('')
+const seedError = state('')
+const reduceMotion = usePreferredReducedMotion()
+const desktopHud = useMediaQuery('(min-width: 761px)')
+const largeHud = useMediaQuery('(min-height: 902px)')
+const mediumHud = useMediaQuery('(min-height: 734px)')
+const hud = derived(() => controlLayout(!desktopHud() || largeHud() ? 768 : mediumHud() ? 600 : 480))
+let game: Game | null = null
+const options = derived(() => catalog.filter(item => item.menu === menu().sub))
+const stocked = derived(() => view().goods.filter(item => item.amount > 0))
+function choose(kind: string): void { selectedTool.set(kind); game?.choose(kind) }
+function inspect(): void { selectedTool.set(''); game?.choose(null) }
+async function restart(landscape: 'generated' | 'tutorial' | 'rival'): Promise<void> {
+  try {
+    const seed = landscape === 'tutorial' ? undefined : parseMapSeed(seedDraft())
+    seedError.set('')
+    await game?.restart(landscape, seed)
+    confirmRestart.set(false); selectedTool.set('')
+    void nextTick(() => map.current?.focus())
+  }
+  catch (error) { seedError.set(error instanceof Error ? error.message : 'Could not read the map seed.'); void nextTick(() => seedInput.current?.focus()) }
+}
+onMount(() => {
+  if (!map.current) return
+  try { game = mountGame(map.current, value => {
+    const previous = view().selected?.id
+    view.set(value); selectedTool.set(value.tool ?? '')
+    const selected = value.selected?.id
+    if (selected !== undefined && selected !== previous) void nextTick(() => {
+      if (view().selected?.id === selected && inspectedBuilding.current) settlementDetails.current?.scrollTo({ top: inspectedBuilding.current.offsetTop, behavior: 'instant' })
+    })
+  }, () => reduceMotion(), overview.current ?? undefined) }
+  catch (error) { view.update(value => ({ ...value, message: error instanceof Error ? error.message : 'Could not start the game.' })) }
+})
+onDestroy(() => game?.dispose())
+</script>
+
+@nolayout
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172c26">
+  <link rel="icon" type="image/png" href="/assets/settlers-original/castle.png">
+  <meta name="description" content="Found a Roman settlement where every settler, tool and good is real: carriers deliver, diggers level, builders build and workers fetch their own resources.">
+  <title>The Settlers III Remake | Roman settlement</title>
+</head>
+<body class="m-0 antialiased">
+  <div class="game-shell">
+    <header class="flex gap-4 items-center justify-between px-5 masthead">
+      <a href="/" class="flex gap-3 items-center brand" aria-label="The Settlers III Remake home">
+        <span class="brand-mark i-hugeicons-castle-01" aria-hidden="true"></span>
+        <span><strong>The Settlers <span class="roman">III</span></strong><small>ROMAN SETTLEMENT</small></span>
+      </a>
+      <div class="flex gap-5 items-center campaign"><span class="campaign-name">{{ view().map }}</span><span class="day">{{ view().time }}</span></div>
+      <nav class="flex gap-2 items-center" aria-label="Settlement controls">
+        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.save()" title="Save settlement on this device"><span class="i-hugeicons-floppy-disk" aria-hidden="true"></span><span>Save</span></button>
+        <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.load()" title="Restore the last saved settlement">Load</button>
+        <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="view().sound" @click="game?.toggleSound()">{{ view().sound ? 'Sound on' : 'Sound off' }}</button>
+        <button ref="guideButton" type="button" class="quiet-button" @click="showGuide.set(!showGuide())" :aria-expanded="showGuide()">Guide</button>
+        <button type="button" class="new-island quiet-button" :disabled="!view().ready" aria-haspopup="dialog" :aria-expanded="confirmRestart()" @click="confirmRestart.set(!confirmRestart())">New settlement</button>
+      </nav>
+    </header>
+
+    <section class="flex items-center resource-strip" aria-label="Goods in your settlement">
+      <div class="flex gap-2 items-center population" title="Settlers in your settlement"><span class="i-hugeicons-user-group" aria-hidden="true"></span><strong>{{ view().population }}</strong><small>settlers</small></div>
+      <div class="flex items-center stocks">
+        <div :for="item in stocked()" class="stock" :title="item.key"><span>{{ item.key }}</span><strong>{{ item.amount }}</strong></div>
+      </div>
+    </section>
+
+    <main class="playfield" :style="hud().style" :data-hud-profile="hud().profile">
+      <section class="map-region" aria-label="Settlement map">
+        <canvas ref="island" class="island-map" tabindex="0" role="application" aria-label="Settlement map. Drag with the right button to pan and with the left to mark soldiers, scroll to zoom. Arrow keys select a tile, Enter builds or inspects, Space pauses, Escape cancels, H centers and S saves." aria-describedby="map-help">Your browser needs Canvas 2D to play this game.</canvas>
+        <p id="map-help" class="sr-only">Arrow keys select a tile. Enter builds or inspects. Space pauses, Escape cancels, H centers and S saves.</p>
+        <div class="map-caption"><span class="map-location">{{ view().map }}</span><span>{{ view().map === 'Original tutorial map' ? 'Original T1 tutorial map from the Amazons demo' : view().map === 'Computer rival' ? 'A computer economy and army grow to the east by the same rules' : 'A generated landscape, not an original map' }}</span><span class="map-seed" :if="view().seed !== null">Map seed {{ view().seed }}</span></div>
+        <div class="flex gap-1 map-controls" aria-label="Simulation speed">
+          <button type="button" class="map-button" @click="game?.home()" title="Center on the castle (H)" aria-label="Center on the castle"><span class="i-hugeicons-location-01" aria-hidden="true"></span></button>
+          <button type="button" class="map-button" :aria-pressed="view().speed === 0" @click="game?.speed(view().speed === 0 ? 1 : 0)" aria-label="Pause or resume simulation">{{ view().speed === 0 ? 'Play' : 'Pause' }}</button>
+          <button type="button" class="map-button" :aria-pressed="view().speed === 1" @click="game?.speed(1)">1x</button>
+          <button type="button" class="map-button" :aria-pressed="view().speed === 2" @click="game?.speed(2)">2x</button>
+          <button type="button" class="map-button" :aria-pressed="view().speed === 4" @click="game?.speed(4)">4x</button>
+        </div>
+        <div class="guide-panel" :if="showGuide()" tabindex="0" role="region" aria-label="Playing guide">
+          <h2>Every good is carried.</h2>
+          <p>Carriers fetch each plank and stone from where it lies. Diggers level the site, builders build it, and a worker needs the right tool before a workplace opens.</p>
+          <p :if="view().canReassignCrew">Lower the builder or digger limit in Occupations to return idle workers and their tools to carrying. Busy workers finish their current task first.</p>
+          <p>Woodcutters and stonecutters walk to the nearest tree or granite in their working area. Foresters replant. Full doorsteps stop production until goods are used or taken to a storage area.</p>
+          <p>Mark goods for storage in the Goods panel. Send pioneers to push your border and geologists to survey mountains. Miners work longer after their favourite meal.</p>
+          <p>Romans offer wine at a small temple. Each offering becomes manna, and manna promotes one class of soldiers recruited from then on. A charcoal maker turns five planks into coal.</p>
+          <p>A barracks turns carriers into swordsmen, pikemen and bowmen with the weapons delivered to it. Soldiers fill your towers; send them to hold ground or to attack an enemy tower. A building whose defenders have all fallen is taken with its goods and land.</p>
+          <p>A thief looks like a carrier to your opponents until their soldiers come near. Click him, then right-click with Alt where he should pilfer; he brings the good home slowly. A healer's hut calls idle wounded soldiers and heals them; Tab keeps only the wounded among marked soldiers.</p>
+          <p>Click a soldier or drag a rectangle to mark soldiers; Shift adds, Alt marks one type. Right-click to move them: Ctrl ignores enemies, Shift adds up to three waypoints, Alt patrols. Alt and a number stores a group, the number marks it, twice centers on it.</p>
+          <p>Drag with the right mouse button to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
+          <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
+          <p class="guide-note">Settlement rules: {{ view().rulesVersion }}. Saved settlements keep their original rules. Start a new settlement for the latest rules.</p>
+          <button type="button" class="primary-button" @click="closeGuide()">Back to the settlement</button>
+        </div>
+        <Dialog :open="confirmRestart()" @close="confirmRestart.set(false)" className="restart-dialog">
+          <DialogBackdrop />
+          <DialogPanel :flush="true" variant="center" className="restart-panel">
+          <DialogTitle as="h2">Start a new settlement?</DialogTitle><p>This replaces the settlement saved on this device. {{ view().prototypeKept ? 'Your Riverlands prototype save stays untouched.' : '' }}</p>
+          <p>The original tutorial map brings its own Roman tower, settlers and goods. Its tutorial script and rival are not played yet. A computer rival builds its own economy and army with the same commands you use, scouts your land and attacks the towers it finds. Capture all enemy castles and towers to win. Losing your last castle or tower ends the match in defeat.</p>
+          <label for="map-seed" class="block mt-4 text-sm">Map seed (optional)</label>
+          <input id="map-seed" ref="seedInput" x-model.trim="seedDraft" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Random" autofocus :aria-invalid="seedError() ? 'true' : 'false'" aria-describedby="map-seed-help map-seed-error" class="mt-2 px-3 py-2 w-full bg-transparent border border-white/20 rounded">
+          <p id="map-seed-help" class="guide-note">Reuse a seed for the same generated landscape or rival map. Leave blank for a random map.</p>
+          <p id="map-seed-error" :if="seedError()" role="alert">{{ seedError() }}</p>
+          <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
+          </DialogPanel>
+        </Dialog>
+        <Dialog :open="demolition() !== null" @close="cancelDemolition()" className="demolition-dialog restart-dialog">
+          <DialogBackdrop />
+          <DialogPanel :flush="true" variant="center" className="demolition-panel restart-panel">
+            <DialogTitle as="h2">Tear down {{ demolition()?.name }}?</DialogTitle>
+            <p>This cannot be undone. {{ demolition()?.name }} will be removed and half of its construction materials will lie on the ground.</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <button type="button" class="keep-building quiet-button" autofocus @click="cancelDemolition()">Keep building</button>
+              <button type="button" class="confirm-demolition primary-button" :disabled="demolition() === null" @click="confirmDemolition()">Tear down</button>
+            </div>
+          </DialogPanel>
+        </Dialog>
+        <div class="advisor"><span class="advisor-icon i-hugeicons-quill-pen-01" aria-hidden="true"></span><div><strong>Settlement dispatch</strong><p role="status" aria-live="polite">{{ view().message }}</p></div></div>
+      </section>
+
+      <aside class="sidebar" aria-label="Settlement management">
+        <section class="overview" aria-label="Overview map">
+          <canvas ref="overview" class="overview-map" width="288" height="192" role="img" aria-label="Overview of the land you have explored. Click to move the view there.">The overview map needs Canvas 2D.</canvas>
+          <div class="minimap-frame-left" aria-hidden="true"></div>
+          <div class="minimap-frame-right" aria-hidden="true"></div>
+        </section>
+        <div class="original-panel">
+          <div class="flex main-menu" role="tablist" aria-label="Control center">
+            <button :for="name in mains" type="button" role="tab" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-selected="menu().main === name" @click="menu.set(openMenu(menu(), name))"><img :src="menuImage(name, null, menu().main === name)" width="55" height="55" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
+          </div>
+          <div class="flex category-list" :aria-label="LABELS[menu().main] + ' menus'">
+            <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
+          </div>
+          <div ref="settlementDetails" class="hud-content" tabindex="0" role="region" aria-label="Settlement details">
+          <div class="flex gap-1 mt-2 overview-modes">
+            <button type="button" class="text-button" @click="nextTerritory()" title="Territory display: player colours, land and sea, or terrain">Territory: {{ view().minimap.territory === 'players' ? 'players' : view().minimap.territory === 'simple' ? 'land and sea' : 'terrain' }}</button>
+            <button type="button" class="text-button" @click="nextSettlers()" title="Settlers display: all, soldiers only or none">Settlers: {{ view().minimap.settlers === 'all' ? 'all' : view().minimap.settlers === 'military' ? 'soldiers' : 'none' }}</button>
+            <button type="button" class="text-button" :aria-pressed="view().minimap.buildings" @click="game?.overview({ buildings: !view().minimap.buildings })">Buildings: {{ view().minimap.buildings ? 'shown' : 'hidden' }}</button>
+          </div>
+        <div class="settlement-heading" :if="menu().sub !== 'production'"><span class="eyebrow">YOUR SETTLEMENT</span><div class="flex items-center justify-between"><h1>Rome</h1><span class="settlement-count">{{ view().buildings }} {{ view().buildings === 1 ? 'building' : 'buildings' }}</span></div><p>Settlers <strong>{{ view().population }}</strong></p></div>
+        <section class="control-center" aria-label="Control center">
+          <div :if="menu().main === 'buildings'">
+            <div class="flex items-center justify-between section-heading"><h2>{{ LABELS[menu().sub] }} buildings</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
+            <div class="building-catalog">
+              <button :for="item in options()" type="button" class="building-choice" :disabled="!view().ready" :aria-pressed="selectedTool() === item.id" :title="item.description" @click="choose(item.id)">
+                <img class="building-symbol" :src="'/assets/settlers-original/' + item.id + '.png'" width="42" height="42" alt=""><strong>{{ item.name }}</strong><small>{{ item.cost }}</small>
+              </button>
+            </div>
+          </div>
+          <div :if="menu().main === 'goods' && menu().sub === 'inventory'">
+            <h2>Inventory</h2><p class="menu-note">Every good your settlement holds, wherever it lies. {{ view().carried }} {{ view().carried === 1 ? 'good is' : 'goods are' }} being carried right now.</p>
+            <ul class="profession-list"><li :for="item in view().goods"><span>{{ item.key }}</span><strong>{{ item.amount }}</strong></li></ul>
+          </div>
+          <div :if="menu().main === 'goods' && menu().sub === 'tools'">
+            <h2>Tools and weapons</h2><p class="menu-note">Ordered items are made first, top to bottom. Weights set how often each is made otherwise.</p>
+            <ul class="profession-list"><li :for="item in view().crafts"><span>{{ item.key }}{{ item.urgent ? ' (' + item.urgent + ' ordered)' : '' }}</span><span class="flex gap-2 items-center"><button type="button" class="text-button" :disabled="!view().ready" @click="game?.urgent(item.key)" :aria-label="'Order one ' + item.key">Order</button><button type="button" class="text-button" @click="game?.weight(item.key, -1)" :aria-label="'Make ' + item.key + ' less often'">-</button><meter min="0" max="10" :value="item.weight" :aria-label="item.key + ' priority'"></meter><button type="button" class="text-button" @click="game?.weight(item.key, 1)" :aria-label="'Make ' + item.key + ' more often'">+</button></span></li></ul>
+          </div>
+          <div :if="menu().main === 'goods' && menu().sub === 'distribution'">
+            <h2>Distribution</h2><p class="menu-note">When several kinds of building need the same good, each receives its share. A share of zero sends it none.</p>
+            <div :for="entry in view().distribution" class="distribution"><h3>{{ entry.good }}</h3>
+              <ul class="profession-list"><li :for="item in entry.types"><span>{{ item.name }}</span><span class="flex gap-2 items-center"><button type="button" class="text-button" @click="game?.distribute(entry.good, item.type, -1)" :aria-label="'Smaller share of ' + entry.good + ' for the ' + item.name">-</button><meter min="0" max="10" :value="item.weight" :aria-label="item.name + ' share of ' + entry.good"></meter><button type="button" class="text-button" @click="game?.distribute(entry.good, item.type, 1)" :aria-label="'Larger share of ' + entry.good + ' for the ' + item.name">+</button></span></li></ul>
+            </div>
+          </div>
+          <div :if="menu().main === 'goods' && menu().sub === 'transport'">
+            <h2>Transport</h2><p class="menu-note">Goods higher in the chain are carried first. Marked goods go to storage areas.</p>
+            <ul class="profession-list"><li :for="item in view().transport"><span>{{ item.rank }}. {{ item.key }}</span><span class="flex gap-2 items-center"><button type="button" class="text-button" :aria-pressed="item.stored" @click="game?.store(item.key)">{{ item.stored ? 'Stored' : 'Store' }}</button><button type="button" class="text-button" @click="game?.priority(item.key, 'top')" :aria-label="'Carry ' + item.key + ' first'">Top</button><button type="button" class="text-button" @click="game?.priority(item.key, 'up')" :aria-label="'Carry ' + item.key + ' earlier'">Up</button><button type="button" class="text-button" @click="game?.priority(item.key, 'down')" :aria-label="'Carry ' + item.key + ' later'">Down</button><button type="button" class="text-button" @click="game?.priority(item.key, 'bottom')" :aria-label="'Carry ' + item.key + ' last'">Last</button></span></li></ul>
+          </div>
+          <div :if="menu().main === 'settlers' && menu().sub === 'statistics'">
+            <h2>Settler statistics</h2>
+            <ul class="profession-list"><li :for="item in view().professions"><span>{{ item.name }}</span><strong>{{ item.count }}</strong></li></ul>
+          </div>
+          <div :if="menu().main === 'settlers' && menu().sub === 'production'" class="production-statistics">
+            <h2>Production statistics</h2>
+            <p class="menu-note">Made and used since settlement began. Stock includes carried goods.</p>
+            <p :if="!view().ready" class="menu-note" role="status">Preparing production statistics...</p>
+            <table class="production-table" aria-label="Goods stock, production and consumption">
+              <thead><tr><th scope="col">Good</th><th scope="col">Stock</th><th scope="col">Made</th><th scope="col">Used</th></tr></thead>
+              <tbody><tr :for="item in view().production"><th scope="row">{{ item.key }}</th><td data-figure="stock" data-label="Stock">{{ item.stock }}</td><td data-figure="produced" data-label="Made">{{ item.produced }}</td><td data-figure="consumed" data-label="Used">{{ item.consumed }}</td></tr></tbody>
+            </table>
+          </div>
+          <div :if="menu().main === 'settlers' && menu().sub === 'occupations'">
+            <h2>Occupations</h2>
+            <ul class="profession-list">
+              <li><span>Carriers at least {{ view().carrierRatio }}%</span><span><button type="button" class="text-button" @click="game?.carrierRatio(-10)" aria-label="Lower the carrier ratio">-</button> <button type="button" class="text-button" @click="game?.carrierRatio(10)" aria-label="Raise the carrier ratio">+</button></span></li>
+              <li><span>Builders at most {{ view().limits.builders }}</span><span><button type="button" class="text-button" @click="game?.limit('builders', -1)" aria-label="Fewer builders">-</button> <button type="button" class="text-button" @click="game?.limit('builders', 1)" aria-label="More builders">+</button></span></li>
+              <li><span>Diggers at most {{ view().limits.diggers }}</span><span><button type="button" class="text-button" @click="game?.limit('diggers', -1)" aria-label="Fewer diggers">-</button> <button type="button" class="text-button" @click="game?.limit('diggers', 1)" aria-label="More diggers">+</button></span></li>
+            </ul>
+            <div class="flex gap-2 mt-3 specialists" aria-label="Specialists">
+              <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'pioneer'" @click="choose('pioneer')" title="Send a pioneer to claim land at the border">Pioneer</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'geologist'" @click="choose('geologist')" title="Send a geologist to survey a mountain">Geologist</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.thieves()" title="Turn a carrier into a thief">Thief</button>
+            </div>
+            <div class="flex gap-2 mt-2 specialists" aria-label="Back to carrying">
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('pioneer')" title="Turn an idle pioneer back into a carrier">Pioneer to carrier</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('geologist')" title="Turn an idle geologist back into a carrier">Geologist to carrier</button>
+              <button type="button" class="quiet-button" :disabled="!view().ready" @click="game?.dismiss('thief')" title="Turn an idle thief back into a carrier">Thief to carrier</button>
+            </div>
+          </div>
+          <div :if="menu().main === 'settlers' && menu().sub === 'military'" class="army-panel" aria-label="Army">
+          <div class="flex items-center justify-between"><h2>Army</h2><span class="ratio">Manna {{ view().army.manna }}{{ view().army.next !== null ? ', next promotion ' + view().army.next : '' }}</span></div>
+          <ul class="profession-list"><li :for="item in view().army.soldiers" class="flex-wrap" :data-profession="item.name"><span>{{ item.name }} <small>rank {{ item.rank }}</small>{{ item.queued ? ' (' + item.queued + ' ordered)' : '' }}<small class="block" :data-weapon="item.weapon">{{ item.weapon }} at barracks: {{ item.weapons }}</small></span><span class="flex gap-2 items-center"><strong>{{ item.count }}</strong><button type="button" class="text-button" :disabled="!view().ready" @click="game?.recruit(item.name)" :aria-label="'Recruit a ' + item.name">Recruit</button><button type="button" class="text-button" :disabled="!view().ready || !item.queued" @click="game?.cancelRecruit(item.name)" :aria-label="'Cancel a waiting ' + item.name + ' order'" title="Cancel one waiting order">Cancel</button><button type="button" class="text-button" :disabled="!view().ready || item.rank >= view().army.ranks" @click="game?.promote(item.name)" :aria-label="'Promote new ' + item.name + ' recruits'">Promote</button></span></li></ul>
+          <div class="flex gap-2 mt-3 specialists">
+            <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="view().army.automatic" @click="game?.recruitAutomatic()" title="Recruit whenever a barracks has weapons">Recruit automatically</button>
+            <button type="button" class="quiet-button" :disabled="!view().ready" :aria-pressed="selectedTool() === 'march'" @click="choose('march')" title="Send soldiers to a place or against an enemy building">Send soldiers</button>
+          </div>
+          <div :if="view().army.interventions.length" class="interventions" aria-label="Divine interventions">
+            <h3>Interventions <small>{{ view().army.priests }} {{ view().army.priests === 1 ? 'priest' : 'priests' }}</small></h3>
+            <div class="goods-grid"><button :for="item in view().army.interventions" type="button" class="good-toggle" :disabled="!view().ready || !view().army.priests || view().army.manna < item.cost" :aria-pressed="selectedTool() === 'spell:' + item.id" @click="choose('spell:' + item.id)" :title="item.name"><span>{{ item.name }}</span><strong>{{ item.cost }}</strong></button></div>
+          </div>
+          <p class="carried">{{ view().army.outside }} {{ view().army.outside === 1 ? 'soldier stands' : 'soldiers stand' }} outside the garrisons.{{ view().marked ? ' ' + view().marked + ' marked.' : '' }}</p>
+          </div>
+        </section>
+        <section ref="inspectedBuilding" class="inspector" :if="view().selected" aria-label="Selected building">
+          <div class="flex items-center justify-between"><h2>{{ view().selected?.name }}</h2><span class="building-status">{{ view().selected?.status }}</span></div>
+          <p>{{ view().selected?.description }}</p>
+          <progress :value="view().selected?.progress" max="1" aria-label="Construction or work progress"></progress>
+          <p class="worker-line">Worker: {{ view().selected?.worker }}</p>
+          <p class="worker-line" :if="view().selected?.garrison">Garrison: {{ view().selected?.garrison }}</p>
+          <div :if="view().selected?.workArea">
+            <p class="working-area">Working area: tile {{ view().selected?.workArea?.x }}, {{ view().selected?.workArea?.y }}. Radius {{ view().selected?.workArea?.radius }}.</p>
+            <button type="button" class="text-button" :aria-pressed="selectedTool() === 'work-area:' + view().selected?.id" @click="game?.workArea()">Set working area</button>
+          </div>
+          <ul class="stock-list" :if="view().selected?.stocks.length"><li :for="stock in view().selected?.stocks"><span>{{ stock.role }} {{ stock.good }}</span><strong>{{ stock.amount }}/{{ stock.capacity }}</strong></li></ul>
+          <div class="flex gap-3 mt-2" :if="!view().selected?.castle"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.suspended ? 'Resume work' : 'Pause work' }}</button><button ref="tearDownButton" type="button" class="text-button tear-down" aria-haspopup="dialog" :aria-expanded="demolition() !== null" @click="requestDemolition()">Tear down</button></div>
+        </section>
+        <section class="objectives" :if="view().objectives.length" aria-label="Mission objectives" aria-live="polite" :data-outcome="view().outcome"><h2>{{ view().outcome === 'won' ? 'Mission won' : view().outcome === 'lost' ? 'Mission lost' : 'Objectives' }}</h2><ol><li :for="goal in view().objectives" :class="goal.status === 'complete' ? 'complete' : ''"><span :class="goal.status === 'complete' ? 'i-hugeicons-checkmark-circle-02' : 'i-hugeicons-circle'" aria-hidden="true"></span><span>{{ goal.text }}</span><span class="sr-only">{{ goal.status }}</span></li></ol></section>
+        <section class="needs-panel" :if="view().needs.length" aria-label="Needs attention"><h2>Needs attention</h2><ul class="profession-list"><li :for="need in view().needs"><span>{{ need }}</span></li></ul></section>
+        <details class="chronicle" open><summary>Settlement chronicle</summary><p :for="line in view().events">{{ line.text }} <button :if="line.at" type="button" class="text-button" @click="game?.goto(line.at.x, line.at.y)">Show</button></p></details>
+        <footer class="sidebar-footer">Built with Stacks, stx and Craft. Original demo sprites, converted for the browser. Rules are the Roman engineering profile, not a verified original ruleset.</footer>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
+
+<style>
+:root { color-scheme: dark; --ink:#e9e5cf; --muted:#a7b4a5; --panel:#1e332b; --line:#ffffff12; --gold:#e1c381; --surface:#172c26; font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif; background:var(--surface); color:var(--ink); }
+* { box-sizing:border-box; } body { margin:0; } button,a { -webkit-tap-highlight-color:transparent; } button { font:inherit; cursor:pointer; color:inherit; } button:focus-visible,a:focus-visible,canvas:focus-visible { outline:2px solid var(--gold); outline-offset:-3px; } button:disabled { opacity:.5; cursor:wait; } button { transition:background .15s,color .15s; } a { color:inherit; text-decoration:none; } .game-shell { height:100dvh; min-height:0; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:76px 58px minmax(0,1fr); } .masthead { background:#132820; border-bottom:1px solid var(--line); } .brand strong { font:600 25px/1.05 Georgia,"Times New Roman",serif; letter-spacing:-.6px; } .brand .roman { color:var(--gold); font-weight:400; padding-left:3px; } .brand small { display:block; font-size:9px; letter-spacing:3.2px; color:var(--gold); margin-top:7px; } .brand-mark { width:34px; height:34px; color:var(--gold); } .campaign { font-size:12px; } .campaign-name { color:var(--muted); } .day { border-left:1px solid #ffffff25; padding-left:20px; } .quiet-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; background:transparent; border:1px solid #ffffff1c; padding:9px 12px; border-radius:3px; font-size:12px; min-height:38px; white-space:nowrap; } .quiet-button:hover { background:#ffffff0c; } .quiet-button>span[aria-hidden="true"] { width:14px; height:14px; } .new-island { color:var(--gold); } .resource-strip { background:#21392e; border-bottom:1px solid #0003; padding:0 20px; gap:22px; font-size:12px; } .population,.army { white-space:nowrap; } .population>span,.army>span { width:20px; height:20px; color:var(--gold); } .population small,.army small { color:var(--muted); font-size:10px; } .stocks { min-width:0; flex:1; justify-content:space-around; overflow:auto; gap:14px; padding:8px 17px; border-left:1px solid var(--line); border-right:1px solid var(--line); } .stock { display:flex; flex-direction:column; align-items:center; min-width:30px; } .stock span { text-transform:capitalize; font-size:9px; color:var(--muted); } .stock strong { font-size:16px; font-weight:500; font-variant-numeric:tabular-nums; margin-top:2px; } .playfield { display:grid; grid-template-columns:minmax(0,1fr) 330px; min-height:0; } .map-region { position:relative; min-width:0; overflow:hidden; background:#243e37; } .island-map { display:block; width:100%; height:100%; touch-action:none; cursor:crosshair; } .map-caption { position:absolute; pointer-events:none; left:27px; top:25px; display:flex; flex-direction:column; gap:6px; color:#c4d1bd; font-size:11px; text-shadow:0 1px 4px #172c26; } .map-location { font:24px Georgia,serif; color:#e9e5cf; } .map-controls { position:absolute; right:18px; top:22px; background:#162d25e8; padding:4px; border:1px solid #ffffff15; border-radius:3px; } .map-button { min-width:32px; min-height:31px; padding:5px 7px; font-size:11px; background:transparent; border:0; border-radius:2px; } .map-button>span { display:block; width:17px; height:17px; } .map-button:hover,.map-button[aria-pressed="true"] { background:#e1c381; color:#192e25; } .advisor { position:absolute; left:22px; bottom:22px; right:22px; display:flex; align-items:center; gap:13px; background:#142b23ed; border:1px solid #a7b78335; box-shadow:0 8px 30px #0002; padding:16px 18px; border-radius:3px; pointer-events:none; } .advisor-icon { min-width:27px; height:27px; color:var(--gold); } .advisor strong { color:var(--gold); font-size:11px; font-weight:500; } .advisor p { font-size:12px; margin:4px 0 0; color:#e4e7d5; line-height:1.55; } .sidebar { min-height:0; overflow:auto; background:var(--panel); border-left:1px solid #d2ce9f1c; scrollbar-width:thin; scrollbar-color:#657055 transparent; } .sidebar section { padding:18px 21px; border-bottom:1px solid var(--line); } .settlement-heading { padding:22px 21px 18px; background:#233b2e; } .eyebrow { font-size:9px; letter-spacing:2px; color:var(--gold); } .settlement-heading h1 { margin:9px 0; font:26px Georgia,serif; } .settlement-count { color:var(--muted); font-size:10px; } .settlement-heading p { font-size:11px; color:var(--muted); margin:5px 0 0; } .settlement-heading strong { color:var(--ink); font-weight:500; float:right; } h2 { font-size:13px; font-weight:500; margin:0; } .text-button { border:0; background:transparent; font-size:11px; color:var(--gold); padding:4px 0; text-underline-offset:3px; } .text-button:hover { text-decoration:underline; } .category-list { margin:14px 0; } .category-list button { background:transparent; border:0; border-radius:2px; padding:7px 8px; font-size:10px; color:var(--muted); } .category-list button[aria-pressed="true"] { background:#d2bd7920; color:var(--gold); } .building-catalog { display:grid; grid-template-columns:1fr 1fr; gap:7px; } .building-choice { min-height:91px; text-align:left; display:grid; grid-template-columns:42px 1fr; align-content:center; column-gap:6px; background:#294234; border:1px solid #ffffff12; border-radius:3px; padding:11px 10px; } .building-choice:hover,.building-choice[aria-pressed="true"] { background:#3a5037; border-color:#d3bc77; } .building-symbol { width:42px; height:42px; object-fit:contain; image-rendering:pixelated; color:var(--gold); grid-row:span 2; align-self:center; } .building-choice strong { font-size:11px; font-weight:500; line-height:1.4; } .building-choice small { font-size:9px; color:#b7c0a7; margin-top:5px; line-height:1.4; } .inspector p,.border-report p { color:#b7c1ae; font-size:11px; line-height:1.7; margin:10px 0; } .building-status { color:var(--gold); font-size:9px; margin-left:8px; } progress { width:100%; height:3px; border:0; accent-color:var(--gold); background:#ffffff15; } progress::-webkit-progress-bar { background:#ffffff15; } progress::-webkit-progress-value { background:var(--gold); } .objectives ol { list-style:none; padding:0; margin:14px 0 0; } .objectives li { display:flex; align-items:flex-start; gap:10px; font-size:11px; line-height:1.6; color:#bac3b1; margin:10px 0; } .objectives li>span:first-child { flex-shrink:0; width:13px; height:13px; margin-top:3px; color:#7e917a; } .objectives li.complete { color:var(--gold); } .objectives li.complete>span:first-child { color:var(--gold); } .raid-time { font-size:10px; color:#dcc091; } .primary-button { display:inline-flex; gap:8px; justify-content:center; align-items:center; font-size:11px; font-weight:600; background:var(--gold); color:#172d24; border:1px solid #edd59c; border-radius:3px; min-height:38px; padding:10px 14px; } .primary-button:hover { background:#efd69b; } .primary-button span { width:16px; height:16px; } .chronicle { padding:15px 21px; font-size:11px; color:var(--muted); } .chronicle summary { cursor:pointer; color:var(--ink); } .chronicle p { line-height:1.6; } .sidebar-footer { font-size:9px; line-height:1.6; color:#97a68f; padding:12px 21px 22px; } .guide-panel,.result-panel { position:absolute; top:85px; left:26px; max-width:min(430px,calc(100% - 52px)); background:#1a3128fa; border:1px solid #d1b97c66; padding:24px; border-radius:3px; box-shadow:0 16px 40px #0004; z-index:4; } .guide-panel { max-height:calc(100% - 110px); overflow-y:auto; } .guide-panel h2,.result-panel h2 { font:25px Georgia,serif; line-height:1.2; } .guide-panel p,.result-panel p { color:#c5cebc; font-size:12px; line-height:1.75; } .result-label { color:var(--gold)!important; font-size:10px!important; letter-spacing:2px; } .result-panel { top:25%; left:50%; transform:translateX(-50%); width:430px; z-index:3; } .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.specialists .quiet-button { flex:1; } .specialists .quiet-button[aria-pressed="true"] { background:#d2bd7920; color:var(--gold); border-color:#d3bc77; } .worker-line { margin:8px 0 4px!important; } .stock-list,.profession-list { list-style:none; padding:0; margin:8px 0 0; font-size:11px; } .stock-list li,.profession-list li { display:flex; justify-content:space-between; padding:3px 0; color:#bac3b1; text-transform:capitalize; border-bottom:1px solid #ffffff08; } .stock-list strong,.profession-list strong { color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums; } .ratio { font-size:10px; color:var(--muted); } .ratio .text-button { font-size:13px; padding:0 4px; } .goods-panel p { color:#b7c1ae; font-size:11px; line-height:1.6; margin:8px 0; } .goods-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; } .good-toggle { display:flex; justify-content:space-between; gap:4px; background:#294234; border:1px solid #ffffff10; border-radius:3px; padding:6px 7px; font-size:10px; text-transform:capitalize; } .good-toggle strong { font-weight:500; font-variant-numeric:tabular-nums; } .good-toggle[aria-pressed="true"] { border-color:#d3bc77; color:var(--gold); background:#3a5037; } .guide-note { font-size:11px!important; color:#9fb09b!important; } .carried { font-size:11px; color:var(--muted); margin:8px 0 0; } .main-menu button { flex:1; background:transparent; border:1px solid #ffffff1c; border-radius:3px; padding:8px 6px; font-size:11px; } .main-menu button[aria-selected="true"] { background:#d2bd7920; color:var(--gold); border-color:#d3bc77; } .menu-note { color:#b7c1ae; font-size:11px; line-height:1.6; margin:8px 0; } .control-center meter { width:56px; height:6px; } .distribution h3 { font-size:11px; font-weight:500; margin:12px 0 0; text-transform:capitalize; } .overview { padding:14px 21px!important; } .overview-map { display:block; width:100%; aspect-ratio:3/2; background:#0a100e; border:1px solid #ffffff1c; border-radius:3px; cursor:pointer; image-rendering:pixelated; } .overview-modes { flex-wrap:wrap; justify-content:space-between; } .interventions h3 { font-size:11px; font-weight:500; margin:14px 0 6px; } .interventions h3 small { color:var(--muted); font-weight:400; } .interventions .good-toggle span { text-transform:none; text-align:left; } .needs-panel .profession-list li span { text-transform:none; }
+@media(max-width:1100px) { .campaign-name { display:none; } .day { border:0; padding:0; } .playfield { grid-template-columns:minmax(0,1fr) 300px; } .stocks { gap:12px; padding:8px 12px; } .resource-strip { gap:12px; } .population small,.army small { display:none; } .map-caption { left:20px; top:72px; } }
+@media(max-width:760px) { .game-shell { height:auto; min-height:100dvh; grid-template-rows:118px 58px auto; } .masthead { padding:12px 14px; flex-wrap:wrap; gap:8px; } .masthead nav { min-width:0; width:100%; justify-content:space-between; gap:4px; } .brand strong { font-size:19px; } .brand-mark,.campaign,.quiet-button>span[aria-hidden="true"] { display:none; } .brand small { font-size:8px; letter-spacing:2px; } .quiet-button { padding:7px 9px; font-size:11px; } .playfield { display:flex; flex-direction:column; } .map-region { height:65dvh; min-height:420px; } .sidebar { min-width:0; overflow:visible; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .settlement-heading { grid-column:span 2; } .sidebar section { min-width:0; padding:17px; } .building-catalog { grid-template-columns:1fr; } .building-choice { min-height:66px; } .sidebar-footer,.chronicle { grid-column:span 2; } .stocks { justify-content:flex-start; flex-shrink:1; } .population { font-size:11px; } .army { display:none; } .resource-strip { padding:0 12px; gap:9px; } .map-caption { top:75px; } .advisor { left:12px; right:12px; bottom:12px; padding:12px; } .guide-panel { left:14px; max-width:calc(100% - 28px); top:66px; padding:18px; max-height:calc(100% - 80px); overflow:auto; } .result-panel { max-width:calc(100% - 28px); } }
+@media(max-width:480px) { .sidebar { display:block; } .building-catalog { grid-template-columns:minmax(0,1fr) minmax(0,1fr); } .quiet-button { padding:7px; } .inspector>div:first-child,.border-report>div:first-child { flex-wrap:wrap; gap:6px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none!important; animation:none!important; } }
+/* The original art has fixed openings. Geometry is computed from the pinned
+   reference layout, while the local UI content remains scrollable inside it. */
+.playfield { --hud-unit:min(1px,calc(100vw / var(--hud-width))); position:relative; display:block; }
+.sidebar { position:relative; margin:0 auto; width:calc(var(--hud-width) * var(--hud-unit)); height:calc(var(--hud-profile) * var(--hud-unit)); min-height:0; display:block; overflow:visible; background:transparent; border:0; pointer-events:none; }
+.sidebar .overview { position:absolute; left:0; top:0; width:100%; height:calc(var(--mini-height) * var(--hud-unit)); padding:0!important; border:0; pointer-events:auto; clip-path:polygon(0 0,100% 0,calc(var(--panel-width) / var(--hud-width) * 100%) 100%,0 100%); }
+.overview-map { position:absolute; left:calc(var(--mini-map-left) * var(--hud-unit)); top:calc(var(--mini-map-top) * var(--hud-unit)); width:calc(var(--mini-map-width) * var(--hud-unit)); height:calc(var(--mini-map-height) * var(--hud-unit)); aspect-ratio:auto; background:transparent; border:0; border-radius:0; clip-path:polygon(33.333333% 0,100% 0,66.666667% 100%,0 100%); pointer-events:auto; }
+.minimap-frame-left,.minimap-frame-right { position:absolute; top:0; height:100%; background-size:100% 100%; background-repeat:no-repeat; image-rendering:pixelated; pointer-events:none; }
+.minimap-frame-left { left:0; width:calc(var(--panel-width) * var(--hud-unit)); background-image:var(--minimap-image); }
+.minimap-frame-right { left:calc(var(--panel-width) * var(--hud-unit)); width:calc(var(--mini-right-width) * var(--hud-unit)); background-image:var(--minimap-right-image); }
+.original-panel { position:absolute; left:0; top:calc(var(--mini-height) * var(--hud-unit)); width:calc(var(--panel-width) * var(--hud-unit)); height:calc(var(--panel-height) * var(--hud-unit)); background-image:var(--panel-image); background-size:100% 100%; image-rendering:pixelated; pointer-events:auto; }
+.original-panel::after { content:""; position:absolute; left:100%; top:0; height:100%; width:calc(var(--panel-edge) * var(--hud-unit)); background-image:var(--panel-right-image); background-size:100% 100%; pointer-events:none; }
+.main-menu,.category-list { position:absolute; margin:0; justify-content:flex-start; flex-wrap:nowrap; }
+.main-menu { left:calc(var(--primary-left) * var(--hud-unit)); top:calc(var(--primary-top) * var(--hud-unit)); gap:calc(var(--primary-gap) * var(--hud-unit)); }
+.main-menu button { flex:none; width:calc(var(--primary-width) * var(--hud-unit)); height:calc(var(--primary-height) * var(--hud-unit)); padding:0; border:0; border-radius:0; background:transparent; overflow:hidden; }
+.main-menu button[aria-selected="true"] { background:transparent; }
+.main-menu img { display:block; width:calc(var(--primary-image) * var(--hud-unit)); height:calc(var(--primary-image) * var(--hud-unit)); max-width:none; image-rendering:pixelated; }
+.category-list { left:calc(var(--secondary-left) * var(--hud-unit)); top:calc(var(--secondary-top) * var(--hud-unit)); gap:calc(var(--secondary-gap) * var(--hud-unit)); }
+.category-list button { flex:none; width:calc(var(--secondary-width) * var(--hud-unit)); height:calc(var(--secondary-height) * var(--hud-unit)); padding:0; border-radius:0; background:transparent; }
+.category-list button[aria-pressed="true"] { background:transparent; }
+.category-list img { display:block; width:100%; height:100%; image-rendering:pixelated; }
+.main-menu button:hover,.category-list button:hover { filter:brightness(1.15); }
+.hud-content { position:absolute; left:calc(var(--content-left) * var(--hud-unit)); top:calc(var(--content-top) * var(--hud-unit)); width:calc(var(--content-width) * var(--hud-unit)); height:calc(var(--content-height) * var(--hud-unit)); overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#7d8a8a #101a23; image-rendering:auto; background:#07131b90; }
+.hud-content section { padding:10px 6px; background:transparent; border-color:#b9c9c826; }
+.hud-content .settlement-heading { padding:10px 6px; background:transparent; }
+.hud-content .settlement-heading h1 { font-size:20px; margin:4px 0; }
+.hud-content .eyebrow { display:none; }
+.hud-content .overview-modes { margin:0; padding:4px 6px; justify-content:flex-start; gap:2px 10px; }
+.hud-content .text-button { font-size:10px; }
+.hud-content .inspector>div:first-child { display:block; }
+.hud-content .inspector .building-status { display:block; margin:4px 0 0; }
+.production-table { width:100%; border-collapse:collapse; font-size:10px; line-height:1.6; font-variant-numeric:tabular-nums; }
+.production-table th,.production-table td { padding:3px 1px; text-align:right; font-weight:400; white-space:nowrap; }
+.hud-content:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
+.production-table th:first-child { text-align:left; text-transform:capitalize; }
+.production-table thead th { color:var(--gold); border-bottom:1px solid var(--line); }
+.hud-content { container-type:inline-size; }
+/* Keep each figure and its label readable when the original frame is narrow. */
+@container(max-width:130px) {
+  .hud-content > * { overflow-wrap:anywhere; }
+  .production-table { table-layout:fixed; }
+  .production-table thead { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+  .production-table tbody { display:block; }
+  .production-table tbody tr { display:grid; grid-template-columns:minmax(0,1fr); padding:5px 0; border-bottom:1px solid var(--line); }
+  .production-table tbody th { white-space:normal; overflow-wrap:anywhere; color:var(--gold); }
+  .production-table tbody td { display:flex; flex-wrap:wrap; justify-content:space-between; gap:3px; white-space:normal; }
+  .production-table tbody td::before { content:attr(data-label); color:var(--muted); }
+}
+.hud-content .building-choice { display:flex; flex-direction:column; align-items:center; padding:6px 3px; text-align:center; min-height:108px; background:#142c3899; border-color:#77939a40; }
+.hud-content .building-choice:hover,.hud-content .building-choice[aria-pressed="true"] { background:#30424ecc; border-color:var(--gold); }
+.hud-content .building-choice strong { font-size:10px; }
+.hud-content .building-choice small { font-size:9px; }
+.hud-content .specialists { flex-wrap:wrap; }
+.hud-content .specialists .quiet-button { white-space:normal; }
+.hud-content .sidebar-footer,.hud-content .chronicle { padding:10px 6px; }
+@media(min-width:761px) {
+  .playfield { --hud-unit:calc((100dvh - 134px) / var(--hud-profile)); }
+  .map-region { width:100%; height:100%; }
+  .sidebar { position:absolute; margin:0; top:0; left:0; }
+  .map-caption { left:calc((var(--panel-width) + var(--panel-edge)) * var(--hud-unit) + 20px); top:calc(var(--mini-height) * var(--hud-unit) + 14px); }
+  .advisor { left:calc((var(--panel-width) + var(--panel-edge)) * var(--hud-unit) + 22px); }
+}
+@media(min-width:761px) and (max-height:649px) {
+  .map-caption { top:16px; }
+  .advisor { bottom:12px; right:12px; padding:8px 12px; }
+}
+.restart-dialog .restart-panel {
+  width:min(560px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow-y:auto;
+  padding:24px; background:#1a3128; color:var(--ink); border:1px solid #d1b97c66;
+  border-radius:3px; box-shadow:0 16px 40px #0004;
+}
+.restart-panel h2 { color:var(--ink); font:25px/1.2 Georgia,serif; }
+.restart-panel p { margin:8px 0 0; color:#c5cebc; font-size:12px; line-height:1.75; }
+.restart-panel .guide-note { margin:8px 0 12px; }
+.restart-panel input::placeholder { color:var(--muted); opacity:1; }
+.restart-panel input:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+@media(max-width:760px) { .restart-dialog .restart-panel { padding:18px; width:calc(100vw - 24px); max-height:calc(100dvh - 24px); } }
+</style>

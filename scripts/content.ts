@@ -1,8 +1,6 @@
 import { resolve } from 'node:path'
 import { contentPolicy } from '../docs/content/policy'
-import { tsCloud } from '../config/cloud'
-import type { DeployedSite } from './lib/content-provenance'
-import { inspectContentBundle, proveOriginalFreeDeployment, requireContentPublication, validateContentPolicy } from './lib/content-provenance'
+import { inspectContentBundle, requireContentPublication, validateContentPolicy } from './lib/content-provenance'
 
 const root = resolve(import.meta.dir, '..')
 const directory = resolve(root, 'public/assets/settlers-original')
@@ -22,19 +20,18 @@ if (import.meta.main) {
     const modes = ['--verify', '--publication', '--inventory'].filter(mode => args.includes(mode))
     if (modes.length !== 1) throw new Error('Select exactly one content verification mode')
     validateContentPolicy(contentPolicy)
-    // Web and preview deployments ship only what config/cloud.ts builds. When that
-    // is provably project-authored, no original-media grant is involved.
-    const originalFree = args.includes('--publication') && (channel === 'web' || channel === 'preview')
-      && await proveOriginalFreeDeployment(root, directory, (tsCloud.sites ?? {}) as Record<string, DeployedSite>).then(() => true, () => false)
-    const manifest = args.includes('--publication') && !originalFree
+    const manifest = args.includes('--publication')
       ? await requireContentPublication(directory, root, contentPolicy, channel)
       : args.includes('--verify') ? await inspectContentBundle(directory, contentPolicy) : null
+    const basis = contentPolicy.originalSources.some(source => source.rightsStatus === 'owner-accepted' && source.permittedChannels.includes(channel as never))
+      ? 'a recorded owner decision, not permission from the rights holders' : 'reviewed redistribution evidence'
     const report = {
       schemaVersion: 1,
       operation: modes[0]!.slice(2),
       channel: args.includes('--publication') ? channel : null,
       sourceRights: contentPolicy.originalSources,
       inventory: contentPolicy.inventory,
+      publicationBasis: args.includes('--publication') ? basis : null,
       verifiedConvertedFiles: manifest?.files.length ?? null,
       verifiedSourceInputs: manifest?.inputs.length ?? null,
       publicationVerified: args.includes('--publication'),
@@ -42,7 +39,7 @@ if (import.meta.main) {
     if (args.includes('--json')) console.log(JSON.stringify(report, null, 2))
     else {
       console.log(`Content inventory: ${contentPolicy.inventory.length} categories, ${manifest?.files.length ?? 0} verified converted files.`)
-      console.log(originalFree ? `Deployment for ${channel} ships only project-authored sources; no original media is published.` : args.includes('--publication') ? `Content publication verified for ${channel}.` : 'Provenance verification does not grant redistribution rights. No bundled publication is authorized by this check.')
+      console.log(args.includes('--publication') ? `Content publication verified for ${channel} on ${basis}.` : 'Provenance verification does not grant redistribution rights. No bundled publication is authorized by this check.')
     }
   }
   catch (error) {

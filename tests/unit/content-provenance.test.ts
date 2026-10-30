@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { contentPolicy } from '../../docs/content/policy'
-import { inspectContentBundle, proveOriginalFreeDeployment, requireContentPublication } from '../../scripts/lib/content-provenance'
+import { inspectContentBundle, requireContentPublication } from '../../scripts/lib/content-provenance'
 import type { ContentPolicy } from '../../scripts/lib/content-provenance'
 
 // This public filesystem/policy seam verifies mapping and fail-closed release
@@ -41,11 +41,20 @@ test('private conversion verifies every file but missing redistribution evidence
   const root = fixture()
   const bundle = await inspectContentBundle(join(root, 'bundle'), contentPolicy)
   expect(bundle.files.length).toBe(1)
-  await expect(requireContentPublication(join(root, 'bundle'), root, contentPolicy, 'web', new Date('2026-10-21T00:00:00Z'))).rejects.toThrow('No recorded redistribution evidence')
+  await expect(requireContentPublication(join(root, 'bundle'), root, unverifiedPolicy(), 'web', new Date('2026-10-21T00:00:00Z'))).rejects.toThrow('No recorded redistribution evidence')
 })
 
-function syntheticGrant(root: string): ContentPolicy {
+/** The state before any decision: unverified rights and no grants. */
+function unverifiedPolicy(): ContentPolicy {
   const policy = structuredClone(contentPolicy)
+  policy.originalSources[0]!.rightsStatus = 'unverified'
+  policy.originalSources[0]!.permittedChannels = []
+  policy.grants = []
+  return policy
+}
+
+function syntheticGrant(root: string): ContentPolicy {
+  const policy = unverifiedPolicy()
   policy.originalSources[0]!.rightsStatus = 'reviewed'
   policy.originalSources[0]!.permittedChannels = ['web']
   mkdirSync(join(root, 'docs/content/permissions'), { recursive: true })
@@ -147,7 +156,8 @@ test('the public policy command reports inventory and fails closed without a sup
   expect(await inventory.exited).toBe(0)
   expect(output.inventory.length).toBe(25)
   expect(output.publicationVerified).toBe(false)
-  expect(output.sourceRights[0].permittedChannels).toEqual([])
+  expect(output.sourceRights[0].permittedChannels).toEqual(['web'])
+  expect(output.sourceRights[0].rightsStatus).toBe('owner-accepted')
   for (const channel of ['', 'unknown']) {
     const child = Bun.spawn([process.execPath, 'scripts/content.ts', '--publication'], { cwd: root, env: { ...process.env, STACKS_PUBLICATION_CHANNEL: channel }, stdout: 'pipe', stderr: 'pipe' })
     const errors = await new Response(child.stderr).text()
@@ -156,38 +166,25 @@ test('the public policy command reports inventory and fails closed without a sup
   }
 }, 45_000) // Three real CLI boots include the application's normal Bun preloads.
 
-const marketingSite = { root: 'dist/marketing', build: 'bunx --bun @stacksjs/stx build --pages resources/views/marketing --out dist/marketing --public resources/marketing/public' }
 
-function marketingProject(): string {
+test('the recorded owner decision covers the web channel only and is labelled as an owner decision', async () => {
+  const root = resolve(import.meta.dir, '../..')
+  const grant = contentPolicy.grants.find(grant => grant.id === 'owner-decision-2026-10-30')!
+  expect(contentPolicy.originalSources[0]!.rightsStatus).toBe('owner-accepted')
+  expect(grant.channels).toEqual(['web'])
+  expect(grant.issuer).toContain('No rights-holder permission')
+  expect(sha(readFileSync(join(root, grant.evidence.path), 'utf8'))).toBe(grant.evidence.sha256)
+  const document = readFileSync(join(root, grant.evidence.path), 'utf8')
+  expect(document).toContain('not a licence and not permission from the rights holders')
+  for (const channel of ['preview', 'desktop', 'ios', 'android', 'github-release']) {
+    const bundle = fixture()
+    await expect(requireContentPublication(join(bundle, 'bundle'), root, contentPolicy, channel, new Date('2026-10-31T00:00:00Z'))).rejects.toThrow('Content publication blocked')
+  }
+})
+
+test('revoking the owner decision blocks the web channel again', async () => {
   const root = fixture()
-  mkdirSync(join(root, 'resources/views/marketing'), { recursive: true })
-  mkdirSync(join(root, 'resources/marketing/public'), { recursive: true })
-  writeFileSync(join(root, 'resources/views/marketing/index.stx'), '<h1>Authored</h1>')
-  writeFileSync(join(root, 'resources/marketing/public/robots.txt'), 'User-agent: *')
-  return root
-}
-
-test('a static build of only the reviewed marketing sources proves no original media ships', async () => {
-  const root = marketingProject()
-  await proveOriginalFreeDeployment(root, join(root, 'bundle'), { main: marketingSite })
-})
-
-test('servers, other roots and unreviewed inputs never count as original-free', async () => {
-  const root = marketingProject()
-  const bundle = join(root, 'bundle')
-  await expect(proveOriginalFreeDeployment(root, bundle, {})).rejects.toThrow('No deployable site')
-  await expect(proveOriginalFreeDeployment(root, bundle, { main: { ...marketingSite, start: 'bun serve.ts' } })).rejects.toThrow('not a static build')
-  await expect(proveOriginalFreeDeployment(root, bundle, { main: { root: '.', build: marketingSite.build } })).rejects.toThrow('not a static build')
-  await expect(proveOriginalFreeDeployment(root, bundle, { main: { ...marketingSite, build: marketingSite.build.replace('resources/marketing/public', 'public') } })).rejects.toThrow('not a static build')
-})
-
-test('converted original bytes or original paths inside a deployed source block the proof', async () => {
-  const root = marketingProject()
-  const bundle = join(root, 'bundle')
-  writeFileSync(join(root, 'resources/marketing/public/copy.png'), 'synthetic image bytes')
-  await expect(proveOriginalFreeDeployment(root, bundle, { main: marketingSite })).rejects.toThrow('Converted original media')
-  rmSync(join(root, 'resources/marketing/public/copy.png'))
-  mkdirSync(join(root, 'resources/marketing/public/settlers-original'))
-  writeFileSync(join(root, 'resources/marketing/public/settlers-original/a.txt'), 'x')
-  await expect(proveOriginalFreeDeployment(root, bundle, { main: marketingSite })).rejects.toThrow('Original media path')
+  const revoked = structuredClone(contentPolicy)
+  revoked.grants[0]!.status = 'revoked'
+  await expect(requireContentPublication(join(root, 'bundle'), root, revoked, 'web', new Date('2026-10-31T00:00:00Z'))).rejects.toThrow('No recorded redistribution evidence')
 })

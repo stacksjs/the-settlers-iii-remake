@@ -1,6 +1,6 @@
 # Original content provenance and publication policy
 
-The converted demo media currently has **unverified redistribution rights and no permitted publication channels**. Download availability, successful conversion, and the reference remake's code license do not establish permission to publish the original graphics, sound, maps or campaign material. This is an evidence record, not a legal conclusion about the historical demo's complete terms.
+The converted demo media has **unverified redistribution rights**: nothing here shows that Blue Byte or Ubisoft permit it. The project owner has nonetheless decided to publish it on the **`web` channel only**, credited everywhere and removable on request (see [Owner decision](#owner-decision)); every other channel stays blocked. Download availability, successful conversion, and the reference remake's code license do not establish permission to publish the original graphics, sound, maps or campaign material. This is an evidence record, not a legal conclusion about the historical demo's complete terms.
 
 ## Inspected sources
 
@@ -32,10 +32,14 @@ Actual bundled publication must run `bun run publication:check --channel <channe
 
 For approval, a source must be reviewed for the requested channel and every converted file/category must have active evidence covering both conversion and redistribution. Each record identifies the source, issuer, scope, permitted categories and channels, reviewer, UTC review date, validity start and optional expiry. The referenced regular document under `docs/content/permissions/` must be present and match its recorded SHA-256. Missing, changed, revoked, future, expired, malformed or insufficient evidence blocks publication. Reviewed policy changes are required; there is no allow-missing or skip-policy flag. Converter and lockfile identity must still match the verified conversion.
 
-The current policy has zero grants. All six publication channels consequently fail. The framework's direct Buddy entrypoint enforcement is delivered upstream; the S3-003 execution receipt records the adopted version when available. Workflow checks are additional protection and do not substitute for that source fix.
+The current policy has one grant, the owner decision below, for the `web` channel. The other five publication channels fail. The framework's direct Buddy entrypoint enforcement is delivered upstream; the S3-003 execution receipt records the adopted version when available. Workflow checks are additional protection and do not substitute for that source fix.
 
 ## Browser evidence
 
 The campaign regression still captures `storage/framework/runtime/shots/campaign.png` and runs every browser assertion. Local QA must inspect that actual PNG. CI retains explicit JSON diagnostics, screenshot SHA-256, dimensions, byte count, browser exit code and the server log. It withholds the raster and does not republish the original demo in an Actions cache because redistribution evidence has not been established. A retained hash does not provide public visual inspection. Adding raster or original-archive artifact publication requires reviewed rights and the same strict publication check for that channel before upload.
 
 This work establishes traceable imports and an enforceable absence of permission. It does not claim licensed bundled distribution, original Gold campaign parity, original runtime observation, or native output.
+
+## Owner decision
+
+On 2026-10-30 the project owner recorded [a decision](permissions/owner-decision-2026-10-30.md) to serve the converted demo media on the public web site, to signed-in players and in marketing screenshots. It is **not a licence and not permission from the rights holders**. The source's `rightsStatus` is `owner-accepted`, a status the publication check treats as sufficient only for the channels listed and reports as "a recorded owner decision, not permission from the rights holders". The decision is conditional on credit wherever the media appears or plays (page footers, screenshot captions, the in-game guide and [the credits page](../../resources/views/credits.stx)) and on prompt removal when a rights holder asks. Revoking it means setting the grant's `status` to `revoked`, which blocks the `web` channel again.
