@@ -5,6 +5,13 @@
 // resolves. Values are paths rather than import thunks on purpose: thunks
 // would make every compilation that touches a name resolve every module.
 export const actions = {
+  'Actions/Multiplayer/CreateRoomAction': '../../../app/Actions/Multiplayer/CreateRoomAction.ts',
+  'Actions/Multiplayer/JoinRoomAction': '../../../app/Actions/Multiplayer/JoinRoomAction.ts',
+  'Actions/Multiplayer/SendOrderAction': '../../../app/Actions/Multiplayer/SendOrderAction.ts',
+  'Actions/Multiplayer/ShowRoomAction': '../../../app/Actions/Multiplayer/ShowRoomAction.ts',
+  'Actions/Multiplayer/SnapshotAction': '../../../app/Actions/Multiplayer/SnapshotAction.ts',
+  'Actions/Multiplayer/StartRoomAction': '../../../app/Actions/Multiplayer/StartRoomAction.ts',
+  'Actions/Multiplayer/StreamRoomAction': '../../../app/Actions/Multiplayer/StreamRoomAction.ts',
   'Actions/NotifyUser': '../../../app/Actions/NotifyUser.ts',
   'Actions/SendWelcomeEmail': '../../../app/Actions/SendWelcomeEmail.ts',
   'Actions/AI/AskAction': '@stacksjs/defaults/app/Actions/AI/AskAction.ts',
