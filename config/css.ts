@@ -29,4 +29,21 @@ export default {
    * for.
    */
   minify: false,
+
+  /*
+   * The Stacks dashboard and auth components are written against the `blue`
+   * palette as their accent. This game's brand is the warm amber of the Roman
+   * castle, so `blue` is mapped to amber here once, in the theme, and every
+   * default component (sign-in, sign-up, buttons, focus rings, links) follows
+   * without a fork. The 500 and 600 steps are the darker ambers so white button
+   * text keeps AA contrast.
+   */
+  theme: {
+    colors: {
+      blue: {
+        50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24',
+        500: '#b45309', 600: '#92400e', 700: '#78350f', 800: '#5c2a0c', 900: '#451a03', 950: '#2a1002',
+      },
+    },
+  },
 } satisfies CssOptions

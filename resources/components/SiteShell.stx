@@ -1,0 +1,13 @@
+<script>
+interface SiteShellProps {
+  width?: string
+}
+
+const { width = 'max-w-6xl' } = defineProps<SiteShellProps>()
+</script>
+<a href="#main" class="focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:px-3 focus:py-2 focus:text-white focus:bg-stone-900 sr-only focus:not-sr-only">Skip to content</a>
+<SiteHeader />
+<main id="main" class="min-h-[60vh]">
+  <slot />
+</main>
+<SiteFooter />

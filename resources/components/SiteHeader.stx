@@ -1,13 +1,19 @@
-<header class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-4 sm:px-6 max-w-6xl">
-  <a href="/" class="flex gap-2 items-center font-bold no-underline text-base text-stone-900 dark:text-stone-100">
-    <span class="h-6 w-6 text-amber-700 dark:text-amber-400 i-hugeicons-castle-01" aria-hidden="true"></span>
-    The Settlers III Remake
-  </a>
-  <nav class="flex flex-wrap gap-x-5 gap-y-1 items-center" aria-label="Primary">
-    <a href="/#screens" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Screenshots</a>
-    <a href="/#simulation" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Simulation</a>
-    <a href="/credits" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Credits</a>
-    <a href="/login?redirect=/play" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Sign in</a>
-    <a href="/play" class="px-4 py-1.5 font-semibold no-underline text-stone-950 bg-amber-600 rounded-full hover:brightness-110">Play</a>
-  </nav>
+<header class="sticky top-0 z-40 bg-amber-50/85 dark:bg-stone-950/85 border-amber-200/70 border-b dark:border-stone-800 backdrop-blur">
+  <div class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-3 sm:px-6 max-w-6xl">
+    <a href="/" class="flex gap-3 items-center font-bold no-underline text-base text-stone-900 dark:text-stone-100" aria-label="The Settlers III Remake home">
+      <span class="inline-flex items-center justify-center h-9 w-9 bg-gradient-to-br from-amber-500 to-amber-700 ring-1 ring-amber-900/20 rounded-xl shadow-amber-700/30 shadow-md">
+        <span class="h-5 w-5 text-white i-hugeicons-castle-01" aria-hidden="true"></span>
+      </span>
+      <span class="leading-tight">The Settlers <span class="text-amber-800 dark:text-amber-400">III</span><small class="block font-semibold text-stone-500 text-xs tracking-widest uppercase dark:text-stone-400">Remake</small></span>
+    </a>
+    <nav class="flex flex-wrap gap-x-1 gap-y-1 items-center" aria-label="Primary">
+      <a href="/#try" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Demo</a>
+      <a href="/#screens" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Modes</a>
+      <a href="/#simulation" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Simulation</a>
+      <a href="/multiplayer" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Multiplayer</a>
+      <a href="/credits" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Credits</a>
+      <a href="/login?redirect=/play" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Sign in</a>
+      <a href="/play" class="flex gap-1.5 items-center ml-1 px-4 py-1.5 font-semibold no-underline text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-full shadow-amber-600/30 shadow-md"><span class="h-4 w-4 i-hugeicons-play" aria-hidden="true"></span>Play</a>
+    </nav>
+  </div>
 </header>

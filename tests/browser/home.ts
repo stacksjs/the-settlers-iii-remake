@@ -47,11 +47,8 @@ const type = async (selector: string, text: string): Promise<void> => {
 try {
   // 1. A signed-out visitor plays the guest demo.
   if (!await navigate(cdp, base)) throw new Error('The home page did not settle')
-  await check('the home page offers the demo without signing in', `!!document.querySelector('#start-demo') && !document.cookie.includes('auth-token')`)
-  await check('the demo overlay covers the map before it starts', `getComputedStyle(document.querySelector('#start-demo').parentElement).display !== 'none'`)
-  await click('#start-demo')
-  await check('the demo overlay leaves once the demo starts', `getComputedStyle(document.querySelector('#start-demo').parentElement).display === 'none'`)
-  await check('the guest settlement is ready with its starting goods', `document.querySelector('#demo-stock').textContent.includes('plank 30') && ![...document.querySelectorAll('[role=toolbar] button')].some(b => b.disabled)`, 60000)
+  await check('the home page offers the demo without signing in', `!!document.querySelector('#demo-map') && !document.cookie.includes('auth-token')`)
+  await check('the demo starts by itself, without signing in, and shows its starting goods', `document.querySelector('#demo-stock').textContent.includes('plank 30') && ![...document.querySelectorAll('[role=toolbar] button')].some(b => b.disabled)`, 60000)
   const stock = await cdp.evaluate<string>(`document.querySelector('#demo-stock').textContent`)
   const over = await point('#demo-map')
   const before = await cdp.evaluate<number>(`scrollY`)
@@ -63,8 +60,7 @@ try {
   await check('choosing a tool hands keyboard focus to the map', `document.activeElement === document.querySelector('#demo-map')`)
   await key('Enter', 'Enter', 13, '\r')
   await check('the engine placed a woodcutter site from the keyboard', `document.querySelector('#demo-message').textContent.includes('site placed')`, 10000)
-  await click('[role=toolbar] button:nth-child(7)')
-  await click('[role=toolbar] button:nth-child(7)')
+  await click('[aria-label="Game speed"] button:last-child')
   await check('the settlers built it and spent real planks and stone', `(() => { const t = document.querySelector('#demo-stock').textContent; const plank = Number(/plank (\\d+)/.exec(t)?.[1] ?? 99); return plank < 30 && /\\b[2-9] buildings/.test(document.querySelector('#demo-message').parentElement.textContent) })()`, 90000)
   steps.push({ action: 'assert', label: `starting goods were ${stock}`, ok: true })
   await check('guest play wrote nothing to the signed-in save namespace', `!Object.keys(localStorage).some(k => k.includes('gold-checkpoint'))`)
@@ -91,7 +87,8 @@ try {
   console.log('The home page demo, the sign-in gate and real registration passed in the browser.')
 }
 catch (error) {
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
+  const state = await cdp.evaluate<string>(`JSON.stringify({ path: location.pathname, title: document.title, canvases: document.querySelectorAll('canvas').length, text: document.body.innerText.slice(0, 300) })`).catch(() => 'unavailable')
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, state, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
   throw error
 }
 finally {

@@ -81,7 +81,7 @@ export function playerSlotsForContent(content: { id: string, digest: string }, c
     if (entry.slots.length < count) throw new Error('Original map player-color mapping has too few players')
     return Object.freeze(entry.slots.slice(0, count))
   }
-  if (/^generated(?:-\d+)?$/.test(content.id) || /^rival-\d+-elimination-v1$/.test(content.id)) return Object.freeze(DEFAULT_PLAYER_SLOTS.slice(0, count))
+  if (/^generated(?:-\d+)?$/.test(content.id) || /^rival-\d+-elimination-v1$/.test(content.id) || /^duel-\d+-v1$/.test(content.id)) return Object.freeze(DEFAULT_PLAYER_SLOTS.slice(0, count))
   throw new Error('Player colors for this saved content are unavailable. Update its content files.')
 }
 

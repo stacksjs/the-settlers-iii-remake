@@ -2,46 +2,61 @@
 const repository = 'https://github.com/stacksjs/the-settlers-iii-remake'
 
 const features = [
-  { title: 'Real logistics', body: 'Carriers fetch each plank and stone from where it lies, diggers level the site, and builders build from delivered material. Construction deliveries come before storage.' },
-  { title: 'Tools and trades', body: 'Woodcutters need an axe, miners a pick, sawyers a saw. A workplace without its tool says so instead of hiring a phantom worker.' },
-  { title: 'Soldiers and borders', body: 'Soldiers are recruited from carriers holding real weapons, garrison towers, fight and capture buildings. Pioneers push the border outward.' },
-  { title: 'A computer rival', body: 'The rival surveys, expands, builds an economy and attacks through the same commands you use. Capture every enemy castle and tower to win.' },
-  { title: 'Seeds and saves', body: 'Reuse a map seed for the same landscape. Settlements, seed and mission outcome survive save and reload on your device.' },
-  { title: 'Keyboard first', body: 'Choosing a building moves the cursor to the nearest valid site and Enter places it. Dialogs contain focus and restore it when closed.' },
+  { icon: 'i-hugeicons-package-01', title: 'Real logistics', body: 'Carriers fetch each plank and stone from where it lies, diggers level the site, and builders build from delivered material. Construction deliveries come before storage.' },
+  { icon: 'i-hugeicons-tools', title: 'Tools and trades', body: 'Woodcutters need an axe, miners a pick, sawyers a saw. A workplace without its tool says so instead of hiring a phantom worker.' },
+  { icon: 'i-hugeicons-sword-01', title: 'Soldiers and borders', body: 'Soldiers are recruited from carriers holding real weapons, garrison towers, fight and capture buildings. Pioneers push the border outward.' },
+  { icon: 'i-hugeicons-target-01', title: 'A computer rival', body: 'The rival surveys, expands, builds an economy and attacks through the same commands you use. Capture every enemy castle and tower to win.' },
+  { icon: 'i-hugeicons-floppy-disk', title: 'Seeds and saves', body: 'Reuse a map seed for the same landscape. Settlements, seed and mission outcome survive save and reload on your device.' },
+  { icon: 'i-hugeicons-keyboard', title: 'Keyboard first', body: 'Choosing a building moves the cursor to the nearest valid site and Enter places it. Dialogs contain focus and restore it when closed.' },
 ]
 
-const shots = [
-  { src: '/showcase/settlement.webp', alt: 'A Roman settlement with a castle, woodcutters, a stonecutter and a sawmill at work on a green hex island.', title: 'A settlement that really works', caption: 'Woodcutters, a forester, a stonecutter and a sawmill: each building staffed by a settler who walked there with the right tool.' },
+const modes = [
   { src: '/showcase/tutorial.webp', alt: 'The original tutorial map from the Amazons demo, with a guard tower, goods on the ground and many soldiers standing around.', title: 'The original tutorial map', caption: 'Decoded from the free Amazons demo, with its own terrain, tower, tools and starting goods.' },
   { src: '/showcase/rival.webp', alt: 'A Roman castle with a sawmill and other workshops among trees, with the objectives panel open.', title: 'Skirmish against a computer rival', caption: 'The rival expands, builds and fights through the same commands you use. Capture every enemy castle and tower to win.' },
 ]
 
-const more = shots.slice(1)
+// Every figure here is traceable to the content policy and the rules profile.
+const stats = [
+  { value: '32', label: 'Roman building types', icon: 'i-hugeicons-home-01' },
+  { value: '23', label: 'goods, carried one at a time', icon: 'i-hugeicons-package-01' },
+  { value: '3', label: 'ways to play: tutorial, rival and online duel', icon: 'i-hugeicons-flag-01' },
+  { value: '0', label: 'phantom workers: tools are real', icon: 'i-hugeicons-shield-01' },
+]
+
+const steps = [
+  { n: '1', icon: 'i-hugeicons-hammer', title: 'Place a building', body: 'Pick a hut and click open ground. Diggers level the site and builders raise it from delivered planks and stone.' },
+  { n: '2', icon: 'i-hugeicons-user-multiple', title: 'Settlers walk to work', body: 'A worker fetches the right tool first, then walks to the hut. No tool, no worker, and the game tells you so.' },
+  { n: '3', icon: 'i-hugeicons-package-01', title: 'Goods flow', body: 'Logs become planks, planks become buildings. Every good is carried by a carrier along a road, one at a time.' },
+]
 
 const status = [
-  '12 epics and more than 100 implementation issues, linked to the framework repositories that own each defect.',
-  'A fidelity audit that lists verified matches and known gaps.',
-  'Production browser acceptance runs on every push.',
+  { icon: 'i-hugeicons-target-01', title: 'Tracked in the open', body: '12 epics and more than 100 implementation issues, linked to the framework repositories that own each defect.' },
+  { icon: 'i-hugeicons-layers-01', title: 'Honest about gaps', body: 'A fidelity audit lists verified matches and known gaps. A feature is only done when its acceptance checks pass in a real browser.' },
+  { icon: 'i-hugeicons-gamepad-01', title: 'Tested on every push', body: 'Production browser acceptance, with real clicks and keys, runs on every push before a release.' },
 ]
 </script>
 
 <script client>
-import { mountGame, snapshot } from '../game/controller'
+import { catalog, mountGame, snapshot } from '../game/controller'
 import type { Game } from '../game/controller'
+import { goodIcon, goodName } from '../game/good-icons'
 
 // The starter kit: the buildings that make the first chain (logs, planks, stone) work.
-const tools = [
-  { id: 'woodcutter', label: "Woodcutter" },
-  { id: 'forester', label: 'Forester' },
-  { id: 'sawmill', label: 'Sawmill' },
-  { id: 'stonecutter', label: 'Stonecutter' },
-  { id: 'small-residence', label: 'Residence' },
+const kit = [
+  { id: 'woodcutter', label: 'Woodcutter', icon: 'i-hugeicons-axe' },
+  { id: 'forester', label: 'Forester', icon: 'i-hugeicons-tree-01' },
+  { id: 'sawmill', label: 'Sawmill', icon: 'i-hugeicons-tools' },
+  { id: 'stonecutter', label: 'Stonecutter', icon: 'i-hugeicons-pickaxe' },
+  { id: 'small-residence', label: 'Residence', icon: 'i-hugeicons-home-01' },
 ]
+// Costs come from the rules the simulation itself runs on.
+const tools = kit.map(item => ({ ...item, cost: catalog.find(entry => entry.id === item.id)?.cost ?? '' }))
 const demoCanvas = useRef<HTMLCanvasElement>('demoMap')
 const started = state(false)
-const demo = state(snapshot(null, null, 'Choose a building, then click open ground next to your castle.', 1))
+const demo = state(snapshot(null, null, 'Preparing the original graphics and your settlement...', 1))
 const tool = state('')
 const stockText = derived(() => demo().goods.filter(item => item.amount > 0).slice(0, 6).map(item => `${item.key} ${item.amount}`).join(', ') || 'none yet')
+const shown = derived(() => demo().goods.filter(item => item.amount > 0).slice(0, 8))
 const reduceMotion = usePreferredReducedMotion()
 let demoGame: Game | null = null
 
@@ -55,7 +70,9 @@ function startDemo(): void {
 }
 function pick(kind: string): void { tool.set(kind); demoGame?.choose(kind) }
 function inspect(): void { tool.set(''); demoGame?.choose(null) }
-function faster(): void { demoGame?.speed(demo().speed >= 4 ? 1 : demo().speed * 2) }
+function setSpeed(value: number): void { demoGame?.speed(value) }
+// The demo is the first thing on the page, so it starts as soon as the page does.
+onMount(() => { void nextTick(() => startDemo()) })
 onDestroy(() => demoGame?.dispose())
 </script>
 
@@ -65,81 +82,159 @@ onDestroy(() => demoGame?.dispose())
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A free browser remake of The Settlers III. Try a small settlement right on the page, or sign in for the full game: every settler, tool and good is a real object in a deterministic settlement simulation.">
+  <meta name="description" content="A free browser remake of The Settlers III. Play a small settlement right on the page, or sign in for the full game: every settler, tool and good is a real object in a deterministic settlement simulation.">
   <meta property="og:title" content="The Settlers III Remake">
   <meta property="og:description" content="Play a Roman settlement where every settler walks and every plank is carried.">
   <meta property="og:image" content="/showcase/settlement.webp">
   <title>The Settlers III Remake</title>
 </head>
 <body class="m-0 antialiased text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-950">
-  <a href="#main" class="focus:absolute focus:left-2 focus:top-2 focus:px-3 focus:py-2 focus:text-white focus:bg-stone-900 sr-only focus:not-sr-only">Skip to content</a>
-  <SiteHeader />
+  <SiteShell>
+    <section id="try" aria-labelledby="try-title" class="overflow-hidden relative">
+      <div class="absolute inset-0 bg-gradient-to-b from-amber-100 to-transparent via-amber-50 dark:from-stone-900 dark:via-stone-950 -z-10" aria-hidden="true"></div>
+      <div class="grid gap-8 items-center lg:grid-cols-12 mx-auto pb-10 pt-8 px-4 sm:px-6 lg:pt-10 max-w-7xl">
+        <div class="lg:col-span-4">
+          <p class="inline-flex gap-2 items-center m-0 mb-4 px-3 py-1 font-semibold text-amber-900 text-xs tracking-wide dark:text-amber-300 bg-amber-200/70 dark:bg-amber-400/15 rounded-full"><span class="h-2 w-2 bg-emerald-500 rounded-full" aria-hidden="true"></span>Free to play in your browser</p>
+          <h1 id="try-title" class="m-0 mb-4 font-bold leading-tight text-4xl tracking-tight xl:text-5xl">Every settler walks. Every plank is carried.</h1>
+          <p class="m-0 mb-6 text-lg text-stone-600 dark:text-stone-400">A browser remake of The Settlers III on a deterministic simulation. If a carrier has not delivered the stone, the wall does not rise. Try it on the right, no account needed.</p>
+          <p class="flex flex-wrap gap-3 m-0 mb-5">
+            <a href="/register?redirect=/play" class="flex gap-2 items-center px-5 py-3 font-semibold no-underline text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-xl shadow-amber-600/30 shadow-lg"><span class="h-5 w-5 i-hugeicons-user-add-01" aria-hidden="true"></span>Create a free account</a>
+            <a href="/play" class="flex gap-2 items-center px-5 py-3 font-semibold no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 hover:bg-amber-50 border border-amber-300 rounded-xl dark:border-stone-700"><span class="h-5 w-5 i-hugeicons-play" aria-hidden="true"></span>Play the full game</a>
+          </p>
+          <ul class="flex flex-wrap gap-2 m-0 p-0 list-none text-stone-600 text-xs dark:text-stone-400">
+            <li class="flex gap-1.5 items-center px-2.5 py-1 bg-white/80 dark:bg-stone-900/80 border border-amber-200/70 rounded-full dark:border-stone-800"><span class="h-3.5 w-3.5 text-amber-700 i-hugeicons-keyboard" aria-hidden="true"></span>Keyboard first</li>
+            <li class="flex gap-1.5 items-center px-2.5 py-1 bg-white/80 dark:bg-stone-900/80 border border-amber-200/70 rounded-full dark:border-stone-800"><span class="h-3.5 w-3.5 text-amber-700 i-hugeicons-floppy-disk" aria-hidden="true"></span>Saves on your device</li>
+            <li class="flex gap-1.5 items-center px-2.5 py-1 bg-white/80 dark:bg-stone-900/80 border border-amber-200/70 rounded-full dark:border-stone-800"><span class="h-3.5 w-3.5 text-amber-700 i-hugeicons-sword-01" aria-hidden="true"></span>Computer rival</li>
+            <li class="flex gap-1.5 items-center px-2.5 py-1 bg-white/80 dark:bg-stone-900/80 border border-amber-200/70 rounded-full dark:border-stone-800"><span class="h-3.5 w-3.5 text-amber-700 i-hugeicons-user-multiple" aria-hidden="true"></span>Online duels</li>
+          </ul>
+        </div>
 
-  <main id="main">
-    <section class="mx-auto pb-10 pt-12 px-4 sm:pt-16 sm:px-6 max-w-6xl">
-      <p class="m-0 mb-3 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Free to play in your browser</p>
-      <h1 class="m-0 mb-5 max-w-3xl font-bold leading-tight text-4xl tracking-tight sm:text-6xl">Every settler walks. Every plank is carried.</h1>
-      <p class="m-0 mb-7 max-w-2xl text-stone-600 text-xl dark:text-stone-400">A browser remake of The Settlers III, built on a deterministic simulation in which each settler, tool and good is a real object in the world. If a carrier has not delivered the stone, the wall does not rise.</p>
-      <p class="flex flex-wrap gap-3 m-0">
-        <a href="/play" class="px-6 py-3 font-semibold no-underline text-stone-950 bg-amber-600 rounded-xl hover:brightness-110">Play now</a>
-        <a href="/register?redirect=/play" class="px-6 py-3 font-semibold no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 border border-stone-300 rounded-xl dark:border-stone-700">Create a free account</a>
-      </p>
-      <p class="mb-0 mt-3 text-sm text-stone-600 dark:text-stone-400">Try a small settlement below with no account. An account unlocks the full game and keeps your saves.</p>
-    </section>
-
-    <section id="try" aria-labelledby="try-title" class="mx-auto px-4 sm:px-6 max-w-6xl">
-      <h2 id="try-title" class="m-0 mb-2 font-bold text-3xl tracking-tight">Try a small settlement now</h2>
-      <p class="m-0 mb-5 max-w-2xl text-stone-600 dark:text-stone-400">No account needed. Place a woodcutter, a forester, a sawmill and a stonecutter next to the castle and watch the settlers fetch their tools and carry every log. Guest games are not saved. <a href="/register?redirect=/play" class="text-amber-800 dark:text-amber-400">Create a free account</a> for the full game with saves, a computer rival and the original tutorial map.</p>
-      <div class="overflow-hidden bg-white dark:bg-stone-900 border border-stone-300 rounded-2xl dark:border-stone-700 shadow-lg">
-        <div class="aspect-[16/10] relative bg-stone-900">
-          <canvas ref="demoMap" id="demo-map" tabindex="0" role="application" aria-label="Demo settlement map. Drag with the right button to pan, hold Ctrl or Cmd and scroll to zoom. Arrow keys select a tile and Enter builds or inspects." class="block h-full w-full cursor-crosshair touch-none"></canvas>
-          <div :class="started() ? 'hidden' : 'flex'" class="absolute inset-0 flex-col gap-4 items-start justify-end p-6 bg-center bg-cover" style="background-image: url('/showcase/settlement.webp')">
-            <button type="button" id="start-demo" class="px-6 py-3 font-semibold text-stone-950 bg-amber-600 rounded-xl hover:brightness-110" @click="startDemo()">Start the demo</button>
+        <div class="lg:col-span-8">
+          <div class="overflow-hidden bg-stone-900 border border-amber-900/30 ring-1 ring-black/10 rounded-2xl shadow-2xl">
+            <div class="flex gap-3 items-center justify-between px-4 py-2.5 text-stone-300 text-xs bg-stone-950">
+              <span class="flex gap-1.5" aria-hidden="true"><span class="h-2.5 w-2.5 bg-red-400/80 rounded-full"></span><span class="h-2.5 w-2.5 bg-amber-300/80 rounded-full"></span><span class="h-2.5 w-2.5 bg-emerald-400/80 rounded-full"></span></span>
+              <span class="font-semibold tracking-wide">Guest settlement <span class="font-normal text-stone-500">(not saved)</span></span>
+              <span class="flex gap-1.5 items-center px-2 py-0.5 tabular-nums text-amber-200 bg-amber-400/10 rounded-full"><span class="h-3.5 w-3.5 i-hugeicons-hourglass" aria-hidden="true"></span>{{ demo().time }}</span>
+            </div>
+            <div class="aspect-[16/10] relative bg-stone-900">
+              <canvas ref="demoMap" id="demo-map" tabindex="0" role="application" aria-label="Demo settlement map. Drag with the right button to pan, hold Ctrl or Cmd and scroll to zoom. Arrow keys select a tile and Enter builds or inspects." class="block h-full w-full cursor-crosshair touch-none"></canvas>
+              <div :class="demo().ready ? 'hidden' : 'flex'" class="absolute inset-0 flex-col gap-3 items-center justify-center text-stone-200 bg-center bg-cover bg-stone-900/90" style="background-image: linear-gradient(rgba(23,20,15,.85), rgba(23,20,15,.85)), url('/showcase/settlement.webp')">
+                <span class="h-8 w-8 text-amber-300 i-hugeicons-castle-01" aria-hidden="true"></span>
+                <p class="m-0 text-sm">{{ demo().message }}</p>
+                <button type="button" id="start-demo" class="px-5 py-2 font-semibold text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-xl" @click="startDemo()">Start the demo</button>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center p-3 bg-stone-950 border-stone-800 border-t" role="toolbar" aria-label="Demo build tools">
+              <button :for="item in tools" type="button" class="flex gap-2 items-center px-3 py-2 font-medium text-sm border rounded-xl disabled:opacity-40 transition" :class="tool() === item.id ? 'bg-amber-500 text-stone-950 border-amber-300' : 'bg-stone-900 text-stone-100 border-stone-700 hover:border-amber-400'" :aria-pressed="tool() === item.id" :disabled="!demo().ready" :title="item.label + ': ' + item.cost" @click="pick(item.id)"><span class="h-4 w-4" :class="item.icon" aria-hidden="true"></span>{{ item.label }}</button>
+              <button type="button" class="flex gap-2 items-center px-3 py-2 font-medium text-sm text-stone-100 bg-stone-900 border border-stone-700 rounded-xl hover:border-amber-400 disabled:opacity-40" :disabled="!demo().ready" @click="inspect()"><span class="h-4 w-4 i-hugeicons-mouse-01" aria-hidden="true"></span>Inspect</button>
+              <span class="flex gap-1 items-center ml-auto" role="group" aria-label="Game speed">
+                <button type="button" class="px-2.5 py-2 text-sm text-stone-100 bg-stone-900 border border-stone-700 rounded-lg disabled:opacity-40" :class="demo().speed === 0 ? 'ring-2 ring-amber-400' : ''" :aria-pressed="demo().speed === 0" :disabled="!demo().ready" aria-label="Pause" @click="setSpeed(0)"><span class="block h-4 w-4 i-hugeicons-pause" aria-hidden="true"></span></button>
+                <button type="button" class="px-2.5 py-2 text-sm text-stone-100 bg-stone-900 border border-stone-700 rounded-lg disabled:opacity-40" :class="demo().speed === 1 ? 'ring-2 ring-amber-400' : ''" :aria-pressed="demo().speed === 1" :disabled="!demo().ready" @click="setSpeed(1)">1x</button>
+                <button type="button" class="px-2.5 py-2 text-sm text-stone-100 bg-stone-900 border border-stone-700 rounded-lg disabled:opacity-40" :class="demo().speed === 2 ? 'ring-2 ring-amber-400' : ''" :aria-pressed="demo().speed === 2" :disabled="!demo().ready" @click="setSpeed(2)">2x</button>
+                <button type="button" class="px-2.5 py-2 text-sm text-stone-100 bg-stone-900 border border-stone-700 rounded-lg disabled:opacity-40" :class="demo().speed === 4 ? 'ring-2 ring-amber-400' : ''" :aria-pressed="demo().speed === 4" :disabled="!demo().ready" @click="setSpeed(4)">4x</button>
+              </span>
+            </div>
+            <div class="flex flex-wrap gap-x-5 gap-y-1 items-center justify-between px-4 py-2.5 text-stone-300 text-xs bg-stone-950 border-stone-800 border-t" aria-live="polite">
+              <p id="demo-message" class="m-0 font-medium text-amber-100">{{ demo().message }}</p>
+              <p class="flex flex-wrap gap-x-4 gap-y-1 items-center m-0 tabular-nums text-stone-400"><span>{{ demo().buildings }} {{ demo().buildings === 1 ? 'building' : 'buildings' }}</span><span :for="item in shown()" class="flex gap-1.5 items-center text-stone-200" :title="goodName(item.key)"><span class="h-4 w-4 text-amber-300" :class="goodIcon(item.key)" aria-hidden="true"></span>{{ goodName(item.key) }} {{ item.amount }}</span><span id="demo-stock" class="sr-only">{{ stockText() }}</span></p>
+            </div>
           </div>
-        </div>
-        <div class="flex flex-wrap gap-2 items-center p-3 border-stone-300 border-t dark:border-stone-700" role="toolbar" aria-label="Demo build tools">
-          <button :for="item in tools" type="button" class="px-3 py-2 font-medium text-sm border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :class="tool() === item.id ? 'bg-amber-600 text-stone-950' : 'bg-white dark:bg-stone-900'" :aria-pressed="tool() === item.id" :disabled="!demo().ready" @click="pick(item.id)">{{ item.label }}</button>
-          <button type="button" class="px-3 py-2 font-medium text-sm bg-white dark:bg-stone-900 border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :disabled="!demo().ready" @click="inspect()">Inspect</button>
-          <button type="button" class="px-3 py-2 font-medium text-sm bg-white dark:bg-stone-900 border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :disabled="!demo().ready" @click="faster()">Speed x{{ demo().speed }}</button>
-        </div>
-        <div class="pb-4 px-4 text-sm" aria-live="polite">
-          <p id="demo-message" class="m-0 mb-1 font-medium">{{ demo().message }}</p>
-          <p class="m-0 text-stone-600 dark:text-stone-400">Time {{ demo().time }} - {{ demo().buildings }} buildings - goods: <span id="demo-stock">{{ stockText() }}</span></p>
+          <p class="mb-0 mt-3 text-stone-500 text-xs dark:text-stone-500">Original art and sound: The Settlers III, Blue Byte / Ubisoft (free Amazons demo). Choose a hut, then click open ground inside your border, or press Enter. Hold Ctrl or Cmd and scroll to zoom. <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits and removal requests</a>.</p>
         </div>
       </div>
-      <p class="mb-0 mt-3 text-stone-500 text-xs dark:text-stone-500">Original art and sound: The Settlers III, Blue Byte / Ubisoft (free Amazons demo). <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits and removal requests</a>.</p>
     </section>
 
-    <section id="screens" aria-labelledby="screens-title" class="mx-auto px-4 py-14 sm:px-6 max-w-6xl">
-      <h2 id="screens-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">See it running</h2>
+    <section aria-label="Facts" class="mx-auto px-4 sm:px-6 max-w-7xl">
+      <dl class="grid gap-3 grid-cols-2 lg:grid-cols-4 m-0">
+        @foreach (stats as stat)
+          <div class="flex gap-3 items-center p-4 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-sm">
+            <span class="inline-flex items-center justify-center shrink-0 h-10 w-10 text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-400/10 rounded-xl"><span class="h-5 w-5 {{ stat.icon }}" aria-hidden="true"></span></span>
+            <div><dt class="font-bold leading-none tabular-nums text-2xl">{{ stat.value }}</dt><dd class="m-0 mt-1 text-stone-600 text-xs dark:text-stone-400">{{ stat.label }}</dd></div>
+          </div>
+        @endforeach
+      </dl>
+    </section>
+
+    <section id="how" aria-labelledby="how-title" class="mx-auto px-4 py-16 sm:px-6 max-w-7xl">
+      <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">How it plays</p>
+      <h2 id="how-title" class="m-0 mb-8 max-w-2xl font-bold text-3xl tracking-tight">Three steps from a patch of grass to a working economy</h2>
+      <ol class="grid gap-4 md:grid-cols-3 m-0 p-0 list-none">
+        @foreach (steps as step)
+          <li class="relative p-6 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-sm">
+            <span class="absolute right-5 top-4 font-bold text-5xl text-amber-200 dark:text-stone-800 select-none" aria-hidden="true">{{ step.n }}</span>
+            <span class="inline-flex items-center justify-center mb-4 h-11 w-11 text-white bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl shadow-md"><span class="h-6 w-6 {{ step.icon }}" aria-hidden="true"></span></span>
+            <h3 class="m-0 mb-2 font-semibold text-lg">{{ step.title }}</h3>
+            <p class="m-0 text-stone-600 dark:text-stone-400">{{ step.body }}</p>
+          </li>
+        @endforeach
+      </ol>
+    </section>
+
+    <section id="screens" aria-labelledby="screens-title" class="mx-auto pb-16 px-4 sm:px-6 max-w-7xl">
+      <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Modes</p>
+      <h2 id="screens-title" class="m-0 mb-8 max-w-2xl font-bold text-3xl tracking-tight">Beyond the sandbox: the original map and a rival</h2>
       <div class="grid gap-6 lg:grid-cols-2">
-        @foreach (more as shot)
+        @foreach (modes as shot)
           <ShowcaseFigure src="{{ shot.src }}" alt="{{ shot.alt }}" title="{{ shot.title }}" caption="{{ shot.caption }}" />
         @endforeach
       </div>
     </section>
 
-    <section id="simulation" aria-labelledby="simulation-title" class="mx-auto px-4 py-6 sm:px-6 max-w-6xl">
-      <h2 id="simulation-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">A settlement that works the way it looks</h2>
+    <section id="online" aria-labelledby="online-title" class="mx-auto pb-16 px-4 sm:px-6 max-w-7xl">
+      <div class="grid gap-8 items-center lg:grid-cols-2 p-8 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-3xl dark:border-stone-800 shadow-sm">
+        <div>
+          <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Multiplayer</p>
+          <h2 id="online-title" class="m-0 mb-3 font-bold text-3xl tracking-tight">Play a friend, castle against castle</h2>
+          <p class="m-0 mb-6 text-stone-600 dark:text-stone-400">Host a match, share its five-letter code and face a friend on one landscape. The server runs the match and sends every turn to both screens over Stacks realtime, so an order lands on both sides on the same tick, and a dropped connection catches up on its own.</p>
+          <p class="flex flex-wrap gap-3 m-0">
+            <a href="/multiplayer" class="flex gap-2 items-center px-5 py-3 font-semibold no-underline text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-xl shadow-amber-600/30 shadow-lg"><span class="h-5 w-5 i-hugeicons-user-multiple" aria-hidden="true"></span>Host or join a match</a>
+          </p>
+        </div>
+        <ol class="grid gap-3 sm:grid-cols-3 m-0 p-0 list-none">
+          <li class="p-4 text-center bg-amber-50 dark:bg-stone-950 border border-amber-200/70 rounded-2xl dark:border-stone-800"><span class="block mb-2 mx-auto h-7 w-7 text-amber-800 dark:text-amber-300 i-hugeicons-castle-01" aria-hidden="true"></span><strong class="block">Host</strong><span class="text-sm text-stone-600 dark:text-stone-400">Take the west castle and get a code.</span></li>
+          <li class="p-4 text-center bg-amber-50 dark:bg-stone-950 border border-amber-200/70 rounded-2xl dark:border-stone-800"><span class="block mb-2 mx-auto h-7 w-7 text-amber-800 dark:text-amber-300 i-hugeicons-user-add-01" aria-hidden="true"></span><strong class="block">Invite</strong><span class="text-sm text-stone-600 dark:text-stone-400">Your friend joins with the code or link.</span></li>
+          <li class="p-4 text-center bg-amber-50 dark:bg-stone-950 border border-amber-200/70 rounded-2xl dark:border-stone-800"><span class="block mb-2 mx-auto h-7 w-7 text-amber-800 dark:text-amber-300 i-hugeicons-sword-01" aria-hidden="true"></span><strong class="block">Battle</strong><span class="text-sm text-stone-600 dark:text-stone-400">Capture the last enemy castle to win.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="simulation" aria-labelledby="simulation-title" class="mx-auto pb-16 px-4 sm:px-6 max-w-7xl">
+      <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Simulation</p>
+      <h2 id="simulation-title" class="m-0 mb-8 max-w-2xl font-bold text-3xl tracking-tight">A settlement that works the way it looks</h2>
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @foreach (features as feature)
-          <FeatureCard title="{{ feature.title }}" body="{{ feature.body }}" />
+          <FeatureCard title="{{ feature.title }}" body="{{ feature.body }}" icon="{{ feature.icon }}" />
         @endforeach
       </div>
     </section>
 
-    <section id="status" aria-labelledby="status-title" class="mx-auto my-10 px-5 py-9 sm:px-10 max-w-6xl bg-amber-100 dark:bg-stone-900 rounded-3xl">
-      <h2 id="status-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">Where it stands</h2>
-      <p class="mt-0 max-w-2xl">This is a faithful-remake effort, not a finished game. It does not yet reproduce the original promotions, other civilizations, ships, campaigns or measured timings. Each claim is tracked as a public issue with its evidence, and a feature is only marked done when its acceptance checks pass in a real browser.</p>
-      <ul class="pl-5 max-w-2xl list-disc">
+    <section id="status" aria-labelledby="status-title" class="mb-10 mx-auto px-5 py-10 sm:px-10 max-w-7xl bg-amber-100 dark:bg-stone-900 border border-amber-200/70 rounded-3xl dark:border-stone-800">
+      <h2 id="status-title" class="m-0 mb-3 font-bold text-3xl tracking-tight">Where it stands</h2>
+      <p class="mb-8 mt-0 max-w-3xl">This is a faithful-remake effort, not a finished game. It does not yet reproduce the original promotions, other civilizations, ships, campaigns or measured timings. Each claim is tracked as a public issue with its evidence.</p>
+      <div class="grid gap-4 md:grid-cols-3">
         @foreach (status as item)
-          <li>{{ item }}</li>
+          <div class="flex flex-col gap-2 p-5 bg-white/80 dark:bg-stone-950/60 border border-amber-200/70 rounded-2xl dark:border-stone-800">
+            <span class="h-6 w-6 text-amber-800 dark:text-amber-300 {{ item.icon }}" aria-hidden="true"></span>
+            <h3 class="m-0 font-semibold">{{ item.title }}</h3>
+            <p class="m-0 text-sm text-stone-600 dark:text-stone-400">{{ item.body }}</p>
+          </div>
         @endforeach
-      </ul>
-      <p class="mb-0 mt-4 max-w-2xl text-sm text-stone-600 dark:text-stone-400">Open source, built with <a href="https://stacksjs.com" class="text-amber-800 dark:text-amber-400">Stacks</a>, stx and Craft. <a href="{{ repository }}/tree/main/docs/roadmap" class="text-amber-800 dark:text-amber-400">Read the roadmap</a>.</p>
+      </div>
+      <p class="mb-0 mt-6 max-w-3xl text-sm text-stone-600 dark:text-stone-400">Open source, built with <a href="https://stacksjs.com" class="text-amber-800 dark:text-amber-400">Stacks</a>, stx and Craft. <a href="{{ repository }}/tree/main/docs/roadmap" class="text-amber-800 dark:text-amber-400">Read the roadmap</a>.</p>
     </section>
-  </main>
 
-  <SiteFooter />
+    <section aria-labelledby="cta-title" class="mb-4 mx-auto px-4 sm:px-6 max-w-7xl">
+      <div class="flex flex-wrap gap-6 items-center justify-between p-8 text-white bg-gradient-to-br from-amber-700 to-amber-900 rounded-3xl shadow-xl">
+        <div class="max-w-xl">
+          <h2 id="cta-title" class="m-0 mb-2 font-bold text-3xl tracking-tight">Found your own settlement</h2>
+          <p class="m-0 text-amber-100">A free account unlocks the full game: your own map seed, the original tutorial, a computer rival and saves on your device.</p>
+        </div>
+        <p class="flex flex-wrap gap-3 m-0">
+          <a href="/register?redirect=/play" class="px-5 py-3 font-semibold no-underline text-stone-950 bg-amber-300 hover:bg-amber-200 rounded-xl">Create a free account</a>
+          <a href="/login?redirect=/play" class="px-5 py-3 font-semibold no-underline text-white hover:bg-white/10 border border-amber-300/60 rounded-xl">Sign in</a>
+        </p>
+      </div>
+    </section>
+  </SiteShell>
 </body>
 </html>

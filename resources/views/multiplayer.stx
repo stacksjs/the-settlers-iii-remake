@@ -1,0 +1,135 @@
+<script server>
+// Online matches need an account: the room decides seats by the signed-in player.
+definePageMeta({ middleware: ['auth'] })
+
+const steps = [
+  { icon: 'i-hugeicons-user-add-01', title: 'Host or join', body: 'Open a match and share its five-letter code, or enter the code a friend gave you.' },
+  { icon: 'i-hugeicons-user-multiple', title: 'Two settlements', body: 'The host holds the west castle and the guest the east, on one landscape.' },
+  { icon: 'i-hugeicons-sword-01', title: 'Last castle standing', body: 'Build, arm and march. Capture every enemy castle and tower to win.' },
+]
+</script>
+<script client>
+import { copyText, createMatch, enterMatch, inviteLink, joinMatch, showMatch, startMatch, watchLobby } from '../game/multiplayer'
+import type { RoomInfo } from '../game/multiplayer'
+
+const room = state<RoomInfo | null>(null)
+const draft = state('')
+const busy = state(false)
+const problem = state('')
+const copied = state(false)
+let stop: (() => void) | null = null
+let entered = false
+
+const seatNames = derived(() => (room()?.seats ?? []).map(seat => seat.name))
+const isHost = derived(() => room()?.you === 1)
+const full = derived(() => (room()?.seats.length ?? 0) >= 2)
+
+function watch(code: string): void {
+  stop?.()
+  stop = watchLobby(code, next => { if (next) room.set({ ...next, you: room()?.you ?? next.you }) }, () => { if (!entered) { entered = true; enterMatch(code) } })
+}
+async function attempt(action: () => Promise<RoomInfo>): Promise<void> {
+  busy.set(true); problem.set('')
+  try {
+    const next = await action()
+    room.set(next); watch(next.code)
+    if (next.status === 'running' && !entered) { entered = true; enterMatch(next.code) }
+  }
+  catch (error) { problem.set(error instanceof Error ? error.message : 'That did not work.') }
+  finally { busy.set(false) }
+}
+function host(): void { void attempt(createMatch) }
+function join(): void {
+  const code = draft().trim().toUpperCase()
+  if (code.length !== 5) { problem.set('A match code is five letters and numbers.'); return }
+  void attempt(() => joinMatch(code))
+}
+function begin(): void { const code = room()?.code; if (code) void attempt(() => startMatch(code)) }
+async function copyInvite(): Promise<void> {
+  const code = room()?.code
+  if (!code) return
+  copied.set(await copyText(inviteLink(code)))
+  setTimeout(() => copied.set(false), 2500)
+}
+function leave(): void { stop?.(); stop = null; room.set(null); draft.set('') }
+onMount(() => {
+  const wanted = String(useRoute().query.join ?? '').trim().toUpperCase()
+  if (wanted) { draft.set(wanted); join() }
+})
+onDestroy(() => stop?.())
+</script>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Play online | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-950">
+  <SiteShell>
+    <section class="mx-auto pb-16 pt-10 px-4 sm:px-6 max-w-5xl" aria-labelledby="mp-title">
+      <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Multiplayer</p>
+      <h1 id="mp-title" class="m-0 mb-3 font-bold text-4xl tracking-tight">Face a friend on one landscape</h1>
+      <p class="m-0 mb-8 max-w-2xl text-lg text-stone-600 dark:text-stone-400">Two players, two Roman settlements. The match runs on the server, so every order lands on both screens on the same tick.</p>
+
+      <div class="grid gap-6 lg:grid-cols-5">
+        <div class="lg:col-span-3">
+          <div :if="!room()" class="grid gap-4 sm:grid-cols-2">
+            <div class="flex flex-col gap-3 p-6 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-sm">
+              <span class="inline-flex items-center justify-center h-11 w-11 text-white bg-gradient-to-br from-amber-500 to-amber-700 rounded-xl shadow-md"><span class="h-6 w-6 i-hugeicons-castle-01" aria-hidden="true"></span></span>
+              <h2 class="m-0 font-semibold text-xl">Host a match</h2>
+              <p class="m-0 text-sm text-stone-600 dark:text-stone-400">You get a code to share. The match starts when your opponent is seated and you press start.</p>
+              <button type="button" id="host-match" class="mt-auto px-4 py-2.5 font-semibold text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-xl disabled:opacity-50" :disabled="busy()" @click="host()">Host a match</button>
+            </div>
+            <div class="flex flex-col gap-3 p-6 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-sm">
+              <span class="inline-flex items-center justify-center h-11 w-11 text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-400/10 rounded-xl"><span class="h-6 w-6 i-hugeicons-user-add-01" aria-hidden="true"></span></span>
+              <h2 class="m-0 font-semibold text-xl">Join with a code</h2>
+              <label for="match-code" class="text-sm text-stone-600 dark:text-stone-400">Match code</label>
+              <input id="match-code" type="text" inputmode="text" autocomplete="off" maxlength="5" placeholder="ABCDE" class="px-3 py-2 font-mono text-lg tracking-widest uppercase bg-amber-50 dark:bg-stone-950 border border-stone-300 rounded-xl dark:border-stone-700 focus:outline-none focus:ring-2 focus:ring-amber-500" :value="draft()" @input="draft.set($event.target.value)" @keydown.enter="join()">
+              <button type="button" id="join-match" class="mt-auto px-4 py-2.5 font-semibold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 hover:bg-amber-50 border border-amber-300 rounded-xl dark:border-stone-700 disabled:opacity-50" :disabled="busy()" @click="join()">Join</button>
+            </div>
+          </div>
+
+          <div :if="room()" class="p-6 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-lg" aria-live="polite">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+              <div>
+                <p class="m-0 text-stone-500 text-xs tracking-widest uppercase">Match code</p>
+                <p id="room-code" class="m-0 font-bold font-mono text-4xl text-amber-800 tracking-widest dark:text-amber-300">{{ room()?.code }}</p>
+              </div>
+              <button type="button" class="flex gap-2 items-center px-3 py-2 font-medium text-sm bg-amber-50 dark:bg-stone-950 hover:bg-amber-100 border border-amber-300 rounded-xl dark:border-stone-700" @click="copyInvite()"><span class="h-4 w-4" :class="copied() ? 'i-hugeicons-checkmark-circle-01' : 'i-hugeicons-copy-01'" aria-hidden="true"></span>{{ copied() ? 'Link copied' : 'Copy invite link' }}</button>
+            </div>
+            <ul class="grid gap-3 sm:grid-cols-2 m-0 mt-6 p-0 list-none">
+              <li :for="seat in room()?.seats" class="flex gap-3 items-center p-3 bg-amber-50 dark:bg-stone-950 border border-amber-200/70 rounded-xl dark:border-stone-800">
+                <span class="inline-flex items-center justify-center h-10 w-10 font-bold text-white rounded-full" :class="seat.player === 1 ? 'bg-red-700' : 'bg-blue-700'">{{ seat.player === 1 ? 'W' : 'E' }}</span>
+                <span><strong class="block">{{ seat.name }}</strong><small class="text-stone-500">{{ seat.player === 1 ? 'West castle' : 'East castle' }}{{ seat.host ? ', host' : '' }}</small></span>
+              </li>
+              <li :if="!full()" class="flex gap-3 items-center p-3 text-stone-500 border-2 border-amber-300 border-dashed rounded-xl dark:border-stone-700">
+                <span class="inline-flex items-center justify-center h-10 w-10 bg-amber-100 dark:bg-stone-800 rounded-full"><span class="h-5 w-5 i-hugeicons-hourglass" aria-hidden="true"></span></span>
+                Waiting for the second player...
+              </li>
+            </ul>
+            <div class="flex flex-wrap gap-3 items-center mt-6">
+              <button :if="isHost()" type="button" id="start-match" class="flex gap-2 items-center px-5 py-2.5 font-semibold text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-xl disabled:opacity-50" :disabled="!full() || busy()" @click="begin()"><span class="h-5 w-5 i-hugeicons-play" aria-hidden="true"></span>Start the match</button>
+              <p :if="!isHost()" id="waiting-host" class="m-0 text-stone-600 dark:text-stone-400">Waiting for the host to start the match...</p>
+              <button type="button" class="px-4 py-2.5 text-sm text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-xl" @click="leave()">Leave</button>
+            </div>
+          </div>
+
+          <p :if="problem()" id="mp-problem" role="alert" class="mb-0 mt-4 px-4 py-3 text-red-900 dark:text-red-200 bg-red-50 dark:bg-red-950/40 border border-red-200 rounded-xl dark:border-red-900">{{ problem() }}</p>
+        </div>
+
+        <ol class="grid content-start gap-3 lg:col-span-2 m-0 p-0 list-none">
+          @foreach (steps as step)
+            <li class="flex gap-4 p-4 bg-white/80 dark:bg-stone-900/80 border border-amber-200/70 rounded-2xl dark:border-stone-800">
+              <span class="inline-flex items-center justify-center shrink-0 h-10 w-10 text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-400/10 rounded-xl"><span class="h-5 w-5 {{ step.icon }}" aria-hidden="true"></span></span>
+              <span><strong class="block">{{ step.title }}</strong><span class="text-sm text-stone-600 dark:text-stone-400">{{ step.body }}</span></span>
+            </li>
+          @endforeach
+        </ol>
+      </div>
+    </section>
+  </SiteShell>
+</body>
+</html>

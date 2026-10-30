@@ -74,9 +74,9 @@ export function status(phase: string, shortage: string | null, suspended: boolea
 
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
-export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0) {
-  if (!session) return { rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
-  const view = session.view(PLAYER), player = session.state.players[PLAYER - 1]!
+export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0, me = PLAYER) {
+  if (!session) return { match: null as MatchStatus | null, rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null, me), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  const view = session.view(me), player = session.state.players[me - 1]!
   const seconds = Math.floor(session.state.tick / rules.tickRate)
   return {
     ready, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP,
@@ -85,25 +85,26 @@ export function snapshot(session: Session | null, selected: number | null, messa
     population: view.population,
     professions: Object.entries(view.professions).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count })),
     goods: rules.goods.map(key => ({ key, amount: view.goods[key] ?? 0, stored: player.settings.stored.includes(key) })),
-    buildings: view.buildings.filter(b => b.owner === PLAYER).length,
+    buildings: view.buildings.filter(b => b.owner === me).length,
     carrierRatio: player.settings.carrierRatio,
-    selected: selected ? inspect(session, selected) : null,
+    selected: selected ? inspect(session, selected, me) : null,
     // Alerts point at what they are about, where the player may look (manual: the Information Center).
     events: view.events.slice(-6).reverse().map(e => ({ text: e.text, at: alertTarget({ explored: t => view.explored[t] === 1, view, width: view.width }, e) })),
     prototypeKept: false,
+    match: null as MatchStatus | null,
     map: mapName(session),
     seed: generatedSeed(session),
     objectives: view.mission?.objectives ?? [],
     outcome: view.mission?.outcome ?? 'playing',
-    ...economy(session),
-    army: army(session),
-    ...controls(session),
+    ...economy(session, me),
+    army: army(session, me),
+    ...controls(session, me),
   }
 }
 
 /** The Goods and Settlers menus' settings: urgent orders and priorities for smiths, transport order, and occupation limits. */
-function controls(session: Session) {
-  const settings = session.state.players[PLAYER - 1]!.settings, rules = session.rules
+function controls(session: Session, me: number) {
+  const settings = session.state.players[me - 1]!.settings, rules = session.rules
   const made = [...rules.tools, ...rules.professions.flatMap(p => p.soldier ? [p.soldier.weapon] : [])]
   return {
     crafts: made.map(key => ({ key, urgent: settings.urgentTools.filter(t => t === key).length, weight: settings.toolWeights[key] ?? 1, weapon: !rules.tools.includes(key) })),
@@ -115,20 +116,20 @@ function controls(session: Session) {
 }
 
 /** Soldiers by class and rank, and the barracks orders that make more. */
-function army(session: Session | null) {
+function army(session: Session | null, me: number) {
   const classes = (session?.rules ?? rules).professions.filter(p => p.soldier).map(p => ({ name: p.id, weapon: p.soldier!.weapon }))
   if (!session) return { soldiers: classes.map(item => ({ ...item, weapons: 0, count: 0, queued: 0, rank: 1 })), outside: 0, ranks: rules.military?.ranks ?? 1, automatic: false, manna: 0, next: null as number | null, interventions: [] as { id: string, name: string, cost: number }[], priests: 0 }
-  const player = session.state.players[PLAYER - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+  const player = session.state.players[me - 1]!, own = [...session.state.settlers.values()].filter(s => s.owner === me && s.soldier)
   // The manual's recruitment figures count weapons delivered to barracks,
   // not warehouse stock, goods still being carried, or equipped soldiers.
   const weapons = new Map<string, number>()
   for (const stack of session.state.stacks.values()) {
     const building = session.state.buildings.get(stack.building)
-    if (stack.owner === PLAYER && stack.role === 'input' && building?.owner === PLAYER && building.type === 'barracks')
+    if (stack.owner === me && stack.role === 'input' && building?.owner === me && building.type === 'barracks')
       weapons.set(stack.good, (weapons.get(stack.good) ?? 0) + stack.amount)
   }
   // Profiles with religion buy ranks with manna; older saved games keep the rank setting they were made with.
-  const religion = session.view(PLAYER).religion
+  const religion = session.view(me).religion
   return {
     soldiers: classes.map(({ name, weapon }) => ({ name, weapon, weapons: weapons.get(weapon) ?? 0, count: own.filter(s => s.profession === name).length, queued: player.settings.recruit?.queue[name] ?? 0, rank: religion?.ranks[name] ?? player.settings.rank ?? 1 })),
     outside: own.filter(s => !s.inside).length,
@@ -136,13 +137,13 @@ function army(session: Session | null) {
     automatic: player.settings.recruit?.automatic ?? false,
     manna: religion?.manna ?? 0, next: religion ? religion.next : null,
     interventions: religion?.interventions ?? [],
-    priests: [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.profession === session.rules.religion?.priest).length,
+    priests: [...session.state.settlers.values()].filter(s => s.owner === me && s.profession === session.rules.religion?.priest).length,
   }
 }
 
 /** Figures derived from the world: goods in carriers' hands and the shortages holding buildings back. */
-function economy(session: Session): { carried: number, needs: string[], production: { key: string, stock: number, produced: number, consumed: number }[] } {
-  const stats = statistics(session, PLAYER)
+function economy(session: Session, me: number): { carried: number, needs: string[], production: { key: string, stock: number, produced: number, consumed: number }[] } {
+  const stats = statistics(session, me)
   return {
     production: session.rules.goods.map(key => ({ key, stock: stats.total[key] ?? 0, produced: stats.produced[key] ?? 0, consumed: stats.consumed[key] ?? 0 })),
     carried: Object.values(stats.stock.transit).reduce((a, n) => a + n, 0),
@@ -165,9 +166,9 @@ export function inspectBuildingAt(session: Session, player: number, point: Point
   return null
 }
 
-function inspect(session: Session, id: number) {
+function inspect(session: Session, id: number, me: number) {
   const b = session.state.buildings.get(id)
-  if (!b || b.owner !== PLAYER) return null
+  if (!b || b.owner !== me) return null
   const rule = session.rules.buildings.find(r => r.id === b.type)!
   const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
   const worker = session.state.settlers.get(b.worker)
@@ -177,7 +178,7 @@ function inspect(session: Session, id: number) {
     progress: b.phase === 'leveling' ? 0 : b.phase === 'building' ? (total - b.workRemaining) / total : 'work' in rule.workflow ? b.cycle / rule.workflow.work : 1,
     worker: worker ? `${worker.profession} #${worker.id}` : rule.worker ? 'none' : 'not needed',
     stocks: [...session.state.stacks.values()].filter(s => s.building === b.id).map(s => ({ role: s.role, good: s.good, amount: s.amount, capacity: s.capacity })),
-    garrison: rule.garrison ? `${session.view(PLAYER).buildings.find(v => v.id === b.id)?.garrison ?? 0} of ${rule.garrison.infantry + rule.garrison.bowmen} soldiers inside` : null,
+    garrison: rule.garrison ? `${session.view(me).buildings.find(v => v.id === b.id)?.garrison ?? 0} of ${rule.garrison.infantry + rule.garrison.bowmen} soldiers inside` : null,
     workArea: 'radius' in rule.workflow ? { ...b.workArea, radius: rule.workflow.radius } : null,
     description: describe(b.type, session.rules),
   }
@@ -186,11 +187,11 @@ export type Snapshot = ReturnType<typeof snapshot>
 export type Game = ReturnType<typeof mountGame>
 
 export type Landscape = 'generated' | 'tutorial' | 'rival'
-export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : 'Generated landscape'
+export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : session?.identity.content.id.startsWith('duel') ? 'Online duel' : 'Generated landscape'
 
 function generatedSeed(session: Session): number | null {
   const { id, digest } = session.identity.content
-  const seed = /^(generated|rival)-/.test(id) ? /^seed:(\d+)$/.exec(digest) : null
+  const seed = /^(generated|rival|duel)-/.test(id) ? /^seed:(\d+)$/.exec(digest) : null
   return seed ? Number(seed[1]) : null
 }
 const RIVAL_SIZE = 128
@@ -225,10 +226,37 @@ export function newSession(seed: number): Session {
   return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
 }
 
-/** A guest game runs the same simulation but never reads or writes the signed-in player's checkpoints. */
-export interface MountOptions { guest?: boolean }
+/**
+ * An online match as the controller sees it. The server owns the simulation and
+ * publishes it as numbered turns; the controller runs the same turns on its own
+ * copy so the picture is smooth and local, and asks for a fresh snapshot when
+ * its copy ever disagrees with the server's checksum.
+ */
+export interface MatchTurn { n: number, from: number, ticks: number, commands: Command[], checksum: string }
+export interface MatchLink {
+  /** The seat this browser plays. */
+  player: number
+  /** Opens the live stream and resolves with the world as of the turn it is at. */
+  open: (onTurn: (turn: MatchTurn) => void, onStatus: (connected: boolean) => void, onNotice: (text: string) => void) => Promise<{ envelope: unknown, turn: number }>
+  /** The whole world again, after a gap or a disagreement. */
+  resync: () => Promise<{ envelope: unknown, turn: number }>
+  /** Sends one order. The server stamps whose it is and when it runs. */
+  order: (type: string, fields: Record<string, unknown>) => Promise<void>
+  close: () => void
+}
+
+/** How an online match stands from this copy's side: used by the page's sync badge and by the acceptance checks. */
+export interface MatchStatus { turn: number, verified: number, resyncs: number, buildings: number, connected: boolean }
+
+export interface MountOptions {
+  /** A guest game runs the same simulation but never reads or writes the signed-in player's checkpoints. */
+  guest?: boolean
+  /** An online match: the server's turns drive the simulation instead of the local clock. */
+  match?: MatchLink
+}
 
 export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) => void, reduceMotion: () => boolean, overview?: HTMLCanvasElement, options: MountOptions = {}) {
+  const link = options.match, me = link?.player ?? PLAYER
   let session: Session | null = null, selected: number | null = null, tool: string | null = null, cursor: Point | null = null
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
   let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
@@ -238,7 +266,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   let computers: { ai: EconomicAI, sequence: { next: number } }[] = []
   const renderer: Renderer = createRenderer(canvas), lifetime = new AbortController()
   // Marked soldiers and numbered groups are interface state; only the orders they produce enter the simulation.
-  let troops = createTroops(() => session, PLAYER), band: { x0: number, y0: number, x1: number, y1: number } | null = null
+  let troops = createTroops(() => session, me), band: { x0: number, y0: number, x1: number, y1: number } | null = null
   let thief: number | null = null
   let minimap: MinimapOptions = { ...DEFAULT_MINIMAP }, sinceMinimap = 0
   const mapInstruction = (): string => {
@@ -254,14 +282,16 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const label = `Settlement map. Tile ${cursor.x}, ${cursor.y}. ${mapInstruction()}`
       if (canvas.getAttribute('aria-label') !== label) canvas.setAttribute('aria-label', label)
     }
-    const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length)
-    value.prototypeKept = prototypeKept; value.minimap = minimap; update(value)
+    const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length, me)
+    value.prototypeKept = prototypeKept; value.minimap = minimap
+    if (link && session) value.match = { turn: lastTurn, verified, resyncs, buildings: session.state.buildings.size, connected: online }
+    update(value)
   }
   /** Draws the overview map from the player's observation and frames the part of the land on screen. */
   const drawOverview = (): void => {
     const target = overview?.getContext('2d')
     if (!overview || !target || !session || !assetsReady) return
-    const { map } = session.state, size = minimapSize(map.width, map.height), image = new ImageData(minimapPixels(observe(session, PLAYER), minimap, playerSlots), size.width, size.height)
+    const { map } = session.state, size = minimapSize(map.width, map.height), image = new ImageData(minimapPixels(observe(session, me), minimap, playerSlots), size.width, size.height)
     const scratch = document.createElement('canvas')
     scratch.width = size.width; scratch.height = size.height
     scratch.getContext('2d')!.putImageData(image, 0, 0)
@@ -300,10 +330,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   // The castle on generated starts, otherwise the first building or settler an original map gives the player.
   const castle = (): Point | null => {
     if (!session) return null
-    const own = [...session.state.buildings.values()].filter(b => b.owner === PLAYER)
+    const own = [...session.state.buildings.values()].filter(b => b.owner === me)
     const b = own.find(b => b.type === 'castle') ?? own[0]
     if (b) return { x: b.x, y: b.y }
-    const s = [...session.state.settlers.values()].find(s => s.owner === PLAYER)
+    const s = [...session.state.settlers.values()].find(s => s.owner === me)
     return s ? { x: s.x, y: s.y } : null
   }
   const center = (): void => { const c = castle(); if (c && session) renderer.home(c, session.state.map.elevation[c.y * session.state.map.width + c.x]) }
@@ -314,9 +344,9 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const adopt = (next: Session): void => {
     if (assetsReady) { try { syncPlayerColors(next) } catch (error) { next.dispose(); throw error } }
     session?.dispose(); session = next; selected = null; tool = null; thief = null; accumulator = 0
-    troops = createTroops(() => session, PLAYER)
+    troops = createTroops(() => session, me)
     const nextSeq = (player: number): number => Math.max(0, ...next.state.pending.filter(c => c.player === player).map(c => c.seq + 1), ...next.state.results.filter(r => r.player === player).map(r => r.seq + 1))
-    seq = nextSeq(PLAYER)
+    seq = nextSeq(me)
     computers = next.state.players.filter(p => p.controller === 'computer').map(p => ({ ai: economicAI(p.id, { military: RIVAL_MILITARY }), sequence: { next: nextSeq(p.id) } }))
     renderer.invalidate(); center(); cursor = castle()
   }
@@ -328,12 +358,18 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
 
   const send = (type: string, fields: Record<string, unknown>): string | null => {
     if (!session) return 'The settlement is not ready.'
-    const command = { tick: session.state.tick, player: PLAYER, seq: seq++, type, ...fields } as Command
+    if (link) {
+      // Online, the server orders and validates every command. The order runs on the next turn, on every copy at once,
+      // so nothing advances here; a refusal comes back with the turn and replaces this optimistic answer.
+      link.order(type, fields).catch(error => { if (!disposed) report(error instanceof Error ? error.message : 'The order was not sent.') })
+      return null
+    }
+    const command = { tick: session.state.tick, player: me, seq: seq++, type, ...fields } as Command
     const rejected = session.enqueue(command)
     if (rejected) return rejected.reason ?? 'That order was refused.'
     // Orders take effect on the next simulation tick, even while paused.
     session.advance(1)
-    const result = session.state.results.find(r => r.seq === command.seq && r.player === PLAYER)
+    const result = session.state.results.find(r => r.seq === command.seq && r.player === me)
     return result?.ok ? null : result?.reason ?? 'That order was refused.'
   }
   let checkpoints: Checkpoints | null = null
@@ -356,9 +392,89 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     }
     catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not restore the settlement.') }
   }
+  // Online play. Turns from the server wait here until the clock has run the simulation up to them, so the
+  // picture moves at the frame rate while every copy of the world still executes the same orders at the same tick.
+  const turns: MatchTurn[] = [], early: MatchTurn[] = [], held: MatchTurn[] = []
+  let running: { turn: MatchTurn, done: number } | null = null
+  let expected = 0, resyncing = false
+  let verified = 0, resyncs = 0, lastTurn = 0, online = true
+  const stage = (turn: MatchTurn): void => {
+    if (disposed) return
+    if (!expected) { early.push(turn); return }
+    if (resyncing) { held.push(turn); return }
+    if (turn.n < expected) return
+    if (turn.n > expected) { void resync('A turn was missed.'); return }
+    expected = turn.n + 1; turns.push(turn)
+  }
+  const resync = async (why: string): Promise<void> => {
+    if (!link || resyncing || disposed) return
+    resyncing = true; resyncs++; report(`${why} Catching up with the match...`)
+    const view = { x: renderer.camera.x, y: renderer.camera.y, zoom: renderer.camera.zoom }
+    try {
+      const fresh = await link.resync()
+      if (disposed) return
+      adopt(restore(fresh.envelope, PUBLISHED_RULES))
+      Object.assign(renderer.camera, view)
+      turns.length = 0; running = null; expected = fresh.turn + 1
+      report('Back in step with the match.')
+    }
+    catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not rejoin the match.') }
+    finally {
+      resyncing = false
+      for (const turn of held.splice(0).sort((a, b) => a.n - b.n)) stage(turn)
+    }
+  }
+  const joinMatch = async (): Promise<void> => {
+    if (!link) return
+    try {
+      const first = await link.open(stage, connected => { online = connected; if (!disposed) report(connected ? 'Connected to the match.' : 'Connection lost. Reconnecting...') }, text => { if (!disposed) report(text) })
+      if (!await assetsLoaded || disposed) return
+      adopt(restore(first.envelope, PUBLISHED_RULES))
+      expected = first.turn + 1
+      for (const turn of early.splice(0).sort((a, b) => a.n - b.n)) stage(turn)
+      ready = true
+      message = `The match has started. You hold the ${me === 1 ? 'west' : 'east'} castle.`
+      emit()
+    }
+    catch (error) { if (!disposed) { report(error instanceof Error ? error.message : 'Could not join the match.') } }
+  }
+  /** After a turn has run in full: it must agree with the server, and a refused order of this player's is said so. */
+  const finishTurn = (turn: MatchTurn): void => {
+    if (!session) return
+    if (session.checksum() !== turn.checksum) { void resync('This copy of the world disagreed with the server.'); return }
+    verified++; lastTurn = turn.n
+    for (const command of turn.commands) {
+      if (command.player !== me) continue
+      const result = session.state.results.find(r => r.seq === command.seq && r.player === me)
+      if (result && !result.ok) report(result.reason ?? 'That order was refused.')
+    }
+  }
+  /** Runs the simulation through as many staged turns as the clock allows. Returns the ticks it ran. */
+  const runMatch = (budget: number): number => {
+    if (!session) return 0
+    const behind = turns.length + (running ? 1 : 0)
+    let allowance = budget * (behind > 12 ? 4 : behind > 4 ? 2 : 1), used = 0
+    while (allowance > 0 && session && !resyncing) {
+      if (!running) {
+        const next = turns.shift()
+        if (!next) break
+        if (session.state.tick !== next.from) { void resync('This copy of the world drifted from the server.'); break }
+        let refused = false
+        for (const command of next.commands) if (session.enqueue(command)) refused = true
+        if (refused) { void resync('An order from the server was not accepted here.'); break }
+        running = { turn: next, done: 0 }
+      }
+      const step = Math.min(allowance, running.turn.ticks - running.done)
+      session.advance(step)
+      running.done += step; allowance -= step; used += step
+      if (running.done === running.turn.ticks) { const done = running.turn; running = null; finishTurn(done) }
+    }
+    return used
+  }
   void createBrowserPlatform({ namespace: 'the-settlers-iii-remake' }).then(async host => {
     if (disposed) { host.dispose(); return }
     platform = host
+    if (link) { await joinMatch(); return }
     if (options.guest) {
       if (!await assetsLoaded || disposed) return
       if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
@@ -391,6 +507,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     host.emit((type, payload) => { if (type === 'APP_STATE' && (payload as { state: string }).state === 'background') void persist() })
     finishBoot()
   }).catch(async () => {
+    if (link) { await joinMatch(); return }
     if (!await assetsLoaded || disposed) return
     if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true; report('Device storage is unavailable. You can play, but this settlement cannot be saved.')
@@ -408,22 +525,22 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (tool?.startsWith('spell:')) {
       // The nearest free priest answers; a busy priest keeps his current order.
       const spell = tool.slice(6), at = cursor
-      const priests = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.profession === session!.rules.religion?.priest)
+      const priests = [...session.state.settlers.values()].filter(s => s.owner === me && s.profession === session!.rules.religion?.priest)
         .sort((a, b) => Number(!!a.cast) - Number(!!b.cast) || Math.hypot(a.x - at.x, a.y - at.y) - Math.hypot(b.x - at.x, b.y - at.y) || a.id - b.id)
       if (!priests.length) { report('You have no priests. A large temple brings one every five minutes.'); return }
-      const name = session.view(PLAYER).religion?.interventions.find(i => i.id === spell)?.name ?? spell
+      const name = session.view(me).religion?.interventions.find(i => i.id === spell)?.name ?? spell
       report(send('cast', { priest: priests[0]!.id, spell, x: at.x, y: at.y }) ?? `A priest goes to call on Jupiter: ${name}.`)
       tool = null
       return
     }
     if (tool === 'march') {
       // Soldiers standing outside obey first; otherwise garrisons send all but their last soldier.
-      const own = [...session.state.settlers.values()].filter(s => s.owner === PLAYER && s.soldier)
+      const own = [...session.state.settlers.values()].filter(s => s.owner === me && s.soldier)
       const outside = own.filter(s => !s.inside), marked = troops.selected()
       const soldiers = marked.length ? marked : (outside.length ? outside : own).map(s => s.id)
       if (!soldiers.length) { report('You have no soldiers yet. Build a barracks and recruit some.'); return }
       const map = session.state.map, target = session.state.buildings.get(session.context.index.buildingAt[cursor.y * map.width + cursor.x]!)
-      const enemy = target && target.owner !== PLAYER && rules.buildings.find(r => r.id === target.type)?.garrison
+      const enemy = target && target.owner !== me && rules.buildings.find(r => r.id === target.type)?.garrison
       const error = enemy ? send('attack', { soldiers, building: target.id }) : send('move-soldiers', { soldiers, x: cursor.x, y: cursor.y })
       report(error ?? (enemy ? 'Your soldiers march to attack.' : 'Your soldiers march there and hold the position.'))
       return
@@ -437,18 +554,18 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const error = send('build', { building: tool, x: cursor.x, y: cursor.y })
       const name = rules.buildings.find(b => b.id === tool)?.name ?? tool
       report(error ?? `${name} site placed. Diggers and builders will start when they are free.`)
-      if (!error) { play('build'); selected = Math.max(...[...session.state.buildings.values()].filter(b => b.owner === PLAYER).map(b => b.id)) }
+      if (!error) { play('build'); if (!link) selected = Math.max(...[...session.state.buildings.values()].filter(b => b.owner === me).map(b => b.id)) }
       return
     }
-    selected = inspectBuildingAt(session, PLAYER, cursor)
+    selected = inspectBuildingAt(session, me, cursor)
     emit()
   }
 
   let pointer: { x: number, y: number, cameraX: number, cameraY: number, moved: boolean, button: number, touch: boolean } | null = null
   const modifiers = (event: MouseEvent | KeyboardEvent) => ({ shift: event.shiftKey, alt: event.altKey, ctrl: event.ctrlKey || event.metaKey })
   /** Own soldiers on the map with their canvas positions, as the scene draws them. */
-  const soldiersOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.rank && i.owner === PLAYER).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
-  const thievesOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: PLAYER }).filter(i => i.kind === 'settler' && i.owner === PLAYER && session!.state.settlers.get(i.entity)?.thief).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
+  const soldiersOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: me }).filter(i => i.kind === 'settler' && i.rank && i.owner === me).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
+  const thievesOnScreen = (): { id: number, at: Point }[] => session ? scene(session, { player: me }).filter(i => i.kind === 'settler' && i.owner === me && session!.state.settlers.get(i.entity)?.thief).map(i => ({ id: i.entity, at: renderer.screen(i.view) })) : []
   const local = (event: MouseEvent): Point => { const rect = canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
   const soldierAt = (point: Point, people = soldiersOnScreen()): number | null => {
     const z = renderer.camera.zoom
@@ -545,7 +662,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       else if (center) renderer.home(center, map.elevation[center.y * map.width + center.x])
       else report(troops.selected().length ? `Group ${n}: ${troops.selected().length} soldiers marked.` : `Group ${n} is empty. Mark soldiers and press Alt+${n}.`)
     }
-    if (event.key === ' ') speed = speed === 0 ? 1 : 0
+    if (event.key === ' ' && !link) speed = speed === 0 ? 1 : 0
     if (event.key === 'Escape') { tool = null; selected = null; thief = null; troops.clear() }
     if (event.key.toLowerCase() === 'h') center()
     if (event.key.toLowerCase() === 's') void persist()
@@ -559,7 +676,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       sinceUpdate += delta; sinceSave += delta
       accumulator = Math.min(accumulator + delta / 1000 * speed * rules.tickRate, rules.tickRate * 2)
       const ticks = Math.floor(accumulator)
-      if (ticks > 0) {
+      if (link) { runMatch(ticks); accumulator = turns.length || running ? accumulator - ticks : 0 }
+      else if (ticks > 0) {
         if (!computers.length) session.advance(ticks)
         else for (let i = 0; i < ticks; i++) { for (const c of computers) stepAI(session, c.ai, c.sequence); session.advance(1) }
         accumulator -= ticks
@@ -570,8 +688,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (sinceSave >= 30000) { sinceSave = 0; void persist() }
     }
     if (session) {
-      const placement = tool && cursor && session.context.building.has(tool) ? session.placement(PLAYER, tool, cursor.x, cursor.y) : null
-      renderer.draw(session, { player: PLAYER, cursor, tool, selected, time: elapsed, reduceMotion: reduceMotion(), placement, marked: new Set(troops.selected()), band })
+      const placement = tool && cursor && session.context.building.has(tool) ? session.placement(me, tool, cursor.x, cursor.y) : null
+      renderer.draw(session, { player: me, cursor, tool, selected, time: elapsed, reduceMotion: reduceMotion(), placement, marked: new Set(troops.selected()), band })
     }
   })
   emit()
@@ -581,13 +699,13 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       tool = kind
       if (kind && session.context.building.has(kind)) {
         // Prefer known resources, retaining legal ground as a fallback.
-        const c = castle(), found = c ? findBuildingSite(session, PLAYER, kind, c) : null
+        const c = castle(), found = c ? findBuildingSite(session, me, kind, c) : null
         if (found) cursor = found
         const work = session.context.building.get(kind)!.workflow
         const harvest = work.kind === 'harvest', mine = work.kind === 'extract' && !!work.food
-        const warning = found && mine && !surveyedMineForecast(session.view(PLAYER), session.rules, kind)(found)
+        const warning = found && mine && !surveyedMineForecast(session.view(me), session.rules, kind)(found)
           ? 'This site has no known matching deposit in reach. Send a geologist to survey or choose another site.'
-          : found && harvest && !observe(session, PLAYER).harvestable(kind, found.x, found.y)
+          : found && harvest && !observe(session, me).harvestable(kind, found.x, found.y)
             ? 'This site has no known reachable resources in its working area. Explore or choose another site.'
             : 'Choose open ground inside your border.'
         report(found ? `${describe(kind, session.rules)} ${warning}` : `No valid site for ${session.rules.buildings.find(b => b.id === kind)!.name} inside your territory. Clear ground or claim more land.`)
@@ -609,7 +727,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       catch { if (!disposed) report('Your browser could not enable audio. You can continue playing.') }
       finally { soundPending = false }
     },
-    speed(value: number) { speed = value; emit() },
+    speed(value: number) { if (link) { report('An online match runs at one speed for both players.'); return } speed = value; emit() },
     /** Switches the overview's territory, settler or building display (manual: The Overview Map). */
     overview(change: Partial<MinimapOptions>) { minimap = { ...minimap, ...change }; drawOverview(); emit() },
     /** Centres the playing area on a tile, as clicking an alert does. */
@@ -618,7 +736,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     save: persist, load,
     workArea() {
       if (!ready || !session || !selected) return
-      const building = session.state.buildings.get(selected), area = inspect(session, selected)?.workArea
+      const building = session.state.buildings.get(selected), area = inspect(session, selected, me)?.workArea
       if (!building || !area) return
       tool = `work-area:${building.id}`; cursor = { x: area.x, y: area.y }; thief = null; troops.clear()
       report('Choose the working area on the map, or use arrow keys and Enter. Escape cancels.')
@@ -626,6 +744,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     },
     async restart(landscape: Landscape = 'generated', requestedSeed?: number) {
       if (!ready) return
+      if (link) { report('An online match cannot be restarted from here. Leave it to start another.'); return }
       try {
         const seed = requestedSeed === undefined ? 1 + Math.floor(Math.random() * 1_000_000) : validateMapSeed(requestedSeed)
         const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed)
@@ -639,7 +758,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     toggle() { if (!session || !selected) return; const b = session.state.buildings.get(selected); if (!b) return; report(send('suspend', { building: b.id, suspended: !b.suspended }) ?? (b.suspended ? 'Work paused.' : 'Work resumed.')) },
     demolition() {
       if (!ready || disposed || selected === null) return null
-      const target = prepareDemolition(() => disposed ? null : session, PLAYER, selected, id => send('demolish', { building: id }))
+      const target = prepareDemolition(() => disposed ? null : session, me, selected, id => send('demolish', { building: id }))
       if (!target) return null
       return { name: target.name, confirm() {
         const error = target.confirm()
@@ -650,7 +769,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     },
     store(good: string) {
       if (!session) return
-      const stored = session.state.players[PLAYER - 1]!.settings.stored
+      const stored = session.state.players[me - 1]!.settings.stored
       const next = stored.includes(good) ? stored.filter(g => g !== good) : [...stored, good]
       report(send('settings', { settings: { stored: next } }) ?? (next.includes(good) ? `Carriers will take ${good} to storage areas.` : `${good} will stay at the doorsteps.`))
     },
@@ -664,7 +783,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     },
     recruitAutomatic() {
       if (!session) return
-      const next = !session.state.players[PLAYER - 1]!.settings.recruit?.automatic
+      const next = !session.state.players[me - 1]!.settings.recruit?.automatic
       report(send('settings', { settings: { recruitAutomatic: next } }) ?? (next ? 'Barracks recruit whenever weapons arrive.' : 'Barracks recruit only the soldiers you order.'))
     },
     promote(profession: string) {
@@ -683,13 +802,13 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     urgent(key: string) { if (!session) return; report(send('urgent-tool', { tool: key }) ?? `The next ${key} will be made first.`) },
     weight(key: string, delta: number) {
       if (!session) return
-      const value = Math.max(0, Math.min(10, (session.state.players[PLAYER - 1]!.settings.toolWeights[key] ?? 1) + delta))
+      const value = Math.max(0, Math.min(10, (session.state.players[me - 1]!.settings.toolWeights[key] ?? 1) + delta))
       report(send('settings', { settings: { toolWeights: { [key]: value } } }) ?? `${key} priority set to ${value}.`)
     },
     /** Moves a good in the transport chain: up or down one place, or to the top or bottom (manual: Transportation Priorities). */
     priority(key: string, move: 'up' | 'down' | 'top' | 'bottom') {
       if (!session) return
-      const list = [...session.state.players[PLAYER - 1]!.settings.transportPriority], at = list.indexOf(key)
+      const list = [...session.state.players[me - 1]!.settings.transportPriority], at = list.indexOf(key)
       if (at < 0) return
       list.splice(at, 1)
       const to = move === 'top' ? 0 : move === 'bottom' ? list.length : Math.max(0, Math.min(list.length, at + (move === 'up' ? -1 : 1)))
@@ -698,25 +817,25 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     },
     distribute(good: string, type: string, delta: number) {
       if (!session) return
-      const value = Math.max(0, Math.min(10, (session.state.players[PLAYER - 1]!.settings.distribution?.[good]?.[type] ?? 1) + delta))
+      const value = Math.max(0, Math.min(10, (session.state.players[me - 1]!.settings.distribution?.[good]?.[type] ?? 1) + delta))
       report(send('settings', { settings: { distribution: { [good]: { [type]: value } } } }) ?? (value ? `The ${rules.buildings.find(b => b.id === type)?.name ?? type} now gets share ${value} of the ${good}.` : `No ${good} goes to the ${rules.buildings.find(b => b.id === type)?.name ?? type} now.`))
     },
     limit(kind: 'builders' | 'diggers', delta: number) {
       if (!session) return
-      const settings = session.state.players[PLAYER - 1]!.settings, key = kind === 'builders' ? 'builderLimit' : 'diggerLimit'
+      const settings = session.state.players[me - 1]!.settings, key = kind === 'builders' ? 'builderLimit' : 'diggerLimit'
       const value = Math.max(0, Math.min(1000, settings[key] + delta))
       report(send('settings', { settings: { [key]: value } }) ?? `At most ${value} ${kind}.`)
     },
     carrierRatio(delta: number) {
       if (!session) return
-      const value = Math.max(0, Math.min(100, session.state.players[PLAYER - 1]!.settings.carrierRatio + delta))
+      const value = Math.max(0, Math.min(100, session.state.players[me - 1]!.settings.carrierRatio + delta))
       report(send('settings', { settings: { carrierRatio: value } }) ?? `At least ${value}% of settlers stay carriers.`)
     },
     dispose() {
       if (disposed) return
       // A last checkpoint is written before storage is released; the session itself stops now.
       const final = checkpoints && session && ready ? checkpoints.save(JSON.stringify(save(session))) : Promise.resolve()
-      disposed = true; clock.stop(); resize.disconnect(); session?.dispose(); renderer.dispose()
+      disposed = true; link?.close(); clock.stop(); resize.disconnect(); session?.dispose(); renderer.dispose()
       void final.finally(() => { checkpoints?.dispose(); lifetime.abort(); platform?.dispose() })
     },
   }

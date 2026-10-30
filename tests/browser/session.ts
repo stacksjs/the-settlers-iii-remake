@@ -6,7 +6,12 @@
  * register or login endpoint. The cookie that endpoint sets is what the gate
  * validates. Nothing here bypasses or forges a session.
  */
-const account = { name: 'Browser Acceptance', email: 'browser-acceptance@example.test', password: 'Acceptance-Check-9!' }
+const accounts = {
+  default: { name: 'Browser Acceptance', email: 'browser-acceptance@example.test', password: 'Acceptance-Check-9!' },
+  // A second player, for the checks that need two people in one match.
+  guest: { name: 'Browser Guest', email: 'browser-guest@example.test', password: 'Guest-Acceptance-7!' },
+} as const
+export type Who = keyof typeof accounts
 
 /** The page the checks drive, resolved from the server's base address. */
 export function playUrl(base: string): string {
@@ -42,7 +47,8 @@ async function postPatient(origin: string, path: string, body: unknown): Promise
   return post(origin, path, body)
 }
 
-async function authenticate(origin: string): Promise<{ name: string, value: string }> {
+async function authenticate(origin: string, who: Who): Promise<{ name: string, value: string }> {
+  const account = accounts[who]
   // Sign in first: it is the common case once the account exists, and registration is limited more tightly.
   let response = await postPatient(origin, 'login', { email: account.email, password: account.password })
   if (!response.ok) response = await postPatient(origin, 'register', { ...account, password_confirmation: account.password, terms: true })
@@ -55,14 +61,14 @@ async function authenticate(origin: string): Promise<{ name: string, value: stri
 }
 
 /** The auth cookie as `name`/`value`, signed in once per process and server. */
-export function signInCookie(base: string): Promise<{ name: string, value: string }> {
-  const origin = new URL(base).origin
-  if (!sessions.has(origin)) sessions.set(origin, authenticate(origin))
-  return sessions.get(origin)!
+export function signInCookie(base: string, who: Who = 'default'): Promise<{ name: string, value: string }> {
+  const key = `${new URL(base).origin} ${who}`
+  if (!sessions.has(key)) sessions.set(key, authenticate(new URL(base).origin, who))
+  return sessions.get(key)!
 }
 
 /** Driver arguments that pre-seed the signed-in cookie. */
-export async function signInArgs(base: string): Promise<string[]> {
-  const { name, value } = await signInCookie(base)
+export async function signInArgs(base: string, who: Who = 'default'): Promise<string[]> {
+  const { name, value } = await signInCookie(base, who)
   return ['--cookie', `${name}=${value}`]
 }

@@ -1,0 +1,25 @@
+<div class="mx-auto pb-16 pt-10 px-4 sm:pt-14 max-w-md auth-frame">
+  <div class="mb-1 text-center">
+    <div class="inline-flex items-center justify-center mb-3 h-14 w-14 bg-gradient-to-br from-amber-500 to-amber-700 ring-1 ring-amber-900/20 rounded-2xl shadow-amber-700/30 shadow-lg">
+      <span class="h-8 w-8 text-white i-hugeicons-castle-01" aria-hidden="true"></span>
+    </div>
+    <p class="m-0 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">The Settlers III Remake</p>
+  </div>
+
+  <slot />
+
+  <ul class="grid gap-2 grid-cols-3 m-0 mt-2 p-0 list-none text-center text-stone-600 text-xs dark:text-stone-400">
+    <li class="px-2 py-3 bg-white/70 dark:bg-stone-900/70 border border-amber-200/70 rounded-xl dark:border-stone-800"><span class="block mb-1 mx-auto h-5 w-5 text-amber-700 dark:text-amber-400 i-hugeicons-hammer" aria-hidden="true"></span>Build a settlement</li>
+    <li class="px-2 py-3 bg-white/70 dark:bg-stone-900/70 border border-amber-200/70 rounded-xl dark:border-stone-800"><span class="block mb-1 mx-auto h-5 w-5 text-amber-700 dark:text-amber-400 i-hugeicons-floppy-disk" aria-hidden="true"></span>Saves on your device</li>
+    <li class="px-2 py-3 bg-white/70 dark:bg-stone-900/70 border border-amber-200/70 rounded-xl dark:border-stone-800"><span class="block mb-1 mx-auto h-5 w-5 text-amber-700 dark:text-amber-400 i-hugeicons-sword-01" aria-hidden="true"></span>Face a computer rival</li>
+  </ul>
+</div>
+
+<style>
+/* The Stacks auth card centres itself in a full-height box and carries its own
+   blue cube tile. Inside the game's frame it sits directly under the castle mark
+   instead, so the box shrinks to its content and the stock tile steps aside. */
+.auth-frame .min-h-screen { min-height: 0; }
+.auth-frame .py-12 { padding-top: 0.75rem; padding-bottom: 1.5rem; }
+.auth-frame [class*="from-blue-500"][class*="rounded-xl"] { display: none; }
+</style>

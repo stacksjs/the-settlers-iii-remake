@@ -7,8 +7,10 @@
   <title>Sign in | The Settlers III Remake</title>
 </head>
 <body class="m-0 antialiased bg-amber-50 dark:bg-stone-950">
-  <SiteHeader />
-  <LoginDashboard />
-  <SiteFooter />
+  <SiteShell>
+      <AuthFrame>
+        <LoginDashboard />
+      </AuthFrame>
+  </SiteShell>
 </body>
 </html>
