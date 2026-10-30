@@ -67,13 +67,14 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
-      # Only the marketing page in resources/views/marketing ships. It must stay free of original
-      # media, and the public config must not name a server. The playable game
-      # needs a reviewed grant (publication:check --channel web) before it can
-      # be added to config/cloud.ts.
-      - name: Verify the public site carries no original media or server names
+      # Web deployments may only ship project-authored sources. The check
+      # proves that from config/cloud.ts and fails closed to the full
+      # redistribution-evidence check for anything else.
+      - name: Verify the deployment carries no original media
         if: steps.check.outputs.configured == 'true'
-        run: bun test tests/unit/cloud-config.test.ts
+        run: |
+          bun test tests/unit/cloud-config.test.ts
+          bun run publication:check --channel web
 
       # The deploy talks to the server as root over SSH with BatchMode on, so
       # the key has to be in an agent before it runs — there is no prompt to

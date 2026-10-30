@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { contentPolicy } from '../../docs/content/policy'
-import { inspectContentBundle, requireContentPublication } from '../../scripts/lib/content-provenance'
+import { inspectContentBundle, proveOriginalFreeDeployment, requireContentPublication } from '../../scripts/lib/content-provenance'
 import type { ContentPolicy } from '../../scripts/lib/content-provenance'
 
 // This public filesystem/policy seam verifies mapping and fail-closed release
@@ -155,3 +155,39 @@ test('the public policy command reports inventory and fails closed without a sup
     expect(errors).toContain('Missing or unknown publication channel')
   }
 }, 45_000) // Three real CLI boots include the application's normal Bun preloads.
+
+const marketingSite = { root: 'dist/marketing', build: 'bunx --bun @stacksjs/stx build --pages resources/views/marketing --out dist/marketing --public resources/marketing/public' }
+
+function marketingProject(): string {
+  const root = fixture()
+  mkdirSync(join(root, 'resources/views/marketing'), { recursive: true })
+  mkdirSync(join(root, 'resources/marketing/public'), { recursive: true })
+  writeFileSync(join(root, 'resources/views/marketing/index.stx'), '<h1>Authored</h1>')
+  writeFileSync(join(root, 'resources/marketing/public/robots.txt'), 'User-agent: *')
+  return root
+}
+
+test('a static build of only the reviewed marketing sources proves no original media ships', async () => {
+  const root = marketingProject()
+  await proveOriginalFreeDeployment(root, join(root, 'bundle'), { main: marketingSite })
+})
+
+test('servers, other roots and unreviewed inputs never count as original-free', async () => {
+  const root = marketingProject()
+  const bundle = join(root, 'bundle')
+  await expect(proveOriginalFreeDeployment(root, bundle, {})).rejects.toThrow('No deployable site')
+  await expect(proveOriginalFreeDeployment(root, bundle, { main: { ...marketingSite, start: 'bun serve.ts' } })).rejects.toThrow('not a static build')
+  await expect(proveOriginalFreeDeployment(root, bundle, { main: { root: '.', build: marketingSite.build } })).rejects.toThrow('not a static build')
+  await expect(proveOriginalFreeDeployment(root, bundle, { main: { ...marketingSite, build: marketingSite.build.replace('resources/marketing/public', 'public') } })).rejects.toThrow('not a static build')
+})
+
+test('converted original bytes or original paths inside a deployed source block the proof', async () => {
+  const root = marketingProject()
+  const bundle = join(root, 'bundle')
+  writeFileSync(join(root, 'resources/marketing/public/copy.png'), 'synthetic image bytes')
+  await expect(proveOriginalFreeDeployment(root, bundle, { main: marketingSite })).rejects.toThrow('Converted original media')
+  rmSync(join(root, 'resources/marketing/public/copy.png'))
+  mkdirSync(join(root, 'resources/marketing/public/settlers-original'))
+  writeFileSync(join(root, 'resources/marketing/public/settlers-original/a.txt'), 'x')
+  await expect(proveOriginalFreeDeployment(root, bundle, { main: marketingSite })).rejects.toThrow('Original media path')
+})

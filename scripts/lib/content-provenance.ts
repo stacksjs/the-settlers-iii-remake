@@ -172,3 +172,62 @@ export async function writeContentManifest(directory: string, manifest: Omit<Con
   }
   await Bun.write(join(directory, 'provenance.json'), `${JSON.stringify({ ...manifest, files }, null, 2)}\n`)
 }
+
+/** The deployable sites a publication check inspects, from `tsCloud.sites`. */
+export interface DeployedSite {
+  root?: string
+  start?: string
+  build?: string
+}
+
+const marketingPages = 'resources/views/marketing'
+const marketingPublic = 'resources/marketing/public'
+
+async function listFiles(directory: string): Promise<string[]> {
+  const found: string[] = []
+  try {
+    for await (const entry of await opendir(directory)) {
+      const path = join(directory, entry.name)
+      if (entry.isDirectory()) found.push(...await listFiles(path))
+      else found.push(path)
+    }
+  }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+  }
+  return found
+}
+
+/**
+ * Proves a web deployment cannot carry converted original media, so it needs no
+ * redistribution grant. Every site must be a static build of exactly the
+ * project-authored marketing sources: no server process, no repository root,
+ * and a build command whose pages and public inputs are the two reviewed
+ * folders. Those folders must also hold no original-media path or any file
+ * whose bytes match a converted original in the local bundle. Anything else
+ * fails closed to the full redistribution check.
+ */
+export async function proveOriginalFreeDeployment(project: string, directory: string, sites: Record<string, DeployedSite>): Promise<void> {
+  const entries = Object.entries(sites)
+  if (entries.length === 0) blocked('No deployable site is declared')
+  for (const [name, site] of entries) {
+    const build = site.build ?? ''
+    const pages = /--pages\s+(\S+)/.exec(build)?.[1], publicDir = /--public\s+(\S+)/.exec(build)?.[1]
+    if (site.start || !site.root?.startsWith('dist/') || pages !== marketingPages || publicDir !== marketingPublic)
+      blocked(`Site ${name} is not a static build of the reviewed project-authored marketing sources`)
+  }
+  const known = new Set<string>()
+  try {
+    const manifest = JSON.parse(await readFile(join(directory, 'provenance.json'), 'utf8')) as { files?: Array<{ sha256?: string }> }
+    for (const file of manifest.files ?? []) if (file.sha256) known.add(file.sha256)
+  }
+  catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
+  }
+  for (const folder of [marketingPages, marketingPublic]) {
+    for (const path of await listFiles(join(project, folder))) {
+      if (/settlers-original|\.dat$/i.test(path)) blocked(`Original media path in a deployed source: ${path}`)
+      if (known.has(sha256(await readFile(path)))) blocked(`Converted original media in a deployed source: ${path}`)
+    }
+  }
+}
