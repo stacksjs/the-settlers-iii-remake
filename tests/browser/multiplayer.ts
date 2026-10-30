@@ -43,6 +43,12 @@ const click = async (player: typeof host, selector: string, text?: string): Prom
   await player.cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', ...p, button: 'left', clickCount: 1 })
   steps.push({ who: player.who, action: 'click', label: selector + (text ? ` ${text}` : ''), ok: true })
 }
+/** Saves a screenshot when SHOT_DIR is set, for a person to look at; the checks never depend on it. */
+const snap = async (player: typeof host, name: string): Promise<void> => {
+  if (!process.env.SHOT_DIR) return
+  const shot = await player.cdp.send<{ data: string }>('Page.captureScreenshot', { format: 'png' })
+  await Bun.write(resolve(process.env.SHOT_DIR, `${name}.png`), Buffer.from(shot.data, 'base64'))
+}
 const key = async (player: typeof host, value: string, code: string, virtual: number, text?: string): Promise<void> => {
   await player.cdp.send('Input.dispatchKeyEvent', { type: 'keyDown', key: value, code, windowsVirtualKeyCode: virtual, ...(text ? { text, unmodifiedText: text } : {}) })
   await player.cdp.send('Input.dispatchKeyEvent', { type: 'keyUp', key: value, code, windowsVirtualKeyCode: virtual })
@@ -77,6 +83,7 @@ try {
   // 4. The lobby shows both seats.
   await check(guest, 'the guest sees both seats', `document.body.innerText.includes('West castle') && document.body.innerText.includes('East castle')`)
 
+  await snap(host, 'mp-lobby-host')
   // 5. The host starts; both browsers enter the match.
   await click(host, '#start-match')
   for (const player of [host, guest]) await check(player, 'both players enter the match page', `location.pathname === '/play' && location.search.includes('room=${code}')`, 30000)
@@ -92,6 +99,9 @@ try {
   // Every copy sees four buildings: two castles and two huts, one of each from each side.
   for (const player of [host, guest]) await check(player, 'both castles and both huts exist on this copy of the world', `Number(document.querySelector('#match-sync').dataset.buildings) === 4`, 20000)
 
+  await Bun.sleep(1500)
+  await snap(host, 'mp-match-host')
+  await snap(guest, 'mp-match-guest')
   // 7. The simulation keeps running in step: many verified turns and not one resync.
   for (const player of [host, guest]) await check(player, 'at least twenty server turns ran and verified on this copy', `Number(document.querySelector('#match-sync').dataset.verified) >= 20`, 30000)
   const [h, g] = [await sync(host), await sync(guest)]
@@ -131,6 +141,7 @@ try {
   const order = await api('/orders', { method: 'POST', body: JSON.stringify({ type: 'demolish', fields: { building: castle.id } }) })
   steps.push({ who: 'guest', action: 'order', label: `demolish own castle answered ${order.status}`, ok: order.ok })
   await check(host, 'the host sees victory when the opponent has no castle left', `document.querySelector('#match-over')?.dataset.outcome === 'won' && document.querySelector('#match-over').innerText.includes('Victory')`, 30000)
+  await snap(host, 'mp-over-host')
   await check(guest, 'the guest sees defeat', `document.querySelector('#match-over')?.dataset.outcome === 'lost' && document.querySelector('#match-over').innerText.includes('Defeat')`, 30000)
 
   await writeFile(resolve(shots, 'multiplayer.json'), `${JSON.stringify({ code, host: h, guest: g, steps }, null, 2)}\n`)
