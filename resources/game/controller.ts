@@ -225,7 +225,10 @@ export function newSession(seed: number): Session {
   return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
 }
 
-export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) => void, reduceMotion: () => boolean, overview?: HTMLCanvasElement) {
+/** A guest game runs the same simulation but never reads or writes the signed-in player's checkpoints. */
+export interface MountOptions { guest?: boolean }
+
+export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) => void, reduceMotion: () => boolean, overview?: HTMLCanvasElement, options: MountOptions = {}) {
   let session: Session | null = null, selected: number | null = null, tool: string | null = null, cursor: Point | null = null
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
   let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
@@ -356,6 +359,12 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   void createBrowserPlatform({ namespace: 'the-settlers-iii-remake' }).then(async host => {
     if (disposed) { host.dispose(); return }
     platform = host
+    if (options.guest) {
+      if (!await assetsLoaded || disposed) return
+      if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
+      ready = true; finishBoot()
+      return
+    }
     checkpoints = createCheckpoints({
       get: (key, signal) => host.call('Storage', 'get', [key], signal),
       setIfAbsent: (key, value, signal) => host.call('Storage', 'setIfAbsent', [key, value], signal) as Promise<boolean>,
@@ -504,6 +513,8 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   on('pointercancel', () => { pointer = null; band = null })
   on('contextmenu', event => event.preventDefault())
   on('wheel', event => {
+    // A guest map sits inside a scrolling page, so only a deliberate Ctrl/Cmd wheel or pinch zooms it.
+    if (options.guest && !(event.ctrlKey || event.metaKey)) return
     event.preventDefault()
     const bounds = canvas.getBoundingClientRect(), x = event.clientX - bounds.left, y = event.clientY - bounds.top, old = renderer.camera.zoom
     renderer.camera.zoom = Math.max(0.5, Math.min(3, old * Math.exp(-event.deltaY * 0.001)))

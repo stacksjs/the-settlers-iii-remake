@@ -25,13 +25,47 @@ const status = [
 ]
 </script>
 
+<script client>
+import { mountGame, snapshot } from '../game/controller'
+import type { Game } from '../game/controller'
+
+// The starter kit: the buildings that make the first chain (logs, planks, stone) work.
+const tools = [
+  { id: 'woodcutter', label: "Woodcutter" },
+  { id: 'forester', label: 'Forester' },
+  { id: 'sawmill', label: 'Sawmill' },
+  { id: 'stonecutter', label: 'Stonecutter' },
+  { id: 'small-residence', label: 'Residence' },
+]
+const demoCanvas = useRef<HTMLCanvasElement>('demoMap')
+const started = state(false)
+const demo = state(snapshot(null, null, 'Choose a building, then click open ground next to your castle.', 1))
+const tool = state('')
+const stockText = derived(() => demo().goods.filter(item => item.amount > 0).slice(0, 6).map(item => `${item.key} ${item.amount}`).join(', ') || 'none yet')
+const reduceMotion = usePreferredReducedMotion()
+let demoGame: Game | null = null
+
+function startDemo(): void {
+  if (started() || !demoCanvas.current) return
+  started.set(true)
+  try {
+    demoGame = mountGame(demoCanvas.current, value => { demo.set(value); tool.set(value.tool ?? '') }, () => reduceMotion(), undefined, { guest: true })
+  }
+  catch (error) { demo.update(value => ({ ...value, message: error instanceof Error ? error.message : 'Could not start the demo.' })) }
+}
+function pick(kind: string): void { tool.set(kind); demoGame?.choose(kind) }
+function inspect(): void { tool.set(''); demoGame?.choose(null) }
+function faster(): void { demoGame?.speed(demo().speed >= 4 ? 1 : demo().speed * 2) }
+onDestroy(() => demoGame?.dispose())
+</script>
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="A free browser remake of The Settlers III. Sign in to play: every settler, tool and good is a real object in a deterministic settlement simulation.">
+  <meta name="description" content="A free browser remake of The Settlers III. Try a small settlement right on the page, or sign in for the full game: every settler, tool and good is a real object in a deterministic settlement simulation.">
   <meta property="og:title" content="The Settlers III Remake">
   <meta property="og:description" content="Play a Roman settlement where every settler walks and every plank is carried.">
   <meta property="og:image" content="/showcase/settlement.webp">
@@ -50,11 +84,30 @@ const status = [
         <a href="/play" class="px-6 py-3 font-semibold no-underline text-stone-950 bg-amber-600 rounded-xl hover:brightness-110">Play now</a>
         <a href="/register?redirect=/play" class="px-6 py-3 font-semibold no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 border border-stone-300 rounded-xl dark:border-stone-700">Create a free account</a>
       </p>
-      <p class="mb-0 mt-3 text-sm text-stone-600 dark:text-stone-400">An account keeps your settlement tied to you. Sign in to play.</p>
+      <p class="mb-0 mt-3 text-sm text-stone-600 dark:text-stone-400">Try a small settlement below with no account. An account unlocks the full game and keeps your saves.</p>
     </section>
 
-    <section class="mx-auto px-4 sm:px-6 max-w-6xl">
-      <ShowcaseFigure src="/showcase/settlement.webp" alt="A Roman settlement with a castle, woodcutters, a stonecutter and a sawmill at work on a green hex island." title="A settlement that really works" caption="Woodcutters, a forester, a stonecutter and a sawmill: each building staffed by a settler who walked there with the right tool." :priority="true" />
+    <section id="try" aria-labelledby="try-title" class="mx-auto px-4 sm:px-6 max-w-6xl">
+      <h2 id="try-title" class="m-0 mb-2 font-bold text-3xl tracking-tight">Try a small settlement now</h2>
+      <p class="m-0 mb-5 max-w-2xl text-stone-600 dark:text-stone-400">No account needed. Place a woodcutter, a forester, a sawmill and a stonecutter next to the castle and watch the settlers fetch their tools and carry every log. Guest games are not saved. <a href="/register?redirect=/play" class="text-amber-800 dark:text-amber-400">Create a free account</a> for the full game with saves, a computer rival and the original tutorial map.</p>
+      <div class="overflow-hidden bg-white dark:bg-stone-900 border border-stone-300 rounded-2xl dark:border-stone-700 shadow-lg">
+        <div class="aspect-[16/10] relative bg-stone-900">
+          <canvas ref="demoMap" id="demo-map" tabindex="0" role="application" aria-label="Demo settlement map. Drag with the right button to pan, hold Ctrl or Cmd and scroll to zoom. Arrow keys select a tile and Enter builds or inspects." class="block h-full w-full cursor-crosshair touch-none"></canvas>
+          <div :class="started() ? 'hidden' : 'flex'" class="absolute inset-0 flex-col gap-4 items-start justify-end p-6 bg-center bg-cover" style="background-image: url('/showcase/settlement.webp')">
+            <button type="button" id="start-demo" class="px-6 py-3 font-semibold text-stone-950 bg-amber-600 rounded-xl hover:brightness-110" @click="startDemo()">Start the demo</button>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center p-3 border-stone-300 border-t dark:border-stone-700" role="toolbar" aria-label="Demo build tools">
+          <button :for="item in tools" type="button" class="px-3 py-2 font-medium text-sm border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :class="tool() === item.id ? 'bg-amber-600 text-stone-950' : 'bg-white dark:bg-stone-900'" :aria-pressed="tool() === item.id" :disabled="!demo().ready" @click="pick(item.id)">{{ item.label }}</button>
+          <button type="button" class="px-3 py-2 font-medium text-sm bg-white dark:bg-stone-900 border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :disabled="!demo().ready" @click="inspect()">Inspect</button>
+          <button type="button" class="px-3 py-2 font-medium text-sm bg-white dark:bg-stone-900 border border-stone-300 rounded-lg dark:border-stone-700 disabled:opacity-50" :disabled="!demo().ready" @click="faster()">Speed x{{ demo().speed }}</button>
+        </div>
+        <div class="pb-4 px-4 text-sm" aria-live="polite">
+          <p id="demo-message" class="m-0 mb-1 font-medium">{{ demo().message }}</p>
+          <p class="m-0 text-stone-600 dark:text-stone-400">Time {{ demo().time }} - {{ demo().buildings }} buildings - goods: <span id="demo-stock">{{ stockText() }}</span></p>
+        </div>
+      </div>
+      <p class="mb-0 mt-3 text-stone-500 text-xs dark:text-stone-500">Original art and sound: The Settlers III, Blue Byte / Ubisoft (free Amazons demo). <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits and removal requests</a>.</p>
     </section>
 
     <section id="screens" aria-labelledby="screens-title" class="mx-auto px-4 py-14 sm:px-6 max-w-6xl">
