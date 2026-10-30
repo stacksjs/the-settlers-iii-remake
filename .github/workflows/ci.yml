@@ -57,6 +57,8 @@ jobs:
           bun tests/browser/terrain-cache.ts
           bun tests/browser/terrain.ts
           bun tests/browser/restart-dialog.ts http://127.0.0.1:3450/
+          bun tests/browser/demolition-dialog.ts http://127.0.0.1:3450/
+          bun tests/browser/arrows.ts
           bun tests/browser/border-posts.ts
       # Original-media rasters remain local until reviewed permission exists.
       # Any future raster upload must pass publication:check for its channel.
@@ -99,6 +101,10 @@ jobs:
             storage/framework/runtime/shots/terrain-media.json
             storage/framework/runtime/shots/restart-dialog.json
             storage/framework/runtime/shots/restart-dialog-media.json
+            storage/framework/runtime/shots/demolition-dialog.json
+            storage/framework/runtime/shots/demolition-dialog-media.json
+            storage/framework/runtime/shots/arrows.json
+            storage/framework/runtime/shots/arrows-media.json
             storage/framework/runtime/shots/border-posts.json
             storage/framework/runtime/shots/border-posts-media.json
             storage/framework/runtime/browser-server.log

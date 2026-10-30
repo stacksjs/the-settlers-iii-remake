@@ -426,5 +426,124 @@
     "Original rasters remain private/local. CI retains only the explicit diagnostic JSON and server-log allowlist.",
     "Temporal fog dimming remains separate presentation work. This checks the original steady-state border policy, not its fade duration.",
     "Native game presentation and the long native runtime probe remain separate, unqualified work."
-  ]
+  ],
+  "finalCI": {
+    "identity": {
+      "kind": "original immutable CI ZIP, API digest and every CRC verified",
+      "head": "9d2c6f52b4b1fde7d05165fa6b815c0c3d66c73f",
+      "runId": 40497850054,
+      "artifactId": 12732910854,
+      "archiveBytes": 37058,
+      "sha256": "0dc1aef1f5c10441319a054fe0f1d00a3ac798c6d87f6112a4cd9a111f4d0fcc"
+    },
+    "suiteCount": 18,
+    "steps": 685,
+    "suites": {
+      "campaign": {
+        "reports": 1,
+        "steps": 58
+      },
+      "control-frame": {
+        "reports": 6,
+        "steps": 108
+      },
+      "resize": {
+        "reports": 1,
+        "steps": 5
+      },
+      "production": {
+        "reports": 1,
+        "steps": 19
+      },
+      "selection": {
+        "reports": 1,
+        "steps": 33
+      },
+      "recruitment": {
+        "reports": 2,
+        "steps": 68
+      },
+      "working-area": {
+        "reports": 1,
+        "steps": 57
+      },
+      "storage-inspection": {
+        "reports": 1,
+        "steps": 87
+      },
+      "mine-placement": {
+        "reports": 1,
+        "steps": 28
+      },
+      "skirmish": {
+        "reports": 1,
+        "steps": 26
+      },
+      "rival-battle": {
+        "reports": 1,
+        "steps": 46
+      },
+      "checkpoints": {
+        "reports": 1,
+        "steps": 1
+      },
+      "player-colors": {
+        "reports": 1,
+        "steps": 2
+      },
+      "shadows": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain-cache": {
+        "reports": 1,
+        "steps": 2
+      },
+      "terrain": {
+        "reports": 2,
+        "steps": 4
+      },
+      "restart-dialog": {
+        "reports": 3,
+        "steps": 135
+      },
+      "border-posts": {
+        "reports": 2,
+        "steps": 4
+      }
+    },
+    "consoleRequestAndCollectionErrors": 0,
+    "battleElapsedMs": 611568.334208,
+    "battleWaitMs": 600000,
+    "terrainScales": [
+      1,
+      2
+    ],
+    "terrainPixelChecksPerScale": {
+      "1": 128815,
+      "2": 131119
+    },
+    "observedWorldPixelChecksPerScale": {
+      "1": 772,
+      "2": 3076
+    },
+    "terrainTransitionCasesPerScale": 1256,
+    "javaSelectorOracle": true,
+    "borderPostPixelChecksPerScale": {
+      "1": 5236,
+      "2": 20944
+    },
+    "borderPostPalettes": 32,
+    "borderPostOcclusionPerScale": {
+      "1": 77,
+      "2": 308
+    },
+    "scope": "Normal production browser gate and original source materials. Not original Gold observations, native host qualification or all-seed/human victory proof.",
+    "units": {
+      "pass": 430,
+      "fail": 0,
+      "files": 66,
+      "elapsedSeconds": 316.25
+    }
+  }
 }

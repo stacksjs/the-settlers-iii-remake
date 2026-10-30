@@ -19,6 +19,7 @@ import { BUILDING_MENU } from './menus'
 import { createTroops } from './troops'
 import { RIVAL_MISSION } from './skirmish'
 import { validateMapSeed } from './setup'
+import { prepareDemolition } from './demolition'
 
 const rules = ROMAN_ENGINEERING
 export const PLAYER = 1
@@ -625,7 +626,17 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not open that map.') }
     },
     toggle() { if (!session || !selected) return; const b = session.state.buildings.get(selected); if (!b) return; report(send('suspend', { building: b.id, suspended: !b.suspended }) ?? (b.suspended ? 'Work paused.' : 'Work resumed.')) },
-    demolish() { if (!session || !selected) return; const error = send('demolish', { building: selected }); if (!error) selected = null; report(error ?? 'Building torn down. Half of its materials lie on the ground.'); void persist() },
+    demolition() {
+      if (!ready || disposed || selected === null) return null
+      const target = prepareDemolition(() => disposed ? null : session, PLAYER, selected, id => send('demolish', { building: id }))
+      if (!target) return null
+      return { name: target.name, confirm() {
+        const error = target.confirm()
+        if (!error) selected = null
+        report(error ?? 'Building torn down. Half of its materials lie on the ground.')
+        if (!error) void persist()
+      } }
+    },
     store(good: string) {
       if (!session) return
       const stored = session.state.players[PLAYER - 1]!.settings.stored

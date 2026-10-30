@@ -10,6 +10,21 @@ await mkdir(shots, { recursive: true })
 const directory = await mkdtemp(resolve(shots, 'control-frame-'))
 const media: unknown[] = [], reports: unknown[] = []
 
+// Measure after the maintained STX render has exposed the newly selected node.
+// This observes real frames and layout; it never changes focus or scroll state.
+const inspection = (name: string, result: string) => `(async () => {
+  const visible = () => {
+    const panel=document.querySelector('.hud-content').getBoundingClientRect();
+    const heading=document.querySelector('.inspector h2'), status=document.querySelector('.inspector .building-status');
+    return heading?.textContent===${JSON.stringify(name)} && [heading,status].every(el=>{const r=el?.getBoundingClientRect();return r && r.top>=panel.top && r.bottom<=panel.bottom;});
+  };
+  const start=performance.now();
+  while (!visible() && performance.now()-start<1000) await new Promise(resolve=>requestAnimationFrame(resolve));
+  if (!visible()) throw new Error('Selected building name or status is outside the control opening: '+${JSON.stringify(name)});
+  if (document.activeElement!==document.querySelector('.island-map')) throw new Error('Inspection stole map keyboard focus');
+  return { ${result}:true, mapFocusPreserved:true };
+})()`
+
 for (const [width, height, profile] of [[812, 375, 480], [1024, 600, 480], [1280, 720, 480], [1280, 850, 600], [1440, 960, 768], [320, 568, 768]] as const) {
   const expression = `(async () => {
     const page = document.querySelector('.playfield');
@@ -99,6 +114,42 @@ for (const [width, height, profile] of [[812, 375, 480], [1024, 600, 480], [1280
     '--step', JSON.stringify({ action: 'click', selector: '.guide-panel button', text: 'Back to the settlement' }),
     '--step', JSON.stringify({ action: 'assert', selector: '.guide-panel', absent: true }),
     '--step', JSON.stringify({ action: 'assert', selector: 'header button', text: 'Guide', focused: true }),
+    '--step', JSON.stringify({ action: 'click', selector: '.main-menu button', text: 'Buildings' }),
+    '--step', JSON.stringify({ action: 'click', selector: '.category-list button', text: 'Resources' }),
+    '--step', JSON.stringify({ action: 'click', selector: '.building-choice', text: "Woodcutter's hut" }),
+    '--step', JSON.stringify({ action: 'press', key: 'Enter' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: inspection("Woodcutter's hut", 'selectedSiteIdentityVisible') }),
+    '--step', JSON.stringify({ action: 'focus', selector: '.hud-content' }),
+    '--step', JSON.stringify({ action: 'press', key: 'End' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: `(async () => {
+      const content=document.querySelector('.hud-content'), start=performance.now();
+      while (content.scrollTop+content.clientHeight<content.scrollHeight-2 && performance.now()-start<1000) await new Promise(resolve=>requestAnimationFrame(resolve));
+      const top=content.scrollTop;
+      await new Promise(resolve=>setTimeout(resolve,500));
+      if (top===0 || Math.abs(content.scrollTop-top)>1) throw new Error('Repeated simulation updates reset deliberate inspection scrolling');
+      return { sameBuildingScrollPreserved:true, scrollTop:top };
+    })()` }),
+    '--step', JSON.stringify({ action: 'click', selector: '.control-center button', text: 'Inspect' }),
+    '--step', JSON.stringify({ action: 'focus', selector: '.island-map' }),
+    '--step', JSON.stringify({ action: 'press', key: 'h' }),
+    '--step', JSON.stringify({ action: 'click', selector: '.island-map' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: inspection('Castle', 'differentBuildingIdentityVisible') }),
+    '--step', JSON.stringify({ action: 'press', key: 'Escape' }),
+    '--step', JSON.stringify({ action: 'assert', selector: '.inspector', absent: true }),
+    '--step', JSON.stringify({ action: 'press', key: 'Enter' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: inspection('Castle', 'clearedAndReselectedIdentityVisible') }),
+    '--step', JSON.stringify({ action: 'click', selector: 'header button', text: 'Save' }),
+    '--step', JSON.stringify({ action: 'assert', selector: '[role=status]', text: 'Settlement saved on this device.', timeoutMs: 2000 }),
+    '--step', JSON.stringify({ action: 'click', selector: 'header button', text: 'Load' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: `(async () => {
+      const start=performance.now();
+      while (document.querySelector('[role=status]').textContent!=='Saved settlement restored.' && performance.now()-start<2000) await new Promise(resolve=>requestAnimationFrame(resolve));
+      if (document.querySelector('[role=status]').textContent!=='Saved settlement restored.' || document.querySelector('.inspector')) throw new Error('Session replacement did not clear the selected inspector');
+      return { replacementClearsInspection:true };
+    })()` }),
+    '--step', JSON.stringify({ action: 'focus', selector: '.island-map' }),
+    '--step', JSON.stringify({ action: 'press', key: 'Enter' }),
+    '--step', JSON.stringify({ action: 'evaluate', expression: inspection('Castle', 'replacementIdentityVisible') }),
   ], { stdout: 'pipe', stderr: 'pipe' })
   const [code, stdout, stderr] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])
   let report: unknown = { stdout, stderr }

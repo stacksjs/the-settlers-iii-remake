@@ -9,6 +9,9 @@ const map = useRef<HTMLCanvasElement>('island')
 const overview = useRef<HTMLCanvasElement>('overview')
 const guideButton = useRef<HTMLButtonElement>('guideButton')
 const seedInput = useRef<HTMLInputElement>('seedInput')
+const tearDownButton = useRef<HTMLButtonElement>('tearDownButton')
+const settlementDetails = useRef<HTMLElement>('settlementDetails')
+const inspectedBuilding = useRef<HTMLElement>('inspectedBuilding')
 const TERRITORY = ['players', 'simple', 'topographic'] as const
 const SETTLERS = ['all', 'military', 'none'] as const
 function nextTerritory(): void { const at = TERRITORY.indexOf(view().minimap.territory); game?.overview({ territory: TERRITORY[(at + 1) % TERRITORY.length] }) }
@@ -21,6 +24,18 @@ const subs = derived(() => [...MENUS[menu().main]])
 const showGuide = state(false)
 function closeGuide(): void { showGuide.set(false); guideButton.current?.focus() }
 const confirmRestart = state(false)
+const demolition = state<ReturnType<Game['demolition']>>(null)
+function requestDemolition(): void { demolition.set(game?.demolition() ?? null) }
+function cancelDemolition(): void {
+  demolition.set(null)
+  void nextTick(() => { if (!tearDownButton.current?.isConnected) map.current?.focus() })
+}
+function confirmDemolition(): void {
+  const target = demolition()
+  demolition.set(null)
+  target?.confirm()
+  void nextTick(() => map.current?.focus())
+}
 const seedDraft = state('')
 const seedError = state('')
 const reduceMotion = usePreferredReducedMotion()
@@ -45,7 +60,14 @@ async function restart(landscape: 'generated' | 'tutorial' | 'rival'): Promise<v
 }
 onMount(() => {
   if (!map.current) return
-  try { game = mountGame(map.current, value => { view.set(value); selectedTool.set(value.tool ?? '') }, () => reduceMotion(), overview.current ?? undefined) }
+  try { game = mountGame(map.current, value => {
+    const previous = view().selected?.id
+    view.set(value); selectedTool.set(value.tool ?? '')
+    const selected = value.selected?.id
+    if (selected !== undefined && selected !== previous) void nextTick(() => {
+      if (view().selected?.id === selected && inspectedBuilding.current) settlementDetails.current?.scrollTo({ top: inspectedBuilding.current.offsetTop, behavior: 'instant' })
+    })
+  }, () => reduceMotion(), overview.current ?? undefined) }
   catch (error) { view.update(value => ({ ...value, message: error instanceof Error ? error.message : 'Could not start the game.' })) }
 })
 onDestroy(() => game?.dispose())
@@ -125,6 +147,17 @@ onDestroy(() => game?.dispose())
           <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
           </DialogPanel>
         </Dialog>
+        <Dialog :open="demolition() !== null" @close="cancelDemolition()" className="demolition-dialog restart-dialog">
+          <DialogBackdrop />
+          <DialogPanel :flush="true" variant="center" className="demolition-panel restart-panel">
+            <DialogTitle as="h2">Tear down {{ demolition()?.name }}?</DialogTitle>
+            <p>This cannot be undone. {{ demolition()?.name }} will be removed and half of its construction materials will lie on the ground.</p>
+            <div class="flex flex-wrap gap-2 mt-4">
+              <button type="button" class="keep-building quiet-button" autofocus @click="cancelDemolition()">Keep building</button>
+              <button type="button" class="confirm-demolition primary-button" :disabled="demolition() === null" @click="confirmDemolition()">Tear down</button>
+            </div>
+          </DialogPanel>
+        </Dialog>
         <div class="advisor"><span class="advisor-icon i-hugeicons-quill-pen-01" aria-hidden="true"></span><div><strong>Settlement dispatch</strong><p role="status" aria-live="polite">{{ view().message }}</p></div></div>
       </section>
 
@@ -141,7 +174,7 @@ onDestroy(() => game?.dispose())
           <div class="flex category-list" :aria-label="LABELS[menu().main] + ' menus'">
             <button :for="name in subs()" type="button" :aria-label="LABELS[name]" :title="LABELS[name]" :aria-pressed="menu().sub === name" @click="menu.set(chooseMenu(menu(), name))"><img :src="menuImage(menu().main, name, menu().sub === name)" width="45" height="40" alt=""><span class="sr-only">{{ LABELS[name] }}</span></button>
           </div>
-          <div class="hud-content" tabindex="0" role="region" aria-label="Settlement details">
+          <div ref="settlementDetails" class="hud-content" tabindex="0" role="region" aria-label="Settlement details">
           <div class="flex gap-1 mt-2 overview-modes">
             <button type="button" class="text-button" @click="nextTerritory()" title="Territory display: player colours, land and sea, or terrain">Territory: {{ view().minimap.territory === 'players' ? 'players' : view().minimap.territory === 'simple' ? 'land and sea' : 'terrain' }}</button>
             <button type="button" class="text-button" @click="nextSettlers()" title="Settlers display: all, soldiers only or none">Settlers: {{ view().minimap.settlers === 'all' ? 'all' : view().minimap.settlers === 'military' ? 'soldiers' : 'none' }}</button>
@@ -220,7 +253,7 @@ onDestroy(() => game?.dispose())
           <p class="carried">{{ view().army.outside }} {{ view().army.outside === 1 ? 'soldier stands' : 'soldiers stand' }} outside the garrisons.{{ view().marked ? ' ' + view().marked + ' marked.' : '' }}</p>
           </div>
         </section>
-        <section class="inspector" :if="view().selected" aria-label="Selected building">
+        <section ref="inspectedBuilding" class="inspector" :if="view().selected" aria-label="Selected building">
           <div class="flex items-center justify-between"><h2>{{ view().selected?.name }}</h2><span class="building-status">{{ view().selected?.status }}</span></div>
           <p>{{ view().selected?.description }}</p>
           <progress :value="view().selected?.progress" max="1" aria-label="Construction or work progress"></progress>
@@ -231,7 +264,7 @@ onDestroy(() => game?.dispose())
             <button type="button" class="text-button" :aria-pressed="selectedTool() === 'work-area:' + view().selected?.id" @click="game?.workArea()">Set working area</button>
           </div>
           <ul class="stock-list" :if="view().selected?.stocks.length"><li :for="stock in view().selected?.stocks"><span>{{ stock.role }} {{ stock.good }}</span><strong>{{ stock.amount }}/{{ stock.capacity }}</strong></li></ul>
-          <div class="flex gap-3 mt-2" :if="!view().selected?.castle"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.suspended ? 'Resume work' : 'Pause work' }}</button><button type="button" class="text-button" @click="game?.demolish()">Tear down</button></div>
+          <div class="flex gap-3 mt-2" :if="!view().selected?.castle"><button type="button" class="text-button" @click="game?.toggle()">{{ view().selected?.suspended ? 'Resume work' : 'Pause work' }}</button><button ref="tearDownButton" type="button" class="text-button tear-down" aria-haspopup="dialog" :aria-expanded="demolition() !== null" @click="requestDemolition()">Tear down</button></div>
         </section>
         <section class="objectives" :if="view().objectives.length" aria-label="Mission objectives" aria-live="polite" :data-outcome="view().outcome"><h2>{{ view().outcome === 'won' ? 'Mission won' : view().outcome === 'lost' ? 'Mission lost' : 'Objectives' }}</h2><ol><li :for="goal in view().objectives" :class="goal.status === 'complete' ? 'complete' : ''"><span :class="goal.status === 'complete' ? 'i-hugeicons-checkmark-circle-02' : 'i-hugeicons-circle'" aria-hidden="true"></span><span>{{ goal.text }}</span><span class="sr-only">{{ goal.status }}</span></li></ol></section>
         <section class="needs-panel" :if="view().needs.length" aria-label="Needs attention"><h2>Needs attention</h2><ul class="profession-list"><li :for="need in view().needs"><span>{{ need }}</span></li></ul></section>
@@ -281,6 +314,8 @@ onDestroy(() => game?.dispose())
 .hud-content .eyebrow { display:none; }
 .hud-content .overview-modes { margin:0; padding:4px 6px; justify-content:flex-start; gap:2px 10px; }
 .hud-content .text-button { font-size:10px; }
+.hud-content .inspector>div:first-child { display:block; }
+.hud-content .inspector .building-status { display:block; margin:4px 0 0; }
 .production-table { width:100%; border-collapse:collapse; font-size:10px; line-height:1.6; font-variant-numeric:tabular-nums; }
 .production-table th,.production-table td { padding:3px 1px; text-align:right; font-weight:400; white-space:nowrap; }
 .hud-content:focus-visible { outline:2px solid var(--gold); outline-offset:-2px; }
