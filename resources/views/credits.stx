@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Credits | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased">
+  <LegalPage title="Credits" summary="This remake stands on the work of the people who made The Settlers III, and says so everywhere it shows their art.">
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">The original game</h2>
+      <p class="m-0">The Settlers III (Die Siedler III) was created by Blue Byte and published by Ubisoft. The graphics, sound and map data you see and hear in this remake come from the free Amazons demo of that game. They are the property of Blue Byte, Ubisoft and the artists, musicians and designers who made them, and they are credited on every page that shows or plays them.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">What this project is</h2>
+      <p class="m-0">An unofficial, non-commercial fan project. It is not affiliated with, sponsored by or endorsed by Blue Byte or Ubisoft. The simulation, interface code and this website are original work, open source on <a href="https://github.com/stacksjs/the-settlers-iii-remake" class="text-amber-800 dark:text-amber-400">GitHub</a>. The original art is converted from your own copy of the demo files and carries its provenance, hashes and source in <code>docs/content</code>.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Reference work</h2>
+      <p class="m-0">Original rules are checked against the preserved Settlers III manual and against the open JSettlers project. Both are reference only; neither provides balance numbers this project copies unverified.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Built with</h2>
+      <p class="m-0"><a href="https://stacksjs.com" class="text-amber-800 dark:text-amber-400">Stacks</a>, stx, ts-css and Craft, with Hugeicons for interface icons.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">If you hold rights in any of it</h2>
+      <p class="m-0">If you are a rights holder and have a concern about anything shown or played here, please reach out at <a href="mailto:chris@stacksjs.com" class="text-amber-800 dark:text-amber-400">chris@stacksjs.com</a> or open an issue on GitHub. The material in question will be removed promptly.</p>
+    </section>
+  </LegalPage>
+</body>
+</html>

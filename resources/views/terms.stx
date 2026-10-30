@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Terms | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased">
+  <LegalPage title="Terms of Service" summary="Plain terms for using this free fan project.">
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">The service</h2>
+      <p class="m-0">This site lets you create a free account and play a browser remake of The Settlers III. It is provided as is, without warranty, and may change or stop at any time. Your settlement is saved on your device; clearing browser data removes it.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Your account</h2>
+      <p class="m-0">Keep your password private and use an email address you control. You are responsible for activity under your account. Do not attack, overload or probe the service, or use it to harm others.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Original game material</h2>
+      <p class="m-0">The Settlers III art and sound belong to Blue Byte and Ubisoft and are shown here as an unofficial fan project, with credit. They are for playing in this remake only; do not copy them out of it. See <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits</a>. Rights holders can ask for removal at <a href="mailto:chris@stacksjs.com" class="text-amber-800 dark:text-amber-400">chris@stacksjs.com</a>.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Ending your account</h2>
+      <p class="m-0">You may stop using the site at any time, and ask for your account to be deleted by email. Accounts may be removed for abuse.</p>
+    </section>
+  </LegalPage>
+</body>
+</html>

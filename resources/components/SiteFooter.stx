@@ -1,0 +1,10 @@
+<footer class="mt-12 mx-auto pb-14 pt-8 px-4 sm:px-6 max-w-6xl text-sm text-stone-600 dark:text-stone-400 border-stone-300 border-t dark:border-stone-700">
+  <p class="my-1 max-w-3xl"><strong class="text-stone-800 dark:text-stone-200">Credit.</strong> The Settlers III is a game by Blue Byte, published by Ubisoft. The original graphics, sound and map data shown and played here come from the free Amazons demo and belong to their owners. This is an unofficial, non-commercial fan remake and is not affiliated with or endorsed by them.</p>
+  <p class="my-1 max-w-3xl">If you hold rights in any of it and have a concern, please reach out at <a href="mailto:chris@stacksjs.com" class="text-amber-800 dark:text-amber-400">chris@stacksjs.com</a> and it will be removed promptly.</p>
+  <p class="flex flex-wrap gap-x-5 my-1">
+    <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits</a>
+    <a href="/terms" class="text-amber-800 dark:text-amber-400">Terms</a>
+    <a href="/privacy" class="text-amber-800 dark:text-amber-400">Privacy</a>
+    <a href="https://github.com/stacksjs/the-settlers-iii-remake" class="text-amber-800 dark:text-amber-400">Source on GitHub</a>
+  </p>
+</footer>

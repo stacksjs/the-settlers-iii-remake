@@ -67,13 +67,14 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
-      # Web deployments may only ship project-authored sources. The check
-      # proves that from config/cloud.ts and fails closed to the full
-      # redistribution-evidence check for anything else.
-      - name: Verify the deployment carries no original media
+      # The converted demo media ships to the web channel under the recorded
+      # owner decision. The check fails closed if that decision is revoked, and
+      # the import below is what puts the media into the release.
+      - name: Import the demo media and verify web publication
         if: steps.check.outputs.configured == 'true'
         run: |
           bun test tests/unit/cloud-config.test.ts
+          bun run assets:import
           bun run publication:check --channel web
 
       # Decrypts in memory and checks identity, flags and key. Emits no values.

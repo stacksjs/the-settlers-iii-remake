@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Privacy | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased">
+  <LegalPage title="Privacy" summary="What this site keeps about you, and what it does not.">
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">What we store</h2>
+      <p class="m-0">Your name, email address and a hashed password, plus the session token that keeps you signed in. Nothing else about you is collected on the server.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Your game</h2>
+      <p class="m-0">Settlements are saved in your browser on your device and are not uploaded.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Cookies</h2>
+      <p class="m-0">A sign-in cookie and a security token that protects forms. There is no advertising or tracking cookie.</p>
+    </section>
+    <section>
+      <h2 class="m-0 mb-2 font-semibold text-xl">Your choices</h2>
+      <p class="m-0">Email <a href="mailto:chris@stacksjs.com" class="text-amber-800 dark:text-amber-400">chris@stacksjs.com</a> to see or delete your account data.</p>
+    </section>
+  </LegalPage>
+</body>
+</html>

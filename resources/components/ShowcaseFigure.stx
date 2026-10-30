@@ -1,0 +1,19 @@
+<script>
+interface ShowcaseFigureProps {
+  src: string
+  alt: string
+  title: string
+  caption: string
+  priority?: boolean
+}
+
+const { src, alt, title, caption, priority = false } = defineProps<ShowcaseFigureProps>()
+</script>
+<figure class="overflow-hidden m-0 bg-white dark:bg-stone-900 border border-stone-300 rounded-2xl dark:border-stone-700 shadow-lg">
+  <img src="{{ src }}" alt="{{ alt }}" width="1440" height="900" loading="{{ priority ? 'eager' : 'lazy' }}" decoding="async" class="block h-auto w-full">
+  <figcaption class="px-5 py-4">
+    <strong class="block text-base">{{ title }}</strong>
+    <span class="block text-sm text-stone-600 dark:text-stone-400">{{ caption }}</span>
+    <span class="block mt-2 text-stone-500 text-xs dark:text-stone-500">Screenshot of this remake running in a browser. Original art and sound: The Settlers III, Blue Byte / Ubisoft (free Amazons demo). <a href="/credits" class="text-amber-800 dark:text-amber-400">Credits</a></span>
+  </figcaption>
+</figure>

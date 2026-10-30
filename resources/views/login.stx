@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Sign in | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased bg-amber-50 dark:bg-stone-950">
+  <SiteHeader />
+  <LoginDashboard />
+  <SiteFooter />
+</body>
+</html>

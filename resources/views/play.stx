@@ -1,3 +1,7 @@
+<script server>
+// Playing needs an account. The stx page gate validates the session token.
+definePageMeta({ middleware: ['auth'] })
+</script>
 <script client>
 import { catalog, mountGame, snapshot } from '../game/controller'
 import { controlLayout } from '../game/control-layout'
@@ -82,7 +86,7 @@ onDestroy(() => game?.dispose())
   <meta name="theme-color" content="#172c26">
   <link rel="icon" type="image/png" href="/assets/settlers-original/castle.png">
   <meta name="description" content="Found a Roman settlement where every settler, tool and good is real: carriers deliver, diggers level, builders build and workers fetch their own resources.">
-  <title>The Settlers III Remake | Roman settlement</title>
+  <title>Play | The Settlers III Remake</title>
 </head>
 <body class="m-0 antialiased">
   <div class="game-shell">
@@ -133,6 +137,7 @@ onDestroy(() => game?.dispose())
           <p>Drag with the right mouse button to pan. Scroll to zoom. Arrow keys select a tile, Enter builds. Space pauses, Escape cancels, H centers, S saves. Checkpoints run every 30 seconds and when the page is hidden.</p>
           <p class="guide-note">Costs, doorstep and storage capacities follow the original manual. Timings, radii and population values are placeholders until original observations are recorded.</p>
           <p class="guide-note">Settlement rules: {{ view().rulesVersion }}. Saved settlements keep their original rules. Start a new settlement for the latest rules.</p>
+          <p class="guide-note">Credit: The Settlers III is a game by Blue Byte, published by Ubisoft. Its original graphics and sound, from the free Amazons demo, are shown here by an unofficial, non-commercial fan project and belong to their owners. See the <a href="/credits">credits</a>; rights holders can reach chris@stacksjs.com.</p>
           <button type="button" class="primary-button" @click="closeGuide()">Back to the settlement</button>
         </div>
         <Dialog :open="confirmRestart()" @close="confirmRestart.set(false)" className="restart-dialog">
@@ -269,7 +274,7 @@ onDestroy(() => game?.dispose())
         <section class="objectives" :if="view().objectives.length" aria-label="Mission objectives" aria-live="polite" :data-outcome="view().outcome"><h2>{{ view().outcome === 'won' ? 'Mission won' : view().outcome === 'lost' ? 'Mission lost' : 'Objectives' }}</h2><ol><li :for="goal in view().objectives" :class="goal.status === 'complete' ? 'complete' : ''"><span :class="goal.status === 'complete' ? 'i-hugeicons-checkmark-circle-02' : 'i-hugeicons-circle'" aria-hidden="true"></span><span>{{ goal.text }}</span><span class="sr-only">{{ goal.status }}</span></li></ol></section>
         <section class="needs-panel" :if="view().needs.length" aria-label="Needs attention"><h2>Needs attention</h2><ul class="profession-list"><li :for="need in view().needs"><span>{{ need }}</span></li></ul></section>
         <details class="chronicle" open><summary>Settlement chronicle</summary><p :for="line in view().events">{{ line.text }} <button :if="line.at" type="button" class="text-button" @click="game?.goto(line.at.x, line.at.y)">Show</button></p></details>
-        <footer class="sidebar-footer">Built with Stacks, stx and Craft. Original demo sprites, converted for the browser. Rules are the Roman engineering profile, not a verified original ruleset.</footer>
+        <footer class="sidebar-footer">Built with Stacks, stx and Craft. Art and sound: The Settlers III, Blue Byte / Ubisoft, from the free Amazons demo; unofficial fan remake. <a href="/credits">Credits</a>. Rules are the Roman engineering profile, not a verified original ruleset.</footer>
           </div>
         </div>
       </aside>

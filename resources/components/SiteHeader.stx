@@ -1,0 +1,13 @@
+<header class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-4 sm:px-6 max-w-6xl">
+  <a href="/" class="flex gap-2 items-center font-bold no-underline text-base text-stone-900 dark:text-stone-100">
+    <span class="h-6 w-6 text-amber-700 dark:text-amber-400 i-hugeicons-castle-01" aria-hidden="true"></span>
+    The Settlers III Remake
+  </a>
+  <nav class="flex flex-wrap gap-x-5 gap-y-1 items-center" aria-label="Primary">
+    <a href="/#screens" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Screenshots</a>
+    <a href="/#simulation" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Simulation</a>
+    <a href="/credits" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Credits</a>
+    <a href="/login?redirect=/play" class="py-1.5 no-underline text-stone-800 dark:text-stone-200 hover:underline">Sign in</a>
+    <a href="/play" class="px-4 py-1.5 font-semibold no-underline text-stone-950 bg-amber-600 rounded-full hover:brightness-110">Play</a>
+  </nav>
+</header>
