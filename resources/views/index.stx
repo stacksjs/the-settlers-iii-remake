@@ -54,7 +54,7 @@ const status = [
     </section>
 
     <section class="mx-auto px-4 sm:px-6 max-w-6xl">
-      <ShowcaseFigure src="/showcase/settlement.webp" alt="A Roman settlement with a castle, woodcutters, a stonecutter and a sawmill at work on a green hex island." title="A settlement that really works" caption="Woodcutters, a forester, a stonecutter and a sawmill: each building staffed by a settler who walked there with the right tool." priority="true" />
+      <ShowcaseFigure src="/showcase/settlement.webp" alt="A Roman settlement with a castle, woodcutters, a stonecutter and a sawmill at work on a green hex island." title="A settlement that really works" caption="Woodcutters, a forester, a stonecutter and a sawmill: each building staffed by a settler who walked there with the right tool." :priority="true" />
     </section>
 
     <section id="screens" aria-labelledby="screens-title" class="mx-auto px-4 py-14 sm:px-6 max-w-6xl">
