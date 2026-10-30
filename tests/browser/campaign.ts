@@ -2,8 +2,10 @@ import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { campaignSteps } from './campaign-steps'
+import { playUrl, signInArgs } from './session'
 
-const url = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const base = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const url = playUrl(base)
 const defaults = dirname(Bun.resolveSync('@stacksjs/defaults/package.json', process.cwd()))
 const driver = resolve(defaults, 'ai/skills/stacks-browse/scripts/browse.ts')
 const shots = resolve('storage/framework/runtime/shots')
@@ -21,7 +23,7 @@ for (let attempt = 0; attempt < 60; attempt++) {
 if (!reachable) throw new Error(`Production server did not become ready: ${url}`)
 
 const browserProcess = Bun.spawn([
-  process.execPath, driver, 'scenario', url,
+  process.execPath, driver, 'scenario', url, ...await signInArgs(base),
   '--viewport', '1440x960', '--out', capture,
   ...campaignSteps.flatMap(step => ['--step', JSON.stringify(step)]),
 ], { stdout: 'pipe', stderr: 'pipe' })

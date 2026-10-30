@@ -34,12 +34,19 @@ jobs:
       - name: Verify the production campaign in Chrome
         env:
           APP_ENV: production
+          STACKS_DEFAULT_ROUTES: auth
           APP_KEY: base64:MTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTE=
         run: |
           mkdir -p storage/framework/runtime
-          ./buddy serve --port 3450 > storage/framework/runtime/browser-server.log 2>&1 &
+          ./buddy migrate
+          # Sign-in is part of playing, so the API runs beside the views server
+          # exactly as the deployed app does.
+          PORT=3478 HOST=127.0.0.1 bun node_modules/@stacksjs/actions/dist/serve/api.js > storage/framework/runtime/api-server.log 2>&1 &
+          settlers_api_pid=$!
+          PORT_API=3478 API_URL=http://127.0.0.1:3478 ./buddy serve --port 3450 > storage/framework/runtime/browser-server.log 2>&1 &
           settlers_server_pid=$!
-          trap 'kill "$settlers_server_pid"' EXIT
+          trap 'kill "$settlers_server_pid" "$settlers_api_pid"' EXIT
+          for attempt in $(seq 1 60); do curl -s -o /dev/null http://127.0.0.1:3478/ && break; sleep 1; done
           bun run test:browser http://127.0.0.1:3450/
           bun tests/browser/control-frame.ts http://127.0.0.1:3450/
           bun tests/browser/resize.ts http://127.0.0.1:3450/
@@ -108,4 +115,5 @@ jobs:
             storage/framework/runtime/shots/border-posts.json
             storage/framework/runtime/shots/border-posts-media.json
             storage/framework/runtime/browser-server.log
+            storage/framework/runtime/api-server.log
           if-no-files-found: ignore

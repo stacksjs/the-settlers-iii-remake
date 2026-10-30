@@ -1,8 +1,10 @@
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
+import { playUrl, signInArgs } from './session'
 
-const url = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const base = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const url = playUrl(base)
 const defaults = dirname(Bun.resolveSync('@stacksjs/defaults/package.json', process.cwd()))
 const driver = resolve(defaults, 'ai/skills/stacks-browse/scripts/browse.ts')
 const shots = resolve('storage/framework/runtime/shots')
@@ -72,7 +74,7 @@ for (const [width, height, profile] of [[812, 375, 480], [1024, 600, 480], [1280
   })()`
   const capture = resolve(directory, `${width}x${height}.png`)
   const child = Bun.spawn([
-    process.execPath, driver, 'scenario', url, '--viewport', `${width}x${height}`, '--out', capture,
+    process.execPath, driver, 'scenario', url, ...await signInArgs(base), '--viewport', `${width}x${height}`, '--out', capture,
     '--step', JSON.stringify({ action: 'wait', ms: 1500 }),
     '--step', JSON.stringify({ action: 'click', selector: '.main-menu button', text: 'Settlers' }),
     '--step', JSON.stringify({ action: 'click', selector: '.category-list button', text: 'Production statistics' }),

@@ -1,8 +1,10 @@
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
+import { playUrl, signInArgs } from './session'
 
-const url = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const base = Bun.argv[2] ?? 'http://127.0.0.1:3450/'
+const url = playUrl(base)
 const defaults = dirname(Bun.resolveSync('@stacksjs/defaults/package.json', process.cwd()))
 const driver = resolve(defaults, 'ai/skills/stacks-browse/scripts/browse.ts')
 const shots = resolve('storage/framework/runtime/shots')
@@ -69,7 +71,7 @@ const reports: unknown[] = [], media: unknown[] = []
 for (const viewport of ['1440x960', '320x568']) {
   const capture = resolve(directory, `recruitment-${viewport}.png`)
   const child = Bun.spawn([
-    process.execPath, driver, 'scenario', url, '--viewport', viewport, '--out', capture,
+    process.execPath, driver, 'scenario', url, ...await signInArgs(base), '--viewport', viewport, '--out', capture,
     ...steps.flatMap(step => ['--step', JSON.stringify(step)]),
   ], { stdout: 'pipe', stderr: 'pipe', timeout: 120000 })
   const [code, out, err] = await Promise.all([child.exited, new Response(child.stdout).text(), new Response(child.stderr).text()])

@@ -2,10 +2,12 @@ import { closeSharedBrowsers, launch, navigate } from '@stacksjs/testing/browser
 import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import { playUrl, signInCookie } from './session'
 
 // Public Stacks browser API, including actual Shift+Tab and platform select-all
 // keys. No page globals, synthetic DOM keyboard events or focus assignments.
-const url = process.argv[2] ?? 'http://127.0.0.1:3450/'
+const base = process.argv[2] ?? 'http://127.0.0.1:3450/'
+const url = playUrl(base)
 const shots = resolve('storage/framework/runtime/shots')
 await mkdir(shots, { recursive: true })
 const directory = await mkdtemp(resolve(shots, 'restart-dialog-'))
@@ -15,6 +17,8 @@ const cases = [{ width: 1280, height: 720, scale: 1, reducedMotion: false }, { w
 try {
   for (const viewport of cases) {
     const { cdp, close } = await launch({ viewport: { width: viewport.width, height: viewport.height, deviceScaleFactor: viewport.scale } })
+    const session = await signInCookie(base)
+    await cdp.send('Network.setCookie', { name: session.name, value: session.value, url: base, httpOnly: true })
     const steps: { action: string, label: string, ok: boolean }[] = []
     let failure: string | null = null, capture: { sha256: string, bytes: number, width: number, height: number } | null = null
     const check = async (label: string, expression: string, timeout = 2000) => {
