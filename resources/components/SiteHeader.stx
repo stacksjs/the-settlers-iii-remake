@@ -1,3 +1,8 @@
+<script server>
+// Whether to offer "Sign in". Only the presence of the session cookie is read here, to keep a signed-in
+// player from being invited to sign in again; every gated page and route still validates the session itself.
+const signedIn = !!requestContext.cookie('auth-token')
+</script>
 <header class="sticky top-0 z-40 bg-amber-50/85 dark:bg-stone-950/85 border-amber-200/70 border-b dark:border-stone-800 backdrop-blur">
   <div class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-3 sm:px-6 max-w-6xl">
     <a href="/" class="flex gap-3 items-center font-bold no-underline text-base text-stone-900 dark:text-stone-100" aria-label="The Settlers III Remake home">
@@ -12,7 +17,7 @@
       <a href="/#simulation" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Simulation</a>
       <a href="/multiplayer" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Multiplayer</a>
       <a href="/credits" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Credits</a>
-      <a href="/login?redirect=/play" class="px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Sign in</a>
+      <a href="/login?redirect=/play" class="{{ signedIn ? 'hidden ' : '' }}px-3 py-1.5 no-underline text-stone-700 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 rounded-full">Sign in</a>
       <a href="/play" class="flex gap-1.5 items-center ml-1 px-4 py-1.5 font-semibold no-underline text-stone-950 bg-amber-500 hover:bg-amber-400 rounded-full shadow-amber-600/30 shadow-md"><span class="h-4 w-4 i-hugeicons-play" aria-hidden="true"></span>Play</a>
     </nav>
   </div>
