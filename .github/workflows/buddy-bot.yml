@@ -85,7 +85,7 @@ jobs:
       - name: Setup Pantry
         uses: pantry-pm/pantry/packages/action@e632b04fb1a8093e7c940c1dbd8ae4fb9b09bf5d # v0.11.130
         with:
-          version: '0.11.130'
+          version: '0.11.147'
           install: 'false'
           packages: bun.com@1.4.4 git-scm.org@2.53.0 sqlite.org@3.54.1
 
