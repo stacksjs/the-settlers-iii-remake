@@ -1,0 +1,88 @@
+<script server>
+const repository = 'https://github.com/stacksjs/the-settlers-iii-remake'
+
+const features = [
+  { title: 'Real logistics', body: 'Carriers fetch each plank and stone from where it lies, diggers level the site, and builders build from delivered material. Construction deliveries come before storage.' },
+  { title: 'Tools and trades', body: 'Woodcutters need an axe, miners a pick, sawyers a saw. A workplace without its tool says so instead of hiring a phantom worker.' },
+  { title: 'Soldiers and borders', body: 'Soldiers are recruited from carriers holding real weapons, garrison towers, fight and capture buildings. Pioneers push the border outward.' },
+  { title: 'A computer rival', body: 'The rival surveys, expands, builds an economy and attacks through the same commands you use. Capture every enemy castle and tower to win.' },
+  { title: 'Seeds and saves', body: 'Reuse a map seed for the same landscape. Settlements, seed and mission outcome survive save and reload on your device.' },
+  { title: 'Keyboard first', body: 'Choosing a building moves the cursor to the nearest valid site and Enter places it. Dialogs contain focus and restore it when closed.' },
+]
+
+const status = [
+  '12 epics and more than 100 implementation issues, linked to the framework repositories that own each defect.',
+  'A fidelity audit that lists verified matches and known gaps.',
+  'Production browser acceptance runs on every push.',
+]
+</script>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="An open, in-progress remake of The Settlers III Gold Edition. A deterministic settlement simulation where every settler, tool and good is real.">
+  <title>The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-950">
+  <a href="#main" class="focus:absolute focus:left-2 focus:top-2 focus:px-3 focus:py-2 focus:text-white focus:bg-stone-900 sr-only focus:not-sr-only">Skip to content</a>
+
+  <header class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-4 sm:px-6 max-w-5xl">
+    <a href="/" class="font-bold no-underline text-base text-stone-900 dark:text-stone-100">The Settlers III Remake</a>
+    <nav class="flex flex-wrap gap-x-5 gap-y-1 items-center" aria-label="Primary">
+      <a href="#simulation" class="py-1.5 no-underline text-stone-900 dark:text-stone-100 hover:underline">Simulation</a>
+      <a href="#status" class="py-1.5 no-underline text-stone-900 dark:text-stone-100 hover:underline">Status</a>
+      <a href="#build" class="py-1.5 no-underline text-stone-900 dark:text-stone-100 hover:underline">Build it</a>
+      <a href="{{ repository }}" class="px-4 py-1.5 no-underline text-stone-900 dark:text-stone-100 border border-stone-300 rounded-full dark:border-stone-700">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main" class="mx-auto px-4 sm:px-6 max-w-5xl">
+    <section class="pb-14 pt-16">
+      <p class="m-0 mb-3 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Open source, in progress</p>
+      <h1 class="m-0 mb-5 max-w-[18ch] font-bold leading-tight text-4xl tracking-tight sm:text-6xl">Every settler walks. Every plank is carried.</h1>
+      <p class="m-0 mb-7 max-w-2xl text-stone-600 text-xl dark:text-stone-400">A browser remake of The Settlers III Gold Edition, built on a deterministic simulation in which each settler, tool and good is a real object in the world. If a carrier has not delivered the stone, the wall does not rise.</p>
+      <p class="flex flex-wrap gap-3 m-0">
+        <a href="{{ repository }}#play-locally" class="px-6 py-3 font-semibold no-underline text-stone-950 bg-amber-600 rounded-xl hover:brightness-110">Run it locally</a>
+        <a href="{{ repository }}/tree/main/docs/roadmap" class="px-6 py-3 font-semibold no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 border border-stone-300 rounded-xl dark:border-stone-700">Read the roadmap</a>
+      </p>
+    </section>
+
+    <section id="simulation" aria-labelledby="simulation-title" class="py-12">
+      <h2 id="simulation-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">A settlement that works the way it looks</h2>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        @foreach (features as feature)
+          <FeatureCard title="{{ feature.title }}" body="{{ feature.body }}" />
+        @endforeach
+      </div>
+    </section>
+
+    <section id="status" aria-labelledby="status-title" class="my-6 px-5 py-9 sm:px-10 bg-amber-100 dark:bg-stone-900 rounded-3xl">
+      <h2 id="status-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">Where it stands</h2>
+      <p class="mt-0 max-w-2xl">This is a faithful-remake effort, not a finished game. It does not yet reproduce the original promotions, other civilizations, ships, campaigns or measured timings. Each claim is tracked as a public issue with its evidence, and a feature is only marked done when its acceptance checks pass in a real browser.</p>
+      <ul class="pl-5 max-w-2xl list-disc">
+        @foreach (status as item)
+          <li>{{ item }}</li>
+        @endforeach
+      </ul>
+      <p class="mb-0 max-w-2xl text-sm text-stone-600 dark:text-stone-400">Original game media is not published here. Rights to redistribute it are unverified, so the public site carries no original art, sound or maps. You import your own copy of the free Amazons demo locally.</p>
+    </section>
+
+    <section id="build" aria-labelledby="build-title" class="py-12">
+      <h2 id="build-title" class="m-0 mb-6 font-bold text-3xl tracking-tight">Build it yourself</h2>
+      <pre class="overflow-x-auto px-5 py-4 bg-white dark:bg-stone-900 border border-stone-300 rounded-xl dark:border-stone-700"><code>bun install
+bun run assets:import
+./buddy dev frontend</code></pre>
+      <p>Then open <code>http://localhost:3000</code>. Drag to pan, scroll to zoom, Space pauses, H centers on the castle and Escape cancels.</p>
+      <p>Built with <a href="https://stacksjs.com" class="text-amber-800 dark:text-amber-400">Stacks</a>, stx and Craft.</p>
+    </section>
+  </main>
+
+  <footer class="mt-8 mx-auto pb-14 pt-8 px-4 sm:px-6 max-w-5xl text-sm text-stone-600 dark:text-stone-400 border-stone-300 border-t dark:border-stone-700">
+    <p class="my-1">A fan project. It is not affiliated with, or endorsed by, Ubisoft or Blue Byte. The Settlers is a trademark of its owners.</p>
+    <p class="my-1"><a href="{{ repository }}" class="text-amber-800 dark:text-amber-400">Source on GitHub</a></p>
+  </footer>
+</body>
+</html>

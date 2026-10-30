@@ -67,7 +67,7 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
-      # Only the static site in site/ ships. It must stay free of original
+      # Only the marketing page in resources/views/marketing ships. It must stay free of original
       # media, and the public config must not name a server. The playable game
       # needs a reviewed grant (publication:check --channel web) before it can
       # be added to config/cloud.ts.

@@ -1,0 +1,12 @@
+<script>
+interface FeatureCardProps {
+  title: string
+  body: string
+}
+
+const { title, body } = defineProps<FeatureCardProps>()
+</script>
+<article class="p-5 bg-white dark:bg-stone-900 border border-stone-300 rounded-2xl dark:border-stone-700">
+  <h3 class="m-0 mb-2 font-semibold text-lg">{{ title }}</h3>
+  <p class="m-0 text-stone-600 dark:text-stone-400">{{ body }}</p>
+</article>

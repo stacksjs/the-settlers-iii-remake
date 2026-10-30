@@ -17,7 +17,7 @@ const ATTACH_TO = process.env.CLOUD_ATTACH_TO || undefined
  * CLOUD_ATTACH_TO (not a literal here) when this app is intentionally joining
  * a server owned by another ts-cloud project.
  *
- * Only the static marketing site in `site/` is deployed. The game itself
+ * Only the marketing page in `resources/views/marketing` is deployed. The game itself
  * embeds original media whose redistribution rights are unverified
  * (`bun run publication:check --channel web`), so no game server site is
  * declared until a reviewed grant exists.
@@ -77,11 +77,16 @@ export const tsCloud: TsCloudConfig = {
   },
 
   sites: {
-    // Static, shipped as-is to the box and served by its reverse proxy.
+    // The stx marketing page in resources/views/marketing, built on its own so
+    // the playable game and its original media never enter the output. The
+    // public folder is a dedicated one for the same reason.
     main: {
-      root: 'site',
+      deploy: 'server',
+      root: 'dist/marketing',
       path: '/',
       domain: APP_DOMAIN,
+      build: 'bunx --bun @stacksjs/stx build --pages resources/views/marketing --out dist/marketing --public resources/marketing/public',
+      pathRewriteStyle: 'directory',
     },
   },
 }
