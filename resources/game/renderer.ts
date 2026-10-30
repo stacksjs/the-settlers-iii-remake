@@ -316,14 +316,6 @@ export function createRenderer(canvas: HTMLCanvasElement) {
           ctx!.fillStyle = item.health > 0.5 ? '#9fd27a' : item.health > 0.25 ? '#e8c35a' : '#e4765a'; ctx!.fillRect(p.x - 5 * z, p.y - 39 * z, 10 * z * item.health, 2 * z)
         }
         return
-      case 'arrow': {
-        // No arrow sprite is mapped from the original data yet, so arrows are drawn as short shafts along their flight.
-        const from = item.from!, to = item.to!, length = Math.hypot(to.x - from.x, to.y - from.y) || 1
-        const ux = (to.x - from.x) / length, uy = (to.y - from.y) / length
-        ctx!.strokeStyle = '#3a2a1a'; ctx!.lineWidth = Math.max(1, z * 0.8)
-        ctx!.beginPath(); ctx!.moveTo(p.x - ux * 5 * z, p.y - uy * 5 * z); ctx!.lineTo(p.x + ux * 5 * z, p.y + uy * 5 * z); ctx!.stroke()
-        return
-      }
       default: sprite(item.sprite, item.view, item.frame)
     }
     if ((item.kind === 'building' || item.kind === 'site') && item.owner !== player) { ctx!.fillStyle = playerCSS(playerSlots, item.owner); ctx!.fillRect(p.x - 3 * z, p.y - 46 * z, 6 * z, 4 * z) }

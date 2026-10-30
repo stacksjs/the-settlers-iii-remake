@@ -10,7 +10,8 @@ import { resolve } from 'node:path'
 import { png } from '@stacksjs/ts-png'
 import { originalPlayerSlots } from '../resources/game/engine/original'
 import { isPlayerSprite, playerColorReferences } from '../resources/game/player-colors'
-import { shadowReferencePaths } from '../resources/game/shadow-images'
+import { shadowReferencePaths, shadowSequence } from '../resources/game/shadow-images'
+import { arrowImages, arrowReferencePaths } from '../resources/game/arrow-images'
 import { geologistImages, geologistReferencePaths } from '../resources/game/geologist-images'
 import { interfaceImages, interfaceReferencePaths } from '../resources/game/interface-assets'
 import { surveyReferencePaths, surveySigns } from '../resources/game/survey-signs'
@@ -38,6 +39,7 @@ const addInput = (id: string, kind: ProvenanceInput['kind'], path: string, bytes
 }
 const converterPaths = ['scripts/import-assets.ts', 'scripts/lib/s3-dat.ts', 'scripts/lib/s3-map.ts', 'scripts/lib/content-provenance.ts', 'scripts/lib/verified-download.ts', 'resources/game/interface-assets.ts', 'resources/game/survey-signs.ts', 'resources/game/geologist-images.ts', 'resources/game/player-colors.ts', 'resources/game/shadow-images.ts', 'resources/game/engine/original.ts', 'scripts/reference-terrain.ts', 'resources/game/reference-terrain.ts', 'scripts/reference-landscapes.ts', 'resources/game/engine/reference-landscapes.ts', 'resources/game/engine/landscapes.ts', 'package.json', 'bun.lock']
 converterPaths.push('resources/game/border-posts.ts')
+converterPaths.push('resources/game/arrow-images.ts')
 const converterBytes = await Promise.all(converterPaths.map(path => readFile(resolve(root, path))))
 const converterInputs = converterPaths.map((path, index) => addInput(`converter:${path}`, 'converter', path, converterBytes[index]!))
 const addOutput = (path: string, categories: ContentCategory[], inputs: string[], selection: string[]): void => {
@@ -159,6 +161,8 @@ await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
 // Vines: three growth steps then ripe grapes (reference MapObjectDrawer, objects file sequence 25).
 await sequence('vine', 1, 25, [0, 1, 2, 3], [], true)
 await sequence(borderPostImage.key, borderPostImage.file, borderPostImage.sequence, [borderPostImage.frame], borderReferencePaths.map(path => `reference:${path}`))
+for (const path of arrowReferencePaths) await getReference(path)
+for (const image of arrowImages) await sequence(image.key, image.file, image.sequence, [0, 1, 2], arrowReferencePaths.map(path => `reference:${path}`))
 for (const [i, seq] of [1, 2, 4, 7, 8, 16, 17].entries()) await sequence(`tree-${i}`, 1, seq, [0])
 await sequence('stone-deposit', 1, 31, [0, 4, 8])
 for (const path of surveyReferencePaths) await getReference(path)
@@ -198,20 +202,22 @@ for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
     inputs: [...entry.inputs], selection: [`${datInputs.get(entry.source.file)}:section=0x3112,body-sequence=${entry.source.actualSequence},physical-torso-sequence=${layerSequence},frame=${entry.source.frame},grayscale=original`], sprite: reader.decode(at, 'torso') })
 }
 entries.push(...clothing)
-// Movable shadow mappings are identity for files 10/11/12 before the
-// reference's independent table alignment. They are not torso selectors.
+// Apply Gold shadow mappings before edition mapping and the independent DAT
+// table alignment. DAT 1 removes two missing shadows; movable files use identity.
 const shadows: typeof entries = []
-for (const entry of entries.filter(entry => isPlayerSprite(entry.key))) {
+for (const entry of entries.filter(entry => isPlayerSprite(entry.key) || entry.key.startsWith('arrow:'))) {
   entry.shadow = null
-  if (![10, 11, 12, 13].includes(entry.source.file)) throw new Error(`Original player sprite shadow mapping is not implemented for DAT ${entry.source.file}`)
-  const reader = await dat(entry.source.file), layerSequence = reader.layerSequence(entry.source.actualSequence, 0x5982)
+  const gold = shadowSequence(entry.source.file, entry.source.sequence)
+  if (gold === null) continue
+  const actual = mappings[entry.source.file]?.settlersMapping?.[gold] ?? gold
+  const reader = await dat(entry.source.file), layerSequence = reader.layerSequence(actual, 0x5982)
   if (layerSequence === null) continue
-  const at = reader.frames(entry.source.actualSequence, 0x5982)[entry.source.frame]
+  const at = reader.frames(actual, 0x5982)[entry.source.frame]
   if (at === undefined) continue
   entry.shadow = `shadow:${entry.key}`
   const references = shadowReferencePaths.map(path => `reference:${path}`)
-  shadows.push({ key: entry.shadow, frame: entry.frame, source: { ...entry.source, section: 0x5982, layerSequence }, inputs: [datInputs.get(entry.source.file)!, `reference:${mappingPath}`, ...references],
-    selection: [`${datInputs.get(entry.source.file)}:section=0x5982,body-sequence=${entry.source.actualSequence},physical-shadow-sequence=${layerSequence},frame=${entry.source.frame},alpha=136`], sprite: reader.decode(at, 'shadow') })
+  shadows.push({ key: entry.shadow, frame: entry.frame, source: { ...entry.source, sequence: gold, actualSequence: actual, section: 0x5982, layerSequence }, inputs: [datInputs.get(entry.source.file)!, `reference:${mappingPath}`, ...references],
+    selection: [`${datInputs.get(entry.source.file)}:section=0x5982,body-sequence=${entry.source.actualSequence},gold-shadow-sequence=${gold},demo-shadow-sequence=${actual},physical-shadow-sequence=${layerSequence},frame=${entry.source.frame},alpha=136`], sprite: reader.decode(at, 'shadow') })
 }
 entries.push(...shadows)
 for (let index = 0; index < REFERENCE_TERRAIN.positions.length; index++) {

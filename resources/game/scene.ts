@@ -5,13 +5,14 @@ import { surveyMarker } from './survey-signs'
 import { SHADOW_ROW_OFFSET } from './shadow-images'
 import { borderPostAt, borderPostImage } from './border-posts'
 import { perceivedAge, perceivedAmount, perceivedHeight, perceivedObject } from './engine/perception'
+import { arrowImage, arrowLift } from './arrow-images'
 
 // The scene is everything a player's screen shows, derived only from the
 // session and that player's sight. The canvas painter draws it; tests compare it
 // with the simulation. Each item is a live entity or a retained observation.
 export interface SceneItem {
   kind: 'tree' | 'sapling' | 'stone' | 'crop' | 'pile' | 'building' | 'site' | 'settler' | 'shadow' | 'sign' | 'arrow' | 'border'
-  /** Sprite key and frame in the original atlas. Arrows have no sprite. */
+  /** Sprite key and frame in the original atlas. */
   sprite: string, frame: number
   /** Projection and map-row depth are independent, as in MapObjectDrawer.getZ. */
   view: Point, depth: number
@@ -125,9 +126,10 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     if (!seen(p.from) && !seen(p.to)) continue
     const at = (t: number): Point => toView(t % map.width, Math.floor(t / map.width), map.elevation[t]!)
     const from = at(p.from), to = at(p.to), share = Math.min(1, Math.max(0, (state.tick - p.fired) / Math.max(1, p.arrives - p.fired)))
-    // Arrows rise and fall along their flight; the simulation only knows when they land.
-    const view = { x: from.x + (to.x - from.x) * share, y: from.y + (to.y - from.y) * share - Math.sin(share * Math.PI) * 24 }
-    items.push({ kind: 'arrow', sprite: '', frame: 0, view, depth: Math.floor(p.from / map.width) + (Math.floor(p.to / map.width) - Math.floor(p.from / map.width)) * share, tile: p.from, entity: p.id, owner: p.owner, from, to })
+    const image = arrowImage({ x: p.from % map.width, y: Math.floor(p.from / map.width) }, { x: p.to % map.width, y: Math.floor(p.to / map.width) }, share)
+    const view = { x: from.x + (to.x - from.x) * share, y: from.y + (to.y - from.y) * share - arrowLift(share) }
+    const body: SceneItem = { kind: 'arrow', ...image, view, depth: Math.floor(p.from / map.width) + (Math.floor(p.to / map.width) - Math.floor(p.from / map.width)) * share, tile: p.from, entity: p.id, owner: p.owner, from, to }
+    items.push({ kind: 'shadow', ...image, view, depth: body.depth - SHADOW_ROW_OFFSET, tile: p.from, entity: p.id, owner: p.owner }, body)
   }
   for (const sign of [...viewer.signs.filter(sign => sign.until > state.tick && (!viewer.memory || seen(sign.tile))), ...(viewer.memory?.signs ?? [])]) {
     const x = sign.tile % map.width, y = Math.floor(sign.tile / map.width), view = toView(x, y, 'elevation' in sign ? sign.elevation : map.elevation[sign.tile]!)
