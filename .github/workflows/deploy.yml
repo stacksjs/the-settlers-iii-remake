@@ -76,6 +76,13 @@ jobs:
           bun test tests/unit/cloud-config.test.ts
           bun run publication:check --channel web
 
+      # Decrypts in memory and checks identity, flags and key. Emits no values.
+      - name: Verify encrypted production configuration
+        if: steps.check.outputs.configured == 'true'
+        env:
+          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+        run: bun run env:verify:production
+
       # The deploy talks to the server as root over SSH with BatchMode on, so
       # the key has to be in an agent before it runs — there is no prompt to
       # fall back to.
@@ -124,6 +131,7 @@ jobs:
           PORKBUN_API_KEY: ${{ secrets.PORKBUN_API_KEY }}
           PORKBUN_SECRET_KEY: ${{ secrets.PORKBUN_SECRET_KEY }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # macOS resource forks in a tarball built on a developer machine make
           # the extraction on the server noisy and occasionally fatal.
           COPYFILE_DISABLE: '1'
