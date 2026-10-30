@@ -436,7 +436,11 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       message = `The match has started. You hold the ${me === 1 ? 'west' : 'east'} castle.`
       emit()
     }
-    catch (error) { if (!disposed) { report(error instanceof Error ? error.message : 'Could not join the match.') } }
+    catch (error) {
+      if (disposed) return
+      // A snapshot made under other rules or content cannot be played here; say so rather than show the raw save error.
+      report(error instanceof SaveError ? 'This match runs on game rules this version of the page does not have. Reload the page to get the latest version, then rejoin.' : error instanceof Error ? error.message : 'Could not join the match.')
+    }
   }
   /** After a turn has run in full: it must agree with the server, and a refused order of this player's is said so. */
   const finishTurn = (turn: MatchTurn): void => {

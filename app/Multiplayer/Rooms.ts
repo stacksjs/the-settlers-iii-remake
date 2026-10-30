@@ -51,6 +51,18 @@ export class Rooms {
     return room
   }
 
+  /**
+   * Leaves a lobby. A guest frees the seat for someone else; the host closes the match, since the code is theirs.
+   * A match already running is not left this way: both seats stay held so the player can come back.
+   */
+  leave(code: string, userId: number): void {
+    const room = this.get(code)
+    if (!room.seatOf(userId) || room.status !== 'lobby') return
+    if (room.host.userId === userId) { this.publish(room.code, 'closed', { message: 'The host closed the match.' }); this.drop(room.code); return }
+    room.leave(userId)
+    this.publish(room.code, 'lobby', room.describe())
+  }
+
   start(code: string, userId: number): Room {
     const room = this.get(code)
     room.start(userId)

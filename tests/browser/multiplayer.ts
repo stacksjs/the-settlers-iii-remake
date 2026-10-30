@@ -2,6 +2,7 @@ import { closeSharedBrowsers, launch, navigate } from '@stacksjs/testing/browser
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import { sessionFromSnapshot } from '../../app/Multiplayer/Room'
 import { signInCookie } from './session'
 
 // Two signed-in players, two real browsers, one match over Stacks realtime:
@@ -64,17 +65,26 @@ try {
   await check(guest, 'the guest is seated and waits for the host', `document.querySelector('#waiting-host') && document.querySelector('#room-code').textContent.trim() === ${JSON.stringify(code)}`)
   await check(host, 'the host sees the second seat fill through the live stream', `document.querySelectorAll('#room-code ~ *, ul li').length > 0 && !document.querySelector('#start-match').disabled`, 15000)
 
-  // 3. A third player is turned away: a full room says so.
+  // 3. A guest who leaves frees the seat, and can take it again.
+  await click(guest, 'button', 'Leave')
+  await check(guest, 'a guest who leaves is back at the choice of host or join', `!!document.querySelector('#join-match') && !document.querySelector('#room-code')`)
+  await check(host, 'the host sees the seat free again and cannot start', `document.querySelector('#start-match').disabled && document.body.innerText.includes('Waiting for the second player')`, 15000)
+  await click(guest, '#match-code')
+  await guest.cdp.send('Input.insertText', { text: code.toLowerCase() })
+  await click(guest, '#join-match')
+  await check(host, 'the host sees the guest seated again, whatever case the code was typed in', `!document.querySelector('#start-match').disabled`, 15000)
+
+  // 4. The lobby shows both seats.
   await check(guest, 'the guest sees both seats', `document.body.innerText.includes('West castle') && document.body.innerText.includes('East castle')`)
 
-  // 4. The host starts; both browsers enter the match.
+  // 5. The host starts; both browsers enter the match.
   await click(host, '#start-match')
   for (const player of [host, guest]) await check(player, 'both players enter the match page', `location.pathname === '/play' && location.search.includes('room=${code}')`, 30000)
   for (const player of [host, guest]) await check(player, 'the match boots from the server snapshot', `!!document.querySelector('#match-sync') && !!document.querySelector('.building-choice:not(:disabled)')`, 90000)
   await check(host, 'the host holds the west castle', `document.body.innerText.includes('west castle')`)
   await check(guest, 'the guest holds the east castle', `document.body.innerText.includes('east castle')`)
 
-  // 5. Both players build a woodcutter with the real controls.
+  // 6. Both players build a woodcutter with the real controls.
   for (const player of [host, guest]) {
     await click(player, '.building-choice', 'Woodcutter')
     await key(player, 'Enter', 'Enter', 13, '\r')
@@ -82,7 +92,7 @@ try {
   // Every copy sees four buildings: two castles and two huts, one of each from each side.
   for (const player of [host, guest]) await check(player, 'both castles and both huts exist on this copy of the world', `Number(document.querySelector('#match-sync').dataset.buildings) === 4`, 20000)
 
-  // 6. The simulation keeps running in step: many verified turns and not one resync.
+  // 7. The simulation keeps running in step: many verified turns and not one resync.
   for (const player of [host, guest]) await check(player, 'at least twenty server turns ran and verified on this copy', `Number(document.querySelector('#match-sync').dataset.verified) >= 20`, 30000)
   const [h, g] = [await sync(host), await sync(guest)]
   steps.push({ who: 'both', action: 'assert', label: `host verified ${h.verified} turns, guest ${g.verified}, resyncs ${h.resyncs}/${g.resyncs}`, ok: h.verified >= 20 && g.verified >= 20 && h.resyncs === 0 && g.resyncs === 0 })
@@ -90,7 +100,7 @@ try {
   // The two copies are within a turn or two of each other.
   if (Math.abs(h.turn - g.turn) > 6) throw new Error(`Copies are ${Math.abs(h.turn - g.turn)} turns apart`)
 
-  // 7. A player who loses the connection catches up when it returns, and the world agrees again.
+  // 8. A player who loses the connection catches up when it returns, and the world agrees again.
   await guest.cdp.send('Network.enable')
   await guest.cdp.send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 })
   await click(host, '.building-choice', 'Stonecutter')
@@ -102,12 +112,29 @@ try {
   const before = (await sync(guest)).verified
   await check(guest, 'and verifies fresh turns against the server afterwards', `Number(document.querySelector('#match-sync').dataset.verified) >= ${before + 20}`, 30000)
 
-  // 8. A reload resumes the same match from the server.
+  // 9. A reload resumes the same match from the server.
   await host.cdp.evaluate(`location.reload(); true`)
   await check(host, 'a reloaded host rejoins the running match', `!!document.querySelector('#match-sync') && Number(document.querySelector('#match-sync').dataset.buildings) === 5`, 60000)
 
+  // 10. When one side loses its last castle the match ends: victory for one screen, defeat for the other.
+  const csrf = async (cookie: string) => {
+    const response = await fetch(at('login'), { redirect: 'manual' })
+    const token = response.headers.getSetCookie().find(value => value.startsWith('X-CSRF-Token='))!.split(';')[0]!.slice('X-CSRF-Token='.length)
+    return { cookie: `${cookie}; X-CSRF-Token=${token}`, token: decodeURIComponent(token) }
+  }
+  const asGuest = await signInCookie(base, 'guest')
+  const credentials = await csrf(`${asGuest.name}=${asGuest.value}`)
+  const api = (path: string, init: RequestInit = {}) => fetch(at(`api/multiplayer/rooms/${code}${path}`), { ...init, headers: { 'content-type': 'application/json', cookie: credentials.cookie, 'X-CSRF-Token': credentials.token } })
+  const world = sessionFromSnapshot(((await (await api('/snapshot')).json()) as { envelope: unknown }).envelope)
+  const castle = [...world.state.buildings.values()].find(b => b.owner === 2 && b.type === 'castle')!
+  world.dispose()
+  const order = await api('/orders', { method: 'POST', body: JSON.stringify({ type: 'demolish', fields: { building: castle.id } }) })
+  steps.push({ who: 'guest', action: 'order', label: `demolish own castle answered ${order.status}`, ok: order.ok })
+  await check(host, 'the host sees victory when the opponent has no castle left', `document.querySelector('#match-over')?.dataset.outcome === 'won' && document.querySelector('#match-over').innerText.includes('Victory')`, 30000)
+  await check(guest, 'the guest sees defeat', `document.querySelector('#match-over')?.dataset.outcome === 'lost' && document.querySelector('#match-over').innerText.includes('Defeat')`, 30000)
+
   await writeFile(resolve(shots, 'multiplayer.json'), `${JSON.stringify({ code, host: h, guest: g, steps }, null, 2)}\n`)
-  console.log(`An online match passed in two browsers: ${h.verified}/${g.verified} turns verified against the server, no resync, both settlements visible to both players, a dropped connection recovered, and a reload rejoined.`)
+  console.log(`An online match passed in two browsers: ${h.verified}/${g.verified} turns verified against the server, no resync, both settlements visible to both players, a dropped connection recovered, a reload rejoined, and the match ended in victory and defeat.`)
 }
 catch (error) {
   const states = await Promise.all([host, guest].map(player => player.cdp.evaluate<string>(`JSON.stringify({ path: location.pathname + location.search, sync: document.querySelector('#match-sync')?.dataset, text: document.body.innerText.slice(0, 400) })`).catch(() => 'unavailable')))

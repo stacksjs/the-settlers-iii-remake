@@ -135,3 +135,43 @@ test('a host who opens a second lobby replaces the first, so abandoned codes do 
   expect(() => registry.get(first.code)).toThrow('No match')
   expect(registry.get(second.code)).toBe(second)
 })
+
+test('a client on other game rules refuses the snapshot with a clear reason instead of playing a different game', () => {
+  const room = started()
+  const envelope = structuredClone(room.snapshot().envelope) as { rules: { version: string } }
+  envelope.rules.version = 'other-rules'
+  expect(() => sessionFromSnapshot(envelope)).toThrow('which this build does not provide')
+  room.close()
+})
+
+test('when one side loses its last castle the match ends, the other seat has won, and the room stops taking turns', () => {
+  const room = started()
+  const mirror = sessionFromSnapshot(room.snapshot().envelope)
+  const castle = [...mirror.state.buildings.values()].find(b => b.owner === 2 && b.type === 'castle')!
+  mirror.dispose()
+  room.submit(guest.id, 'demolish', { building: castle.id })
+  let turns = 0
+  while (room.status === 'running' && turns++ < 40) room.step()
+  expect(room.status).toBe('over')
+  expect(room.outcomeOf(1)).toBe('won')
+  expect(room.outcomeOf(2)).toBe('lost')
+  expect(() => room.step()).toThrow('not running')
+  expect(() => room.submit(host.id, 'settings', { settings: {} })).toThrow('not running')
+  expect(room.describe().outcome).toEqual({ 1: 'won', 2: 'lost' })
+  room.close()
+})
+
+test('a guest who leaves the lobby frees the seat, and a host who leaves closes the match for everyone', () => {
+  const seen: string[] = []
+  const registry = new Rooms((_code, event) => { seen.push(event) })
+  registries.push(registry)
+  const room = registry.create(host, 9)
+  registry.join(room.code, guest)
+  registry.leave(room.code, guest.id)
+  expect(room.seats).toHaveLength(1)
+  registry.join(room.code, { id: 3, name: 'Third' })
+  expect(room.seats.map(seat => seat.name)).toEqual(['West', 'Third'])
+  registry.leave(room.code, host.id)
+  expect(seen).toEqual(['lobby', 'lobby', 'lobby', 'closed'])
+  expect(() => registry.get(room.code)).toThrow('No match')
+})

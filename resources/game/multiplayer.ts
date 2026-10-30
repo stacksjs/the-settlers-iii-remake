@@ -52,19 +52,21 @@ async function call<T>(method: string, path: string, body?: unknown): Promise<T>
 export const createMatch = (): Promise<RoomInfo> => call('POST', '')
 export const joinMatch = (code: string): Promise<RoomInfo> => call('POST', `/${encodeURIComponent(code)}/join`)
 export const startMatch = (code: string): Promise<RoomInfo> => call('POST', `/${encodeURIComponent(code)}/start`)
+export const leaveMatch = (code: string): Promise<{ left: boolean }> => call('POST', `/${encodeURIComponent(code)}/leave`)
 export const showMatch = (code: string): Promise<RoomInfo> => call('GET', `/${encodeURIComponent(code)}`)
 
 /**
  * The lobby as a live view: every change to who is seated, and the host's start,
  * arrive on the room's stream. Returns a function that stops listening.
  */
-export function watchLobby(code: string, onRoom: (room: RoomInfo | null) => void, onStart: () => void): () => void {
+export function watchLobby(code: string, onRoom: (room: RoomInfo | null) => void, onStart: () => void, onClosed: () => void = () => {}): () => void {
   const stream = useBroadcastStream({
     request: (path, init) => fetch(path, { ...init, credentials: 'same-origin' }),
     endpoint: `${BASE}/${encodeURIComponent(code)}/stream`,
     onMessage: frame => {
       if (frame.event === 'lobby') onRoom(frame.data as RoomInfo)
       if (frame.event === 'start') onStart()
+      if (frame.event === 'closed') onClosed()
     },
     // A reconnect may have missed the start, so the lobby is read again.
     onConnected: () => { void showMatch(code).then(room => { onRoom(room); if (room.status === 'running') onStart() }).catch(() => onRoom(null)) },

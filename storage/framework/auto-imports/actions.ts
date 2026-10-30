@@ -7,6 +7,7 @@
 export const actions = {
   'Actions/Multiplayer/CreateRoomAction': '../../../app/Actions/Multiplayer/CreateRoomAction.ts',
   'Actions/Multiplayer/JoinRoomAction': '../../../app/Actions/Multiplayer/JoinRoomAction.ts',
+  'Actions/Multiplayer/LeaveRoomAction': '../../../app/Actions/Multiplayer/LeaveRoomAction.ts',
   'Actions/Multiplayer/SendOrderAction': '../../../app/Actions/Multiplayer/SendOrderAction.ts',
   'Actions/Multiplayer/ShowRoomAction': '../../../app/Actions/Multiplayer/ShowRoomAction.ts',
   'Actions/Multiplayer/SnapshotAction': '../../../app/Actions/Multiplayer/SnapshotAction.ts',

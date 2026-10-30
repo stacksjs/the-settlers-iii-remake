@@ -9,7 +9,7 @@ const steps = [
 ]
 </script>
 <script client>
-import { copyText, createMatch, enterMatch, inviteLink, joinMatch, showMatch, startMatch, watchLobby } from '../game/multiplayer'
+import { copyText, createMatch, enterMatch, inviteLink, joinMatch, leaveMatch, startMatch, watchLobby } from '../game/multiplayer'
 import type { RoomInfo } from '../game/multiplayer'
 
 const room = state<RoomInfo | null>(null)
@@ -26,7 +26,7 @@ const full = derived(() => (room()?.seats.length ?? 0) >= 2)
 
 function watch(code: string): void {
   stop?.()
-  stop = watchLobby(code, next => { if (next) room.set({ ...next, you: room()?.you ?? next.you }) }, () => { if (!entered) { entered = true; enterMatch(code) } })
+  stop = watchLobby(code, next => { if (next) room.set({ ...next, you: room()?.you ?? next.you }) }, () => { if (!entered) { entered = true; enterMatch(code) } }, () => { stop?.(); stop = null; room.set(null); problem.set('The host closed the match.') })
 }
 async function attempt(action: () => Promise<RoomInfo>): Promise<void> {
   busy.set(true); problem.set('')
@@ -51,7 +51,11 @@ async function copyInvite(): Promise<void> {
   copied.set(await copyText(inviteLink(code)))
   setTimeout(() => copied.set(false), 2500)
 }
-function leave(): void { stop?.(); stop = null; room.set(null); draft.set('') }
+function leave(): void {
+  const code = room()?.code
+  stop?.(); stop = null; room.set(null); draft.set('')
+  if (code) void leaveMatch(code).catch(() => {})
+}
 onMount(() => {
   const wanted = String(useRoute().query.join ?? '').trim().toUpperCase()
   if (wanted) { draft.set(wanted); join() }
