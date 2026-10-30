@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Settlers III Remake</title>
+  <meta name="description" content="An open, in-progress remake of The Settlers III Gold Edition. A deterministic settlement simulation where every settler, tool and good is real.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23b8862b'/%3E%3Cpath d='M6 25 16 8l10 17z' fill='%23fff8e6'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="bar">
+    <a class="brand" href="/">The Settlers III Remake</a>
+    <nav aria-label="Primary">
+      <a href="#simulation">Simulation</a>
+      <a href="#status">Status</a>
+      <a href="#build">Build it</a>
+      <a class="cta" href="https://github.com/stacksjs/the-settlers-iii-remake">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <p class="eyebrow">Open source, in progress</p>
+      <h1>Every settler walks. Every plank is carried.</h1>
+      <p class="lead">A browser remake of The Settlers III Gold Edition, built on a deterministic simulation in which each settler, tool and good is a real object in the world. No production numbers are faked: if a carrier has not delivered the stone, the wall does not rise.</p>
+      <p class="actions">
+        <a class="button primary" href="https://github.com/stacksjs/the-settlers-iii-remake#play-locally">Run it locally</a>
+        <a class="button" href="https://github.com/stacksjs/the-settlers-iii-remake/tree/main/docs/roadmap">Read the roadmap</a>
+      </p>
+    </section>
+
+    <section id="simulation" aria-labelledby="sim-title">
+      <h2 id="sim-title">A settlement that works the way it looks</h2>
+      <div class="grid">
+        <article>
+          <h3>Real logistics</h3>
+          <p>Carriers fetch each plank and stone from where it lies, diggers level the site, and builders build from delivered material. Construction deliveries come before storage.</p>
+        </article>
+        <article>
+          <h3>Tools and trades</h3>
+          <p>Woodcutters need an axe, miners a pick, sawyers a saw. A workplace without its tool says so instead of hiring a phantom worker.</p>
+        </article>
+        <article>
+          <h3>Soldiers and borders</h3>
+          <p>Soldiers are recruited from carriers holding real weapons, garrison towers, fight and capture buildings. Pioneers push the border outward.</p>
+        </article>
+        <article>
+          <h3>A computer rival</h3>
+          <p>The rival surveys, expands, builds an economy and attacks through the same commands you use. Capture every enemy castle and tower to win.</p>
+        </article>
+        <article>
+          <h3>Seeds and saves</h3>
+          <p>Reuse a map seed for the same landscape. Settlements, seed and mission outcome survive save and reload on your device.</p>
+        </article>
+        <article>
+          <h3>Keyboard first</h3>
+          <p>Choosing a building moves the cursor to the nearest valid site and Enter places it. Dialogs contain focus and restore it when closed.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="status" aria-labelledby="status-title" class="band">
+      <h2 id="status-title">Where it stands</h2>
+      <p>This is a faithful-remake effort, not a finished game. It does not yet reproduce the original promotions, other civilizations, ships, campaigns or measured timings. Each claim is tracked as a public issue with its evidence, and a feature is only marked done when its acceptance checks pass in a real browser.</p>
+      <ul class="checks">
+        <li>12 epics and more than 100 implementation issues, linked to the framework repositories that own each defect.</li>
+        <li>A fidelity audit that lists verified matches and known gaps.</li>
+        <li>Production browser acceptance runs on every push.</li>
+      </ul>
+      <p class="fine">Original game media is not published here. Rights to redistribute it are unverified, so the public site carries no original art, sound or maps. You import your own copy of the free Amazons demo locally.</p>
+    </section>
+
+    <section id="build" aria-labelledby="build-title">
+      <h2 id="build-title">Build it yourself</h2>
+      <pre><code>bun install
+bun run assets:import
+./buddy dev frontend</code></pre>
+      <p>Then open <code>http://localhost:3000</code>. Drag to pan, scroll to zoom, Space pauses, H centers on the castle and Escape cancels.</p>
+      <p>Built with <a href="https://stacksjs.com">Stacks</a>, stx and Craft.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>A fan project. It is not affiliated with, or endorsed by, Ubisoft or Blue Byte. The Settlers is a trademark of its owners.</p>
+    <p><a href="https://github.com/stacksjs/the-settlers-iii-remake">Source on GitHub</a></p>
+  </footer>
+</body>
+</html>

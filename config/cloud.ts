@@ -1,16 +1,26 @@
 import type { CloudConfig } from '@stacksjs/types'
 import type { CloudConfig as TsCloudConfig } from '@stacksjs/ts-cloud'
+import process from 'node:process'
 import { env } from '@stacksjs/env'
 
 const APP_SLUG = 'the-settlers-iii-remake'
 const APP_DOMAIN = env.APP_DOMAIN || undefined
+// The server this project joins is named by whoever deploys it, never by the
+// repository: set CLOUD_ATTACH_TO in the encrypted production environment or a
+// protected CI secret. Provider tokens and hosts stay out of Git the same way.
+const ATTACH_TO = process.env.CLOUD_ATTACH_TO || undefined
 
 /**
  * Safe application cloud defaults.
  *
- * Set APP_DOMAIN and provider credentials before the first deploy. Use
- * `cloud.attachTo` only when this app is intentionally joining a server owned
- * by another ts-cloud project.
+ * Set APP_DOMAIN and provider credentials before the first deploy. Set
+ * CLOUD_ATTACH_TO (not a literal here) when this app is intentionally joining
+ * a server owned by another ts-cloud project.
+ *
+ * Only the static marketing site in `site/` is deployed. The game itself
+ * embeds original media whose redistribution rights are unverified
+ * (`bun run publication:check --channel web`), so no game server site is
+ * declared until a reviewed grant exists.
  */
 export const tsCloud: TsCloudConfig = {
   project: {
@@ -31,6 +41,7 @@ export const tsCloud: TsCloudConfig = {
   // `server:setup` for getting a fresh board to that point.
   cloud: {
     provider: 'hetzner',
+    ...(ATTACH_TO ? { attachTo: ATTACH_TO } : {}),
   },
 
   mode: 'server',
@@ -66,34 +77,11 @@ export const tsCloud: TsCloudConfig = {
   },
 
   sites: {
+    // Static, shipped as-is to the box and served by its reverse proxy.
     main: {
-      root: '.',
+      root: 'site',
       path: '/',
       domain: APP_DOMAIN,
-      start: 'bun node_modules/@stacksjs/buddy/dist/serve-entry.js',
-      port: 3000,
-      preStart: [
-        'bun install --frozen-lockfile',
-        'bun node_modules/@stacksjs/buddy/dist/cli.js migrate',
-      ],
-      env: {
-        APP_ENV: 'production',
-        NODE_ENV: 'production',
-        PORT_API: '3008',
-        API_URL: 'http://127.0.0.1:3008',
-      },
-    },
-
-    api: {
-      root: '.',
-      start: 'bun node_modules/@stacksjs/actions/dist/serve/api.js',
-      port: 3008,
-      preStart: ['bun install --frozen-lockfile'],
-      env: {
-        HOST: '127.0.0.1',
-        APP_ENV: 'production',
-        NODE_ENV: 'production',
-      },
     },
   },
 }

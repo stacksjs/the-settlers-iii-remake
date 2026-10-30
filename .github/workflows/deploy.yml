@@ -67,11 +67,13 @@ jobs:
         if: steps.check.outputs.configured == 'true'
         run: bun install --frozen-lockfile
 
-      - name: Verify bundled content publication rights
+      # Only the static site in site/ ships. It must stay free of original
+      # media, and the public config must not name a server. The playable game
+      # needs a reviewed grant (publication:check --channel web) before it can
+      # be added to config/cloud.ts.
+      - name: Verify the public site carries no original media or server names
         if: steps.check.outputs.configured == 'true'
-        run: |
-          bun run assets:import
-          bun run publication:check --channel web
+        run: bun test tests/unit/cloud-config.test.ts
 
       # The deploy talks to the server as root over SSH with BatchMode on, so
       # the key has to be in an agent before it runs — there is no prompt to
@@ -109,6 +111,11 @@ jobs:
           # fall back to defaults, which is how an app deploys with the wrong
           # APP_KEY and invalidates every session it had.
           DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+          # Which server to join and which name to serve are deployment
+          # settings, kept in the protected environment rather than in Git.
+          CLOUD_ATTACH_TO: ${{ vars.CLOUD_ATTACH_TO }}
+          APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+          HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
           # DNS records are written through the registrar that administers the
           # zone, declared in config/cloud.ts. Keep these in the environment
           # even when they are also in .env.production — a missing one now
