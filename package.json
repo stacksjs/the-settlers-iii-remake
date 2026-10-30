@@ -69,7 +69,8 @@
     "content:inventory": "bun scripts/content.ts --inventory",
     "maps:inventory": "bun scripts/maps.ts --inventory",
     "content:verify": "bun scripts/content.ts --verify",
-    "publication:check": "bun scripts/content.ts --publication"
+    "publication:check": "bun scripts/content.ts --publication",
+    "env:verify:production": "bun scripts/verify-production-env.ts"
   },
   "dependencies": {
     "@stacksjs/actions": "0.75.328",
