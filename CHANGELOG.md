@@ -1,5 +1,30 @@
 # The Settlers Iii Remake Changelog
 
+[Compare changes](https://github.com/stacksjs/the-settlers-iii-remake/compare/v0.0.1...v0.0.2)
+
+## ✨ Features
+
+- leave a lobby, end an online match in victory or defeat, and say clearly when the game rules differ ([a7dbef5](https://github.com/stacksjs/the-settlers-iii-remake/commit/a7dbef5)) _(by Chris <chris@stacksjs.com>)_
+- stop inviting a signed-in player to sign in again ([5e70110](https://github.com/stacksjs/the-settlers-iii-remake/commit/5e70110)) _(by Chris <chris@stacksjs.com>)_
+- online duels over Stacks realtime, a branded sign-in, the live demo as the home hero and icons for every good ([78f1762](https://github.com/stacksjs/the-settlers-iii-remake/commit/78f1762)) _(by Chris <chris@stacksjs.com>)_
+
+## 🐛 Bug Fixes
+
+- close the match badge so the single-player clock is not nested inside it ([169fb6a](https://github.com/stacksjs/the-settlers-iii-remake/commit/169fb6a)) _(by Chris <chris@stacksjs.com>)_
+- lay the online match badge out cleanly and name the player's seat ([6418bc5](https://github.com/stacksjs/the-settlers-iii-remake/commit/6418bc5)) _(by Chris <chris@stacksjs.com>)_
+
+## ✅ Tests
+
+- type the owner-decision channels so the tools typecheck passes ([099341f](https://github.com/stacksjs/the-settlers-iii-remake/commit/099341f)) _(by Chris <chris@stacksjs.com>)_
+
+## 🔧 Chores
+
+- register the multiplayer actions in the auto-import manifest ([52ef85d](https://github.com/stacksjs/the-settlers-iii-remake/commit/52ef85d)) _(by Chris <chris@stacksjs.com>)_
+
+## Contributors
+
+- _Chris <chris@stacksjs.com>_
+
 ## v0.0.1
 
 ## ✨ Features
