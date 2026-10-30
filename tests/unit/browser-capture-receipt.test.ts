@@ -7,7 +7,17 @@ const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR
 
 async function run(capture: boolean, exitCode: number) {
   const root = await mkdtemp(join(tmpdir(), 'settlers-capture-receipt-'))
-  const server = Bun.serve({ hostname: '127.0.0.1', port: 0, fetch: () => new Response('ready') })
+  // A stand-in for the app: it hands out the CSRF cookie and accepts the sign-in the checks perform.
+  const server = Bun.serve({
+    hostname: '127.0.0.1', port: 0,
+    fetch(request) {
+      if (new URL(request.url).pathname !== '/login') return new Response('ready')
+      const headers = new Headers()
+      if (request.method === 'GET') headers.append('set-cookie', 'X-CSRF-Token=test; Path=/')
+      else headers.append('set-cookie', 'auth-token=test; Path=/; HttpOnly')
+      return new Response('ready', { headers })
+    },
+  })
   try {
     const defaults = join(root, 'node_modules/@stacksjs/defaults')
     const driver = join(defaults, 'ai/skills/stacks-browse/scripts')
