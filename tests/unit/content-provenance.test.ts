@@ -156,7 +156,7 @@ test('the public policy command reports inventory and fails closed without a sup
   expect(await inventory.exited).toBe(0)
   expect(output.inventory.length).toBe(25)
   expect(output.publicationVerified).toBe(false)
-  expect(output.sourceRights[0].permittedChannels).toEqual(['web'])
+  expect(output.sourceRights[0].permittedChannels).toEqual(['web', 'github-release'])
   expect(output.sourceRights[0].rightsStatus).toBe('owner-accepted')
   for (const channel of ['', 'unknown']) {
     const child = Bun.spawn([process.execPath, 'scripts/content.ts', '--publication'], { cwd: root, env: { ...process.env, STACKS_PUBLICATION_CHANNEL: channel }, stdout: 'pipe', stderr: 'pipe' })
@@ -167,24 +167,29 @@ test('the public policy command reports inventory and fails closed without a sup
 }, 45_000) // Three real CLI boots include the application's normal Bun preloads.
 
 
-test('the recorded owner decision covers the web channel only and is labelled as an owner decision', async () => {
+test('the recorded owner decisions cover the web and github-release channels only and are labelled as owner decisions', async () => {
   const root = resolve(import.meta.dir, '../..')
-  const grant = contentPolicy.grants.find(grant => grant.id === 'owner-decision-2026-10-30')!
   expect(contentPolicy.originalSources[0]!.rightsStatus).toBe('owner-accepted')
-  expect(grant.channels).toEqual(['web'])
-  expect(grant.issuer).toContain('No rights-holder permission')
-  expect(sha(readFileSync(join(root, grant.evidence.path), 'utf8'))).toBe(grant.evidence.sha256)
-  const document = readFileSync(join(root, grant.evidence.path), 'utf8')
-  expect(document).toContain('not a licence and not permission from the rights holders')
-  for (const channel of ['preview', 'desktop', 'ios', 'android', 'github-release']) {
+  const channels: Record<string, string[]> = { 'owner-decision-2026-10-30': ['web'], 'owner-decision-2026-10-30-github-release': ['github-release'] }
+  for (const [id, expected] of Object.entries(channels)) {
+    const grant = contentPolicy.grants.find(grant => grant.id === id)!
+    expect(grant.channels).toEqual(expected)
+    expect(grant.issuer).toContain('No rights-holder permission')
+    const document = readFileSync(join(root, grant.evidence.path), 'utf8')
+    expect(sha(document)).toBe(grant.evidence.sha256)
+    expect(document).toContain('not a licence and not permission from the rights holders')
+  }
+  for (const channel of ['preview', 'desktop', 'ios', 'android']) {
     const bundle = fixture()
     await expect(requireContentPublication(join(bundle, 'bundle'), root, contentPolicy, channel, new Date('2026-10-31T00:00:00Z'))).rejects.toThrow('Content publication blocked')
   }
 })
 
-test('revoking the owner decision blocks the web channel again', async () => {
-  const root = fixture()
-  const revoked = structuredClone(contentPolicy)
-  revoked.grants[0]!.status = 'revoked'
-  await expect(requireContentPublication(join(root, 'bundle'), root, revoked, 'web', new Date('2026-10-31T00:00:00Z'))).rejects.toThrow('No recorded redistribution evidence')
+test('revoking an owner decision blocks its channel again', async () => {
+  for (const [id, channel] of [['owner-decision-2026-10-30', 'web'], ['owner-decision-2026-10-30-github-release', 'github-release']] as const) {
+    const root = fixture()
+    const revoked = structuredClone(contentPolicy)
+    revoked.grants.find(grant => grant.id === id)!.status = 'revoked'
+    await expect(requireContentPublication(join(root, 'bundle'), root, revoked, channel, new Date('2026-10-31T00:00:00Z'))).rejects.toThrow('No recorded redistribution evidence')
+  }
 })

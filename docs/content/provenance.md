@@ -1,6 +1,6 @@
 # Original content provenance and publication policy
 
-The converted demo media has **unverified redistribution rights**: nothing here shows that Blue Byte or Ubisoft permit it. The project owner has nonetheless decided to publish it on the **`web` channel only**, credited everywhere and removable on request (see [Owner decision](#owner-decision)); every other channel stays blocked. Download availability, successful conversion, and the reference remake's code license do not establish permission to publish the original graphics, sound, maps or campaign material. This is an evidence record, not a legal conclusion about the historical demo's complete terms.
+The converted demo media has **unverified redistribution rights**: nothing here shows that Blue Byte or Ubisoft permit it. The project owner has nonetheless decided to publish it on the **`web` and `github-release` channels only**, credited everywhere and removable on request (see [Owner decision](#owner-decision)); every other channel stays blocked. Download availability, successful conversion, and the reference remake's code license do not establish permission to publish the original graphics, sound, maps or campaign material. This is an evidence record, not a legal conclusion about the historical demo's complete terms.
 
 ## Inspected sources
 
@@ -43,3 +43,5 @@ This work establishes traceable imports and an enforceable absence of permission
 ## Owner decision
 
 On 2026-10-30 the project owner recorded [a decision](permissions/owner-decision-2026-10-30.md) to serve the converted demo media on the public web site, to signed-in players and in marketing screenshots. It is **not a licence and not permission from the rights holders**. The source's `rightsStatus` is `owner-accepted`, a status the publication check treats as sufficient only for the channels listed and reports as "a recorded owner decision, not permission from the rights holders". The decision is conditional on credit wherever the media appears or plays (page footers, screenshot captions, the in-game guide and [the credits page](../../resources/views/credits.stx)) and on prompt removal when a rights holder asks. Revoking it means setting the grant's `status` to `revoked`, which blocks the `web` channel again.
+
+On the same day the owner extended the decision to the **`github-release` channel** ([record](permissions/owner-decision-2026-10-30-github-release.md)), on the same terms: credited, removable on request, and not permission from the rights holders. Revoke it by setting the grant `owner-decision-2026-10-30-github-release` to `revoked`. The `preview`, `desktop`, `ios` and `android` channels stay blocked.

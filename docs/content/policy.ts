@@ -1,13 +1,13 @@
 import type { ContentPolicy } from '../../scripts/lib/content-provenance'
 
 /**
- * Reviewed source evidence is in provenance.md. The only grant is the project owner's
- * decision for the web channel: it is not permission from the rights holders, and every
- * other channel stays blocked.
+ * Reviewed source evidence is in provenance.md. The only grants are the project owner's
+ * decisions for the web and github-release channels: they are not permission from the
+ * rights holders, and every other channel stays blocked.
  */
 export const contentPolicy: ContentPolicy = {
   schemaVersion: 1,
-  originalSources: [{ id: 'amazons-demo', sha256: 'ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65', rightsStatus: 'owner-accepted', permittedChannels: ['web'] }],
+  originalSources: [{ id: 'amazons-demo', sha256: 'ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65', rightsStatus: 'owner-accepted', permittedChannels: ['web', 'github-release'] }],
   inventory: [
     { id: 'terrain', status: 'partial', description: 'Selected original demo landscape frames. All factions and terrain variants remain uninventoried.' },
     { id: 'vegetation-and-deposits', status: 'partial', description: 'Selected trees, sapling and crop growth stages, stone frames and twelve original survey-sign frames. Other decorations and finite-deposit media remain uninventoried.' },
@@ -50,6 +50,21 @@ export const contentPolicy: ContentPolicy = {
       reviewedBy: 'Chris Breuer (project owner)',
       reviewedAt: '2026-10-30T18:00:00Z',
       evidence: { path: 'docs/content/permissions/owner-decision-2026-10-30.md', sha256: '7f5fe2c425ae60d59421f329cd24ebbf31b3b9f034edeee6e3a040f914fbbaa0' },
+    },
+    {
+      id: 'owner-decision-2026-10-30-github-release',
+      source: 'amazons-demo',
+      issuer: 'Project owner decision. No rights-holder permission.',
+      scope: 'Credited, non-commercial inclusion of converted Amazons demo media in GitHub releases, removable on request.',
+      permissions: ['convert', 'redistribute'],
+      categories: ['ambience', 'buildings', 'generated-metadata', 'goods-and-wares', 'interface-and-icons', 'settlers-and-soldiers', 'sound-effects', 'terrain', 'tutorials', 'vegetation-and-deposits'],
+      channels: ['github-release'],
+      status: 'active',
+      validFrom: '2026-10-30T21:40:00Z',
+      validUntil: null,
+      reviewedBy: 'Chris Breuer (project owner)',
+      reviewedAt: '2026-10-30T21:40:00Z',
+      evidence: { path: 'docs/content/permissions/owner-decision-2026-10-30-github-release.md', sha256: '99b8c034d66d3fe4deca6dd0495fe5a5831a54ffa95fadb4b1f34980fa2a5b71' },
     },
   ],
 }
