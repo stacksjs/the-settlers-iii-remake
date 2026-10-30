@@ -170,7 +170,7 @@ test('the public policy command reports inventory and fails closed without a sup
 test('the recorded owner decisions cover the web and github-release channels only and are labelled as owner decisions', async () => {
   const root = resolve(import.meta.dir, '../..')
   expect(contentPolicy.originalSources[0]!.rightsStatus).toBe('owner-accepted')
-  const channels: Record<string, string[]> = { 'owner-decision-2026-10-30': ['web'], 'owner-decision-2026-10-30-github-release': ['github-release'] }
+  const channels: Record<string, ('web' | 'github-release')[]> = { 'owner-decision-2026-10-30': ['web'], 'owner-decision-2026-10-30-github-release': ['github-release'] }
   for (const [id, expected] of Object.entries(channels)) {
     const grant = contentPolicy.grants.find(grant => grant.id === id)!
     expect(grant.channels).toEqual(expected)
