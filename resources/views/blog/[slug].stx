@@ -1,0 +1,72 @@
+<script server>
+import { articleHead } from '@stacksjs/cms/article'
+import { formatPostDate, loadPost, renderPostBody } from '@stacksjs/cms/blog'
+
+const post = loadPost(useRoute().params?.slug)
+if (!post) notFound()
+
+const html = post ? renderPostBody(post.body) : ''
+const when = post ? formatPostDate(post.date) : ''
+const head = articleHead()
+</script>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="{{ post?.description }}">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ post?.title }}">
+  <meta property="og:description" content="{{ post?.description }}">
+  <meta property="og:image" content="/showcase/settlement.webp">
+  <title>{{ post?.title }} | The Settlers III Remake</title>
+  {!! head !!}
+</head>
+<body class="m-0 antialiased text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-950">
+  <SiteShell>
+    <article class="mx-auto pb-8 pt-10 px-4 sm:px-6 max-w-3xl" aria-labelledby="post-title">
+      <a href="/blog" class="inline-flex gap-1 items-center mb-6 no-underline text-amber-800 text-sm dark:text-amber-400"><span class="h-4 w-4 i-hugeicons-arrow-left-01" aria-hidden="true"></span>All posts</a>
+      <h1 id="post-title" class="m-0 mb-4 font-bold leading-tight text-4xl tracking-tight sm:text-5xl">{{ post?.title }}</h1>
+      <p class="flex flex-wrap gap-x-5 gap-y-1 items-center m-0 mb-8 text-sm text-stone-500 dark:text-stone-400">
+        <span class="flex gap-1.5 items-center"><span class="h-4 w-4 i-hugeicons-user-multiple" aria-hidden="true"></span>{{ post?.author }}</span>
+        <span class="flex gap-1.5 items-center"><span class="h-4 w-4 i-hugeicons-calendar-01" aria-hidden="true"></span>{{ when }}</span>
+        <span class="flex gap-1.5 items-center"><span class="h-4 w-4 i-hugeicons-clock-01" aria-hidden="true"></span>{{ post?.minutes }} min read</span>
+      </p>
+      <div class="post-body">{!! html !!}</div>
+    </article>
+
+    <section class="mb-4 mx-auto px-4 sm:px-6 max-w-3xl" aria-label="Play">
+      <div class="flex flex-wrap gap-5 items-center justify-between p-6 text-white bg-gradient-to-br from-amber-700 to-amber-900 rounded-3xl shadow-lg">
+        <div class="max-w-md"><strong class="block mb-1 text-xl">Come and build something</strong><span class="text-amber-100">Try a settlement on the home page, or host a duel and bring a friend.</span></div>
+        <p class="flex flex-wrap gap-3 m-0">
+          <a href="/#try" class="px-4 py-2.5 font-semibold no-underline text-stone-950 bg-amber-300 hover:bg-amber-200 rounded-xl">Play the demo</a>
+          <a href="/multiplayer" class="px-4 py-2.5 font-semibold no-underline text-white hover:bg-white/10 border border-amber-300/60 rounded-xl">Play online</a>
+        </p>
+      </div>
+    </section>
+  </SiteShell>
+</body>
+</html>
+
+<style>
+.post-body { font-size: 1.125rem; line-height: 1.8; color: #44403c; }
+.post-body h2 { margin: 2.2rem 0 0.7rem; font-size: 1.6rem; line-height: 1.3; letter-spacing: -0.01em; color: #1c1917; }
+.post-body p { margin: 0 0 1.15rem; }
+.post-body ul, .post-body ol { margin: 0 0 1.3rem; padding-left: 1.5rem; }
+.post-body ul { list-style: disc; }
+.post-body ol { list-style: decimal; }
+.post-body li::marker { color: #d97706; }
+.post-body li { margin: 0.45rem 0; }
+.post-body strong { color: #1c1917; }
+.post-body a { color: #92400e; text-underline-offset: 3px; }
+.post-body blockquote { margin: 1.5rem 0; padding: 0.2rem 1.2rem; border-left: 4px solid #f59e0b; color: #57534e; }
+.post-body code { padding: 0.1rem 0.35rem; font-size: 0.92em; background: #fef3c7; border-radius: 6px; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .post-body { color: #d6d3d1; }
+  :root:not([data-theme="light"]) .post-body h2, :root:not([data-theme="light"]) .post-body strong { color: #fafaf9; }
+  :root:not([data-theme="light"]) .post-body a { color: #fbbf24; }
+  :root:not([data-theme="light"]) .post-body code { background: #292524; }
+}
+</style>

@@ -1,4 +1,6 @@
 <script server>
+import { formatPostDate, loadPosts } from '@stacksjs/cms/blog'
+
 const repository = 'https://github.com/stacksjs/the-settlers-iii-remake'
 
 const features = [
@@ -18,7 +20,7 @@ const modes = [
 // Every figure here is traceable to the content policy and the rules profile.
 const stats = [
   { value: '32', label: 'Roman building types', icon: 'i-hugeicons-home-01' },
-  { value: '23', label: 'goods, carried one at a time', icon: 'i-hugeicons-package-01' },
+  { value: '26', label: 'goods, carried one at a time', icon: 'i-hugeicons-package-01' },
   { value: '3', label: 'ways to play: tutorial, rival and online duel', icon: 'i-hugeicons-flag-01' },
   { value: '0', label: 'phantom workers: tools are real', icon: 'i-hugeicons-shield-01' },
 ]
@@ -28,6 +30,9 @@ const steps = [
   { n: '2', icon: 'i-hugeicons-user-multiple', title: 'Settlers walk to work', body: 'A worker fetches the right tool first, then walks to the hut. No tool, no worker, and the game tells you so.' },
   { n: '3', icon: 'i-hugeicons-package-01', title: 'Goods flow', body: 'Logs become planks, planks become buildings. Every good is carried by a carrier along a road, one at a time.' },
 ]
+
+// The newest post, for the card above the sign-up band.
+const latest = loadPosts().map(post => ({ ...post, when: formatPostDate(post.date) }))[0] ?? null
 
 const status = [
   { icon: 'i-hugeicons-target-01', title: 'Tracked in the open', body: '12 epics and more than 100 implementation issues, linked to the framework repositories that own each defect.' },
@@ -222,6 +227,19 @@ onDestroy(() => demoGame?.dispose())
       </div>
       <p class="mb-0 mt-6 max-w-3xl text-sm text-stone-600 dark:text-stone-400">Open source, built with <a href="https://stacksjs.com" class="text-amber-800 dark:text-amber-400">Stacks</a>, stx and Craft. <a href="{{ repository }}/tree/main/docs/roadmap" class="text-amber-800 dark:text-amber-400">Read the roadmap</a>.</p>
     </section>
+
+    @if (latest)
+    <section aria-labelledby="latest-title" class="mb-10 mx-auto px-4 sm:px-6 max-w-7xl">
+      <a href="/blog/{{ latest.slug }}" class="flex flex-wrap gap-6 items-center justify-between p-8 no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-3xl dark:border-stone-800 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
+        <div class="max-w-2xl">
+          <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">From the blog</p>
+          <h2 id="latest-title" class="m-0 mb-2 font-bold text-2xl tracking-tight">{{ latest.title }}</h2>
+          <p class="m-0 text-stone-600 dark:text-stone-400">{{ latest.description }}</p>
+        </div>
+        <span class="flex gap-2 items-center font-semibold text-amber-800 dark:text-amber-400">Read the post<span class="h-5 w-5 i-hugeicons-arrow-right-01" aria-hidden="true"></span></span>
+      </a>
+    </section>
+    @endif
 
     <section aria-labelledby="cta-title" class="mb-4 mx-auto px-4 sm:px-6 max-w-7xl">
       <div class="flex flex-wrap gap-6 items-center justify-between p-8 text-white bg-gradient-to-br from-amber-700 to-amber-900 rounded-3xl shadow-xl">

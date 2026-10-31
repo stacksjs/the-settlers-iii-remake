@@ -1,0 +1,56 @@
+<script server>
+import { formatPostDate, loadPosts } from '@stacksjs/cms/blog'
+
+// Published posts only, featured first and then newest, without their bodies.
+const posts = loadPosts().map(post => ({ ...post, when: formatPostDate(post.date) }))
+const lead = posts[0] ?? null
+const rest = posts.slice(1)
+</script>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="News and notes from the fans rebuilding The Settlers III for the browser: what works, what is next and why the game is still fun.">
+  <link rel="alternate" type="application/rss+xml" title="The Settlers III Remake blog" href="/blog/feed.xml">
+  <title>Blog | The Settlers III Remake</title>
+</head>
+<body class="m-0 antialiased text-stone-900 dark:text-stone-100 bg-amber-50 dark:bg-stone-950">
+  <SiteShell>
+    <section class="mx-auto pb-16 pt-10 px-4 sm:px-6 max-w-5xl" aria-labelledby="blog-title">
+      <p class="m-0 mb-2 font-semibold text-amber-800 text-xs tracking-widest uppercase dark:text-amber-400">Blog</p>
+      <h1 id="blog-title" class="m-0 mb-3 font-bold text-4xl tracking-tight sm:text-5xl">Dispatches from the settlement</h1>
+      <p class="m-0 mb-10 max-w-2xl text-lg text-stone-600 dark:text-stone-400">We are fans who grew up with The Settlers III and want it to carry on. Here is what we are building, what works, what does not yet, and why we think the game is still fun.</p>
+
+      @if (lead)
+      <a href="/blog/{{ lead.slug }}" class="block mb-8 p-8 no-underline text-stone-900 dark:text-stone-100 bg-gradient-to-br from-amber-100 to-white dark:from-stone-900 dark:to-stone-950 border border-amber-200/80 rounded-3xl dark:border-stone-800 shadow-sm hover:shadow-lg transition hover:-translate-y-0.5">
+        <span class="inline-flex gap-2 items-center mb-4 px-3 py-1 font-semibold text-amber-900 text-xs dark:text-amber-300 bg-amber-200/70 dark:bg-amber-400/15 rounded-full"><span class="h-3.5 w-3.5 i-hugeicons-crown" aria-hidden="true"></span>Start here</span>
+        <h2 class="m-0 mb-3 font-bold leading-tight text-3xl tracking-tight">{{ lead.title }}</h2>
+        <p class="m-0 mb-5 max-w-2xl text-lg text-stone-600 dark:text-stone-400">{{ lead.description }}</p>
+        <span class="flex flex-wrap gap-x-4 gap-y-1 items-center text-sm text-stone-500 dark:text-stone-400"><span>{{ lead.author }}</span><span>{{ lead.when }}</span><span>{{ lead.minutes }} min read</span><span class="flex gap-1 items-center font-semibold text-amber-800 dark:text-amber-400">Read the post<span class="h-4 w-4 i-hugeicons-arrow-right-01" aria-hidden="true"></span></span></span>
+      </a>
+      @endif
+
+      @if (rest.length)
+      <div class="grid gap-4 sm:grid-cols-2">
+        @foreach (rest as post)
+          <a href="/blog/{{ post.slug }}" class="flex flex-col gap-2 p-6 no-underline text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800 shadow-sm hover:shadow-md transition hover:-translate-y-0.5">
+            <h2 class="m-0 font-semibold text-xl">{{ post.title }}</h2>
+            <p class="m-0 text-stone-600 dark:text-stone-400">{{ post.description }}</p>
+            <span class="mt-auto pt-2 text-sm text-stone-500 dark:text-stone-400">{{ post.when }} - {{ post.minutes }} min read</span>
+          </a>
+        @endforeach
+      </div>
+      @endif
+
+      @if (!lead)
+      <p class="m-0 p-6 text-stone-600 dark:text-stone-400 bg-white dark:bg-stone-900 border border-amber-200/70 rounded-2xl dark:border-stone-800">The first post is on its way.</p>
+      @endif
+
+      <p class="mb-0 mt-10 text-sm text-stone-500 dark:text-stone-400"><a href="/blog/feed.xml" class="flex gap-2 items-center w-fit text-amber-800 dark:text-amber-400"><span class="h-4 w-4 i-hugeicons-rss" aria-hidden="true"></span>Subscribe with RSS</a></p>
+    </section>
+  </SiteShell>
+</body>
+</html>

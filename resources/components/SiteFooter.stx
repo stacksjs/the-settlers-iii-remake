@@ -10,6 +10,7 @@
       <ul class="grid gap-2 m-0 p-0 list-none">
         <li><a href="/#try" class="text-amber-800 dark:text-amber-400">Play the demo</a></li>
         <li><a href="/multiplayer" class="text-amber-800 dark:text-amber-400">Play online</a></li>
+        <li><a href="/blog" class="text-amber-800 dark:text-amber-400">Blog</a></li>
         <li><a href="/register?redirect=/play" class="text-amber-800 dark:text-amber-400">Create an account</a></li>
         <li><a href="/credits" class="text-amber-800 dark:text-amber-400">Credits</a></li>
         <li><a href="/terms" class="text-amber-800 dark:text-amber-400">Terms</a></li>
