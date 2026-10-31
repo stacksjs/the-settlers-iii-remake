@@ -79,6 +79,9 @@ try {
       await key('Tab', 'Tab', 9)
       await key('Enter', 'Enter', 13, 0, '\r')
       await check('new seeded game closes dialog and focuses the map', `(${closed}) && (${focused('.island-map')}) && document.querySelector('.map-seed')?.textContent.includes('2')`, 30000)
+      // The restart saves its checkpoint in the background and says so when it is written. Reloading before that
+      // acknowledgement races the write on a slow machine, which is not what a person who sees "saved" does.
+      await check('the new settlement reports its checkpoint saved', `document.querySelector('[role=status]')?.textContent.includes('Settlement saved on this device.')`, 30000)
       if (!await navigate(cdp, url)) throw new Error('Restored production page did not settle')
       await check('replaced checkpoint restores its new map seed', `!!document.querySelector('.new-island:not(:disabled)') && document.querySelector('.map-seed')?.textContent.includes('2') && (${closed})`, 30000)
       await click('.new-island')
