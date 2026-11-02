@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-01",
+  "issue": 233,
+  "baseCommit": "d49b4eeafdf2c0febb64806f68fc61cec3e69089",
+  "problem": "The campaign asserted asynchronous checkpoint success immediately after a real Save click.",
+  "originalFailure": {
+    "ciRun": 41397879438,
+    "artifactId": 13120930818,
+    "bytes": 5349,
+    "sha256": "a3835203b7a7c80f95017275dbac3c300e07eb0f8178d308ea050a8180828022",
+    "failedStep": 54,
+    "finalPageAlreadyContainsSavedAcknowledgement": true
+  },
+  "controlled": {
+    "method": "Actual production UI, unmodified Craft checkpoint provider, native Web Lock contention, unchanged immediate driver assertion, then same exact assertion with existing 2000ms completion budget",
+    "results": [
+      {
+        "repetition": 0,
+        "immediateError": "Error: Scenario assert failed: Element not found ([role=status])",
+        "ackMs": 816.8138329999983,
+        "actualReloadRestoresTutorialAnd51Settlers": true
+      },
+      {
+        "repetition": 1,
+        "immediateError": "Error: Scenario assert failed: Element not found ([role=status])",
+        "ackMs": 1648.0332499999968,
+        "actualReloadRestoresTutorialAnd51Settlers": true
+      },
+      {
+        "repetition": 2,
+        "immediateError": "Error: Scenario assert failed: Element not found ([role=status])",
+        "ackMs": 1582.5742499999978,
+        "actualReloadRestoresTutorialAnd51Settlers": true
+      }
+    ],
+    "identity": {
+      "path": "/tmp/settlers-save-ack-investigation.json",
+      "bytes": 2630,
+      "sha256": "71534290a67701f6661c63c35cd29008a2aa6fa5d95a61bc1c00d3b03ace816e"
+    }
+  },
+  "correction": "Campaign assertions observe real asynchronous checkpoint acknowledgement with the existing 2000ms completion budget; exact texts, atomic commit semantics and failures are preserved.",
+  "source": {
+    "path": "tests/browser/campaign-steps.ts",
+    "bytes": 8227,
+    "sha256": "0b6b03a123c3144a22c5b1c414575d3431397144186c9fe379a861b49909692f"
+  },
+  "checks": {
+    "campaign": {
+      "steps": 56,
+      "allPassed": true,
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": [],
+      "report": {
+        "path": "/tmp/settlers-ci-save-campaign-fixed.json",
+        "bytes": 8567,
+        "sha256": "65955c4842a8b76b8847a7b524397ce60f3cbd3097e4dd2b2846ab378865c216"
+      },
+      "media": {
+        "path": "/tmp/settlers-ci-save-campaign-fixed-media.json",
+        "bytes": 433,
+        "sha256": "95732b9dad5ac0840e2b3448293a9f47257bf3ab475c6058088497fde2f37dd1"
+      },
+      "visualInspection": "Actual final 1440x960 tutorial screenshot inspected locally.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    },
+    "lint": "zero errors or warnings",
+    "types": "tools passed",
+    "review": "Independent root review passed, production source unchanged"
+  },
+  "pending": [
+    "Exact corrected-source hosted CI and deployment"
+  ]
+}
