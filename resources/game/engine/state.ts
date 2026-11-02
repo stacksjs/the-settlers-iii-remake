@@ -128,7 +128,9 @@ export interface Building {
   workArea: Point
   /** Production state: current cycle progress and the goods it has committed. */
   cycle: number, cycleGoods: Goods, meals: number, shortage: string | null
-  residents: number, nextResident: number
+  residents: number
+  /** Arrival deadline, or remaining ticks while a pause-arrivals residence is suspended. */
+  nextResident: number
 }
 
 export type Job =

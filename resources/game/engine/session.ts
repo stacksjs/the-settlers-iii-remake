@@ -277,6 +277,8 @@ function execute(ctx: Context, command: Command): CommandResult {
     case 'suspend': {
       const b = owned(); if (typeof b === 'string') return result(false, b)
       if (typeof command.suspended !== 'boolean') return result(false, 'Malformed suspend order.')
+      if (rules.residenceSuspension === 'pause-arrivals' && b.phase === 'active' && ruleOf(ctx, b).residents && command.suspended !== b.suspended)
+        b.nextResident = command.suspended ? Math.max(0, b.nextResident - state.tick) : state.tick + b.nextResident
       b.suspended = command.suspended
       // Deliveries not yet picked up are withdrawn; goods already in a carrier's hands arrive.
       if (b.suspended && b.phase !== 'active') for (const job of [...state.jobs.values()]) if (job.kind === 'deliver' && !job.picked && state.stacks.get(job.target)?.building === b.id) cancelJob(ctx, job, 'site suspended')

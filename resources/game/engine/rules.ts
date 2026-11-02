@@ -82,6 +82,8 @@ export interface RulesProfile {
   specialistDispatch?: 'reachable'
   /** Earlier profiles let an in-progress site operation finish after suspension. */
   constructionSuspension?: 'pause-program'
+  /** Earlier profiles continued residence arrivals while the building was suspended. */
+  residenceSuspension?: 'pause-arrivals'
   /** Earlier profiles only checked the resting occupancy index when placing a site. */
   constructionOccupancy?: 'current-and-next'
   /** Earlier profiles chose nearby resting tiles without checking the movement route. */
@@ -247,6 +249,7 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   if (rules.specialistRouting !== undefined && rules.specialistRouting !== 'reachable') problems.push('Unknown specialist routing policy')
   if (rules.specialistDispatch !== undefined && rules.specialistDispatch !== 'reachable') problems.push('Unknown specialist dispatch policy')
   if (rules.constructionSuspension !== undefined && rules.constructionSuspension !== 'pause-program') problems.push('Unknown construction suspension policy')
+  if (rules.residenceSuspension !== undefined && rules.residenceSuspension !== 'pause-arrivals') problems.push('Unknown residence suspension policy')
   if (rules.constructionOccupancy !== undefined && rules.constructionOccupancy !== 'current-and-next') problems.push('Unknown construction occupancy policy')
   if (rules.restingRouting !== undefined && rules.restingRouting !== 'reachable') problems.push('Unknown resting routing policy')
   if (rules.constructionReassignment !== undefined && rules.constructionReassignment !== 'surplus-idle') problems.push('Unknown construction reassignment policy')
@@ -258,7 +261,7 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.specialistDispatch ? ['specialistDispatch'] : []), ...(rules.constructionSuspension ? ['constructionSuspension'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.worldMemory ? ['worldMemory'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.specialistDispatch ? ['specialistDispatch'] : []), ...(rules.constructionSuspension ? ['constructionSuspension'] : []), ...(rules.residenceSuspension ? ['residenceSuspension'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.worldMemory ? ['worldMemory'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -330,7 +333,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.16.0',
+  version: '0.17.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -408,6 +411,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   specialistRouting: 'reachable',
   specialistDispatch: 'reachable',
   constructionSuspension: 'pause-program',
+  residenceSuspension: 'pause-arrivals',
   constructionOccupancy: 'current-and-next',
   restingRouting: 'reachable',
   constructionReassignment: 'surplus-idle',
@@ -436,6 +440,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     'specialistRouting': E(sources.spec, 'Automatic specialist duties choose the nearest reachable candidate through the normal movement router. This is engineering recovery behavior, not a Gold executable observation.'),
     'specialistDispatch': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/230', 'Dispatch selects an idle specialist or a real carrier/tool pair with reachable equipment and duty routes before reserving tools. This is engineering recovery behavior, not a Gold executable observation.'),
     'constructionSuspension': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/35', 'Suspending a construction site pauses its current work program, retaining its progress until resumed. This is engineering pause behavior, not a Gold executable timing observation.'),
+    'residenceSuspension': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/232', 'Paused residences retain their remaining arrival interval and add no settlers until resumed. This makes the authored pause control agree with population state; original Gold residence controls and timing remain unobserved.'),
     'constructionOccupancy': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/193', 'Construction rejects outside settlers on the footprint or already stepping onto it. This prevents physical enclosure during movement; original Gold construction behavior remains unobserved.'),
     'restingRouting': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/201', 'Resting settlers choose a free tile reachable through the ordinary movement edges and civilian territory constraints. This prevents impossible repeated resting orders; original Gold crowd behavior remains unobserved.'),
     'constructionReassignment': E('https://github.com/paulwedeck/settlers-remake/blob/6ad8c4230a4aa4cd21840f8cb59a38344e41c3e0/jsettlers.logic/src/main/java/jsettlers/logic/map/grid/partition/manager/PartitionManager.java', 'Return surplus jobless builders and diggers to carriers through physical tool recovery. The pinned remake reconciles profession caps periodically and drops the real tool; this engineering profile uses its existing staffing cadence and absolute limits. Exact original Gold timing and percentage behavior remain unobserved. See issue204.'),

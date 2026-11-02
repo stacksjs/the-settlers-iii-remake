@@ -250,7 +250,7 @@ export function staff(ctx: Context): void {
   reassignConstruction(ctx)
   for (const b of [...state.buildings.values()].sort((a, c) => a.order - c.order || a.id - c.id)) {
     const rule = ruleOf(ctx, b)
-    if (b.phase === 'active' && rule.residents && b.residents < rule.residents.count && state.tick >= b.nextResident) {
+    if (b.phase === 'active' && rule.residents && (!b.suspended || ctx.rules.residenceSuspension !== 'pause-arrivals') && b.residents < rule.residents.count && state.tick >= b.nextResident) {
       if (spawn(ctx, b.owner, 'carrier', doorOf(ctx, b), 'birth')) { b.residents++; b.nextResident = state.tick + rule.residents.interval }
     }
     if (b.suspended || state.cooldowns.has(`staff:${b.id}`)) continue

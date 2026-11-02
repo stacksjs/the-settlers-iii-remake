@@ -53,6 +53,7 @@ jobs:
           bun tests/browser/control-frame.ts http://127.0.0.1:3450/
           bun tests/browser/resize.ts http://127.0.0.1:3450/
           bun tests/browser/production.ts http://127.0.0.1:3450/
+          bun tests/browser/residences.ts http://127.0.0.1:3450/
           bun tests/browser/selection.ts http://127.0.0.1:3450/
           bun tests/browser/recruitment.ts http://127.0.0.1:3450/
           bun tests/browser/working-area.ts http://127.0.0.1:3450/
@@ -87,6 +88,8 @@ jobs:
             storage/framework/runtime/shots/resize-media.json
             storage/framework/runtime/shots/production.json
             storage/framework/runtime/shots/production-media.json
+            storage/framework/runtime/shots/residences.json
+            storage/framework/runtime/shots/residences-media.json
             storage/framework/runtime/shots/selection.json
             storage/framework/runtime/shots/selection-media.json
             storage/framework/runtime/shots/recruitment.json

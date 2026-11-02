@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-01",
+  "baseCommit": "db1029ed444d0dbc35be01f003aae83eff43f540",
+  "issue": 232,
+  "parent": 37,
+  "scope": "Authored residence pause control stops population arrivals and retains the remaining interval",
+  "rules": {
+    "current": {
+      "version": "0.17.0",
+      "digest": "2939e347b6e11f4f3a7d4ee578f6c07f3e79bdb1ab6d4e891b9144ff2f1a6189"
+    },
+    "frozen": {
+      "version": "0.16.0",
+      "digest": "f5a9150b31d735fb0974863a681e2518723895f70292ed3c598d052a40f34f68"
+    }
+  },
+  "redBeforeGreen": "Public session paused at tick 40 still added settlers: expected births 1, received 3 at tick 440.",
+  "checks": {
+    "unit": {
+      "command": "./buddy test --unit",
+      "passed": 489,
+      "failed": 0,
+      "assertions": 85789
+    },
+    "lint": "zero errors or warnings",
+    "types": "app, tools and STX passed",
+    "build": "production views passed",
+    "focused": "7 residence cases, 49 assertions; construction and workforce regressions also passed",
+    "browser": {
+      "steps": 18,
+      "observations": [
+        {
+          "population": 39,
+          "elapsedGameSeconds": 21,
+          "populationRetained": true
+        },
+        {
+          "before": 39,
+          "after": 40,
+          "arrivalsResumed": true
+        }
+      ],
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": [],
+      "diagnosticSha256": "a5785cf36d02d37ee823cf45dd175951e7802f2f855dfd632988fa73bbc7b992",
+      "screenshot": {
+        "sha256": "5b80ffe1af6a0841a9ee16abfbabce18a57efa19eef87ed22095303dc420617a",
+        "bytes": 635708,
+        "width": 1440,
+        "height": 960
+      },
+      "visualInspection": "Final 1440x960 raster inspected locally; real completed residence, population 40, visible controls and save acknowledgement.",
+      "rasterPublication": "withheld-pending-redistribution-evidence"
+    }
+  },
+  "sources": {
+    "resources/game/engine/session.ts": "7e2c2b38be642e1e748998bc0098f86e6a43724a17027362b76b47aa65f96188",
+    "resources/game/engine/workforce.ts": "434d75eb9f3ebd7154241e5679f21a905736c312179c068601e4e91899b8c4a9",
+    "resources/game/engine/rules.ts": "21b1899c87479326fb44e360c4157d1fdfe89c821e3dbb7b6c1e87f59b72530e",
+    "tests/unit/residence-suspension.test.ts": "9cea5bceef18b1db98d4f94a455614f78eda33fda59e4aa015066dbb5283632e",
+    "tests/browser/residences.ts": "692246a8cf9058f412dd29d96340d73178541d38e8fa8338e2640df63f0f3a30"
+  },
+  "compatibility": [
+    "Published 0.16 profiles retain paused births and unchanged rules digest.",
+    "Paused nextResident stores remaining ticks only for pause-arrivals profiles; the save shape is unchanged.",
+    "Repeated controls do not transform the timer twice; malformed/foreign controls do not transform it.",
+    "Mid-pause restore and replay match; demolition cannot spawn outstanding residents."
+  ],
+  "limitations": [
+    "Original Gold counts, arrival intervals and residence controls remain unobserved under S3-035.",
+    "Hosted CI and deployment have their own run evidence; this receipt records local source acceptance."
+  ]
+}
