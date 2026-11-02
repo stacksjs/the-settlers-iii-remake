@@ -92,7 +92,10 @@ test('an ordinary four-site opening can release real hammers through its staffin
   for (let tick = 0; tick < 200; tick++) { stepAI(s, ai, sequence); s.advance(1) }
   expect(crew(s, 'builder').length).toBe(2)
   expect(s.view(1).goods.hammer).toBe(6)
-  order(s, 'specialists', { profession: 'geologist', count: 1, x: home.x, y: home.y })
+  // Dispatch to open ground occupied by a carrier, rather than the castle's
+  // blocked footprint: current rules reject unreachable specialist targets.
+  const target = s.view(1).settlers.find(p => p.owner === 1 && !p.inside && p.profession === 'carrier')!
+  order(s, 'specialists', { profession: 'geologist', count: 1, x: target.x, y: target.y })
   s.advance(1000)
   expect(crew(s, 'geologist').length).toBe(1)
   expect(s.state.ledger[1]!.created).toEqual(created)

@@ -162,7 +162,7 @@ describe('AI deadlock recovery', () => {
     expect(audit(s.context)).toEqual([])
   }, 60_000)
 
-  test('an idle failed geologist is reassigned to a mountain outside known building footprints without equipping a second specialist', () => {
+  test('an idle geologist recovers from a rejected building target without equipping a second specialist', () => {
     const map = describeMap(rules, { width: 96, height: 96, seed: 5, base: 'grass', features: [
       { kind: 'terrain', id: 'mountain', x: 15, y: 15, radius: 7 },
       { kind: 'resource', id: 'coal', x: 15, y: 15, radius: 7, amount: 2 },
@@ -170,9 +170,11 @@ describe('AI deadlock recovery', () => {
     const s = computer([{ type: 'coal-mine', x: 22, y: 22 }, { type: 'sawmill', x: 31, y: 44 }], [
       { good: 'plank', amount: 10 }, { good: 'stone', amount: 12 }, { good: 'hammer', amount: 2 }, { good: 'saw', amount: 1 },
     ], [...carriers(16), { profession: 'geologist', x: 30, y: 40 }], map)
-    order(s, 'specialists', { profession: 'geologist', x: 22, y: 22, count: 1 })
+    expect(s.enqueue({ tick: s.state.tick, player: 1, seq: 0, type: 'specialists', profession: 'geologist', x: 22, y: 22, count: 1 })).toBeNull()
+    s.advance(1)
+    expect(s.view(1).results.at(-1)).toMatchObject({ ok: false, reason: 'No geologist could be equipped.' })
     const geologist = s.view(1).settlers.find(p => p.profession === 'geologist')!
-    expect(geologist.diagnostic).toBe('unreachable')
+    expect(geologist.diagnostic).toBeNull()
     expect(geologist.busy).toBe(false)
     const ai = economicAI(1, { interval: 20 })
     const survey = ai.decide(observe(s, 1)).find(command => command.type === 'specialists')

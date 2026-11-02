@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-01",
+  "baseCommit": "4a89e4419592ba3c10c76d0e64c51c44261eec12",
+  "issues": [
+    230,
+    231
+  ],
+  "parents": [
+    40,
+    35
+  ],
+  "scope": "Engineering specialist dispatch and construction pause correctness, preserving published save/replay behavior",
+  "rules": {
+    "current": {
+      "version": "0.16.0",
+      "digest": "f5a9150b31d735fb0974863a681e2518723895f70292ed3c598d052a40f34f68"
+    },
+    "frozen": {
+      "version": "0.15.0",
+      "digest": "f9f2adad01804a09836577c6732a1b79e9c79ea7c02327a40b00a076117bd912"
+    }
+  },
+  "redBeforeGreen": [
+    "Isolated nearest shovel prevented a reachable pioneer from equipping after 1000 ticks.",
+    "Suspended building work consumed a material, reducing remaining work from 7 to 6.",
+    "Suspended leveling work changed terrain, reducing remaining leveling from 54 to 53.",
+    "Already-due build and level effects committed on the pause command tick.",
+    "Equipping replaced its program with a site program and started walking during suspension."
+  ],
+  "checks": {
+    "bun": "1.4.4",
+    "unit": {
+      "command": "./buddy test --unit",
+      "passed": 482,
+      "failed": 0,
+      "assertions": 85739
+    },
+    "lint": "./buddy lint: zero errors and warnings",
+    "types": "bun run typecheck: app, tools and all STX checks passed",
+    "frozenInstall": "bun install --frozen-lockfile --ignore-scripts:270 installs across212 packages,no changes",
+    "assets": "11408 sprite frames,52 interface images,6 PCM sounds,95 converted-file provenance checks passed",
+    "content": "25 categories,95 verified converted files",
+    "build": "./buddy build views passed"
+  },
+  "behavior": [
+    "Reachable specialists or carrier/tool/duty routes are selected using ordinary movement restrictions.",
+    "Rejected trips reserve no goods; carrier minimums and single tool reservations remain enforced.",
+    "Paused site programs retain operation and elapsed work, including equip-to-site transitions.",
+    "Resume, demolition, mid-pause saves and replays preserve real jobs and materials.",
+    "Legacy0.15 scenarios and all earlier catalog digests remain unchanged."
+  ],
+  "sources": {
+    "resources/game/engine/territory.ts": "01cdce0ffaafe3db0193775ab635ff30f690cdd76406c01da3d80a1befb13abf",
+    "resources/game/engine/settlers.ts": "035198a251449fa506e8946e6a587600409335b199d91c35fe7515cebff0ccdb",
+    "resources/game/engine/rules.ts": "9ad806a5890f994937e9b26019914b148f6d979177aec3462ee74dee6d9c5567",
+    "tests/unit/specialist-dispatch.test.ts": "615e3c44b7e706c754b1e7e5ec9cbeba4a478f6967aaf0819006dbd6d3e43900",
+    "tests/unit/construction-suspension.test.ts": "2884af6677582fbfb5877c97b6a34adcb0ee0aa9ef8efc0c81e05c0152425a90"
+  },
+  "browser": {
+    "campaign": {
+      "steps": 58,
+      "failedSteps": 0,
+      "diagnosticSha256": "8a3e76e8c21d2fbbd9ff561460bde09bcb23e92b164692e0261a15d71b1ce18b",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": []
+    },
+    "production": {
+      "steps": 19,
+      "failedSteps": 0,
+      "diagnosticSha256": "16606a5e53833816bb47103fff118a62258a9c353579d9d395da24473025b895",
+      "consoleErrors": [],
+      "failedRequests": [],
+      "collectionErrors": []
+    },
+    "home": {
+      "steps": 26,
+      "failedSteps": 0,
+      "diagnosticSha256": "af926e7e84e8ccf3b13fa63609eb96978a0c1cdcc0237385746ada36509e5839"
+    }
+  },
+  "limitations": [
+    "Original Gold numeric rules, cancellation/refund values and rights are not established by these engineering corrections.",
+    "Actual native game callback and presentation qualification remains open; separate Craft0.0.396 failure receipt retained.",
+    "Hosted CI and a production deployment require their own run evidence."
+  ]
+}

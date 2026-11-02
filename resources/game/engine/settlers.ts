@@ -107,6 +107,9 @@ function rest(ctx: Context, s: Settler): void {
 function runProgram(ctx: Context, s: Settler): void {
   // Several instantaneous operations may complete in one tick; bound them so a malformed program cannot spin.
   for (let budget = 0; budget < 8 && s.program; budget++) {
+    // Check each operation because equipping can replace its program with site
+    // work. Paused sites retain elapsed work and already-due effects alike.
+    if (ctx.rules.constructionSuspension === 'pause-program' && s.program.kind === 'site' && ctx.state.buildings.get(s.program.ref)?.suspended) return
     const op = s.program.steps[s.program.pc]
     if (!op) { finish(ctx, s, true, null); return }
     if (op.op === 'go') {

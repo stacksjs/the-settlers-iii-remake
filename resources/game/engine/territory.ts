@@ -31,17 +31,25 @@ export function dispatch(ctx: Context, owner: number, profession: 'geologist' | 
   const rule = ctx.profession.get(profession)!
   let sent = 0
   const goal = pointAt(ctx, target)
-  const ready = population(ctx, owner).filter(s => s.profession === profession && !s.program && !s.inside && !s.workplace).sort((a, b) => distance(a, goal) - distance(b, goal) || a.id - b.id)
+  const routing = ctx.rules.specialistDispatch === 'reachable'
+  const reachesDuty = (from: number): boolean => !routing || route(ctx, from, target).ok
+  const ready = population(ctx, owner).filter(s => s.profession === profession && !s.program && !s.inside && !s.workplace && reachesDuty(tileOf(ctx, s))).sort((a, b) => distance(a, goal) - distance(b, goal) || a.id - b.id)
   for (const s of ready.slice(0, count)) { start(ctx, s, 'duty', target, duty(ctx, s, target)); sent++ }
   if (sent >= count) return sent
   const people = population(ctx, owner), player = ctx.state.players.find(p => p.id === owner)!
   for (let i = sent; i < count; i++) {
     const carriers = people.filter(s => s.profession === 'carrier' && !s.program && !s.inside && !s.cargo && !s.workplace)
     if (carriers.length - 1 < Math.ceil(people.length * player.settings.carrierRatio / 100)) break
-    if (rule.tool === null) { const s = carriers.sort((a, b) => distance(a, goal) - distance(b, goal) || a.id - b.id)[0]!; changeProfession(ctx, s, profession); start(ctx, s, 'duty', target, duty(ctx, s, target)); sent++; continue }
-    const source = [...ctx.state.stacks.values()].filter(s => s.owner === owner && s.good === rule.tool && available(s) > 0 && s.role !== 'input' && s.role !== 'construction').sort((a, b) => distance(pointAt(ctx, a.tile), goal) - distance(pointAt(ctx, b.tile), goal) || a.id - b.id)[0]
+    if (rule.tool === null) {
+      const s = carriers.sort((a, b) => distance(a, goal) - distance(b, goal) || a.id - b.id).find(s => reachesDuty(tileOf(ctx, s)))
+      if (!s) break
+      changeProfession(ctx, s, profession); start(ctx, s, 'duty', target, duty(ctx, s, target)); sent++; continue
+    }
+    const canEquip = (s: Settler, tile: number): boolean => !routing || route(ctx, tileOf(ctx, s), tile, { territory: owner }).ok
+    const source = [...ctx.state.stacks.values()].filter(s => s.owner === owner && s.good === rule.tool && available(s) > 0 && s.role !== 'input' && s.role !== 'construction').sort((a, b) => distance(pointAt(ctx, a.tile), goal) - distance(pointAt(ctx, b.tile), goal) || a.id - b.id)
+      .find(source => reachesDuty(source.tile) && carriers.some(s => canEquip(s, source.tile)))
     if (!source) { emit(ctx, { player: owner, type: 'shortage', text: `No ${rule.tool} available for a ${profession}` }); break }
-    const from = pointAt(ctx, source.tile), s = carriers.sort((a, b) => distance(a, from) - distance(b, from) || a.id - b.id)[0]!
+    const from = pointAt(ctx, source.tile), s = carriers.sort((a, b) => distance(a, from) - distance(b, from) || a.id - b.id).find(s => canEquip(s, source.tile))!
     const job: Job = { id: nextId(ctx), kind: 'equip', owner, tool: rule.tool, source: source.id, settler: s.id, profession, building: 0, picked: false }
     ctx.state.jobs.set(job.id, job); source.reservedOut++
     start(ctx, s, 'specialist', job.id, [{ op: 'go', tile: source.tile }, { op: 'do', effect: 'pickup', args: { job: job.id } }, { op: 'do', effect: 'arm', args: { job: job.id, target } }])
