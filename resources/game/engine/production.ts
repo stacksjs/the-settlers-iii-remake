@@ -103,11 +103,17 @@ function outdoor(ctx: Context, b: Building, s: Settler, w: Workflow): string | n
   }
   if (w.kind === 'plant' || w.kind === 'cultivate') {
     const object = w.kind === 'plant' ? w.object : w.plant
-    const candidates = within(ctx, b, w.radius).filter(t => plantable(ctx, t, b.owner) && (w.kind === 'cultivate' ? sowable(ctx, t, w) : !terrainAt(ctx, t).landscape || terrainIs(terrainAt(ctx, t), 'grass'))).slice(0, 8)
+    const routed = ctx.rules.plantingRouting === 'reachable', candidates: number[] = []
+    for (const tile of within(ctx, b, w.radius)) {
+      if (!plantable(ctx, tile, b.owner) || !(w.kind === 'cultivate' ? sowable(ctx, tile, w) : !terrainAt(ctx, tile).landscape || terrainIs(terrainAt(ctx, tile), 'grass'))) continue
+      if (routed && !reachable(ctx, s, door, tile, false)) continue
+      candidates.push(tile)
+      if (candidates.length === 8) break
+    }
     // Choose among the nearest free tiles so plantings spread out rather than filling one line.
     while (candidates.length) {
       const pick = candidates.splice(randomInt(ctx.state.random, candidates.length), 1)[0]!
-      if (reachable(ctx, s, door, pick, false)) { ctx.state.claims.set(pick, s.id); start(ctx, s, 'work', b.id, [{ op: 'leave' }, { op: 'go', tile: pick }, { op: 'work', ticks: w.work }, { op: 'do', effect: 'plant', args: { tile: pick, object } }, { op: 'go', tile: door }, { op: 'enter', building: b.id }]); return null }
+      if (routed || reachable(ctx, s, door, pick, false)) { ctx.state.claims.set(pick, s.id); start(ctx, s, 'work', b.id, [{ op: 'leave' }, { op: 'go', tile: pick }, { op: 'work', ticks: w.work }, { op: 'do', effect: 'plant', args: { tile: pick, object } }, { op: 'go', tile: door }, { op: 'enter', building: b.id }]); return null }
     }
     return 'no-space'
   }

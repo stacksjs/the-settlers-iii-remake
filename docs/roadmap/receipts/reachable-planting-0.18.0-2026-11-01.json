@@ -1,0 +1,150 @@
+{
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/233",
+  "parent": "https://github.com/stacksjs/the-settlers-iii-remake/issues/43",
+  "base": "afea78e3e0a6d3da88ce906bd1e57ee97fb12eb0",
+  "branch": "codex/reachable-planting",
+  "runtime": {
+    "bun": "1.4.4",
+    "revision": "38afee6c84fcf48c0edb2466aa4b27d287a59c30"
+  },
+  "sourceFiles": [
+    {
+      "path": "resources/game/engine/production.ts",
+      "sha256": "3069d764ef100d6c7aa7e4f96f45277b719a427aec7abed45933c52252d35b29"
+    },
+    {
+      "path": "resources/game/engine/rules.ts",
+      "sha256": "9b69700ac21a8dc6bf55051d9d9c0fe777e1a6db9f81092cc4b1f65febea7230"
+    },
+    {
+      "path": "resources/game/engine/catalog.ts",
+      "sha256": "324f54c4ac2e8ced835653cef46af7bdca51b044c60ee23a39fe26bd0846c8e0"
+    },
+    {
+      "path": "resources/game/engine/profiles/roman-engineering-0.17.0.json",
+      "sha256": "efcd56c30f84e3a3531f0b5d3add6f5cdeff3855bbae652b9993df2c9c706bc6"
+    },
+    {
+      "path": "tests/unit/planting-routing.test.ts",
+      "sha256": "7836085caaa995f27231316306f9ae6e6c934f0fabdae536e0989f04f9289784"
+    },
+    {
+      "path": "tests/unit/engine-core.test.ts",
+      "sha256": "a24685e704937485948759c719faf4eb5d5735df687de0e2a810b4df64bc77e6"
+    }
+  ],
+  "rules": {
+    "frozen": {
+      "id": "roman-engineering",
+      "version": "0.17.0",
+      "digest": "2939e347b6e11f4f3a7d4ee578f6c07f3e79bdb1ab6d4e891b9144ff2f1a6189"
+    },
+    "current": {
+      "id": "roman-engineering",
+      "version": "0.18.0",
+      "digest": "3cf77dcb95b710d1406627898c294fb16d07f1ca37aec6be607188d44b8dd03a"
+    }
+  },
+  "checks": {
+    "red": {
+      "command": "bun test /tmp/settlers-forester-island.test.ts",
+      "result": "0 pass, 1 fail; no-space despite reachable planting ground",
+      "log": {
+        "path": "/tmp/settlers-forester-red-root.log",
+        "sha256": "78fcd6c4edc363fee5db926b18d0f600a1e56a74174064ae3fa09244ae087962"
+      }
+    },
+    "originalPublicGreen": {
+      "command": "bun test /tmp/settlers-forester-island.test.ts",
+      "result": "1 pass, 0 fail, 6 assertions",
+      "log": {
+        "path": "/tmp/settlers-forester-green-root.log",
+        "sha256": "b7352cb3caa196086b5e4eebb2bd07d1346c95cdaa82dcba8620494976690f19"
+      }
+    },
+    "focused": {
+      "command": "bun test tests/unit/planting-routing.test.ts",
+      "result": "8 pass, 0 fail, 8894 assertions",
+      "log": {
+        "path": "/tmp/settlers-233-focused.log",
+        "sha256": "175a3f0bd6cef6eeffbb4d72a9dc3fce8a2bd3b374ddda34e9d32a82d2b732e5"
+      }
+    },
+    "lint": {
+      "command": "./buddy lint",
+      "result": "581 files, 0 errors, 0 warnings",
+      "log": {
+        "path": "/tmp/settlers-233-lint.log",
+        "sha256": "ea6932b48ee02b73bc373229bf21020c9d431f843a0b5de679ba9da8688f18a1"
+      }
+    },
+    "types": {
+      "command": "bun run typecheck",
+      "result": "app, tools and STX passed; 14 script blocks, 449 template expressions, 16 files, 0 errors, 0 warnings",
+      "log": {
+        "path": "/tmp/settlers-233-types.log",
+        "sha256": "05804f1521d6293406d9690fb370e6a20b465aa31ff86a52e64e0d511e4424c8"
+      }
+    },
+    "unit": {
+      "command": "./buddy test --unit",
+      "result": "497 pass, 0 fail, 94684 assertions across 77 files, 232.97 seconds",
+      "log": {
+        "path": "/tmp/settlers-233-unit.log",
+        "sha256": "d457f896e3a1e8120016cc21ed61a7c17c761da45a0f94bc109b69674d4602b1"
+      }
+    },
+    "build": "Production views passed: 7 pages, no failures",
+    "assets": "11408 sprite frames, 6 PCM WAV, 52 interface images, 95 converted files verified",
+    "browser": {
+      "working-area": {
+        "steps": 57,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "collectionErrors": [],
+        "diagnosticSha256": "4be58b2fe45eb2631fe34186c44172f54140198c98c535d26638f48dfa98ea30",
+        "screenshot": {
+          "sha256": "e7c293ad03038b131c39399238c06d4bf84812f6e9a9f9b00602b181b4bc0a6e",
+          "bytes": 645503,
+          "width": 1440,
+          "height": 960
+        },
+        "visualInspection": "Actual 1440x960 raster inspected locally.",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      },
+      "production": {
+        "steps": 19,
+        "consoleErrors": [],
+        "failedRequests": [],
+        "collectionErrors": [],
+        "diagnosticSha256": "11f0720977be4753e43d9aeb5111a77e5df285f4877d92e606349cfbadf1c8b2",
+        "screenshot": {
+          "sha256": "2717ec3bc307d9856a110b2b34935dd27a0e254fd45157da023f9051f4454c93",
+          "bytes": 612945,
+          "width": 1440,
+          "height": 960
+        },
+        "visualInspection": "Actual 1440x960 raster inspected locally.",
+        "rasterPublication": "withheld-pending-redistribution-evidence"
+      }
+    }
+  },
+  "behavior": [
+    "Select at most eight nearest eligible reachable planting targets before the seeded choice",
+    "Shared plant/cultivate selection respects ordinary civilian routes, ownership, empty ground and claims",
+    "Original unobstructed seed decisions retain identical per-tick state checksums against the frozen profile",
+    "Frozen 0.17 saves and replays retain their former disconnected planting behavior"
+  ],
+  "pending": [
+    "Exact-source hosted CI and deployment evidence, followed by issue closure"
+  ],
+  "limitations": [
+    "Engineering routing correction only; no original Gold planting timing, radii, distribution or balance qualification",
+    "No native gameplay qualification",
+    "Application-owned behavior; no source package dependencies changed and no package release performed"
+  ],
+  "finishedAt": "2026-11-02T06:02:43.522Z",
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-01",
+  "review": "Independent Standards and Spec review passed; no findings."
+}
