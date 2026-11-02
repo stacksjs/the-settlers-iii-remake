@@ -137,6 +137,15 @@ jobs:
           # the extraction on the server noisy and occasionally fatal.
           COPYFILE_DISABLE: '1'
 
+      - name: Verify the public site after deployment
+        id: smoke
+        if: steps.check.outputs.configured == 'true'
+        env:
+          APP_DOMAIN: ${{ vars.APP_DOMAIN }}
+        run: |
+          test -n "$APP_DOMAIN" || { echo '::error::Set APP_DOMAIN in this deployment environment before running the public smoke check.'; exit 1; }
+          bun scripts/deploy-smoke.ts "https://${APP_DOMAIN}"
+
       # A deploy that failed half way must not leave the half it finished live.
       #
       # Each site's own cutover already refuses a release that crashes, never
@@ -144,12 +153,12 @@ jobs:
       # back. What it cannot undo is the site deployed before the one that
       # failed, left on a different commit from the rest. This rolls back every
       # site whose live release is this commit, and only those, then fails the
-      # job. Add a smoke check after Deploy (give it `id: smoke`) and include it
-      # in the condition to roll back releases that are up but wrong as well.
+      # job. The public smoke check also rolls back a release that is up but
+      # serves the wrong pages, loses its images or bypasses the sign-in gate.
       #
       # Needs @stacksjs/ts-cloud 0.16.34 or newer for --all and --only-if-live.
       - name: Roll back what this deploy made live
-        if: failure() && steps.deploy.outcome == 'failure'
+        if: failure() && (steps.deploy.outcome == 'failure' || steps.smoke.outcome == 'failure')
         run: |
           ./buddy deploy:rollback --env ${{ github.event.inputs.environment || 'production' }} --all --only-if-live "$GITHUB_SHA" || echo "::error::The rollback did not complete; check which release each site serves."
           echo "::error::Deploy of ${GITHUB_SHA::7} failed; sites it had switched were rolled back."

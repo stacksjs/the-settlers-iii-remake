@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-01",
+  "issue": 229,
+  "scope": "Public application smoke and rollback wiring; historical static plan superseded by already-deployed app",
+  "checks": {
+    "unit": "5 real HTTP tests, 11 assertions, passing",
+    "types": "bun run typecheck passed",
+    "lint": "buddy lint: zero errors and warnings",
+    "live": {
+      "checks": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/login",
+          "status": 200
+        },
+        {
+          "path": "/register",
+          "status": 200
+        },
+        {
+          "path": "/credits",
+          "status": 200
+        },
+        {
+          "path": "/terms",
+          "status": 200
+        },
+        {
+          "path": "/privacy",
+          "status": 200
+        },
+        {
+          "path": "/blog",
+          "status": 200
+        },
+        {
+          "path": "/showcase/tutorial.webp",
+          "status": 200
+        },
+        {
+          "path": "/showcase/rival.webp",
+          "status": 200
+        },
+        {
+          "path": "/play",
+          "status": 302
+        }
+      ]
+    },
+    "responsiveViewports": [
+      320,
+      428,
+      768,
+      1280,
+      1920
+    ],
+    "responsiveResult": "Real Chrome: zero horizontal overflow at each width; 320px raster privately inspected"
+  },
+  "images": {
+    "decoder": "@stacksjs/ts-webp 0.1.7, already installed transitively, now pinned as a direct dev dependency",
+    "fixture": "1x1 red VP8L, independently decoded by macOS ImageIO",
+    "liveDecodedDimensions": {
+      "tutorial": [
+        1440,
+        900
+      ],
+      "rival": [
+        1440,
+        900
+      ]
+    }
+  },
+  "deployment": "No new production deployment was executed for this receipt. Workflow now runs smoke after deploy and invokes existing conditional rollback on smoke failure.",
+  "limitations": [
+    "Direct live checks do not establish execution of the new deploy workflow.",
+    "Original-media captures stay outside public artifacts.",
+    "Source host privacy guidance corrected in Stacks; full host configuration migration remains pending."
+  ]
+}

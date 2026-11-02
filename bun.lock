@@ -17,6 +17,7 @@
         "@stacksjs/components": "0.2.774",
         "@stacksjs/testing": "0.75.390",
         "@stacksjs/ts-png": "0.1.10",
+        "@stacksjs/ts-webp": "0.1.7",
         "better-dx": "^0.2.38",
         "bun-plugin-stx": "0.2.774",
       },
