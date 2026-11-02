@@ -98,6 +98,8 @@ export interface RulesProfile {
   staffingRouting?: 'reachable'
   /** Earlier profiles limited planting candidates before checking their routes. */
   plantingRouting?: 'reachable'
+  /** Earlier profiles left immature objects in the starting map without growth timers. */
+  initialGrowth?: 'scheduled'
   /** Absent in profiles published before soldiers existed. */
   military?: {
     searchRadius: number, recruitWork: number, defendRadius: number, towerRange: number, ranks: number
@@ -259,12 +261,13 @@ export function validateRules(rules: RulesProfile): RulesProfile {
   if (rules.groundPileMerging !== undefined && rules.groundPileMerging !== 'same-owner') problems.push('Unknown ground pile merging policy')
   if (rules.staffingRouting !== undefined && rules.staffingRouting !== 'reachable') problems.push('Unknown staffing routing policy')
   if (rules.plantingRouting !== undefined && rules.plantingRouting !== 'reachable') problems.push('Unknown planting routing policy')
+  if (rules.initialGrowth !== undefined && rules.initialGrowth !== 'scheduled') problems.push('Unknown initial growth policy')
   if (rules.worldMemory !== undefined && rules.worldMemory !== 'last-seen') problems.push('Unknown observed-world policy')
   if (!Number.isInteger(rules.population.carrierRatio) || rules.population.carrierRatio < 0 || rules.population.carrierRatio > 100) problems.push('Carrier ratio must be a percentage')
   const [refund, of] = rules.demolition.refundFraction
   if (!Number.isInteger(refund) || !Number.isInteger(of) || of < 1 || refund < 0 || refund > of) problems.push('Demolition refund must be a fraction between 0 and 1')
   const paths = Object.keys(rules.evidence)
-  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.specialistDispatch ? ['specialistDispatch'] : []), ...(rules.constructionSuspension ? ['constructionSuspension'] : []), ...(rules.residenceSuspension ? ['residenceSuspension'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.plantingRouting ? ['plantingRouting'] : []), ...(rules.worldMemory ? ['worldMemory'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
+  for (const key of [...required, ...(rules.specialistRouting ? ['specialistRouting'] : []), ...(rules.specialistDispatch ? ['specialistDispatch'] : []), ...(rules.constructionSuspension ? ['constructionSuspension'] : []), ...(rules.residenceSuspension ? ['residenceSuspension'] : []), ...(rules.constructionOccupancy ? ['constructionOccupancy'] : []), ...(rules.restingRouting ? ['restingRouting'] : []), ...(rules.constructionReassignment ? ['constructionReassignment'] : []), ...(rules.constructionWaiting ? ['constructionWaiting'] : []), ...(rules.groundPileMerging ? ['groundPileMerging'] : []), ...(rules.staffingRouting ? ['staffingRouting'] : []), ...(rules.plantingRouting ? ['plantingRouting'] : []), ...(rules.initialGrowth ? ['initialGrowth'] : []), ...(rules.worldMemory ? ['worldMemory'] : []), ...(rules.military ? ['military'] : []), ...rules.buildings.map(b => `buildings.${b.id}`)]) if (!paths.some(path => path === key || path.startsWith(`${key}.`))) problems.push(`${key} has no evidence record`)
   for (const [path, item] of Object.entries(rules.evidence)) {
     if (!['M', 'O', 'E', 'U'].includes(item.class) || !item.source || !item.note) problems.push(`evidence ${path} is incomplete`)
     if (item.class === 'U' && !item.owner) problems.push(`unverified ${path} must name its owning issue`)
@@ -336,7 +339,7 @@ const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 
  */
 export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   id: 'roman-engineering',
-  version: '0.18.0',
+  version: '0.19.0',
   fidelity: 'engineering',
   description: 'Roman M1 economy mechanics with manual-candidate costs and explicit placeholders for unobserved values.',
   tickRate: 20,
@@ -422,6 +425,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
   groundPileMerging: 'same-owner',
   staffingRouting: 'reachable',
   plantingRouting: 'reachable',
+  initialGrowth: 'scheduled',
   military: {
     searchRadius: 30, recruitWork: 40, defendRadius: 2, towerRange: 25, ranks: 3,
     wealth: { good: 'gold', start: [2900, 2200, 1400, 1025, 800, 600, 500, 470, 420, 380, 330, 310, 290, 270, 260, 240, 230, 220, 210, 200, 190, 180, 170, 160, 150, 140, 130, 120, 110], doublings: 9, ownGround: 1000 },
@@ -441,6 +445,7 @@ export const ROMAN_ENGINEERING: RulesProfile = validateRules({
     ],
   },
   evidence: {
+    'initialGrowth': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/234', 'New sessions schedule surviving immature map objects once, after scenario sites are cleared, using their declared growth intervals. Restored sessions retain their saved timer queues. Original Gold initial-object classifications and growth timing remain unobserved.'),
     'plantingRouting': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/233', 'Planting keeps the nearest eight eligible reachable tiles before seeded selection, using the ordinary worker router. This prevents disconnected nearby ground from hiding usable working-area tiles. Original Gold planting distribution and timing remain unobserved.'),
     'specialistRouting': E(sources.spec, 'Automatic specialist duties choose the nearest reachable candidate through the normal movement router. This is engineering recovery behavior, not a Gold executable observation.'),
     'specialistDispatch': E('https://github.com/stacksjs/the-settlers-iii-remake/issues/230', 'Dispatch selects an idle specialist or a real carrier/tool pair with reachable equipment and duty routes before reserving tools. This is engineering recovery behavior, not a Gold executable observation.'),

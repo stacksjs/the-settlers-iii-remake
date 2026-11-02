@@ -450,6 +450,15 @@ export function createSession(setup: SessionSetup): Session {
   const state = createState(setup)
   const session = openSession(setup.rules, state, setup.content ?? { id: 'generated', digest: 'unverified' })
   Object.assign(session.skipped, populate(session.context, setup))
+  if (setup.rules.initialGrowth === 'scheduled') {
+    // Scenario buildings clear their sites first. Only the surviving objects
+    // start timers; opening a saved session never rebuilds its growth queue.
+    for (let tile = 0; tile < state.map.object.length; tile++) {
+      const growth = setup.rules.objects[state.map.object[tile]! - 1]?.grows
+      if (growth) state.growth.push([growth.ticks, tile])
+    }
+    state.growth.sort((a, b) => a[0] - b[0] || a[1] - b[1])
+  }
   return session
 }
 

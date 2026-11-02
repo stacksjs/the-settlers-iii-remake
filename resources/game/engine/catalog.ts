@@ -15,6 +15,7 @@ import roman0140 from './profiles/roman-engineering-0.14.0.json'
 import roman0150 from './profiles/roman-engineering-0.15.0.json'
 import roman0160 from './profiles/roman-engineering-0.16.0.json'
 import roman0170 from './profiles/roman-engineering-0.17.0.json'
+import roman0180 from './profiles/roman-engineering-0.18.0.json'
 import { ROMAN_ENGINEERING, rulesIdentity, validateRules } from './rules'
 
 /**
@@ -22,7 +23,7 @@ import { ROMAN_ENGINEERING, rulesIdentity, validateRules } from './rules'
  * they were made with; earlier published profiles stay here, frozen as data, so
  * those games keep their rules instead of being refused or reinterpreted.
  */
-export const PUBLISHED_RULES: readonly RulesProfile[] = [validateRules(roman020 as unknown as RulesProfile), validateRules(roman030 as unknown as RulesProfile), validateRules(roman040 as unknown as RulesProfile), validateRules(roman050 as unknown as RulesProfile), validateRules(roman060 as unknown as RulesProfile), validateRules(roman070 as unknown as RulesProfile), validateRules(roman080 as unknown as RulesProfile), validateRules(roman090 as unknown as RulesProfile), validateRules(roman0100 as unknown as RulesProfile), validateRules(roman0110 as unknown as RulesProfile), validateRules(roman0120 as unknown as RulesProfile), validateRules(roman0130 as unknown as RulesProfile), validateRules(roman0140 as unknown as RulesProfile), validateRules(roman0150 as unknown as RulesProfile), validateRules(roman0160 as unknown as RulesProfile), validateRules(roman0170 as unknown as RulesProfile), ROMAN_ENGINEERING]
+export const PUBLISHED_RULES: readonly RulesProfile[] = [validateRules(roman020 as unknown as RulesProfile), validateRules(roman030 as unknown as RulesProfile), validateRules(roman040 as unknown as RulesProfile), validateRules(roman050 as unknown as RulesProfile), validateRules(roman060 as unknown as RulesProfile), validateRules(roman070 as unknown as RulesProfile), validateRules(roman080 as unknown as RulesProfile), validateRules(roman090 as unknown as RulesProfile), validateRules(roman0100 as unknown as RulesProfile), validateRules(roman0110 as unknown as RulesProfile), validateRules(roman0120 as unknown as RulesProfile), validateRules(roman0130 as unknown as RulesProfile), validateRules(roman0140 as unknown as RulesProfile), validateRules(roman0150 as unknown as RulesProfile), validateRules(roman0160 as unknown as RulesProfile), validateRules(roman0170 as unknown as RulesProfile), validateRules(roman0180 as unknown as RulesProfile), ROMAN_ENGINEERING]
 
 export function rulesFor(identity: { id: string, version: string, digest: string }): RulesProfile | null {
   return PUBLISHED_RULES.find(rules => { const own = rulesIdentity(rules); return own.id === identity.id && own.version === identity.version && own.digest === identity.digest }) ?? null

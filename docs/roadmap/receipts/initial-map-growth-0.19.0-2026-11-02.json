@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "recordedDate": "2026-11-02",
+  "baseCommit": "fb77ab1c8e811717b9b3a170406916b78cc5dfc5",
+  "issue": 234,
+  "parent": 43,
+  "scope": "Initialize surviving immature map objects once after scenario placement, using their declared engineering growth intervals.",
+  "rules": {
+    "current": {
+      "id": "roman-engineering",
+      "version": "0.19.0",
+      "digest": "ae07f5b49e7969a9a6dcb73c8610929c2ecaa09df48e7a745fbf3140ad0345f3",
+      "initialGrowth": "scheduled"
+    },
+    "frozen": {
+      "id": "roman-engineering",
+      "version": "0.18.0",
+      "digest": "3cf77dcb95b710d1406627898c294fb16d07f1ca37aec6be607188d44b8dd03a"
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "README.md",
+      "sha256": "5b5ec2becdf1f2fa3200509d7f566f41bdb7e5a95b9be37bd737010d16c75c61"
+    },
+    {
+      "path": "resources/game/engine/catalog.ts",
+      "sha256": "e2a820eedc9597b39d757462cf9395a46275db7cafe8f1eb7f9260f8a2d9dff2"
+    },
+    {
+      "path": "resources/game/engine/rules.ts",
+      "sha256": "bb6ae10fb4adc1ad5eaa52656532179cb3cb432f3ec8e11f40287f4c721da7b8"
+    },
+    {
+      "path": "resources/game/engine/session.ts",
+      "sha256": "e91a0b6b8c12819b07d257635a194191a95ac5587d896ac81fe98b1dac80a55c"
+    },
+    {
+      "path": "resources/game/engine/profiles/roman-engineering-0.18.0.json",
+      "sha256": "8cbaa95bce42e55450a820caaff2e0cac2612dea12baa9d29444316bf75aa67c"
+    },
+    {
+      "path": "tests/unit/engine-core.test.ts",
+      "sha256": "60bd73029c26959067d53d7bdb50f7aa797ae2c4cf763b06a207f2fbee09b583"
+    },
+    {
+      "path": "tests/unit/initial-map-growth.test.ts",
+      "sha256": "89f859016b0849bb5b247d98878286683f07fe65740af60d7e0c546f5b764b9c"
+    }
+  ],
+  "checks": {
+    "red": {
+      "command": "bun test tests/unit/initial-map-growth.test.ts",
+      "result": "Before production changes: 0 pass, 3 fail, 12 assertions; initial sapling, field and vine remain immature beyond their declared deadlines.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/maintained-red.log",
+        "sha256": "ae1d834a3afac9d1935de445a33b78f50db5e5b662f0cb0d7b7a2b10d98f20b2"
+      }
+    },
+    "focused": {
+      "command": "bun test tests/unit/initial-map-growth.test.ts",
+      "result": "9 pass, 0 fail, 58 assertions",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/focused-green.log",
+        "sha256": "0142c2be72ce334f075023ed1a777a59a4a96d5b251341126c691c72efb712c1"
+      }
+    },
+    "unit": {
+      "command": "./buddy test --unit",
+      "result": "506 pass, 0 fail, 94743 assertions across 78 files, 223.17 seconds",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/unit.log",
+        "sha256": "25c6fa72728de9a39ba16090f4e9f6746f066230ddff02a2ae889a1598812e7e"
+      }
+    },
+    "lint": {
+      "command": "./buddy lint",
+      "result": "0 errors, 0 warnings",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/lint.log",
+        "sha256": "94f9eeac9987884ede473f4e122f244bb3e1754baaecd52f241cc4f53480a0a6"
+      }
+    },
+    "types": {
+      "command": "bun run typecheck",
+      "result": "App, tools and STX passed; 14 script blocks, 449 template expressions, 16 files, 0 errors or warnings.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/typecheck.log",
+        "sha256": "05804f1521d6293406d9690fb370e6a20b465aa31ff86a52e64e0d511e4424c8"
+      }
+    },
+    "build": {
+      "command": "bun run build",
+      "result": "Production views passed: 7 pages, 31.79 seconds",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/build-cached-source.log",
+        "sha256": "c855c2389192b11fabb027e328e1b9ed8db3794dd91d27eb3ea91edde8cdb176"
+      }
+    },
+    "assets": {
+      "command": "bun run assets:verify",
+      "result": "11408 sprite frames, 52 interface images, 6 PCM WAV files and 95 converted files verified.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/assets-verify.log",
+        "sha256": "554917b4710e393bdbebc92c70a575f524dda394cd9298dc63c628be33e8e236"
+      }
+    },
+    "install": {
+      "command": "bun install --frozen-lockfile",
+      "result": "Passed; manifests and lockfiles unchanged.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/frozen-install.log",
+        "sha256": "64b549ca06e4108806bbaabe03c8777775cd829ca4dc5d10d14f1a0cdbf71679"
+      }
+    }
+  },
+  "behavior": [
+    "Sapling, grain field and vine maturation follows their existing declared intervals in new sessions.",
+    "Mature objects and objects cleared by scenario building placement receive no growth timers.",
+    "Growth deadlines and equal-time tile order remain deterministic; mid-growth restore retains the original deadline and replay matches.",
+    "Frozen 0.18.0 preserves its previous initial-map, save and replay behavior."
+  ],
+  "review": {
+    "result": "Independent Standards and Spec reviews passed with no findings.",
+    "implementationPatchSha256": "bdc63c7828125593175f21cec3fc373d1b9ea393488fb7283a51fce385bcd7e0"
+  },
+  "retainedEnvironmentalFailures": [
+    {
+      "result": "Initial build exhausted the unchanged demo transfer policy after archive.org returned HTTP 500.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/build.log",
+        "sha256": "ef3d3c7b47961af6897f1265d5dd6b939915b73b7ada3f28257b54f361c9d92a"
+      }
+    },
+    {
+      "result": "Initial full suite started before media preparation: 501 passed, 5 failed on missing source DATs or atlas metadata. After canonical import, all 506 passed without source, assertion or timeout changes.",
+      "log": {
+        "path": "/tmp/settlers-frontier-yy_6gbuj/unit-before-assets.log",
+        "sha256": "a3e8bd7a37b8006d8f909c40686aaadf26e60e27beaa9180e698df18a996ed38"
+      }
+    }
+  ],
+  "originalSourceCache": {
+    "sha256": "ac87c418101aadeb2338f04ecc79a56bf816ce1c6c7adc40bb7dc435ca4e7f65",
+    "bytes": 50875904,
+    "handling": "The existing original archive was verified, then copied to the normal ignored worktree cache. The unchanged importer reverified, extracted and converted its contents."
+  },
+  "pending": [
+    "Exact-source hosted CI and protected production deployment acceptance."
+  ],
+  "limitations": [
+    "Original Gold durations, balance and initial map object classifications remain unobserved. Parent #43 remains open.",
+    "This receipt establishes local simulation and build checks, without browser presentation or native gameplay qualification.",
+    "No package dependency changed and no framework or SDK release was performed."
+  ]
+}

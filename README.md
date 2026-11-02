@@ -76,6 +76,11 @@ its evidence: manual candidates, reference-remake geometry, engineering decision
 or unverified placeholders owned by a roadmap issue. The current profile cannot
 qualify a release.
 
+New engineering sessions also start growth timers for immature objects already
+in their map. Scenario building sites are cleared first; saved growth deadlines
+are retained on restore. This lifecycle behavior does not verify original Gold
+growth timing or object classifications.
+
 Building footprints, doors, pile positions and builder spots come from the pinned
 reference remake's Roman definitions (`bun scripts/reference-geometry.ts`). The
 Canvas 2D renderer draws the lattice terrain with elevation shading, fog of war,
