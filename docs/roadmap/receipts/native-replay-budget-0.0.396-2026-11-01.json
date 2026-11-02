@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-02T04:06:22.080Z",
+  "sourceCommit": "4a89e4419592ba3c10c76d0e64c51c44261eec12",
+  "sourceMethod": "git archive HEAD resources/game tests/fixtures, unchanged committed source snapshot",
+  "bunVersion": "1.4.4",
+  "craft": {
+    "version": "0.0.396",
+    "sourceCommit": "c662237b37abc782c373f06809862f8988e3d950",
+    "tagObject": "4e8627eab847eca41f47d372039154d94d0a7b9d",
+    "release": "https://github.com/craft-native/craft/releases/tag/v0.0.396",
+    "assetId": 692659381,
+    "archiveSha256": "702f0408456312f2d842625c263aa2d1f8d2b16e7be15713f0f81589c8577d0a",
+    "executableSha256": "ccac81ad478d8569756868eb1b823069316d888078583dde63d95ccdbdc874ce",
+    "manifestSha256": "dad9b99e9549ee314199b6a13b7d00d26248d104fd7e9f859c6d5817fc109c59",
+    "archiveSize": 11371533,
+    "archiveCrcs": "all four original ZIP members pass unzip -t",
+    "githubDigestMatched": true,
+    "releaseManifestMatched": true,
+    "cliVersionVerified": true,
+    "ci": "https://github.com/craft-native/craft/actions/runs/41071220268",
+    "mobile": "https://github.com/craft-native/craft/actions/runs/41071220677",
+    "publication": "https://github.com/craft-native/craft/actions/runs/41071220592"
+  },
+  "probes": [
+    {
+      "fixture": "tests/fixtures/native-engine-probe.ts",
+      "fixtureSha256": "21b6f109bc0f1848cebc76f1d9bdeb6f54a0e6f43b85b5aed157bbde5a13dc45",
+      "bundleSha256": "db63f7f4ba77b788fb51f3db00b43a9d691fa95f647f436f67ddcf6164800fdc",
+      "bunResult": {
+        "tick": 5,
+        "checksum": "f596edd9",
+        "restoredChecksum": "f596edd9",
+        "replay": {
+          "ok": true,
+          "ticks": 5,
+          "checksum": "f596edd9"
+        },
+        "crewRecovery": {
+          "tick": 5,
+          "checksum": "325b9466",
+          "restoredChecksum": "325b9466",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "325b9466"
+          },
+          "builderCount": 2,
+          "diggerCount": 2,
+          "hammers": 6,
+          "shovels": 4,
+          "createdUnchanged": true
+        },
+        "pileOwnership": {
+          "tick": 5,
+          "checksum": "9c5d8403",
+          "restoredChecksum": "9c5d8403",
+          "replay": {
+            "ok": true,
+            "ticks": 5,
+            "checksum": "9c5d8403"
+          },
+          "ownHammers": 1,
+          "foreignHammers": 3
+        }
+      },
+      "native": {
+        "exit": 1,
+        "stdout": "",
+        "stderr": "uncaught error: RangeError: evaluation step budget exceeded\n"
+      },
+      "matchedBunReference": false
+    },
+    {
+      "fixture": "tests/fixtures/native-staffing-probe.ts",
+      "fixtureSha256": "9a08bb1faf36e285c687c13e4642fc0f83e33eaa736e45204bd889421e5528fa",
+      "bundleSha256": "64cc33f05ac3f83f8e54b93f90b0714b085250d1bba32340277930129342ccf9",
+      "bunResult": {
+        "tick": 5000,
+        "checksum": "b413c661",
+        "restoredChecksum": "b413c661",
+        "replay": {
+          "ok": true,
+          "ticks": 5000,
+          "checksum": "b413c661"
+        },
+        "storagePhase": "active",
+        "createdUnchanged": true
+      },
+      "native": {
+        "exit": 1,
+        "stdout": "",
+        "stderr": "uncaught error: RangeError: evaluation step budget exceeded\n"
+      },
+      "matchedBunReference": false
+    }
+  ],
+  "budget": {
+    "pinnedEngineCommit": "afb30ec2620d701269477c987d9344b792d0ce96",
+    "defaultInterpreterSteps": 500000000,
+    "guardChanged": false,
+    "tickWindowShortened": false,
+    "timeoutMilliseconds": 30000,
+    "hostEntryAnalysis": "Context.interpreter constructs a fresh steps=0 interpreter. Context.callProtected constructs a new interpreter per host callback. The one-shot CLI executes the whole program in one evaluation. No counter-reset defect is demonstrated."
+  },
+  "persistentHostingInspection": {
+    "sourceCommit": "90038f87a19d14a20af915591b62059fb590f460",
+    "hostingFilesUnchangedSince396": true,
+    "existingFixture": "packages/zig/src/js_host_test.zig",
+    "fixtureScope": "100 retained callback calls increment a typed byte with GC and handle, exception, ownership, disposal tests. No settlement construction/save/replay fixture or native display-linked game callback integration was found.",
+    "sourceReferences": [
+      "packages/zig/src/js_host_zigjs.zig",
+      "packages/zig/src/js_host_test.zig",
+      "docs/guides/persistent-javascript.md"
+    ],
+    "nextGate": "Use the maintained PersistentRuntime API through the actual native game host with retained tick callbacks, full unchanged construction command scenario and 5000 ticks plus save/restore/replay. This is application/native integration acceptance under S3-023/S3-092, not evidence that one-shot eval budgets should be raised."
+  },
+  "limitations": [
+    "This receipt records failures, not native qualification.",
+    "No native presentation, full game parity, or Gold fidelity is established.",
+    "The source snapshot predates concurrent application work; that later work needs separate evidence.",
+    "No source package was modified or released because no owning defect was demonstrated.",
+    "The initial current-worktree checks used installed SDK resolver with CRAFT_BIN original verified executable override and also failed; the frozen snapshot results here are independently reproducible."
+  ]
+}
