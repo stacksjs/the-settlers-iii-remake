@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { catalog, snapshot } from '../../resources/game/controller'
-import { checksum, EGYPTIAN_ENGINEERING, restore, save } from '../../resources/game/engine'
+import { checksum, PUBLISHED_RULES, restore, save } from '../../resources/game/engine'
 import { BUILDING_MENU, chooseMenu, initialMenu, MENUS, openMenu } from '../../resources/game/menus'
 import { anchors, order, place, present, rules, session, until } from '../fixtures/engine'
 
@@ -50,7 +50,7 @@ describe('control center', () => {
   })
 
   test('every building the player can place appears in exactly one Buildings sub-menu', () => {
-    for (const profile of [rules, EGYPTIAN_ENGINEERING]) {
+    for (const profile of PUBLISHED_RULES) {
       for (const b of profile.buildings.filter(b => b.id !== 'castle')) {
         const menu = BUILDING_MENU[b.id]
         if (menu === undefined) throw new Error(`Placeable ${profile.id} building ${b.id} has no control center menu`)

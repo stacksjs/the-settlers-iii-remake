@@ -1,5 +1,5 @@
 // Public interface of the deterministic game session shared by browser, native and server hosts.
-export { EGYPTIAN_ENGINEERING, PUBLISHED_RULES, rulesFor } from './catalog'
+export { AMAZON_ENGINEERING, ASIAN_ENGINEERING, EGYPTIAN_ENGINEERING, PUBLISHED_RULES, rulesFor } from './catalog'
 export { checksum, MIGRATIONS, restore, save, SAVE_FORMAT, SAVE_VERSION, SaveError } from './save'
 export type { SaveEnvelope } from './save'
 export { diagnose, economicAI, observe, stepAI } from './ai'

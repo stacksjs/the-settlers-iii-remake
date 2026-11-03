@@ -60,8 +60,8 @@ export function chooseMenu(state: MenuState, sub: string): MenuState {
  */
 export const BUILDING_MENU: Record<string, Sub<'buildings'>> = {
   'woodcutter': 'resources', 'forester': 'resources', 'stonecutter': 'resources', 'sawmill': 'resources', 'coal-mine': 'resources', 'iron-mine': 'resources', 'gold-mine': 'resources',
-  'iron-smelter': 'resources', 'gold-smelter': 'resources', 'toolsmith': 'resources', 'charcoal-maker': 'resources', 'gem-mine': 'resources',
-  'fisher': 'food', 'grain-farm': 'food', 'waterworks': 'food', 'mill': 'food', 'bakery': 'food', 'pig-farm': 'food', 'slaughterhouse': 'food', 'winery': 'food', 'brewery': 'food',
+  'iron-smelter': 'resources', 'gold-smelter': 'resources', 'toolsmith': 'resources', 'charcoal-maker': 'resources', 'gem-mine': 'resources', 'sulfur-mine': 'resources', 'alchemist': 'resources',
+  'fisher': 'food', 'grain-farm': 'food', 'waterworks': 'food', 'mill': 'food', 'bakery': 'food', 'pig-farm': 'food', 'slaughterhouse': 'food', 'winery': 'food', 'brewery': 'food', 'rice-farm': 'food', 'distillery': 'food', 'beekeeper': 'food', 'mead-brewery': 'food',
   'barracks': 'military', 'weaponsmith': 'military', 'castle': 'military', 'small-tower': 'military', 'large-tower': 'military', 'lookout-tower': 'military', 'healers-hut': 'military',
   'storage': 'misc', 'small-residence': 'misc', 'medium-residence': 'misc', 'large-residence': 'misc', 'small-temple': 'misc', 'large-temple': 'misc',
 }
