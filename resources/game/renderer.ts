@@ -6,7 +6,7 @@ import type { Atlas, AtlasFrame } from './assets'
 import type { Point, Session } from './engine'
 import type { SceneItem } from './scene'
 import { pick, toView } from './engine'
-import { scene } from './scene'
+import { buildingArt, scene } from './scene'
 import { perceivedHeight, perceivedTerrain } from './engine/perception'
 
 // Presentation reads the session and the viewing player's sight. It never
@@ -280,7 +280,7 @@ export function createRenderer(canvas: HTMLCanvasElement) {
       if (options.tool && session.context.building.has(options.tool)) {
         const rule = session.context.building.get(options.tool)!, allowed = options.placement === null
         outline(session, rule.footprint.map(([dx, dy]) => ({ x: c.x + dx, y: c.y + dy })), allowed ? '#f2df9c' : '#e4765a', 0.3)
-        if (allowed) sprite(`building:${options.tool}`, toView(c.x, c.y, perceivedHeight(map, viewer, c.y * map.width + c.x)), 0, 0.55)
+        if (allowed) sprite(buildingArt('building', session.state.players[options.player - 1]?.civilization ?? 'roman', options.tool), toView(c.x, c.y, perceivedHeight(map, viewer, c.y * map.width + c.x)), 0, 0.55)
       }
       else outline(session, [c], '#f2df9c', 0.25)
     }

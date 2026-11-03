@@ -30,7 +30,9 @@ for (const mask of manifest.sprites.filter(frame => frame.key.startsWith('shadow
 if (manifest.version !== 3 || manifest.width !== atlas.width || manifest.height !== atlas.height || !manifest.source.sha256) throw new Error('Invalid atlas provenance or dimensions')
 const buildings = ['castle', 'storage', 'small-residence', 'medium-residence', 'small-tower', 'barracks', 'woodcutter', 'forester', 'stonecutter', 'sawmill', 'fisher', 'grain-farm', 'waterworks', 'mill', 'bakery', 'pig-farm', 'slaughterhouse', 'coal-mine', 'iron-mine', 'gold-mine', 'iron-smelter', 'gold-smelter', 'toolsmith', 'weaponsmith']
 const goods = ['log', 'plank', 'stone', 'grain', 'flour', 'water', 'bread', 'pig', 'meat', 'fish', 'coal', 'ironore', 'goldore', 'iron', 'gold', 'hammer', 'shovel', 'axe', 'saw', 'pickaxe', 'scythe', 'fishingrod', 'sword']
-const required = [...buildings.map(id => `building:${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', ...REFERENCE_TERRAIN.positions.map((_, image) => materialKey(image))]
+// The Amazons' buildings use the demo's own Amazon artwork; they are everything the Roman set has, less the Roman winery and charcoal maker, plus their own.
+const amazonBuildings = [...buildings.filter(id => !['winery', 'charcoal-maker'].includes(id)), 'beekeeper', 'mead-brewery', 'alchemist', 'gem-mine', 'sulfur-mine']
+const required = [...buildings.map(id => `building:${id}`), ...amazonBuildings.map(id => `building:amazon/${id}`), ...goods.flatMap(id => [`stack:${id}`, `carry:${id}`]), 'worker', 'sapling', 'crop', 'stone-deposit', ...REFERENCE_TERRAIN.positions.map((_, image) => materialKey(image))]
 for (const expected of surveySigns) {
   const images = frames.get(expected.key) ?? []
   if (images.length !== expected.frames || images.some((frame, index) => frame.frame !== index || frame.width !== 14 || frame.height !== 24 || frame.offsetX !== -8 || frame.offsetY !== -21)) throw new Error(`Invalid original survey frames ${expected.key}`)
@@ -42,6 +44,7 @@ for (const expected of geologistImages) {
 for (const key of required) if (!frames.get(key)?.some(frame => frame.width && frame.height)) throw new Error(`Missing asset ${key}`)
 for (const key of ['worker', ...goods.map(id => `carry:${id}`)]) if (frames.get(key)?.length !== 72) throw new Error(`Carrier ${key} needs twelve frames in each of six directions`)
 for (const id of buildings) if (!(await Bun.file(resolve(directory, `${id}.png`)).exists())) throw new Error(`Missing building composite ${id}`)
+for (const id of amazonBuildings) if (!(await Bun.file(resolve(directory, `amazon/${id}.png`)).exists())) throw new Error(`Missing Amazon building composite ${id}`)
 if (!atlas.data.some((value, index) => index % 4 === 3 && value === 0) || !atlas.data.some((value, index) => index % 4 === 3 && value === 255)) throw new Error('Atlas must preserve transparent and opaque pixels')
 const sounds = await Bun.file(resolve(directory, 'sounds.json')).json() as Record<string, string>
 for (const [key, file] of Object.entries(sounds)) {

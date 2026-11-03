@@ -1,3 +1,4 @@
+import type { RulesProfile } from './engine/rules'
 import type { PlayerSlotCatalog } from './player-colors'
 import { DEFAULT_PLAYER_SLOTS, playerSlotsForContent } from './player-colors'
 import type { BrowserPlatform } from 'craft-native/browser'
@@ -9,7 +10,7 @@ import { loadOriginalAssets } from './assets'
 import type { Checkpoints } from './checkpoint'
 import { createCheckpoints } from './checkpoint'
 import type { EconomicAI } from './engine'
-import { createSession, DEFAULT_START, economicAI, findBuildingSite, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, surveyedMineForecast, worldFromOriginal } from './engine'
+import { AMAZON_ENGINEERING, createSession, DEFAULT_START, economicAI, findBuildingSite, findStart, generateMap, observe, PUBLISHED_RULES, restore, ROMAN_ENGINEERING, save, SaveError, statistics, stepAI, surveyedMineForecast, worldFromOriginal } from './engine'
 import { loadOriginalMap } from './maps'
 import { createRenderer } from './renderer'
 import { scene } from './scene'
@@ -30,11 +31,16 @@ const PROTOTYPE_KEY = 'campaign'
 const MAP_SIZE = 96
 
 /** Building catalog for the control center, grouped as the manual groups the build menu. */
-export const catalog = rules.buildings.filter(b => b.id !== 'castle').map(b => ({
-  id: b.id, name: b.name, category: b.category, menu: BUILDING_MENU[b.id] ?? 'misc',
-  cost: Object.entries(b.cost).map(([good, n]) => `${n} ${good}`).join(' + '),
-  description: describe(b.id),
-}))
+export function catalogFor(profile: RulesProfile, civilization = 'roman') {
+  return profile.buildings.filter(b => b.id !== 'castle').map(b => ({
+    id: b.id, name: b.name, category: b.category, menu: BUILDING_MENU[b.id] ?? 'misc',
+    cost: Object.entries(b.cost).map(([good, n]) => `${n} ${good}`).join(' + '),
+    description: describe(b.id, profile),
+    // The construction catalog shows the same original artwork as the map; a civilization's own is filed under its name.
+    image: `/assets/settlers-original/${civilization === 'roman' ? '' : `${civilization}/`}${b.id}.png`,
+  }))
+}
+export const catalog = catalogFor(rules)
 export const categories = [...new Set(catalog.map(item => item.category))]
 export const goods = rules.goods
 
@@ -72,19 +78,27 @@ export function status(phase: string, shortage: string | null, suspended: boolea
   return needsWorker ? 'Working' : 'Ready'
 }
 
+const catalogs = new Map<string, ReturnType<typeof catalogFor>>()
+/** The building catalog for the rules a session plays, built once per profile and civilization. */
+function catalogOf(session: Session) {
+  const civilization = session.state.players[0]?.civilization ?? 'roman', key = `${session.rules.id}@${session.rules.version}/${civilization}`
+  if (!catalogs.has(key)) catalogs.set(key, catalogFor(session.rules, civilization))
+  return catalogs.get(key)!
+}
+
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0, me = PLAYER) {
-  if (!session) return { match: null as MatchStatus | null, rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null, me), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { match: null as MatchStatus | null, catalog, rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null, me), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(me), player = session.state.players[me - 1]!
-  const seconds = Math.floor(session.state.tick / rules.tickRate)
+  const seconds = Math.floor(session.state.tick / session.rules.tickRate)
   return {
-    ready, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP,
+    ready, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP, catalog: catalogOf(session),
     rulesVersion: session.rules.version, canReassignCrew: session.rules.constructionReassignment === 'surplus-idle',
     time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`,
     population: view.population,
     professions: Object.entries(view.professions).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ name, count })),
-    goods: rules.goods.map(key => ({ key, amount: view.goods[key] ?? 0, stored: player.settings.stored.includes(key) })),
+    goods: session.rules.goods.map(key => ({ key, amount: view.goods[key] ?? 0, stored: player.settings.stored.includes(key) })),
     buildings: view.buildings.filter(b => b.owner === me).length,
     carrierRatio: player.settings.carrierRatio,
     selected: selected ? inspect(session, selected, me) : null,
@@ -147,7 +161,7 @@ function economy(session: Session, me: number): { carried: number, needs: string
   return {
     production: session.rules.goods.map(key => ({ key, stock: stats.total[key] ?? 0, produced: stats.produced[key] ?? 0, consumed: stats.consumed[key] ?? 0 })),
     carried: Object.values(stats.stock.transit).reduce((a, n) => a + n, 0),
-    needs: stats.shortages.map(s => `${rules.buildings.find(b => b.id === s.type)!.name}: ${status('active', s.shortage, false, true, true).toLowerCase()}`).slice(0, 6),
+    needs: stats.shortages.map(s => `${session.rules.buildings.find(b => b.id === s.type)!.name}: ${status('active', s.shortage, false, true, true).toLowerCase()}`).slice(0, 6),
   }
 }
 
@@ -186,7 +200,7 @@ function inspect(session: Session, id: number, me: number) {
 export type Snapshot = ReturnType<typeof snapshot>
 export type Game = ReturnType<typeof mountGame>
 
-export type Landscape = 'generated' | 'tutorial' | 'rival'
+export type Landscape = 'generated' | 'tutorial' | 'rival' | 'amazons'
 export const mapName = (session: Session | null): string => session?.identity.content.id.startsWith('demo:') ? 'Original tutorial map' : session?.identity.content.id.startsWith('rival') ? 'Computer rival' : session?.identity.content.id.startsWith('duel') ? 'Online duel' : 'Generated landscape'
 
 function generatedSeed(session: Session): number | null {
@@ -217,13 +231,18 @@ export async function tutorialSession(seed: number): Promise<Session> {
   return createSession({ rules, map: world.map, seed, players: world.players.slice(0, 1), piles: world.piles, content: { id: `demo:${asset.source.path}`, digest: asset.source.sha256 } })
 }
 
+/** The civilizations a generated settlement can be played as, and the engineering profile each plays under. */
+export const FACTIONS = { roman: { name: 'Rome', profile: ROMAN_ENGINEERING }, amazon: { name: 'The Amazons', profile: AMAZON_ENGINEERING } } as const
+export type Faction = keyof typeof FACTIONS
+
 /** A fresh development settlement on a generated landscape. Not an original map or campaign. */
-export function newSession(seed: number): Session {
-  const map = generateMap(rules, MAP_SIZE, MAP_SIZE, seed)
+export function newSession(seed: number, faction: Faction = 'roman'): Session {
+  const { name, profile } = FACTIONS[faction]
+  const map = generateMap(profile, MAP_SIZE, MAP_SIZE, seed)
   // The castle's reference footprint and protected ring reach nine tiles from its origin.
-  const start = findStart(rules, map, { x: MAP_SIZE / 2, y: MAP_SIZE / 2 }, 10)
+  const start = findStart(profile, map, { x: MAP_SIZE / 2, y: MAP_SIZE / 2 }, 10)
   if (!start) throw new Error('This landscape has no room for a settlement. Start another one.')
-  return createSession({ rules, map, seed, players: [{ name: 'Rome', civilization: 'roman', start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
+  return createSession({ rules: profile, map, seed, players: [{ name, civilization: faction, start }], content: { id: `generated-${MAP_SIZE}`, digest: `seed:${seed}` } })
 }
 
 /**
@@ -544,7 +563,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       const soldiers = marked.length ? marked : (outside.length ? outside : own).map(s => s.id)
       if (!soldiers.length) { report('You have no soldiers yet. Build a barracks and recruit some.'); return }
       const map = session.state.map, target = session.state.buildings.get(session.context.index.buildingAt[cursor.y * map.width + cursor.x]!)
-      const enemy = target && target.owner !== me && rules.buildings.find(r => r.id === target.type)?.garrison
+      const enemy = target && target.owner !== me && session.rules.buildings.find(r => r.id === target.type)?.garrison
       const error = enemy ? send('attack', { soldiers, building: target.id }) : send('move-soldiers', { soldiers, x: cursor.x, y: cursor.y })
       report(error ?? (enemy ? 'Your soldiers march to attack.' : 'Your soldiers march there and hold the position.'))
       return
@@ -556,7 +575,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     }
     if (tool) {
       const error = send('build', { building: tool, x: cursor.x, y: cursor.y })
-      const name = rules.buildings.find(b => b.id === tool)?.name ?? tool
+      const name = session?.rules.buildings.find(b => b.id === tool)?.name ?? tool
       report(error ?? `${name} site placed. Diggers and builders will start when they are free.`)
       if (!error) { play('build'); if (!link) selected = Math.max(...[...session.state.buildings.values()].filter(b => b.owner === me).map(b => b.id)) }
       return
@@ -751,10 +770,10 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (link) { report('An online match cannot be restarted from here. Leave it to start another.'); return }
       try {
         const seed = requestedSeed === undefined ? 1 + Math.floor(Math.random() * 1_000_000) : validateMapSeed(requestedSeed)
-        const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed)
+        const next = landscape === 'tutorial' ? await tutorialSession(seed) : landscape === 'rival' ? rivalSession(seed) : newSession(seed, landscape === 'amazons' ? 'amazon' : 'roman')
         if (disposed) return
         adopt(next); speed = 1
-        report(landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : landscape === 'rival' ? 'A computer settlement grows to the east, building and fighting by the same rules. It scouts, raises an army and attacks the towers it finds. You only see it where your settlers can.' : 'A new landscape. Your settlers have arrived.')
+        report(landscape === 'amazons' ? 'The Amazons settle a generated island. Their buildings use the original Amazon artwork; every timing is still an engineering placeholder.' : landscape === 'tutorial' ? 'The original tutorial map. Your Roman settlers and their tower are ready.' : landscape === 'rival' ? 'A computer settlement grows to the east, building and fighting by the same rules. It scouts, raises an army and attacks the towers it finds. You only see it where your settlers can.' : 'A new landscape. Your settlers have arrived.')
         void persist()
       }
       catch (error) { if (!disposed) report(error instanceof Error ? error.message : 'Could not open that map.') }
@@ -822,7 +841,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     distribute(good: string, type: string, delta: number) {
       if (!session) return
       const value = Math.max(0, Math.min(10, (session.state.players[me - 1]!.settings.distribution?.[good]?.[type] ?? 1) + delta))
-      report(send('settings', { settings: { distribution: { [good]: { [type]: value } } } }) ?? (value ? `The ${rules.buildings.find(b => b.id === type)?.name ?? type} now gets share ${value} of the ${good}.` : `No ${good} goes to the ${rules.buildings.find(b => b.id === type)?.name ?? type} now.`))
+      report(send('settings', { settings: { distribution: { [good]: { [type]: value } } } }) ?? (value ? `The ${(session?.rules ?? rules).buildings.find(b => b.id === type)?.name ?? type} now gets share ${value} of the ${good}.` : `No ${good} goes to the ${rules.buildings.find(b => b.id === type)?.name ?? type} now.`))
     },
     limit(kind: 'builders' | 'diggers', delta: number) {
       if (!session) return

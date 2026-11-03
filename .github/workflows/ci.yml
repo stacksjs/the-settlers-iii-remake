@@ -50,6 +50,7 @@ jobs:
           bun run test:browser http://127.0.0.1:3450/
           bun tests/browser/home.ts http://127.0.0.1:3450/
           bun tests/browser/multiplayer.ts http://127.0.0.1:3450/
+          bun tests/browser/amazons.ts http://127.0.0.1:3450/
           bun tests/browser/control-frame.ts http://127.0.0.1:3450/
           bun tests/browser/resize.ts http://127.0.0.1:3450/
           bun tests/browser/production.ts http://127.0.0.1:3450/
@@ -82,6 +83,7 @@ jobs:
             storage/framework/runtime/shots/campaign-media.json
             storage/framework/runtime/shots/home.json
             storage/framework/runtime/shots/multiplayer.json
+            storage/framework/runtime/shots/amazons.json
             storage/framework/runtime/shots/control-frame.json
             storage/framework/runtime/shots/control-frame-media.json
             storage/framework/runtime/shots/resize.json

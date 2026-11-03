@@ -98,7 +98,11 @@ the Sphinx), the Asian rice farm, distillery and sulfur mine (liquor for the sma
 pagoda) and the Amazon beekeeper, mead maker, alchemist's den, gem and sulfur mines
 (mead for the temple). Every timing and capacity in them is still a Roman engineering
 placeholder and none has divine interventions yet, so they are engineering data,
-never original-game claims, and the game does not offer them as a choice yet. The
+never original-game claims. The Amazons can be played from the new-settlement dialog
+("Play the Amazons"): the Amazons demo carries all of their building graphics, which
+the importer converts under `building:amazon/<id>`. The Egyptians and Asians cannot be
+offered, because the demo has none of their graphics (0 of 36 and 0 of 37 buildings)
+and nothing is substituted for them. The
 Canvas 2D renderer draws the lattice terrain with elevation shading, fog of war,
 borders and the actual settlers, cargo, piles and construction stages from the
 session. stx's `useAnimationFrame` supplies the clock and Craft's browser platform

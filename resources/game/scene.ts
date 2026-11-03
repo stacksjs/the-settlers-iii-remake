@@ -39,6 +39,8 @@ export interface SceneOptions { player: number, rows?: [number, number], columns
  * north-west, north-east, east, south-east (the reference remake's movables.txt). The engine's
  * directions run north-east, east, south-east, south-west, west, north-west.
  */
+/** Sprite key of a building or site: the Romans' art is keyed by building, any other civilization's by civilization and building. */
+export const buildingArt = (kind: 'building' | 'site', civilization: string, type: string): string => civilization === 'roman' ? `${kind}:${type}` : `${kind}:${civilization}/${type}`
 export const spriteDirection = (direction: number): number => (direction + 3) % 6
 
 export function scene(session: Session, options: SceneOptions): SceneItem[] {
@@ -82,6 +84,7 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const base = toView(x, y, 'elevation' in st ? st.elevation : map.elevation[st.tile]!), view = { x: base.x + (slot ? 10 + ((slot - 1) % 3) * 9 : 0), y: base.y + (slot ? Math.floor((slot - 1) / 3) * 6 - 2 : 0) }
     items.push({ kind: 'pile', sprite: `stack:${st.good}`, frame: Math.min(8, st.amount) - 1, view, depth: Math.floor(st.tile / map.width), tile: st.tile, entity: st.id, owner: st.owner, good: st.good, amount: st.amount })
   }
+  const civilization = (owner: number): string => state.players[owner - 1]?.civilization ?? 'roman'
   for (const b of [...state.buildings.values(), ...(viewer.memory?.buildings ?? [])]) {
     const rule = rules.buildings.find(r => r.id === b.type)!
     const remembered = 'elevation' in b
@@ -90,8 +93,8 @@ export function scene(session: Session, options: SceneOptions): SceneItem[] {
     const view = toView(b.x, b.y, remembered ? b.elevation : map.elevation[b.y * map.width + b.x]!)
     const total = Object.values(rule.cost).reduce((a, n) => a + n, 0) || 1
     const suspended = !remembered && b.owner === options.player && b.suspended
-    if (b.phase === 'active') items.push({ kind: 'building', sprite: `building:${b.type}`, frame: 0, view, depth: b.y, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, suspended })
-    else items.push({ kind: 'site', sprite: `site:${b.type}`, frame: 0, view, depth: b.y + 1, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, reveal: b.phase === 'building' ? (total - b.workRemaining) / total : 0, suspended })
+    if (b.phase === 'active') items.push({ kind: 'building', sprite: buildingArt('building', civilization(b.owner), b.type), frame: 0, view, depth: b.y, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, suspended })
+    else items.push({ kind: 'site', sprite: buildingArt('site', civilization(b.owner), b.type), frame: 0, view, depth: b.y + 1, tile: b.y * map.width + b.x, entity: b.id, owner: b.owner, phase: b.phase, reveal: b.phase === 'building' ? (total - b.workRemaining) / total : 0, suspended })
   }
   for (const s of state.settlers.values()) {
     if (s.inside) continue

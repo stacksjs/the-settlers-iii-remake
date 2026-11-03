@@ -59,7 +59,9 @@ try {
       await check('focused cancel is visible on short screens', `(() => { const r=document.activeElement.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight+1 && r.left >= 0 && r.right <= innerWidth+1; })()`)
       await key('Tab', 'Tab', 9)
       await check('Tab wraps back to seed', focused('#map-seed'))
-      for (let n = 0; n < 5; n++) await key('Tab', 'Tab', 9)
+      // One full turn through every control in the dialog (the seed field and each button) returns to the seed.
+      const stops = await cdp.evaluate<number>(`document.querySelector('[role="dialog"]').querySelectorAll('input:not([disabled]), button:not([disabled])').length`)
+      for (let n = 0; n < stops; n++) await key('Tab', 'Tab', 9)
       await check('forward navigation remains inside dialog', focused('#map-seed'))
       await input('invalid')
       await key('Tab', 'Tab', 9)

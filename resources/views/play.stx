@@ -3,7 +3,7 @@
 definePageMeta({ middleware: ['auth'] })
 </script>
 <script client>
-import { catalog, mountGame, snapshot } from '../game/controller'
+import { mountGame, snapshot } from '../game/controller'
 import { controlLayout } from '../game/control-layout'
 import { chooseMenu, initialMenu, LABELS, menuImage, MENUS, openMenu } from '../game/menus'
 import type { Game } from '../game/controller'
@@ -55,11 +55,11 @@ const largeHud = useMediaQuery('(min-height: 902px)')
 const mediumHud = useMediaQuery('(min-height: 734px)')
 const hud = derived(() => controlLayout(!desktopHud() || largeHud() ? 768 : mediumHud() ? 600 : 480))
 let game: Game | null = null
-const options = derived(() => catalog.filter(item => item.menu === menu().sub))
+const options = derived(() => view().catalog.filter(item => item.menu === menu().sub))
 const stocked = derived(() => view().goods.filter(item => item.amount > 0))
 function choose(kind: string): void { selectedTool.set(kind); game?.choose(kind) }
 function inspect(): void { selectedTool.set(''); game?.choose(null) }
-async function restart(landscape: 'generated' | 'tutorial' | 'rival'): Promise<void> {
+async function restart(landscape: 'generated' | 'tutorial' | 'rival' | 'amazons'): Promise<void> {
   try {
     const seed = landscape === 'tutorial' ? undefined : parseMapSeed(seedDraft())
     seedError.set('')
@@ -178,9 +178,9 @@ onDestroy(() => game?.dispose())
           <p>The original tutorial map brings its own Roman tower, settlers and goods. Its tutorial script and rival are not played yet. A computer rival builds its own economy and army with the same commands you use, scouts your land and attacks the towers it finds. Capture all enemy castles and towers to win. Losing your last castle or tower ends the match in defeat.</p>
           <label for="map-seed" class="block mt-4 text-sm">Map seed (optional)</label>
           <input id="map-seed" ref="seedInput" x-model.trim="seedDraft" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Random" autofocus :aria-invalid="seedError() ? 'true' : 'false'" aria-describedby="map-seed-help map-seed-error" class="mt-2 px-3 py-2 w-full bg-transparent border border-white/20 rounded">
-          <p id="map-seed-help" class="guide-note">Reuse a seed for the same generated landscape or rival map. Leave blank for a random map.</p>
+          <p id="map-seed-help" class="guide-note">Reuse a seed for the same generated landscape, Amazon island or rival map. Leave blank for a random map.</p>
           <p id="map-seed-error" :if="seedError()" role="alert">{{ seedError() }}</p>
-          <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
+          <div class="flex flex-wrap gap-2"><button type="button" class="primary-button" @click="restart('generated')">Generated landscape</button><button type="button" class="primary-button" @click="restart('tutorial')">Original tutorial map</button><button type="button" class="primary-button" @click="restart('rival')">Computer rival</button><button type="button" class="primary-button" @click="restart('amazons')">Play the Amazons</button><button type="button" class="quiet-button" @click="confirmRestart.set(false)">Keep playing</button></div>
           </DialogPanel>
         </Dialog>
         <Dialog :open="demolition() !== null" @close="cancelDemolition()" className="demolition-dialog restart-dialog">
@@ -222,7 +222,7 @@ onDestroy(() => game?.dispose())
             <div class="flex items-center justify-between section-heading"><h2>{{ LABELS[menu().sub] }} buildings</h2><button type="button" class="text-button" @click="inspect()">Inspect</button></div>
             <div class="building-catalog">
               <button :for="item in options()" type="button" class="building-choice" :disabled="!view().ready" :aria-pressed="selectedTool() === item.id" :title="item.description" @click="choose(item.id)">
-                <img class="building-symbol" :src="'/assets/settlers-original/' + item.id + '.png'" width="42" height="42" alt=""><strong>{{ item.name }}</strong><small>{{ item.cost }}</small>
+                <img class="building-symbol" :src="item.image" width="42" height="42" alt=""><strong>{{ item.name }}</strong><small>{{ item.cost }}</small>
               </button>
             </div>
           </div>

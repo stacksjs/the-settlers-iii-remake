@@ -128,17 +128,26 @@ const buildingFiles = {
   'winery': 'winegrower', 'charcoal-maker': 'charcoal_burner', 'small-temple': 'temple', 'large-temple': 'big_temple', 'healers-hut': 'hospital',
   'large-tower': 'big_tower', 'lookout-tower': 'lookout_tower', 'large-residence': 'big_livinghouse',
 }
+// The Amazons' buildings: the demo carries their graphics too. Buildings both civilizations have use the same
+// reference definition file name; the Amazons' own buildings have their own. Their sprites are keyed
+// `building:amazon/<id>` so a settlement of either civilization draws its own, and Roman keys stay as they were.
+const amazonFiles: Record<string, string> = {
+  ...Object.fromEntries(Object.entries(buildingFiles).filter(([key]) => !['winery', 'charcoal-maker'].includes(key))),
+  'beekeeper': 'beekeeping', 'mead-brewery': 'mead_brewery', 'alchemist': 'laboratory', 'gem-mine': 'gemsmine', 'sulfur-mine': 'sulfurmine',
+}
 const imported: string[] = []
-for (const [key, name] of Object.entries(buildingFiles)) {
-  const path = `jsettlers.common/src/main/resources/jsettlers/common/buildings/roman/${name}.xml`
-  const xml = await getReference(path)
-  const images = [...xml.matchAll(/<image\s+([^>]+)>/g)].map(match => Object.fromEntries([...match[1]!.matchAll(/(\w+)="([^"]*)"/g)].map(attr => [attr[1], attr[2]]))).filter(attrs => attrs.type === 'SETTLER')
-  const final = images.filter(attrs => attrs.for === 'FINAL'), site = images.filter(attrs => attrs.for === 'BUILD')
-  if (!final.length) throw new Error(`No original image mapping for ${name}`)
-  const before = entries.length
-  for (const image of final) await sequence(`building:${key}`, Number(image.file), Number(image.sequence), [Number(image.image)], [`reference:${path}`], true)
-  for (const image of site) await sequence(`site:${key}`, Number(image.file), Number(image.sequence), [Number(image.image)], [`reference:${path}`], true)
-  if (entries.slice(before).some(entry => entry.key === `building:${key}`)) imported.push(key)
+for (const [race, files, prefix] of [['roman', buildingFiles, ''], ['amazon', amazonFiles, 'amazon/']] as const) {
+  for (const [id, name] of Object.entries(files)) {
+    const key = `${prefix}${id}`, path = `jsettlers.common/src/main/resources/jsettlers/common/buildings/${race}/${name}.xml`
+    const xml = await getReference(path)
+    const images = [...xml.matchAll(/<image\s+([^>]+)>/g)].map(match => Object.fromEntries([...match[1]!.matchAll(/(\w+)="([^"]*)"/g)].map(attr => [attr[1], attr[2]]))).filter(attrs => attrs.type === 'SETTLER')
+    const final = images.filter(attrs => attrs.for === 'FINAL'), site = images.filter(attrs => attrs.for === 'BUILD')
+    if (!final.length) throw new Error(`No original image mapping for ${race} ${name}`)
+    const before = entries.length
+    for (const image of final) await sequence(`building:${key}`, Number(image.file), Number(image.sequence), [Number(image.image)], [`reference:${path}`], true)
+    for (const image of site) await sequence(`site:${key}`, Number(image.file), Number(image.sequence), [Number(image.image)], [`reference:${path}`], true)
+    if (entries.slice(before).some(entry => entry.key === `building:${key}`)) imported.push(key)
+  }
 }
 // Goods: original pile sequences hold one image per pile size, carriers hold one walking cycle per direction.
 // Sequence numbers come from the reference remake's EMaterialType and movables-ROMAN tables.
@@ -148,13 +157,16 @@ const goodsSprites: Record<string, { stack: number, carry: number }> = {
   goldore: { stack: 36, carry: 7 }, iron: { stack: 42, carry: 13 }, gold: { stack: 37, carry: 14 }, hammer: { stack: 51, carry: 16 }, shovel: { stack: 55, carry: 21 }, axe: { stack: 46, carry: 35 },
   saw: { stack: 54, carry: 20 }, pickaxe: { stack: 53, carry: 17 }, scythe: { stack: 56, carry: 19 }, fishingrod: { stack: 66, carry: 18 }, sword: { stack: 59, carry: 24 },
   spear: { stack: 60, carry: 23 }, bow: { stack: 63, carry: 22 }, wine: { stack: 69, carry: 54 },
+  // Goods of the other civilizations: stack images from EMaterialType, carrying cycles from movables-ROMAN. The reference has none for honey and mead.
+  keg: { stack: 70, carry: 55 }, gems: { stack: 79, carry: 57 }, rice: { stack: 78, carry: 58 }, sulfur: { stack: 80, carry: 59 }, liquor: { stack: 71, carry: 55 },
+  mead: { stack: 90, carry: -1 }, honey: { stack: 89, carry: -1 },
 }
 const materialTables = ['jsettlers.common/src/main/java/jsettlers/common/material/EMaterialType.java', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables-ROMAN.txt', 'jsettlers.graphics/src/main/resources/jsettlers/graphics/map/draw/settlerimages/movables.txt']
 for (const path of materialTables) await getReference(path)
 const materialRefs = materialTables.map(path => `reference:${path}`)
 for (const [good, { stack, carry }] of Object.entries(goodsSprites)) {
   await sequence(`stack:${good}`, 1, stack, [0, 1, 2, 3, 4, 5, 6, 7], materialRefs, true)
-  await sequence(`carry:${good}`, 10, carry, 'all', materialRefs, true)
+  if (carry >= 0) await sequence(`carry:${good}`, 10, carry, 'all', materialRefs, true)
 }
 await sequence('sapling', 1, 22, 'all', [], true)
 await sequence('crop', 1, 23, [0, 1, 2, 3, 4, 5, 6, 7, 8], [], true)
