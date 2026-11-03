@@ -89,7 +89,14 @@ are not read by the engine yet; like the Roman table they are reference evidence
 original observation. The preserved manual's construction costs for all four
 civilizations are generated beside them (`bun scripts/manual-construction.ts`), and
 `docs/content/faction-construction-ledger.json` sets the two sources side by side,
-building by building, without choosing between them. The
+building by building, without choosing between them. The Egyptian engineering profile
+(`bun scripts/faction-profile.ts`, published as `egyptian-engineering` 0.1.0) is the
+Roman one with the Egyptians' own buildings: the manual's Egyptian costs, the
+reference's Egyptian geometry, a brewery whose kegs the Sphinx turns into manna, a
+gem mine, and neither winery nor charcoal maker. Every timing and capacity in it is
+still a Roman engineering placeholder and it has no divine interventions yet, so it
+is engineering data, never an original-game claim, and the game does not offer it as
+a choice yet. The
 Canvas 2D renderer draws the lattice terrain with elevation shading, fog of war,
 borders and the actual settlers, cargo, piles and construction stages from the
 session. stx's `useAnimationFrame` supplies the clock and Craft's browser platform

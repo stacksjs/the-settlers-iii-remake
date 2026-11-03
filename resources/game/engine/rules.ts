@@ -304,27 +304,40 @@ const M = (source: string, note: string, owner: string): Evidence => ({ class: '
 const E = (source: string, note: string): Evidence => ({ class: 'E', source, note })
 
 type Spec = Omit<BuildingRule, 'levelWork' | 'buildWork' | 'vision' | 'inputs' | 'outputs' | 'workflow' | 'footprint' | 'protected' | 'door' | 'piles' | 'builders'> & Partial<Pick<BuildingRule, 'inputs' | 'outputs' | 'workflow' | 'vision' | 'door'>>
-// Footprints, doors, pile positions and builder spots come from the pinned reference remake definitions.
-const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders' | 'groundBorder'> => {
-  const g = (REFERENCE_GEOMETRY as Record<string, (typeof REFERENCE_GEOMETRY)[keyof typeof REFERENCE_GEOMETRY]>)[id]
-  if (!g) throw new RangeError(`No reference geometry for ${id}`)
+/** One reference building definition, in the shape reference-geometry.ts and reference-factions.ts generate. */
+export interface ReferenceSource {
+  blocked: readonly (readonly number[])[], protected: readonly (readonly number[])[], door: readonly number[]
+  construction: readonly { good: string, at: readonly number[] }[]
+  piles: readonly { good: string, at: readonly number[], role: string }[]
+  builders: readonly (readonly number[])[], ground: readonly string[], mine: boolean
+}
+/** Footprint, door, piles and builder spots of a reference definition. `goods` renames reference goods the engine calls something else. */
+export const geometryFrom = (g: ReferenceSource, goods: Readonly<Record<string, string>> = {}): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders' | 'groundBorder'> => {
+  const named = (good: string): string => goods[good] ?? good
   const piles: Pile[] = [
-    ...g.construction.map(c => ({ role: 'construction' as const, good: c.good, at: c.at as Offset })),
-    ...g.piles.map(p => ({ role: p.good === '*' ? 'storage' as const : p.role === 'offer' ? 'output' as const : 'input' as const, good: p.good === '*' ? null : p.good, at: p.at as Offset })),
+    ...g.construction.map(c => ({ role: 'construction' as const, good: named(c.good), at: c.at as unknown as Offset })),
+    ...g.piles.map(p => ({ role: p.good === '*' ? 'storage' as const : p.role === 'offer' ? 'output' as const : 'input' as const, good: p.good === '*' ? null : named(p.good), at: p.at as unknown as Offset })),
   ]
   // The reference coal mine lists builder spots on its own blocked tiles; those cannot be reached and are dropped.
   const blocked = new Set(g.blocked.map(([x, y]) => `${x},${y}`))
   const protectedArea = [...g.blocked, ...g.protected], area = new Set(protectedArea.map(([x, y]) => `${x},${y}`))
   const border = new Map<string, Offset>()
-  for (const [x, y] of protectedArea) for (const [dx, dy] of DIRECTIONS) { const key = `${x + dx},${y + dy}`; if (!area.has(key)) border.set(key, [x + dx, y + dy]) }
-  return { groundBorder: [...border.values()], footprint: g.blocked.map(o => o as Offset), protected: g.protected.map(o => o as Offset), door: g.door as Offset, piles, builders: g.builders.filter(([x, y]) => !blocked.has(`${x},${y}`)).map(o => o as Offset) }
+  for (const [x, y] of protectedArea) for (const [dx, dy] of DIRECTIONS) { const key = `${x! + dx},${y! + dy}`; if (!area.has(key)) border.set(key, [x! + dx, y! + dy]) }
+  return { groundBorder: [...border.values()], footprint: g.blocked.map(o => o as unknown as Offset), protected: g.protected.map(o => o as unknown as Offset), door: g.door as unknown as Offset, piles, builders: g.builders.filter(([x, y]) => !blocked.has(`${x},${y}`)).map(o => o as unknown as Offset) }
 }
-const define = (spec: Spec): BuildingRule => {
-  const source = REFERENCE_GEOMETRY[spec.id as keyof typeof REFERENCE_GEOMETRY]
+// Footprints, doors, pile positions and builder spots come from the pinned reference remake definitions.
+const geometry = (id: string): Pick<BuildingRule, 'footprint' | 'protected' | 'door' | 'piles' | 'builders' | 'groundBorder'> => {
+  const g = (REFERENCE_GEOMETRY as Record<string, ReferenceSource>)[id]
+  if (!g) throw new RangeError(`No reference geometry for ${id}`)
+  return geometryFrom(g)
+}
+/** A building from its specification and a reference definition (the engine's own Roman one unless another is given). */
+export const defineFrom = (spec: Spec, source: ReferenceSource, goods: Readonly<Record<string, string>> = {}): BuildingRule => {
   const ground = source.ground.map(landscapeId)
-  return { ...geometry(spec.id), levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec,
+  return { ...geometryFrom(source, goods), levelWork: 20, buildWork: 30, vision: 6, inputs: {}, outputs: {}, workflow: { kind: 'none' }, ...spec,
     ground: source.mine ? ['mountain', 'mountain-border'] : ground, footprintGround: ground }
 }
+const define = (spec: Spec): BuildingRule => defineFrom(spec, REFERENCE_GEOMETRY[spec.id as keyof typeof REFERENCE_GEOMETRY] as unknown as ReferenceSource)
 const cost = (plank: number, stone: number): Goods => Object.fromEntries(Object.entries({ plank, stone }).filter(([, n]) => n > 0))
 const doorstep = (good: string): Goods => ({ [good]: 8 })
 const meal = (preferred: string): MineFood => ({ preferred, accepted: ['bread', 'meat', 'fish'].filter(id => id !== preferred), preferredCycles: 10, otherCycles: 2 })
