@@ -77,7 +77,7 @@ function pick(kind: string): void { tool.set(kind); demoGame?.choose(kind) }
 function inspect(): void { tool.set(''); demoGame?.choose(null) }
 function setSpeed(value: number): void { demoGame?.speed(value) }
 // The demo is the first thing on the page, so it starts as soon as the page does.
-onMount(() => { void nextTick(() => startDemo()) })
+onMount(() => startDemo())
 onDestroy(() => demoGame?.dispose())
 </script>
 
