@@ -49,6 +49,17 @@ describe('the blog', () => {
     expect(loadPost('no-such-post')).toBeNull()
   })
 
+  test('the Amazon post states the counts the data has', async () => {
+    const { AMAZON_ENGINEERING, ASIAN_ENGINEERING, EGYPTIAN_ENGINEERING } = await import('../../resources/game/engine')
+    const ledger = JSON.parse(readFileSync(join(import.meta.dir, '../../docs/content/faction-construction-ledger.json'), 'utf8')) as { agrees: boolean | null }[]
+    const body = loadPost('the-amazons-are-playable')!.body
+    expect(body).toContain(`${AMAZON_ENGINEERING.buildings.length} Amazon building types`)
+    expect(body).toContain(`${EGYPTIAN_ENGINEERING.buildings.length} Egyptian building types`)
+    expect(body).toContain(`${ASIAN_ENGINEERING.buildings.length} Asian ones`)
+    expect(body).toContain(`Of ${ledger.length} buildings that either source names, ${ledger.filter(e => e.agrees === true).length} agree. ${ledger.filter(e => e.agrees === false).length} disagree, and ${ledger.filter(e => e.agrees === null).length} are named`)
+    expect(body).toContain('0 of the 36 Egyptian buildings and 0 of the 37 Asian ones')
+  })
+
   test('states only counts the simulation actually has', async () => {
     const { ROMAN_ENGINEERING } = await import('../../resources/game/engine')
     const body = loadPost('we-grew-up-with-this-game')!.body
