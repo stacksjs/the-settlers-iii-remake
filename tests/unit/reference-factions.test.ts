@@ -5,8 +5,8 @@ import type { ReferenceGeometry } from '../../scripts/reference-geometry'
 
 const REFERENCE_FACTIONS = GENERATED as unknown as Record<string, Record<string, ReferenceGeometry>>
 
-// The Egyptian, Asian and Amazon building tables are generated from the same
-// pinned reference remake as the Roman one. They are class E evidence: what the
+// The building tables are generated from the pinned reference remake, the same
+// revision the engine's Roman geometry comes from. They are class E evidence: what the
 // reference defines, not what the original game does. These tests keep the
 // generated data honest (complete, from the same revision, internally coherent)
 // without claiming more than that.
@@ -17,9 +17,9 @@ describe('reference faction building tables', () => {
     expect(REFERENCE_FACTIONS_REVISION).toBe(REFERENCE_REVISION)
   })
 
-  test('cover every building the reference defines for the three civilizations', () => {
-    expect(Object.keys(REFERENCE_FACTIONS)).toEqual(['egyptian', 'asian', 'amazon'])
-    expect(civilizations.map(([name, buildings]) => [name, Object.keys(buildings).length])).toEqual([['egyptian', 36], ['asian', 37], ['amazon', 39]])
+  test('cover every building the reference defines for the four civilizations', () => {
+    expect(Object.keys(REFERENCE_FACTIONS)).toEqual(['roman', 'egyptian', 'asian', 'amazon'])
+    expect(civilizations.map(([name, buildings]) => [name, Object.keys(buildings).length])).toEqual([['roman', 36], ['egyptian', 36], ['asian', 37], ['amazon', 39]])
   })
 
   test('every civilization has the shared core buildings and its own', () => {
@@ -47,12 +47,12 @@ describe('reference faction building tables', () => {
     }
   })
 
-  test('only the temple has its door inside its own footprint, as the Roman small temple does', () => {
+  test('only the temples have their door inside their own footprint', () => {
     // A property of the reference data, recorded so any other building doing it is noticed.
     const inside = civilizations.flatMap(([name, buildings]) => Object.entries(buildings)
       .filter(([, building]) => building.blocked.some(tile => tile.join(',') === building.door.join(',')))
       .map(([file]) => `${name}/${file}`))
-    expect(inside).toEqual(['amazon/temple'])
+    expect(inside).toEqual(['roman/temple', 'amazon/temple'])
   })
 
   test('buildings that take materials to construct list them, and mines are marked', () => {

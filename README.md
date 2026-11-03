@@ -84,8 +84,12 @@ growth timing or object classifications.
 Building footprints, doors, pile positions and builder spots come from the pinned
 reference remake's Roman definitions (`bun scripts/reference-geometry.ts`). Its
 Egyptian, Asian and Amazon definitions are generated the same way
-(`bun scripts/reference-factions.ts`, 112 buildings) and are not read by the engine
-yet; like the Roman table they are reference evidence, not original observation. The
+(`bun scripts/reference-factions.ts`, every definition for the four civilizations) and
+are not read by the engine yet; like the Roman table they are reference evidence, not
+original observation. The preserved manual's construction costs for all four
+civilizations are generated beside them (`bun scripts/manual-construction.ts`), and
+`docs/content/faction-construction-ledger.json` sets the two sources side by side,
+building by building, without choosing between them. The
 Canvas 2D renderer draws the lattice terrain with elevation shading, fog of war,
 borders and the actual settlers, cargo, piles and construction stages from the
 session. stx's `useAnimationFrame` supplies the clock and Craft's browser platform

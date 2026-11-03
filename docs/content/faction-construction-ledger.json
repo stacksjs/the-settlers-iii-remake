@@ -1,0 +1,2117 @@
+[
+  {
+    "race": "roman",
+    "reference": "baker",
+    "manualName": "Bakery",
+    "manual": [
+      4,
+      5
+    ],
+    "referenceCost": [
+      4,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "barrack",
+    "manualName": "Barracks",
+    "manual": [
+      4,
+      5
+    ],
+    "referenceCost": [
+      5,
+      4
+    ],
+    "agrees": false
+  },
+  {
+    "race": "roman",
+    "reference": "big_livinghouse",
+    "manualName": "Large Residence",
+    "manual": [
+      15,
+      24
+    ],
+    "referenceCost": [
+      15,
+      24
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "big_temple",
+    "manualName": "Large Temple",
+    "manual": [
+      8,
+      14
+    ],
+    "referenceCost": [
+      8,
+      14
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "big_tower",
+    "manualName": "Large Guard Tower",
+    "manual": [
+      5,
+      5
+    ],
+    "referenceCost": [
+      5,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "castle",
+    "manualName": "Castle",
+    "manual": [
+      8,
+      12
+    ],
+    "referenceCost": [
+      8,
+      12
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "charcoal_burner",
+    "manualName": "Charcoal Maker's Hut",
+    "manual": [
+      3,
+      4
+    ],
+    "referenceCost": [
+      3,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "coalmine",
+    "manualName": "Coal Mine",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "dockyard",
+    "manualName": "Shipyard",
+    "manual": [
+      3,
+      5
+    ],
+    "referenceCost": [
+      3,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "donkey_farm",
+    "manualName": null,
+    "manual": null,
+    "referenceCost": [
+      6,
+      6
+    ],
+    "agrees": null
+  },
+  {
+    "race": "roman",
+    "reference": "farm",
+    "manualName": "Grain Farm",
+    "manual": [
+      6,
+      6
+    ],
+    "referenceCost": [
+      6,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "fisher",
+    "manualName": "Fisherman's Hut",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "forester",
+    "manualName": "Forester's Hut",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      3,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "goldmelt",
+    "manualName": "Gold Smelting Works",
+    "manual": [
+      4,
+      6
+    ],
+    "referenceCost": [
+      4,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "goldmine",
+    "manualName": "Gold Mine",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "harbor",
+    "manualName": "Landing Dock",
+    "manual": [
+      2,
+      4
+    ],
+    "referenceCost": [
+      2,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "hospital",
+    "manualName": "Healer's Hut",
+    "manual": [
+      3,
+      3
+    ],
+    "referenceCost": [
+      3,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "ironmelt",
+    "manualName": "Iron Smelting Works",
+    "manual": [
+      4,
+      6
+    ],
+    "referenceCost": [
+      4,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "ironmine",
+    "manualName": "Iron Mine",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "lookout_tower",
+    "manualName": "Lookout Tower",
+    "manual": [
+      2,
+      4
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": false
+  },
+  {
+    "race": "roman",
+    "reference": "lumberjack",
+    "manualName": "Woodcutter's Hut",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "market_place",
+    "manualName": "Marketplace",
+    "manual": [
+      1,
+      5
+    ],
+    "referenceCost": [
+      1,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "roman",
+    "reference": "medium_livinghouse",
+    "manualName": "Medium Residence",
+    "manual": [
+      5,
+      8
+    ],
+    "referenceCost": [
+      5,
+      8
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "mill",
+    "manualName": "Grain Mill",
+    "manual": [
+      3,
+      3
+    ],
+    "referenceCost": [
+      3,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "pig_farm",
+    "manualName": "Pig Farm",
+    "manual": [
+      6,
+      6
+    ],
+    "referenceCost": [
+      6,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "sawmill",
+    "manualName": "Sawmill",
+    "manual": [
+      3,
+      4
+    ],
+    "referenceCost": [
+      3,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "slaughterhouse",
+    "manualName": "Slaughterhouse",
+    "manual": [
+      4,
+      4
+    ],
+    "referenceCost": [
+      4,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "small_livinghouse",
+    "manualName": "Small Residence",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "stock",
+    "manualName": "Storage Area",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "stonecutter",
+    "manualName": "Stonecutter's Hut",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "temple",
+    "manualName": "Small Temple",
+    "manual": [
+      5,
+      8
+    ],
+    "referenceCost": [
+      5,
+      8
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "toolsmith",
+    "manualName": "Tool Smith's Works",
+    "manual": [
+      3,
+      5
+    ],
+    "referenceCost": [
+      3,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "tower",
+    "manualName": "Small Guard Tower",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "waterworks",
+    "manualName": "Waterworks",
+    "manual": [
+      3,
+      4
+    ],
+    "referenceCost": [
+      3,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "weaponsmith",
+    "manualName": "Weapon Smith's Works",
+    "manual": [
+      5,
+      7
+    ],
+    "referenceCost": [
+      5,
+      7
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "winegrower",
+    "manualName": "Winery",
+    "manual": [
+      4,
+      4
+    ],
+    "referenceCost": [
+      4,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "roman",
+    "reference": "",
+    "manualName": "Catapult Hall",
+    "manual": [
+      5,
+      7
+    ],
+    "referenceCost": null,
+    "agrees": null
+  },
+  {
+    "race": "egyptian",
+    "reference": "baker",
+    "manualName": "Bakery",
+    "manual": [
+      3,
+      6
+    ],
+    "referenceCost": [
+      3,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "barrack",
+    "manualName": "Barracks",
+    "manual": [
+      3,
+      6
+    ],
+    "referenceCost": [
+      3,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "big_livinghouse",
+    "manualName": "Large Residence",
+    "manual": [
+      12,
+      27
+    ],
+    "referenceCost": [
+      12,
+      27
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "big_temple",
+    "manualName": "Pyramid",
+    "manual": [
+      6,
+      20
+    ],
+    "referenceCost": [
+      6,
+      20
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "big_tower",
+    "manualName": "Large Guard Tower",
+    "manual": [
+      4,
+      6
+    ],
+    "referenceCost": [
+      4,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "brewery",
+    "manualName": "Brewery",
+    "manual": [
+      2,
+      5
+    ],
+    "referenceCost": [
+      2,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "castle",
+    "manualName": "Castle",
+    "manual": [
+      6,
+      14
+    ],
+    "referenceCost": [
+      6,
+      14
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "coalmine",
+    "manualName": "Coal Mine",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "dockyard",
+    "manualName": "Shipyard",
+    "manual": [
+      1,
+      6
+    ],
+    "referenceCost": [
+      1,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "donkey_farm",
+    "manualName": null,
+    "manual": null,
+    "referenceCost": [
+      3,
+      9
+    ],
+    "agrees": null
+  },
+  {
+    "race": "egyptian",
+    "reference": "farm",
+    "manualName": "Grain Farm",
+    "manual": [
+      3,
+      9
+    ],
+    "referenceCost": [
+      3,
+      9
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "fisher",
+    "manualName": "Fisherman's Hut",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "forester",
+    "manualName": "Forester's Hut",
+    "manual": [
+      1,
+      3
+    ],
+    "referenceCost": [
+      1,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "gemsmine",
+    "manualName": "Gem Mine",
+    "manual": [
+      5,
+      3
+    ],
+    "referenceCost": [
+      5,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "goldmelt",
+    "manualName": "Gold Smelting Works",
+    "manual": [
+      3,
+      7
+    ],
+    "referenceCost": [
+      3,
+      7
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "goldmine",
+    "manualName": "Gold Mine",
+    "manual": [
+      4,
+      2
+    ],
+    "referenceCost": [
+      4,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "harbor",
+    "manualName": "Landing Dock",
+    "manual": [
+      1,
+      4
+    ],
+    "referenceCost": [
+      1,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "hospital",
+    "manualName": "Healer's Hut",
+    "manual": [
+      2,
+      4
+    ],
+    "referenceCost": [
+      2,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "ironmelt",
+    "manualName": "Iron Smelting Works",
+    "manual": [
+      3,
+      7
+    ],
+    "referenceCost": [
+      3,
+      7
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "ironmine",
+    "manualName": "Iron Mine",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "lookout_tower",
+    "manualName": "Lookout Tower",
+    "manual": [
+      2,
+      4
+    ],
+    "referenceCost": [
+      2,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "lumberjack",
+    "manualName": "Woodcutter's Hut",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      1,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "egyptian",
+    "reference": "market_place",
+    "manualName": "Marketplace",
+    "manual": [
+      1,
+      5
+    ],
+    "referenceCost": [
+      0,
+      4
+    ],
+    "agrees": false
+  },
+  {
+    "race": "egyptian",
+    "reference": "medium_livinghouse",
+    "manualName": "Medium Residence",
+    "manual": [
+      4,
+      9
+    ],
+    "referenceCost": [
+      4,
+      9
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "mill",
+    "manualName": "Grain Mill",
+    "manual": [
+      2,
+      5
+    ],
+    "referenceCost": [
+      2,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "pig_farm",
+    "manualName": "Pig Farm",
+    "manual": [
+      3,
+      9
+    ],
+    "referenceCost": [
+      3,
+      9
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "sawmill",
+    "manualName": "Sawmill",
+    "manual": [
+      2,
+      5
+    ],
+    "referenceCost": [
+      2,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "slaughterhouse",
+    "manualName": "Slaughterhouse",
+    "manual": [
+      2,
+      6
+    ],
+    "referenceCost": [
+      2,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "small_livinghouse",
+    "manualName": "Small Residence",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "stock",
+    "manualName": "Storage Area",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "stonecutter",
+    "manualName": "Stonecutter's Hut",
+    "manual": [
+      1,
+      3
+    ],
+    "referenceCost": [
+      1,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "temple",
+    "manualName": "Sphinx",
+    "manual": [
+      2,
+      10
+    ],
+    "referenceCost": [
+      2,
+      10
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "toolsmith",
+    "manualName": "Tool Smith's Works",
+    "manual": [
+      2,
+      6
+    ],
+    "referenceCost": [
+      2,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "tower",
+    "manualName": "Small Guard Tower",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "waterworks",
+    "manualName": "Waterworks",
+    "manual": [
+      2,
+      6
+    ],
+    "referenceCost": [
+      2,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "weaponsmith",
+    "manualName": "Weapon Smith's Works",
+    "manual": [
+      3,
+      8
+    ],
+    "referenceCost": [
+      3,
+      8
+    ],
+    "agrees": true
+  },
+  {
+    "race": "egyptian",
+    "reference": "",
+    "manualName": "Ballista Hall",
+    "manual": [
+      3,
+      9
+    ],
+    "referenceCost": null,
+    "agrees": null
+  },
+  {
+    "race": "asian",
+    "reference": "baker",
+    "manualName": "Bakery",
+    "manual": [
+      6,
+      3
+    ],
+    "referenceCost": [
+      6,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "barrack",
+    "manualName": "Barracks",
+    "manual": [
+      6,
+      3
+    ],
+    "referenceCost": [
+      6,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "big_livinghouse",
+    "manualName": "Large Residence",
+    "manual": [
+      24,
+      9
+    ],
+    "referenceCost": [
+      16,
+      9
+    ],
+    "agrees": false
+  },
+  {
+    "race": "asian",
+    "reference": "big_temple",
+    "manualName": "Large Pagoda",
+    "manual": [
+      15,
+      6
+    ],
+    "referenceCost": [
+      9,
+      6
+    ],
+    "agrees": false
+  },
+  {
+    "race": "asian",
+    "reference": "big_tower",
+    "manualName": "Large Guard Tower",
+    "manual": [
+      6,
+      4
+    ],
+    "referenceCost": [
+      6,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "castle",
+    "manualName": "Castle",
+    "manual": [
+      12,
+      8
+    ],
+    "referenceCost": [
+      12,
+      8
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "coalmine",
+    "manualName": "Coal Mine",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "distillery",
+    "manualName": "Distillery",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      4,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "dockyard",
+    "manualName": "Shipyard",
+    "manual": [
+      5,
+      2
+    ],
+    "referenceCost": [
+      8,
+      4
+    ],
+    "agrees": false
+  },
+  {
+    "race": "asian",
+    "reference": "donkey_farm",
+    "manualName": null,
+    "manual": null,
+    "referenceCost": [
+      9,
+      3
+    ],
+    "agrees": null
+  },
+  {
+    "race": "asian",
+    "reference": "farm",
+    "manualName": "Grain Farm",
+    "manual": [
+      9,
+      3
+    ],
+    "referenceCost": [
+      9,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "fisher",
+    "manualName": "Fisherman's Hut",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "forester",
+    "manualName": "Forester's Hut",
+    "manual": [
+      2,
+      0
+    ],
+    "referenceCost": [
+      2,
+      0
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "goldmelt",
+    "manualName": "Gold Smelting Works",
+    "manual": [
+      6,
+      4
+    ],
+    "referenceCost": [
+      6,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "goldmine",
+    "manualName": "Gold Mine",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "harbor",
+    "manualName": "Landing Dock",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "hospital",
+    "manualName": "Healer's Hut",
+    "manual": [
+      4,
+      2
+    ],
+    "referenceCost": [
+      4,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "ironmelt",
+    "manualName": "Iron Smelting Works",
+    "manual": [
+      6,
+      4
+    ],
+    "referenceCost": [
+      6,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "ironmine",
+    "manualName": "Iron Mine",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "lookout_tower",
+    "manualName": "Lookout Tower",
+    "manual": [
+      4,
+      2
+    ],
+    "referenceCost": [
+      4,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "lumberjack",
+    "manualName": "Woodcutter's Hut",
+    "manual": [
+      3,
+      0
+    ],
+    "referenceCost": [
+      3,
+      0
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "market_place",
+    "manualName": "Marketplace",
+    "manual": [
+      2,
+      4
+    ],
+    "referenceCost": [
+      1,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "asian",
+    "reference": "medium_livinghouse",
+    "manualName": "Medium Residence",
+    "manual": [
+      8,
+      3
+    ],
+    "referenceCost": [
+      8,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "mill",
+    "manualName": "Grain Mill",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "pig_farm",
+    "manualName": "Pig Farm",
+    "manual": [
+      9,
+      3
+    ],
+    "referenceCost": [
+      8,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "asian",
+    "reference": "rice_farm",
+    "manualName": "Rice Farm",
+    "manual": [
+      9,
+      3
+    ],
+    "referenceCost": [
+      9,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "sawmill",
+    "manualName": "Sawmill",
+    "manual": [
+      4,
+      1
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "slaughterhouse",
+    "manualName": "Slaughterhouse",
+    "manual": [
+      6,
+      2
+    ],
+    "referenceCost": [
+      6,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "small_livinghouse",
+    "manualName": "Small Residence",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      3,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "stock",
+    "manualName": "Storage Area",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "stonecutter",
+    "manualName": "Stonecutter's Hut",
+    "manual": [
+      3,
+      0
+    ],
+    "referenceCost": [
+      3,
+      0
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "sulfurmine",
+    "manualName": "Sulfur Mine",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "temple",
+    "manualName": "Small Pagoda",
+    "manual": [
+      9,
+      4
+    ],
+    "referenceCost": [
+      9,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "toolsmith",
+    "manualName": "Tool Smith's Works",
+    "manual": [
+      5,
+      3
+    ],
+    "referenceCost": [
+      5,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "tower",
+    "manualName": "Small Guard Tower",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "waterworks",
+    "manualName": "Waterworks",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "weaponsmith",
+    "manualName": "Weapon Smith's Works",
+    "manual": [
+      7,
+      5
+    ],
+    "referenceCost": [
+      7,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "asian",
+    "reference": "",
+    "manualName": "Cannon Hall",
+    "manual": [
+      9,
+      3
+    ],
+    "referenceCost": null,
+    "agrees": null
+  },
+  {
+    "race": "asian",
+    "reference": "",
+    "manualName": "Gunpowder Maker's Hut",
+    "manual": [
+      5,
+      3
+    ],
+    "referenceCost": null,
+    "agrees": null
+  },
+  {
+    "race": "amazon",
+    "reference": "baker",
+    "manualName": "Bakery",
+    "manual": [
+      5,
+      2
+    ],
+    "referenceCost": [
+      5,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "barrack",
+    "manualName": "Barracks",
+    "manual": [
+      6,
+      4
+    ],
+    "referenceCost": [
+      6,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "beekeeping",
+    "manualName": "Beekeeper's Hut",
+    "manual": [
+      6,
+      1
+    ],
+    "referenceCost": [
+      6,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "big_livinghouse",
+    "manualName": "Large Residence",
+    "manual": [
+      18,
+      9
+    ],
+    "referenceCost": [
+      18,
+      9
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "big_temple",
+    "manualName": "Large Temple",
+    "manual": [
+      13,
+      11
+    ],
+    "referenceCost": [
+      13,
+      11
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "big_tower",
+    "manualName": "Large Guard Tower",
+    "manual": [
+      3,
+      5
+    ],
+    "referenceCost": [
+      3,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "castle",
+    "manualName": "Castle",
+    "manual": [
+      8,
+      10
+    ],
+    "referenceCost": [
+      9,
+      9
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "coalmine",
+    "manualName": "Coal Mine",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "dockyard",
+    "manualName": "Shipyard",
+    "manual": [
+      5,
+      2
+    ],
+    "referenceCost": [
+      3,
+      5
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "donkey_farm",
+    "manualName": null,
+    "manual": null,
+    "referenceCost": [
+      7,
+      3
+    ],
+    "agrees": null
+  },
+  {
+    "race": "amazon",
+    "reference": "farm",
+    "manualName": "Grain Farm",
+    "manual": [
+      7,
+      3
+    ],
+    "referenceCost": [
+      6,
+      6
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "fisher",
+    "manualName": "Fisherman's Hut",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "forester",
+    "manualName": "Forester's Hut",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      3,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "gemsmine",
+    "manualName": "Gem Mine",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "goldmelt",
+    "manualName": "Gold Smelting Works",
+    "manual": [
+      4,
+      5
+    ],
+    "referenceCost": [
+      4,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "goldmine",
+    "manualName": "Gold Mine",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      5,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "harbor",
+    "manualName": "Landing Dock",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      3,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "hospital",
+    "manualName": "Healer's Hut",
+    "manual": [
+      5,
+      2
+    ],
+    "referenceCost": [
+      5,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "ironmelt",
+    "manualName": "Iron Smelting Works",
+    "manual": [
+      4,
+      5
+    ],
+    "referenceCost": [
+      4,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "ironmine",
+    "manualName": "Iron Mine",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      4,
+      1
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "laboratory",
+    "manualName": "Alchemist's Den",
+    "manual": [
+      5,
+      1
+    ],
+    "referenceCost": [
+      5,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "lookout_tower",
+    "manualName": "Lookout Tower",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "lumberjack",
+    "manualName": "Woodcutter's Hut",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      3,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "market_place",
+    "manualName": "Marketplace",
+    "manual": [
+      3,
+      1
+    ],
+    "referenceCost": [
+      3,
+      1
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "mead_brewery",
+    "manualName": "Mead Maker's Works",
+    "manual": [
+      6,
+      4
+    ],
+    "referenceCost": [
+      6,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "medium_livinghouse",
+    "manualName": "Medium Residence",
+    "manual": [
+      8,
+      5
+    ],
+    "referenceCost": [
+      8,
+      5
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "mill",
+    "manualName": "Grain Mill",
+    "manual": [
+      5,
+      2
+    ],
+    "referenceCost": [
+      5,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "pig_farm",
+    "manualName": "Pig Farm",
+    "manual": [
+      7,
+      2
+    ],
+    "referenceCost": [
+      7,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "sawmill",
+    "manualName": "Sawmill",
+    "manual": [
+      4,
+      3
+    ],
+    "referenceCost": [
+      4,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "slaughterhouse",
+    "manualName": "Slaughterhouse",
+    "manual": [
+      5,
+      3
+    ],
+    "referenceCost": [
+      5,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "small_livinghouse",
+    "manualName": "Small Residence",
+    "manual": [
+      4,
+      2
+    ],
+    "referenceCost": [
+      4,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "stock",
+    "manualName": "Storage Area",
+    "manual": [
+      2,
+      2
+    ],
+    "referenceCost": [
+      2,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "stonecutter",
+    "manualName": "Stonecutter's Hut",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      2,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "sulfurmine",
+    "manualName": "Sulfur Mine",
+    "manual": [
+      3,
+      2
+    ],
+    "referenceCost": [
+      3,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "temple",
+    "manualName": "Small Temple",
+    "manual": [
+      7,
+      6
+    ],
+    "referenceCost": [
+      7,
+      6
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "toolsmith",
+    "manualName": "Tool Smith's Works",
+    "manual": [
+      4,
+      4
+    ],
+    "referenceCost": [
+      4,
+      4
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "tower",
+    "manualName": "Small Guard Tower",
+    "manual": [
+      2,
+      3
+    ],
+    "referenceCost": [
+      3,
+      3
+    ],
+    "agrees": false
+  },
+  {
+    "race": "amazon",
+    "reference": "waterworks",
+    "manualName": "Waterworks",
+    "manual": [
+      4,
+      2
+    ],
+    "referenceCost": [
+      4,
+      2
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "weaponsmith",
+    "manualName": "Weapon Smith's Works",
+    "manual": [
+      5,
+      3
+    ],
+    "referenceCost": [
+      5,
+      3
+    ],
+    "agrees": true
+  },
+  {
+    "race": "amazon",
+    "reference": "",
+    "manualName": "Gong Hall",
+    "manual": [
+      8,
+      10
+    ],
+    "referenceCost": null,
+    "agrees": null
+  }
+]
