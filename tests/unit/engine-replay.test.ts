@@ -191,3 +191,44 @@ test('the content descriptor supplied at creation cannot change later saves or r
   }
   finally { s.dispose() }
 })
+
+test('editing setup settings cannot change a running session or its recording', () => {
+  const settings = {
+    transportPriority: [...rules.goods], toolWeights: { axe: 2 }, urgentTools: ['axe'], stored: ['plank'],
+    recruit: { automatic: false, queue: {} as Record<string, number> }, distribution: { coal: { toolsmith: 2 } },
+  }
+  const s = session({ players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle, settings }] })
+  try {
+    const before = save(s), recorder = record(s)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: before.checksum })
+    settings.transportPriority.reverse()
+    settings.toolWeights.axe = 9
+    settings.urgentTools.push('hammer')
+    settings.stored.push('stone')
+    settings.recruit.automatic = true
+    settings.recruit.queue.swordsman = 3
+    settings.distribution.coal.toolsmith = 7
+    expect(save(s)).toEqual(before)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: before.checksum })
+    recorder.advance(2)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 2, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
+})
+
+test('sessions using one settings preset retain independent command histories', () => {
+  const settings = { urgentTools: ['axe'] }
+  const players = [{ name: 'Rome', civilization: 'roman', start: anchors.castle, settings }]
+  const first = session({ players }), second = session({ players })
+  try {
+    const untouched = save(second), recorder = record(first)
+    expect(recorder.enqueue({ tick: 0, player: 1, seq: 0, type: 'urgent-tool', tool: 'hammer' })).toBeNull()
+    recorder.advance(1)
+    expect(first.state.results.at(-1)).toMatchObject({ ok: true, type: 'urgent-tool' })
+    expect(first.state.players[0]!.settings.urgentTools).toEqual(['axe', 'hammer'])
+    expect(settings.urgentTools).toEqual(['axe'])
+    expect(save(second)).toEqual(untouched)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 1, checksum: first.checksum() })
+  }
+  finally { first.dispose(); second.dispose() }
+})

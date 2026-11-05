@@ -54,7 +54,7 @@ export function createState(setup: SessionSetup): State {
   for (const [name, array] of Object.entries(map)) if (ArrayBuffer.isView(array) && (array as unknown as ArrayLike<number>).length !== size) throw new RangeError(`Map layer ${name} has the wrong size`)
   return {
     schema: 1, tick: 0, random: seedRandom(setup.seed), nextId: 1, map,
-    players: setup.players.map((p, i) => ({ id: i + 1, name: p.name, civilization: p.civilization, controller: p.controller ?? 'human', settings: { ...defaultSettings(rules), ...p.settings }, explored: new Uint8Array(size), visible: new Uint8Array(size), ...(rules.worldMemory ? { memory: createWorldMemory(size) } : {}), signs: [], craftCursor: 0 })),
+    players: setup.players.map((p, i) => ({ id: i + 1, name: p.name, civilization: p.civilization, controller: p.controller ?? 'human', settings: structuredClone({ ...defaultSettings(rules), ...p.settings }), explored: new Uint8Array(size), visible: new Uint8Array(size), ...(rules.worldMemory ? { memory: createWorldMemory(size) } : {}), signs: [], craftCursor: 0 })),
     settlers: new Map(), buildings: new Map(), stacks: new Map(), jobs: new Map(), claims: new Map(), growth: [], ledger: {}, events: [], results: [], cooldowns: new Map(), pending: [], navigation: 0,
     mission: setup.mission ? startMission(validateMission(setup.mission, { players: setup.players.length, width: map.width, height: map.height, goods: rules.goods, buildings: rules.buildings.map(b => b.id) }), setup.players.length) : null,
   }
