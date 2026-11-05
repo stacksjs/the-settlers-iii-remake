@@ -1,8 +1,8 @@
 import { expect, test } from 'bun:test'
 import type { Replay } from '../../resources/game/engine'
 import legacy from '../fixtures/replay-format-1.json'
-import { PUBLISHED_RULES, record, verify } from '../../resources/game/engine'
-import { rules, session } from '../fixtures/engine'
+import { createSession, PUBLISHED_RULES, record, restore, save, verify } from '../../resources/game/engine'
+import { anchors, landscape, rules, session } from '../fixtures/engine'
 
 test('a future command replays from when it was submitted, including its pending queue', () => {
   const s = session()
@@ -154,6 +154,40 @@ test('rejected commands never enter the recording', () => {
     expect(recorder.enqueue({ tick: 0, player: 2, seq: 0, type: 'settings', settings: { carrierRatio: 40 } })).not.toBeNull()
     expect(recorder.replay().submissions).toEqual([])
     expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
+})
+
+test('editing an exported save cannot change the session identity or an active recording', () => {
+  const s = session()
+  try {
+    const recorder = record(s)
+    const expected = structuredClone(s.identity)
+    const exported = save(s)
+    exported.rules.version = 'edited outside the session'
+    exported.content.id = 'another content pack'
+    expect(s.identity).toEqual(expected)
+    const next = save(s)
+    expect({ rules: next.rules, content: next.content }).toEqual(expected)
+    const restored = restore(next, rules)
+    try { expect(restored.checksum()).toBe(s.checksum()) }
+    finally { restored.dispose() }
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
+})
+
+test('the content descriptor supplied at creation cannot change later saves or recordings', () => {
+  const content = { id: 'generated-test', digest: 'fixed-content-digest' }
+  const s = createSession({ rules, seed: 1, map: landscape(), content, players: [{ name: 'Rome', civilization: 'roman', start: anchors.castle }] })
+  try {
+    const recorder = record(s)
+    content.id = 'replacement'
+    content.digest = 'replacement-digest'
+    expect(save(s).content).toEqual({ id: 'generated-test', digest: 'fixed-content-digest' })
+    expect(recorder.replay().start.content).toEqual({ id: 'generated-test', digest: 'fixed-content-digest' })
+    recorder.advance(1)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 1, checksum: s.checksum() })
   }
   finally { s.dispose() }
 })

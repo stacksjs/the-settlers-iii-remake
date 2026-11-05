@@ -400,7 +400,7 @@ export function openSession(rules: RulesProfile, state: State, content: { id: st
   if (state.players.some(player => !!player.memory !== !!rules.worldMemory)) throw new TypeError('The world observation history does not belong to these rules.')
   const context = createContext(rules, state)
   let disposed = false
-  const identity = { rules: rulesIdentity(rules), content }
+  const identity = { rules: rulesIdentity(rules), content: { ...content } }
   const guard = (): void => { if (disposed) throw new Error('This game session has been disposed.') }
   const tick = (): void => {
     const due: Command[] = []

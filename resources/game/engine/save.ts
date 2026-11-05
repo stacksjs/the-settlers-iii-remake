@@ -136,7 +136,7 @@ export function encodeState(state: State): EncodedState {
 }
 
 export function save(session: Session): SaveEnvelope {
-  return { format: SAVE_FORMAT, version: SAVE_VERSION, rules: session.identity.rules, content: session.identity.content, tick: session.state.tick, checksum: checksum(session.state), state: encodeState(session.state) }
+  return { format: SAVE_FORMAT, version: SAVE_VERSION, rules: { ...session.identity.rules }, content: { ...session.identity.content }, tick: session.state.tick, checksum: checksum(session.state), state: encodeState(session.state) }
 }
 
 const damaged = (detail: string): SaveError => new SaveError('damaged', `Saved game is damaged: ${detail}.`)
