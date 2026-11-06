@@ -2,6 +2,8 @@ import { closeSharedBrowsers, launch, navigate, waitFor } from '@stacksjs/testin
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import type { InputTraceReport } from './input-trace'
+import { traceInput } from './input-trace'
 
 // The public front door, driven through the real browser with real pointer and
 // keyboard input: a signed-out visitor plays the guest demo, the game page
@@ -22,6 +24,8 @@ const account = { name: 'Home Check', email: `home-check-${stamp}@example.test`,
 const placementAttempts: { pan: number, x: number, y: number, message: string, tile: string | null }[] = []
 const expectedErrorIndexes = new Set<number>()
 const failedRequests: { url: string, status: number }[] = []
+let inputTrace: InputTraceReport | undefined
+let stopInputTrace: (() => Promise<void>) | undefined
 const { cdp, close } = await launch({ viewport: { width: 1280, height: 900, deviceScaleFactor: 1 } })
 const browser = await cdp.send('Browser.getVersion')
 await cdp.send('Runtime.addBinding', { name: 'homeInputObserved' })
@@ -155,6 +159,9 @@ try {
     await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
   }
   await tap(await point('[aria-label="Game speed"] button:first-child'))
+  const capture = await traceInput(cdp)
+  inputTrace = capture.report
+  stopInputTrace = capture.stop
   await point('#demo-map')
   const panStart = await point('#demo-map')
   const beforePan = await cdp.evaluate<string>(`document.querySelector('#demo-map').toDataURL()`)
@@ -169,6 +176,9 @@ try {
   await check('panning places no building', `/1 building/.test(document.querySelector('#demo-message').parentElement.textContent)`)
   await tap(await point('[role=toolbar] button:nth-child(1)'))
   await check('touch selects the woodcutter tool', `document.querySelector('[role=toolbar] button:nth-child(1)').getAttribute('aria-pressed') === 'true'`)
+  await stopInputTrace()
+  if (!inputTrace.complete || inputTrace.error || inputTrace.dataLoss || inputTrace.dropped)
+    throw new Error(`Guest input tracing did not stop and drain cleanly: ${JSON.stringify({ complete: inputTrace.complete, error: inputTrace.error, dataLoss: inputTrace.dataLoss, dropped: inputTrace.dropped })}`)
   // Explore visible open ground, as a player does, without calling the renderer
   // or the simulation from the test. The castle itself is an occupied site.
   await point('#demo-map')
@@ -230,13 +240,15 @@ try {
   const unexpectedErrors = cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index))
   if (unexpectedErrors.length || failedRequests.length) throw new Error(`Unexpected browser failures: ${JSON.stringify({ unexpectedErrors, failedRequests })}`)
   await check('the favicon fallback is a valid castle image', `(async () => { const image = new Image(); image.src = '/favicon.ico'; await image.decode(); return image.naturalWidth === 32 && image.naturalHeight === 32 })()`)
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, browser, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, browser, viewports, appearances, inputEvents, inputTrace, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
   console.log('The home page demo, the sign-in gate and real registration passed in the browser.')
 }
 catch (error) {
   const state = await cdp.evaluate<string>(`JSON.stringify({ path: location.pathname, title: document.title, canvases: document.querySelectorAll('canvas').length, demoMessage: document.querySelector('#demo-message')?.textContent, selectedBuilding: document.querySelector('#demo-building')?.textContent, text: document.body.innerText.slice(0, 300) })`).catch(() => 'unavailable')
   const originalErrors = [...cdp.errors]
-  const failure = { steps, browser, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: originalErrors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: originalErrors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }
+  const failure = { steps, browser, viewports, appearances, inputEvents, inputTrace, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: originalErrors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: originalErrors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify(failure, null, 2)}\n`)
+  await stopInputTrace?.()
   await writeFile(resolve(shots, 'home.json'), `${JSON.stringify(failure, null, 2)}\n`)
   throw error
 }
