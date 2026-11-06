@@ -89,11 +89,11 @@ function catalogOf(session: Session) {
 export const DEFAULT_MINIMAP: MinimapOptions = { territory: 'players', settlers: 'all', buildings: true }
 
 export function snapshot(session: Session | null, selected: number | null, message: string, speed: number, tool: string | null = null, sound = false, ready = false, marked = 0, me = PLAYER) {
-  if (!session) return { match: null as MatchStatus | null, catalog, rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null, me), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
+  if (!session) return { match: null as MatchStatus | null, catalog, rulesVersion: rules.version, canReassignCrew: rules.constructionReassignment === 'surplus-idle', production: [] as { key: string, stock: number, produced: number, consumed: number }[], distribution: [] as { good: string, types: { type: string, name: string, weight: number }[] }[], crafts: [] as { key: string, urgent: number, weight: number, weapon: boolean }[], transport: [] as { key: string, rank: number, stored: boolean }[], limits: { builders: 0, diggers: 0 }, minimap: DEFAULT_MINIMAP, marked, army: army(null, me), carried: 0, needs: [] as string[], objectives: [] as { id: string, text: string, status: string }[], outcome: 'playing', map: 'Generated landscape', seed: null as number | null, ready: false, bootError: false, message, speed, tool, sound, time: '0:00', population: 0, professions: [] as { name: string, count: number }[], goods: [] as { key: string, amount: number, stored: boolean }[], buildings: 0, carrierRatio: 0, selected: null as null | ReturnType<typeof inspect>, events: [] as { text: string, at: Point | null }[], prototypeKept: false }
   const view = session.view(me), player = session.state.players[me - 1]!
   const seconds = Math.floor(session.state.tick / session.rules.tickRate)
   return {
-    ready, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP, catalog: catalogOf(session),
+    ready, bootError: false, message, speed, tool, sound, marked, minimap: DEFAULT_MINIMAP, catalog: catalogOf(session),
     rulesVersion: session.rules.version, canReassignCrew: session.rules.constructionReassignment === 'surplus-idle',
     time: `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`,
     population: view.population,
@@ -278,7 +278,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
   const link = options.match, me = link?.player ?? PLAYER
   let session: Session | null = null, selected: number | null = null, tool: string | null = null, cursor: Point | null = null
   let speed = 1, message = 'Preparing original graphics and your settlement...', disposed = false, sound = false, soundPending = false
-  let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
+  let platform: BrowserPlatform | null = null, assetsReady = false, ready = false, bootError = false, elapsed = 0, sinceUpdate = 0, sinceSave = 0, accumulator = 0, seq = 0
   let playerCatalog: PlayerSlotCatalog = [], playerSlots: readonly number[] = DEFAULT_PLAYER_SLOTS
   let prototypeKept = false
   // Computer players act through the same command queue as the person playing.
@@ -302,7 +302,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
       if (canvas.getAttribute('aria-label') !== label) canvas.setAttribute('aria-label', label)
     }
     const value = snapshot(session, selected, message, speed, tool, sound, ready && assetsReady, troops.selected().length, me)
-    value.prototypeKept = prototypeKept; value.minimap = minimap
+    value.bootError = bootError; value.prototypeKept = prototypeKept; value.minimap = minimap
     if (link && session) value.match = { turn: lastTurn, verified, resyncs, buildings: session.state.buildings.size, connected: online }
     update(value)
   }
@@ -346,6 +346,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     else command(tile, modifiers(event))
   }, { signal: lifetime.signal })
   const report = (text: string): void => { message = text; emit() }
+  const failBoot = (text: string): void => { bootError = true; report(text) }
   // The castle on generated starts, otherwise the first building or settler an original map gives the player.
   const castle = (): Point | null => {
     if (!session) return null
@@ -373,7 +374,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (ready && assetsReady && message.startsWith('Preparing')) message = 'Choose a building, then click open ground inside your border.'
     emit()
   }
-  const assetsLoaded = loadOriginalAssets().then(atlas => { if (disposed) return false; renderer.setAssets(atlas); playerCatalog = atlas.playerSlots; assetsReady = true; drawOverview(); finishBoot(); return true }).catch(error => { if (!disposed) { assetsReady = false; report(error instanceof Error ? error.message : 'Could not load original game assets.') }; return false })
+  const assetsLoaded = loadOriginalAssets().then(atlas => { if (disposed) return false; renderer.setAssets(atlas); playerCatalog = atlas.playerSlots; assetsReady = true; drawOverview(); finishBoot(); return true }).catch(error => { if (!disposed) { assetsReady = false; console.warn('Game graphics failed to load.', error); failBoot('The game graphics could not be loaded. Check your connection and try again.') }; return false })
 
   const send = (type: string, fields: Record<string, unknown>): string | null => {
     if (!session) return 'The settlement is not ready.'
@@ -500,7 +501,7 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (link) { await joinMatch(); return }
     if (options.guest) {
       if (!await assetsLoaded || disposed) return
-      if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
+      if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { failBoot(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
       ready = true; finishBoot()
       return
     }
@@ -523,16 +524,16 @@ export function mountGame(canvas: HTMLCanvasElement, update: (value: Snapshot) =
     if (disposed) return
     if (resumed) {
       try { adopt(resumed); message = 'Welcome back. Your settlement has been restored.' }
-      catch (error) { report(error instanceof Error ? error.message : 'Could not restore player colors.'); return }
+      catch (error) { failBoot(error instanceof Error ? error.message : 'Could not restore player colors.'); return }
     }
-    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
+    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { failBoot(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true
     host.emit((type, payload) => { if (type === 'APP_STATE' && (payload as { state: string }).state === 'background') void persist() })
     finishBoot()
   }).catch(async () => {
     if (link) { await joinMatch(); return }
     if (!await assetsLoaded || disposed) return
-    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { report(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
+    if (!session) { try { adopt(newSession(1 + Math.floor(Math.random() * 1_000_000))) } catch (error) { failBoot(error instanceof Error ? error.message : 'Could not start a settlement.'); return } }
     ready = true; report('Device storage is unavailable. You can play, but this settlement cannot be saved.')
   })
   const play = (name: string): void => { if (sound && platform) void platform.call('Audio', 'play', [name, `/assets/settlers-original/${name}.wav`, { volume: 0.3 }], lifetime.signal).catch(() => {}) }

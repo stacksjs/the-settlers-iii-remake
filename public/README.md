@@ -15,3 +15,7 @@ If you want to overwrite the default `favicon.ico` file, you can do this by putt
 ## Security
 
 If you want to make sure that a file is not publicly accessible, you can put it in the `storage/private` folder. This folder is not accessible by the web server.
+
+The castle in `favicon.svg` and `favicon.ico` reuses the existing header's
+`hugeicons:castle-01` glyph from the installed Iconify catalog. Its MIT notice
+is retained in `favicon-LICENSE.txt`. The icon contains no original game artwork.
