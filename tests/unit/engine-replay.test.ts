@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test'
 import type { Replay } from '../../resources/game/engine'
 import legacy from '../fixtures/replay-format-1.json'
 import { createSession, PUBLISHED_RULES, record, restore, save, verify } from '../../resources/game/engine'
-import { anchors, landscape, rules, session } from '../fixtures/engine'
+import { anchors, landscape, order, rules, session, until } from '../fixtures/engine'
 
 test('a future command replays from when it was submitted, including its pending queue', () => {
   const s = session()
@@ -231,4 +231,60 @@ test('sessions using one settings preset retain independent command histories', 
     expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 1, checksum: first.checksum() })
   }
   finally { first.dispose(); second.dispose() }
+})
+
+
+test('editing a player view cannot change live work areas or a recording', () => {
+  const s = session()
+  try {
+    const recorder = record(s)
+    const expected = structuredClone(s.view(1))
+    const exported = s.view(1)
+    expect(exported.buildings.length).toBeGreaterThan(0)
+    exported.buildings[0]!.workArea.x += 10
+    exported.buildings[0]!.workArea.y += 10
+    expect(s.view(1)).toEqual(expected)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
+})
+
+
+test('editing displayed command diagnostics cannot change live results or a recording', () => {
+  const s = session()
+  try {
+    const recorder = record(s)
+    expect(recorder.enqueue({ tick: 0, player: 1, seq: 0, type: 'build', building: 'not-a-building', x: 0, y: 0 })).toBeNull()
+    recorder.advance(1)
+    const expected = structuredClone(s.view(1))
+    const exported = s.view(1)
+    const rejected = exported.events.find(event => event.type === 'rejected')
+    expect(rejected).toBeDefined()
+    expect(exported.results).toHaveLength(1)
+    expect(exported.results[0]!.ok).toBe(false)
+    rejected!.text = 'edited presentation'
+    exported.results[0]!.ok = true
+    exported.results[0]!.reason = 'edited presentation'
+    expect(s.view(1)).toEqual(expected)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 1, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
+})
+
+
+test('editing displayed survey signs cannot change live surveys or a recording', () => {
+  const s = session()
+  try {
+    order(s, 'specialists', { profession: 'geologist', ...anchors.mountain, count: 1 })
+    until(s, () => s.view(1).signs.length > 0, 4000)
+    const recorder = record(s)
+    const expected = structuredClone(s.view(1).signs)
+    const exported = s.view(1)
+    expect(exported.signs.length).toBeGreaterThan(0)
+    exported.signs[0]!.amount += 100
+    exported.signs[0]!.until += 100
+    expect(s.view(1).signs).toEqual(expected)
+    expect(verify(recorder.replay(), rules)).toEqual({ ok: true, ticks: 0, checksum: s.checksum() })
+  }
+  finally { s.dispose() }
 })
