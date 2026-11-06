@@ -2,6 +2,7 @@ import { closeSharedBrowsers, launch, navigate, waitFor } from '@stacksjs/testin
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import { touchFailureDiagnostics } from './input-diagnostics'
 
 // The public front door, driven through the real browser with real pointer and
 // keyboard input: a signed-out visitor plays the guest demo, the game page
@@ -13,7 +14,7 @@ const shots = resolve('storage/framework/runtime/shots')
 await mkdir(shots, { recursive: true })
 const steps: { action: string, label: string, ok: boolean }[] = []
 const viewports: { width: number, overflow: number }[] = []
-const inputEvents: { type: string, trusted: boolean, pointerType: string | null, target: string }[] = []
+const inputEvents: { type: string, trusted: boolean, pointerType: string | null, target: string, prevented: boolean, cancelable: boolean, focused: boolean }[] = []
 const touchTargets: { x: number, y: number, target: string | null, scrollY: number, scale: number }[] = []
 const appearances: { mode: string, background: string, luminance: number, contrast: number }[] = []
 const stamp = Date.now().toString(36)
@@ -23,6 +24,7 @@ const placementAttempts: { pan: number, x: number, y: number, message: string, t
 const expectedErrorIndexes = new Set<number>()
 const failedRequests: { url: string, status: number }[] = []
 const { cdp, close } = await launch({ viewport: { width: 1280, height: 900, deviceScaleFactor: 1 } })
+const browser = await cdp.send('Browser.getVersion')
 await cdp.send('Runtime.addBinding', { name: 'homeInputObserved' })
 cdp.on('Runtime.bindingCalled', ({ name, payload }: { name: string, payload: string }) => { if (name === 'homeInputObserved') inputEvents.push(JSON.parse(payload)) })
 cdp.on('Network.responseReceived', ({ response }: { response: { url: string, status: number } }) => { if (response.status >= 400) failedRequests.push({ url: response.url, status: response.status }) })
@@ -136,10 +138,10 @@ try {
   await check('the page fits a narrow touch viewport', `document.documentElement.scrollWidth <= 390`)
   viewports.push({ width: 390, overflow: await cdp.evaluate<number>('Math.max(0, document.documentElement.scrollWidth - 390)') })
   // Observe real guest input without changing signals, handlers or game state.
-  await cdp.evaluate(`['pointerdown', 'pointerup', 'click'].forEach(type => document.addEventListener(type, event => {
+  await cdp.evaluate(`['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click'].forEach(type => document.addEventListener(type, event => {
     const target = event.target.closest?.('button, canvas'); if (!target) return;
-    homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, pointerType: event.pointerType || null, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) }));
-  }, { capture: true }))`)
+    setTimeout(() => homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, prevented: event.defaultPrevented, cancelable: event.cancelable, focused: document.hasFocus(), pointerType: event.pointerType || null, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) })), 0);
+  }, { capture: true, passive: true }))`)
   const tap = async (p: { x: number, y: number }): Promise<void> => {
     touchTargets.push(await cdp.evaluate<{ x: number, y: number, target: string | null, scrollY: number, scale: number }>(`(() => {
       const target = document.elementFromPoint(${p.x}, ${p.y})?.closest('button, canvas');
@@ -225,12 +227,17 @@ try {
   const unexpectedErrors = cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index))
   if (unexpectedErrors.length || failedRequests.length) throw new Error(`Unexpected browser failures: ${JSON.stringify({ unexpectedErrors, failedRequests })}`)
   await check('the favicon fallback is a valid castle image', `(async () => { const image = new Image(); image.src = '/favicon.ico'; await image.decode(); return image.naturalWidth === 32 && image.naturalHeight === 32 })()`)
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, browser, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
   console.log('The home page demo, the sign-in gate and real registration passed in the browser.')
 }
 catch (error) {
   const state = await cdp.evaluate<string>(`JSON.stringify({ path: location.pathname, title: document.title, canvases: document.querySelectorAll('canvas').length, demoMessage: document.querySelector('#demo-message')?.textContent, selectedBuilding: document.querySelector('#demo-building')?.textContent, text: document.body.innerText.slice(0, 300) })`).catch(() => 'unavailable')
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
+  const originalErrors = [...cdp.errors]
+  const failure = { steps, browser, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: originalErrors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: originalErrors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }
+  // Persist the original failure before a separate diagnostic page can fail.
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify(failure, null, 2)}\n`)
+  const touchDiagnostics = await touchFailureDiagnostics(cdp).catch(problem => ({ calibrationFailure: problem instanceof Error ? problem.message : String(problem) }))
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ ...failure, touchDiagnostics }, null, 2)}\n`)
   throw error
 }
 finally {
