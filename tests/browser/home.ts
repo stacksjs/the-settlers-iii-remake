@@ -167,9 +167,9 @@ try {
   const beforePan = await cdp.evaluate<string>(`document.querySelector('#demo-map').toDataURL()`)
   const scrollBeforePan = await cdp.evaluate<number>('scrollY')
   const dragMap = async (dx: number, dy: number): Promise<void> => {
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...panStart, id: 1 }] })
-    for (const fraction of [1 / 3, 2 / 3, 1]) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: panStart.x + dx * fraction, y: panStart.y + dy * fraction, id: 1 }] })
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    // Stop the finger before lifting: this scenario pans, then uses the toolbar.
+    // A fast release starts a fling whose cancellation can suppress the next tap.
+    await cdp.send('Input.synthesizeScrollGesture', { ...panStart, xDistance: dx, yDistance: dy, gestureSourceType: 'touch', preventFling: true })
   }
   await dragMap(60, 0)
   await check('a touch drag pans the paused map without scrolling the page', `document.querySelector('#demo-map').toDataURL() !== ${JSON.stringify(beforePan)} && scrollY === ${scrollBeforePan}`)
