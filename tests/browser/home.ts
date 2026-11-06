@@ -13,6 +13,8 @@ const shots = resolve('storage/framework/runtime/shots')
 await mkdir(shots, { recursive: true })
 const steps: { action: string, label: string, ok: boolean }[] = []
 const viewports: { width: number, overflow: number }[] = []
+const inputEvents: { type: string, trusted: boolean, pointerType: string | null, target: string }[] = []
+const touchTargets: { x: number, y: number, target: string | null, scrollY: number, scale: number }[] = []
 const appearances: { mode: string, background: string, luminance: number, contrast: number }[] = []
 const stamp = Date.now().toString(36)
 const account = { name: 'Home Check', email: `home-check-${stamp}@example.test`, password: `Home-Check-${stamp}-9!` }
@@ -21,6 +23,8 @@ const placementAttempts: { pan: number, x: number, y: number, message: string, t
 const expectedErrorIndexes = new Set<number>()
 const failedRequests: { url: string, status: number }[] = []
 const { cdp, close } = await launch({ viewport: { width: 1280, height: 900, deviceScaleFactor: 1 } })
+await cdp.send('Runtime.addBinding', { name: 'homeInputObserved' })
+cdp.on('Runtime.bindingCalled', ({ name, payload }: { name: string, payload: string }) => { if (name === 'homeInputObserved') inputEvents.push(JSON.parse(payload)) })
 cdp.on('Network.responseReceived', ({ response }: { response: { url: string, status: number } }) => { if (response.status >= 400) failedRequests.push({ url: response.url, status: response.status }) })
 const check = async (label: string, expression: string, timeout = 5000): Promise<void> => {
   const deadline = performance.now() + timeout
@@ -42,7 +46,7 @@ const appearance = async (mode: string): Promise<void> => {
 }
 const point = async (selector: string): Promise<{ x: number, y: number }> => cdp.evaluate<{ x: number, y: number }>(`(() => {
   const el = document.querySelector(${JSON.stringify(selector)}); if (!el || el.disabled) throw new Error('Missing enabled control ${selector.replace(/'/g, '')}')
-  el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }
+  el.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = el.getBoundingClientRect(); const x = Math.max(0, Math.min(innerWidth - 1, r.left + r.width / 2)), y = Math.max(0, Math.min(innerHeight - 1, r.top + r.height / 2)); const hit = document.elementFromPoint(x, y); if (!hit || !el.contains(hit)) throw new Error('Control is obscured ${selector.replace(/'/g, '')}'); return { x, y }
 })()`)
 const click = async (selector: string): Promise<void> => {
   const p = await point(selector)
@@ -131,9 +135,19 @@ try {
   await check('the touch demo boots with real starting goods', `document.querySelector('#demo-stock').textContent.includes('plank 30')`, 60000)
   await check('the page fits a narrow touch viewport', `document.documentElement.scrollWidth <= 390`)
   viewports.push({ width: 390, overflow: await cdp.evaluate<number>('Math.max(0, document.documentElement.scrollWidth - 390)') })
+  // Observe real guest input without changing signals, handlers or game state.
+  await cdp.evaluate(`['pointerdown', 'pointerup', 'click'].forEach(type => document.addEventListener(type, event => {
+    const target = event.target.closest?.('button, canvas'); if (!target) return;
+    homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, pointerType: event.pointerType || null, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) }));
+  }, { capture: true }))`)
   const tap = async (p: { x: number, y: number }): Promise<void> => {
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...p, id: 1 }] })
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    touchTargets.push(await cdp.evaluate<{ x: number, y: number, target: string | null, scrollY: number, scale: number }>(`(() => {
+      const target = document.elementFromPoint(${p.x}, ${p.y})?.closest('button, canvas');
+      return { x: ${p.x}, y: ${p.y}, target: target ? target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) : null, scrollY, scale: visualViewport?.scale || 1 };
+    })()`))
+    // Let Chrome complete a touch gesture, including compatibility click
+    // delivery, instead of sending a zero-duration down/up pair.
+    await cdp.send('Input.synthesizeTapGesture', { ...p, duration: 50, gestureSourceType: 'touch' })
   }
   await tap(await point('[aria-label="Game speed"] button:first-child'))
   await point('#demo-map')
@@ -211,12 +225,12 @@ try {
   const unexpectedErrors = cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index))
   if (unexpectedErrors.length || failedRequests.length) throw new Error(`Unexpected browser failures: ${JSON.stringify({ unexpectedErrors, failedRequests })}`)
   await check('the favicon fallback is a valid castle image', `(async () => { const image = new Image(); image.src = '/favicon.ico'; await image.decode(); return image.naturalWidth === 32 && image.naturalHeight === 32 })()`)
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)) }, null, 2)}\n`)
   console.log('The home page demo, the sign-in gate and real registration passed in the browser.')
 }
 catch (error) {
   const state = await cdp.evaluate<string>(`JSON.stringify({ path: location.pathname, title: document.title, canvases: document.querySelectorAll('canvas').length, demoMessage: document.querySelector('#demo-message')?.textContent, selectedBuilding: document.querySelector('#demo-building')?.textContent, text: document.body.innerText.slice(0, 300) })`).catch(() => 'unavailable')
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
+  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ steps, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: cdp.errors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: cdp.errors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
   throw error
 }
 finally {
