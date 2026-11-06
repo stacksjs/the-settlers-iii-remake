@@ -2,7 +2,6 @@ import { closeSharedBrowsers, launch, navigate, waitFor } from '@stacksjs/testin
 import { mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
-import { touchFailureDiagnostics } from './input-diagnostics'
 
 // The public front door, driven through the real browser with real pointer and
 // keyboard input: a signed-out visitor plays the guest demo, the game page
@@ -138,7 +137,7 @@ try {
   await check('the page fits a narrow touch viewport', `document.documentElement.scrollWidth <= 390`)
   viewports.push({ width: 390, overflow: await cdp.evaluate<number>('Math.max(0, document.documentElement.scrollWidth - 390)') })
   // Observe real guest input without changing signals, handlers or game state.
-  await cdp.evaluate(`['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click'].forEach(type => document.addEventListener(type, event => {
+  await cdp.evaluate(`['pointerdown', 'pointerup', 'click'].forEach(type => document.addEventListener(type, event => {
     const target = event.target.closest?.('button, canvas'); if (!target) return;
     setTimeout(() => homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, prevented: event.defaultPrevented, cancelable: event.cancelable, focused: document.hasFocus(), pointerType: event.pointerType || null, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) })), 0);
   }, { capture: true, passive: true }))`)
@@ -147,9 +146,10 @@ try {
       const target = document.elementFromPoint(${p.x}, ${p.y})?.closest('button, canvas');
       return { x: ${p.x}, y: ${p.y}, target: target ? target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) : null, scrollY, scale: visualViewport?.scale || 1 };
     })()`))
-    // Let Chrome complete a touch gesture, including compatibility click
-    // delivery, instead of sending a zero-duration down/up pair.
-    await cdp.send('Input.synthesizeTapGesture', { ...p, duration: 50, gestureSourceType: 'touch' })
+    // Direct touch input delivers the trusted compatibility click on both
+    // host platforms; the synthesized gesture does not on hosted Linux.
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...p, id: 1 }] })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
   }
   await tap(await point('[aria-label="Game speed"] button:first-child'))
   await point('#demo-map')
@@ -234,10 +234,7 @@ catch (error) {
   const state = await cdp.evaluate<string>(`JSON.stringify({ path: location.pathname, title: document.title, canvases: document.querySelectorAll('canvas').length, demoMessage: document.querySelector('#demo-message')?.textContent, selectedBuilding: document.querySelector('#demo-building')?.textContent, text: document.body.innerText.slice(0, 300) })`).catch(() => 'unavailable')
   const originalErrors = [...cdp.errors]
   const failure = { steps, browser, viewports, appearances, inputEvents, touchTargets, placementAttempts, failedRequests, observedConsoleErrors: originalErrors, expectedFailureErrorCount: expectedErrorIndexes.size, consoleErrors: originalErrors.filter((_, index) => !expectedErrorIndexes.has(index)), state, error: error instanceof Error ? error.message : String(error) }
-  // Persist the original failure before a separate diagnostic page can fail.
   await writeFile(resolve(shots, 'home.json'), `${JSON.stringify(failure, null, 2)}\n`)
-  const touchDiagnostics = await touchFailureDiagnostics(cdp).catch(problem => ({ calibrationFailure: problem instanceof Error ? problem.message : String(problem) }))
-  await writeFile(resolve(shots, 'home.json'), `${JSON.stringify({ ...failure, touchDiagnostics }, null, 2)}\n`)
   throw error
 }
 finally {
