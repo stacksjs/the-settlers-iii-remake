@@ -1,7 +1,7 @@
 <script server>
 // Whether to offer "Sign in". Only the presence of the session cookie is read here, to keep a signed-in
 // player from being invited to sign in again; every gated page and route still validates the session itself.
-const signedIn = !!requestContext.cookie('auth-token')
+const signedIn = !!cookies['auth-token']
 </script>
 <header class="sticky top-0 z-40 bg-amber-50/85 dark:bg-stone-950/85 border-amber-200/70 border-b dark:border-stone-800 backdrop-blur">
   <div class="flex flex-wrap gap-x-6 gap-y-2 items-center justify-between mx-auto px-4 py-3 sm:px-6 max-w-6xl">
