@@ -13,7 +13,7 @@ const shots = resolve('storage/framework/runtime/shots')
 await mkdir(shots, { recursive: true })
 const steps: { action: string, label: string, ok: boolean }[] = []
 const viewports: { width: number, overflow: number }[] = []
-const inputEvents: { type: string, trusted: boolean, pointerType: string | null, target: string, prevented: boolean, cancelable: boolean, focused: boolean }[] = []
+const inputEvents: { type: string, trusted: boolean, pointerType: string | null, target: string, prevented: boolean, cancelable: boolean, focused: boolean, pointerId: number, captured: boolean }[] = []
 const touchTargets: { x: number, y: number, target: string | null, scrollY: number, scale: number }[] = []
 const appearances: { mode: string, background: string, luminance: number, contrast: number }[] = []
 const stamp = Date.now().toString(36)
@@ -45,9 +45,12 @@ const appearance = async (mode: string): Promise<void> => {
   })()`)
   appearances.push({ mode, ...value })
 }
-const point = async (selector: string): Promise<{ x: number, y: number }> => cdp.evaluate<{ x: number, y: number }>(`(() => {
+const point = async (selector: string): Promise<{ x: number, y: number }> => cdp.evaluate<{ x: number, y: number }>(`(async () => {
   const el = document.querySelector(${JSON.stringify(selector)}); if (!el || el.disabled) throw new Error('Missing enabled control ${selector.replace(/'/g, '')}')
-  el.scrollIntoView({ block: 'center', behavior: 'instant' }); const r = el.getBoundingClientRect(); const x = Math.max(0, Math.min(innerWidth - 1, r.left + r.width / 2)), y = Math.max(0, Math.min(innerHeight - 1, r.top + r.height / 2)); const hit = document.elementFromPoint(x, y); if (!hit || !el.contains(hit)) throw new Error('Control is obscured ${selector.replace(/'/g, '')}'); return { x, y }
+  el.scrollIntoView({ block: 'center', behavior: 'instant' });
+  // Match the Stacks driver's compositor synchronization after scrolling.
+  await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame);
+  const r = el.getBoundingClientRect(); const x = Math.max(0, Math.min(innerWidth - 1, r.left + r.width / 2)), y = Math.max(0, Math.min(innerHeight - 1, r.top + r.height / 2)); const hit = document.elementFromPoint(x, y); if (!hit || !el.contains(hit)) throw new Error('Control is obscured ${selector.replace(/'/g, '')}'); return { x, y }
 })()`)
 const click = async (selector: string): Promise<void> => {
   const p = await point(selector)
@@ -137,9 +140,9 @@ try {
   await check('the page fits a narrow touch viewport', `document.documentElement.scrollWidth <= 390`)
   viewports.push({ width: 390, overflow: await cdp.evaluate<number>('Math.max(0, document.documentElement.scrollWidth - 390)') })
   // Observe real guest input without changing signals, handlers or game state.
-  await cdp.evaluate(`['pointerdown', 'pointerup', 'click'].forEach(type => document.addEventListener(type, event => {
+  await cdp.evaluate(`['pointerdown', 'pointerup', 'pointercancel', 'gotpointercapture', 'lostpointercapture', 'click'].forEach(type => document.addEventListener(type, event => {
     const target = event.target.closest?.('button, canvas'); if (!target) return;
-    setTimeout(() => homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, prevented: event.defaultPrevented, cancelable: event.cancelable, focused: document.hasFocus(), pointerType: event.pointerType || null, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) })), 0);
+    setTimeout(() => homeInputObserved(JSON.stringify({ type, trusted: event.isTrusted, prevented: event.defaultPrevented, cancelable: event.cancelable, focused: document.hasFocus(), pointerType: event.pointerType || null, pointerId: event.pointerId, captured: target.hasPointerCapture?.(event.pointerId) || false, target: target.id || target.getAttribute('aria-label') || target.textContent.trim().slice(0, 60) })), 0);
   }, { capture: true, passive: true }))`)
   const tap = async (p: { x: number, y: number }): Promise<void> => {
     touchTargets.push(await cdp.evaluate<{ x: number, y: number, target: string | null, scrollY: number, scale: number }>(`(() => {
