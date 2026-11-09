@@ -9,11 +9,18 @@ The user authorized source improvements, package patch releases, downstream Stac
 | Game rules, assets, campaigns, application controls | stacksjs/the-settlers-iii-remake | ~/Code/the-settlers-iii-remake |
 | Compiler, signals, native stx control/surface contract | stacksjs/stx | ~/Code/Tools/stx |
 | Native graphics, host runtime, storage, audio, input, lifecycle | craft-native/craft | ~/Code/Tools/craft |
+| JavaScript execution and collector integration | zig-utils/zig-js | ~/Code/Libraries/zig-js |
 | Build, configuration, signing, release and store orchestration | stacksjs/stacks | ~/Code/stacks |
 | Shared utility/style semantics | stacksjs/ts-css | ~/Code/Libraries/ts-css |
 | Executed HomeOS shared-graphics consumer | home-lang/home-os | ~/Code/Home/os |
 
 Discover other owners from the actual dependency and remote under ~/Code. Do not patch a consumer to disguise an upstream defect. Read each owning AGENTS.md and relevant skill before changing its source.
+
+## Current Craft selection
+
+Use the latest Craft source for active development and the latest published native package through Pantry for installed checks. Fetch the owning `origin/main`, inspect the newest tag and actual release artifacts, then install or upgrade with `pantry add --global craft-native.org`. Resolve the executable with `pantry which craft --resolve` and retain its actual `--version`, source identity and checksum in the check receipt.
+
+When the newest source tag has not completed publication, fix its release gate in the owning source and verify the resulting artifacts before installing them. A tag, staged npm package or cached executable does not establish publication. Keep older versions only as identified historical comparisons; they cannot qualify current behavior. Repeat Pantry resolution and installed-consumer checks after the new release becomes available.
 
 ## Required sequence
 
