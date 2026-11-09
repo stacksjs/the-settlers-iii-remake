@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-09T20:21:34.847Z",
+  "applicationHead": "c4f0f3ac63662ba7289dc917b11d9f61c84c7d76",
+  "applicationDirty": false,
+  "applicationTrackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "checkScriptSha256": "94842fd8e158aff7ffca9b2398eb4e3cc6045db3ddf4f5909e21c7384fabe140",
+  "hostSources": {
+    "build.zig": "b7d5a962e411d603735edca977d0eff0478c1639ee2fe0968d79a55da5364944",
+    "main.zig": "c1eb914de991d73338708a4536a21cdd04f37a611cf65c91afa5d4e30b616a72"
+  },
+  "hostManifestSha256": "89f8a56e476a85c89b5e09b403e4c661abb4c1a6fb005d48192bd14d226c8568",
+  "nativeExecutableSha256": "26e12048309d2c5239127b14f942f2858ee195a559c0a8c21983bc6c7daafb49",
+  "craftSourceCommit": "c662237b37abc782c373f06809862f8988e3d950",
+  "craftSourceTree": "902486caa376c811df0737e4775261b80bfe3b89",
+  "zigVersion": "0.18.0-dev.146+35accc06e",
+  "zigExecutableSha256": "9372e802a53cc16a13a901a903ffc116c66627a20696af2be0a0bf328a5971e7",
+  "bunVersion": "1.4.4",
+  "fixtureSha256": "32de26ef5bd51d6e20cea00eed4a379c8851d3da8bef478ffe1d39348bfec0c4",
+  "bundleSha256": "0935723acdd8bc2007c991757bb13e7be04df23251aea97ad307c179cc4c5d31",
+  "bundleBytes": 288718,
+  "runtimeOptions": "Craft PersistentRuntime defaults, unchanged",
+  "bunCallbacks": 10002,
+  "expected": {
+    "tick": 5000,
+    "checksum": "b413c661",
+    "restoredChecksum": "b413c661",
+    "replay": {
+      "ok": true,
+      "ticks": 5000,
+      "checksum": "b413c661"
+    },
+    "storagePhase": "active",
+    "createdUnchanged": true
+  },
+  "build": {
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "native": {
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": "bundle load failed before first callback: OutOfMemory\nerror: OutOfMemory\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/mem/Allocator.zig:325:82: 0x104e77e6f in allocBytesAligned__func_173 (settlers-retained-probe)\n    const byte_ptr = self.rawAlloc(byte_count, alignment, return_address) orelse return error.OutOfMemory;\n                                                                                 ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/mem/Allocator.zig:311:5: 0x104e7f28b in allocWithSizeAndAlignment__func_216 (settlers-retained-probe)\n    return self.allocBytesAligned(alignment, byte_count, return_address);\n    ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/mem/Allocator.zig:299:55: 0x104e7f083 in allocAdvancedWithRetAddr (settlers-retained-probe)\n    const ptr: [*]align(a.toByteUnits()) T = @ptrCast(try self.allocWithSizeAndAlignment(@sizeOf(T), a, n, return_address));\n                                                      ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/mem/Allocator.zig:287:5: 0x104e7f0f7 in alignedAlloc__func_213 (settlers-retained-probe)\n    return self.allocAdvancedWithRetAddr(T, alignment, n, @returnAddress());\n    ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/hash_map.zig:1480:27: 0x1051a1173 in allocate (settlers-retained-probe)\n            const slice = try allocator.alignedAlloc(u8, max_align, total_size);\n                          ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/hash_map.zig:1437:13: 0x1051a02ef in grow (settlers-retained-probe)\n            try map.allocate(allocator, new_cap);\n            ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/hash_map.zig:1298:17: 0x10519ff07 in growIfNeeded (settlers-retained-probe)\n                try self.grow(allocator, capacityForSize(self.load() + new_count), ctx);\n                ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/hash_map.zig:1122:70: 0x10519d863 in getOrPutContextAdapted__func_1733 (settlers-retained-probe)\n                    const index = self.getIndex(key, key_ctx) orelse return err;\n                                                                     ^\n/Users/chris/Code/Tools/craft/pantry/ziglang.org/v0.18.0-dev.146+35accc06e/lib/std/hash_map.zig:1103:25: 0x10519d433 in getOrPutContext (settlers-retained-probe)\n            const gop = try self.getOrPutContextAdapted(allocator, key, ctx, ctx);\n                        ^\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:105:28: 0x10519d17b in getOrPut (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:388:23: 0x10519cdc7 in noteLexicalName (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:403:9: 0x10519b7c3 in addLexical (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:2682:25: 0x1051f6677 in predeclareLexicalNode (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:3420:25: 0x1051919cf in compileStmt (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:2342:13: 0x10518d787 in compilePlainFunctionInner (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/compiler.zig:2177:34: 0x10518c2ff in admitPlainFunction (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:8604:9: 0x10518c17b in compileAdmissionFailed (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:8620:83: 0x10518bcc7 in installPlainFunctionBytecode (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:8570:32: 0x1052c5943 in makeFunction (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:6014:21: 0x105262c47 in hoistStatementFunctionDecl (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:8359:46: 0x10527e7ef in evalStatements (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/interpreter.zig:6965:28: 0x10525c273 in eval (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/context.zig:10590:13: 0x105ff6817 in evaluateWithThis (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/context.zig:10280:9: 0x105ff3c73 in evaluate (settlers-retained-probe)\nzig-pkg/zig_js-0.0.1-gDtlP6gRjQEt_U4Qg-k3mIQy9yAKwt6kKItRRG0Ycbyh/src/context.zig:7972:13: 0x105ff3487 in evaluateProtected (settlers-retained-probe)\ncraft/src/js_host_zigjs.zig:26:5: 0x104f6478b in translate (settlers-retained-probe)\ncraft/src/js_host_zigjs.zig:106:80: 0x105ff2007 in evaluate (settlers-retained-probe)\n/Users/chris/Code/settlers-retained-replay/storage/framework/runtime/native-retained-h8KYsg/main.zig:12:9: 0x104f5eeab in main (settlers-retained-probe)\n        return err;\n        ^\n"
+  },
+  "matchedBunReference": false,
+  "interpreterGuardChanged": false,
+  "tickWindowShortened": false,
+  "webViewUsed": false,
+  "scope": "Headless source API consumer of Craft PersistentRuntime. No published artifact, display-linked callback, graphics, native HUD or Gold fidelity qualification."
+}

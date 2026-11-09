@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-09T20:22:25.117Z",
+  "implementationCommit": "c4f0f3ac63662ba7289dc917b11d9f61c84c7d76",
+  "issue": "https://github.com/stacksjs/the-settlers-iii-remake/issues/244",
+  "relatedIssues": [
+    94,
+    26
+  ],
+  "changes": [
+    "Owned incremental replay verification with synchronous compatibility and format1 support",
+    "Public runtime entrypoint without eager historical/faction catalogs",
+    "Real browser event-loop qualification and fail-closed source-native consumer"
+  ],
+  "checks": {
+    "unit": {
+      "command": "./buddy test --unit",
+      "pass": 564,
+      "fail": 0,
+      "assertions": 102152,
+      "seconds": 443.39
+    },
+    "focused": {
+      "command": "bun test tests/unit/engine-replay.test.ts tests/unit/engine-core.test.ts tests/unit/engine-original.test.ts",
+      "pass": 52,
+      "fail": 0,
+      "assertions": 2302
+    },
+    "types": {
+      "command": "bun run typecheck",
+      "passed": true
+    },
+    "lint": {
+      "command": "./buddy lint",
+      "errors": 0,
+      "existingWarnings": 1,
+      "warning": "resources/views/index.stx:135 class order"
+    },
+    "assets": {
+      "command": "bun run assets:verify",
+      "passed": true,
+      "spriteFrames": 12621,
+      "interfaceImages": 52,
+      "convertedFiles": 130
+    },
+    "build": {
+      "command": "./buddy build views",
+      "passed": true,
+      "pages": 7
+    },
+    "frozenInstall": {
+      "command": "bun install --frozen-lockfile",
+      "passed": true,
+      "changedPackages": 0
+    },
+    "roadmap": {
+      "command": "bun scripts/roadmap.ts --check",
+      "passed": true
+    },
+    "zigFormat": {
+      "command": "CRAFT_ZIG fmt --check tests/fixtures/native-replay-host/build.zig tests/fixtures/native-replay-host/main.zig",
+      "passed": true
+    }
+  },
+  "browser": {
+    "receipt": "browser-incremental-replay-2026-11-09.json",
+    "bundleSha256": "0935723acdd8bc2007c991757bb13e7be04df23251aea97ad307c179cc4c5d31",
+    "callbacks": 10002,
+    "eventLoopYields": 312,
+    "result": {
+      "tick": 5000,
+      "checksum": "b413c661",
+      "restoredChecksum": "b413c661",
+      "replay": {
+        "ok": true,
+        "ticks": 5000,
+        "checksum": "b413c661"
+      },
+      "storagePhase": "active",
+      "createdUnchanged": true
+    },
+    "consoleErrors": [],
+    "failedRequests": []
+  },
+  "native": {
+    "receipt": "native-retained-source-0.0.396-2026-11-09.json",
+    "result": "failed during bundle loading, before first callback",
+    "buildPassed": true,
+    "exitCode": 1,
+    "matchedBunReference": false,
+    "defaultRuntimeLimitsChanged": false,
+    "bundleMatchesBrowser": true
+  },
+  "bunVersion": "1.4.4",
+  "lockfileSha256": "9817a2922ba1587d71179e5700a158c45cf2ec7f51da6ff800e2645fafdc3196",
+  "dependencyVersions": {
+    "stacks": "0.75.445",
+    "stx": "0.2.789",
+    "craft": "0.0.396"
+  },
+  "limitations": [
+    "Tick counts do not bound wall-clock time, same-tick command count or interpreter steps.",
+    "Native source consumer builds but fails with OutOfMemory during load under unchanged default options. No native parity or presentation claim.",
+    "No owning framework defect or new released package has been established by this slice. Dependency pins are unchanged.",
+    "Original Gold observations, complete native hosting, all archived/faction native loading and broader S3-023/S3-092 acceptance remain open."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "HeadlessChrome/157.0.8103.38",
+    "revision": "@a733b5afbb3ba618844ff8876b89ad1a774b2f18",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.8103.38 Safari/537.36",
+    "jsVersion": "15.7.112.23"
+  },
+  "bundleSha256": "0935723acdd8bc2007c991757bb13e7be04df23251aea97ad307c179cc4c5d31",
+  "callbacks": 10002,
+  "turns": 312,
+  "result": {
+    "tick": 5000,
+    "checksum": "b413c661",
+    "restoredChecksum": "b413c661",
+    "replay": {
+      "ok": true,
+      "ticks": 5000,
+      "checksum": "b413c661"
+    },
+    "storagePhase": "active",
+    "createdUnchanged": true
+  },
+  "consoleErrors": [],
+  "failedRequests": []
+}
