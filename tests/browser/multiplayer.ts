@@ -148,8 +148,29 @@ try {
   console.log(`An online match passed in two browsers: ${h.verified}/${g.verified} turns verified against the server, no resync, both settlements visible to both players, a dropped connection recovered, a reload rejoined, and the match ended in victory and defeat.`)
 }
 catch (error) {
-  const states = await Promise.all([host, guest].map(player => player.cdp.evaluate<string>(`JSON.stringify({ path: location.pathname + location.search, sync: document.querySelector('#match-sync')?.dataset, text: document.body.innerText.slice(0, 400) })`).catch(() => 'unavailable')))
-  await writeFile(resolve(shots, 'multiplayer.json'), `${JSON.stringify({ steps, states, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
+  const states = await Promise.all([host, guest].map(player => player.cdp.evaluate<string>(`JSON.stringify({
+    path: location.pathname + location.search,
+    sync: document.querySelector('#match-sync')?.dataset,
+    dispatch: document.querySelector('.advisor [role="status"]')?.textContent,
+    selectedBuilding: document.querySelector('.building-choice[aria-pressed="true"]')?.textContent,
+    focused: document.activeElement?.className,
+    text: document.body.innerText.slice(0, 400),
+  })`).catch(() => 'unavailable')))
+  // The server's seed and command results distinguish input failures from a
+  // placement refused by the simulation. Keep no session cookies or headers.
+  const authoritative = await (async () => {
+    const snapshot = await host.cdp.evaluate<{ seed: number, turn: number, envelope: unknown }>(`(async () => {
+      const code = new URLSearchParams(location.search).get('room')
+      if (!code) throw new Error('No running match')
+      const response = await fetch('/api/multiplayer/rooms/' + encodeURIComponent(code) + '/snapshot')
+      if (!response.ok) throw new Error('Snapshot answered ' + response.status)
+      return response.json()
+    })()`)
+    const world = sessionFromSnapshot(snapshot.envelope)
+    try { return { seed: snapshot.seed, turn: snapshot.turn, tick: world.state.tick, results: world.state.results, pending: world.state.pending } }
+    finally { world.dispose() }
+  })().catch(diagnosticError => ({ unavailable: diagnosticError instanceof Error ? diagnosticError.message : String(diagnosticError) }))
+  await writeFile(resolve(shots, 'multiplayer.json'), `${JSON.stringify({ steps, states, authoritative, error: error instanceof Error ? error.message : String(error) }, null, 2)}\n`)
   throw error
 }
 finally {
