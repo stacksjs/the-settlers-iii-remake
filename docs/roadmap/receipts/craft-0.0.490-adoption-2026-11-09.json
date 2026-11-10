@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-10T05:40:01.873688+00:00",
+  "sdk": {
+    "name": "craft-native",
+    "previousVersion": "0.0.396",
+    "version": "0.0.490",
+    "sourceRevision": "714640f1b06b27ab35064c0e3fa8898429dbe149",
+    "releaseUrl": "https://github.com/craft-native/craft/releases/tag/v0.0.490",
+    "releaseRun": "https://github.com/craft-native/craft/actions/runs/42694045022",
+    "releaseRunConclusion": "success",
+    "installation": "pantry add --exact craft-native@0.0.490"
+  },
+  "checks": {
+    "pantryVersion": "0.11.194 (a68e2b05b)",
+    "pantryFrozenInstall": "passed",
+    "bunFrozenInstall": "passed",
+    "lint": {
+      "errors": 0,
+      "warnings": 1,
+      "note": "Existing index.stx class ordering warning."
+    },
+    "types": "App, tools and all 16 STX files passed",
+    "unit": {
+      "passed": 564,
+      "failed": 0,
+      "assertions": 102152,
+      "files": 81
+    },
+    "assets": "Verified original pixels, source provenance and conversion inputs",
+    "productionBuild": {
+      "passed": true,
+      "pages": 7
+    },
+    "roadmap": "107 implementation issues, 12 epics and one master validated"
+  },
+  "native": {
+    "requestedVersion": "0.0.490",
+    "command": "pantry add --global craft-native.org@0.0.490",
+    "exitCode": 1,
+    "result": "Registry HTTP 404, artifact missing",
+    "resolvedInstalledVersion": "0.0.487",
+    "qualification": "The older executable does not qualify current Craft behavior. Native checks must use the current package once available through Pantry.",
+    "trackingIssue": "https://github.com/craft-native/craft/issues/454"
+  },
+  "limits": "This records SDK adoption and application checks. Native PersistentRuntime, presentation, campaign fidelity and Gold release acceptance remain separate and incomplete.",
+  "identities": {
+    "package.json": "5a5bfc42e470833b98876f0bd404f5f352406ca1c711a07eadcb08ec7099c545",
+    "bun.lock": "b4378ff385a85dbe7798a6c6b94adf3afa889aa41afaafb88e42150ef25ff3df",
+    "pantry.lock": "45f0ab05633b6ab7a587a3e19363a0f548fe91f1f0d01d7bd72154b8308e0817"
+  },
+  "retainedLogSha256": {
+    "sdk-490-lint.log": "f30d0dc7c3fd26b94df288615fb2588e6d140d5908f111c27a8d6db5f9e229fc",
+    "sdk-490-typecheck.log": "6e4bbad3e3bec76d5b44b209cb3759ac1647b097abbb9e352a80f298d424a655",
+    "sdk-490-unit-stable.log": "bedfb3ba17f6abc3eaed76352f0e2352b9b32ab1c6423bff5530f29a44dceb69",
+    "sdk-490-assets.log": "d4677f2676e077df1c1c594b9799abc68b83aec246654dc35ab554ac6c7f5f24",
+    "sdk-490-build.log": "9e07014ff17b66ab529a5e7fd09436486900263557ea808af91ee153fada92bf",
+    "native-490-install-attempt.json": "52a28929756dbacd342410a74605f6a75fe0166cc4e35bdbcfcbd68243799134"
+  }
+}
