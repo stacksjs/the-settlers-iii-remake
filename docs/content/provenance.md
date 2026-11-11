@@ -32,7 +32,7 @@ Actual bundled publication must run `bun run publication:check --channel <channe
 
 For approval, a source must be reviewed for the requested channel and every converted file/category must have active evidence covering both conversion and redistribution. Each record identifies the source, issuer, scope, permitted categories and channels, reviewer, UTC review date, validity start and optional expiry. The referenced regular document under `docs/content/permissions/` must be present and match its recorded SHA-256. Missing, changed, revoked, future, expired, malformed or insufficient evidence blocks publication. Reviewed policy changes are required; there is no allow-missing or skip-policy flag. Converter and lockfile identity must still match the verified conversion.
 
-The current policy has one grant, the owner decision below, for the `web` channel. The other five publication channels fail. The framework's direct Buddy entrypoint enforcement is delivered upstream; the S3-003 execution receipt records the adopted version when available. Workflow checks are additional protection and do not substitute for that source fix.
+The current policy records two owner decisions, one for `web` and one for `github-release`. Each decision applies only to its recorded channel. The `preview`, `desktop`, `ios` and `android` channels remain blocked. The framework's direct Buddy entrypoint enforcement is delivered upstream; the S3-003 execution receipt records the adopted version when available. Workflow checks are additional protection and do not substitute for that source fix.
 
 ## Browser evidence
 
