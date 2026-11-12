@@ -21,9 +21,9 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Pantry
-        uses: pantry-pm/pantry/packages/action@2f29383de4744c64e98154414fb2d92f25ca9c7c # v0.11.160
+        uses: pantry-pm/pantry/packages/action@135940df27586d47f30eb89176d0927513b2e050 # v0.11.198
         with:
-          version: '0.11.147'
+          version: '0.11.198'
           install: 'false'
           packages: bun.com@1.4.4 git-scm.org@2.53.0 sqlite.org@3.54.1
 

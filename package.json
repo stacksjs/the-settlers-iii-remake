@@ -73,13 +73,13 @@
     "env:verify:production": "bun scripts/verify-production-env.ts"
   },
   "dependencies": {
-    "@stacksjs/actions": "0.75.552",
-    "@stacksjs/env": "0.75.552",
-    "@stacksjs/path": "0.75.552",
-    "@stacksjs/storage": "0.75.552",
+    "@stacksjs/actions": "0.75.555",
+    "@stacksjs/env": "0.75.555",
+    "@stacksjs/path": "0.75.555",
+    "@stacksjs/storage": "0.75.555",
     "@stacksjs/stx": "0.2.859",
     "craft-native": "0.0.499",
-    "stacks": "0.75.552",
+    "stacks": "0.75.555",
     "ts-pantry": "0.11.198"
   },
   "workspaces": [
@@ -97,7 +97,7 @@
   },
   "devDependencies": {
     "@stacksjs/components": "0.2.859",
-    "@stacksjs/testing": "0.75.552",
+    "@stacksjs/testing": "0.75.555",
     "@stacksjs/ts-png": "0.1.10",
     "@stacksjs/ts-webp": "0.1.7",
     "better-dx": "^0.2.38",
