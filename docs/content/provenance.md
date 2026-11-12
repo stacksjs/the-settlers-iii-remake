@@ -24,6 +24,32 @@ The archived ZIP has 82 entries. A filename inventory did not identify a separat
 
 The manifest identifies the exact original DAT/SND bytes, pinned reference mappings and XML, source converter files, dependency manifest and lockfile. `import-receipt.json` retains these identities and selectors without the graphics or audio bytes. It is a reproducible conversion record, not independent proof of permission or original gameplay behavior. The manifest itself is the control file and is not self-hashed as a converted output. `content:verify` rejects extra, missing, changed, symlinked or incompletely mapped converted files.
 
+## Rebuilding local content
+
+`bun run assets:import` extracts and converts in an owned private workspace under
+`storage/reference/`. It checks the complete provenance-bound bundle before
+installing either destination. A failed archive check, download, decode or
+validation preserves the previously installed public bundle and reports the
+original error. Each invocation owns a separate workspace, so concurrent
+conversions do not share partially extracted inputs.
+
+The complete original source cache at `storage/reference/demo` is installed
+first, followed by `public/assets/settlers-original`, using the native Stacks
+storage replacement API. Existing source-raster checks retain that cache path.
+These are separate replacements: a later bundle-installation failure can leave
+the complete source cache refreshed while the previous public bundle remains.
+The two-step directory path has a temporary missing-destination window.
+
+When native storage reports recovery or cleanup uncertainty, the importer keeps
+its private workspace and the original recovery error, including the destination,
+lock and backup paths. The diagnostic identifies the source cache or converted
+bundle involved. `installed: true` describes that destination's completed rename,
+even if cleanup failed; a partially removed backup is not promised to be complete.
+Stop the operation's owner and inspect its actual files before recovery. Neither
+an old lock nor a diagnostic journal authorizes deletion by age. This lifecycle
+does not establish hardware durability, permission to publish original media or
+original-game behavior.
+
 ## Publication decisions
 
 `bun run content:inventory` checks the category/source policy without requiring converted media. `bun run assets:verify` and `bun run content:verify` verify local conversion integrity. They do not authorize publication. A private developer build and local browser regression can therefore run while rights remain unverified.
