@@ -73,13 +73,14 @@
     "env:verify:production": "bun scripts/verify-production-env.ts"
   },
   "dependencies": {
-    "@stacksjs/actions": "0.75.445",
-    "@stacksjs/env": "0.75.445",
-    "@stacksjs/path": "0.75.445",
-    "@stacksjs/stx": "0.2.789",
-    "craft-native": "0.0.490",
-    "stacks": "0.75.445",
-    "ts-pantry": "0.11.147"
+    "@stacksjs/actions": "0.75.552",
+    "@stacksjs/env": "0.75.552",
+    "@stacksjs/path": "0.75.552",
+    "@stacksjs/storage": "0.75.552",
+    "@stacksjs/stx": "0.2.859",
+    "craft-native": "0.0.499",
+    "stacks": "0.75.552",
+    "ts-pantry": "0.11.198"
   },
   "workspaces": [
     "storage/framework",
@@ -95,12 +96,12 @@
     "commit-msg": "bun x gitlint --edit \"$1\""
   },
   "devDependencies": {
-    "@stacksjs/components": "0.2.789",
-    "@stacksjs/testing": "0.75.445",
+    "@stacksjs/components": "0.2.859",
+    "@stacksjs/testing": "0.75.552",
     "@stacksjs/ts-png": "0.1.10",
     "@stacksjs/ts-webp": "0.1.7",
     "better-dx": "^0.2.38",
-    "bun-plugin-stx": "0.2.789"
+    "bun-plugin-stx": "0.2.859"
   },
   "author": "Chris <chris@stacksjs.com>",
   "repository": {
