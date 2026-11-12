@@ -1,4 +1,5 @@
 import { Action } from '@stacksjs/actions/runtime'
+import { config } from '@stacksjs/config'
 import { mail, template } from '@stacksjs/email'
 import { log } from '@stacksjs/logging'
 import { schema } from '@stacksjs/validation/runtime'
@@ -48,7 +49,7 @@ export default new Action({
 
     await mail.send({
       to: user.to,
-      subject: 'Welcome to Stacks!',
+      subject: `Welcome to ${config.app.name}!`,
       html,
       text,
     })
