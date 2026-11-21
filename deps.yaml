@@ -9,4 +9,4 @@ dependencies:
   curl: ^8.22.0
   git: ^2.47.0
   sqlite: ^3.47.2
-  github.com/mail-os/mail: ^0.3.2
+  github.com/mail-os/mail: ^0.3.10
